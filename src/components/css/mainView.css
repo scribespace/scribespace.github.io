@@ -1,0 +1,69 @@
+.main-view {
+    display: grid;
+    grid-template-columns: 15% 84%;
+    column-gap: 1%;
+    height: 100%;
+    width: 100%;
+}
+
+.tree-view {
+    height: 100%;
+    overflow: hidden;
+}
+
+.editor-view {
+    width: 794px; /* Width matching A4 paper size in pixels */
+    overflow: hidden;
+}
+
+.ql-editor {
+    height: 100%;
+  }
+
+.quill {
+    height: 95%;
+}
+
+.FolderTree {
+    height: 100%;
+    overflow: scroll;
+}
+
+.TreeNode {
+    width: 100%;
+}
+
+@media print {
+
+    body {
+        overflow: visible;
+    }
+
+    .editor-view {
+        overflow: visible;
+    }
+
+    .ql-editor {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;  /* Adjust width to fit the print page */
+        height: auto;  /* Remove fixed height to print all content */
+        overflow: visible;  /* Content flows into additional pages if needed */
+        padding: 0;
+        border: none;
+    }
+
+    .ql-container.ql-snow {
+        border: none;
+    }
+
+    .ql-toolbar {
+        display: none;
+     }
+
+    .tree-view {
+        display: none;
+     }
+
+  }
