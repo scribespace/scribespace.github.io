@@ -1,8 +1,12 @@
-.FolderTree {
-    height: 100%;
-    overflow: scroll;
+[role="treeitem"]:has(.node):hover {
+    background-color: rgb(211, 211, 211);
 }
 
-.TreeNode {
-    width: 100%;
+[role="treeitem"][aria-selected="true"]:has(.node) {
+    background-color: rgb(138, 138, 138);
+    font-weight: 700;
+}
+
+[role="treeitem"]:has(.willReceiveDrop) {
+    background-color: rgb(211, 211, 211);
 }

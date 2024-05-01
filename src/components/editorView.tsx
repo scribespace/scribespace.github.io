@@ -14,7 +14,11 @@ export function EditorView() {
         plugins: [
           'autolink', 'codesample', 'help', 'link', 'lists', 'pagebreak', 'searchreplace', 'table'
         ],
-        toolbar: '| h1 h2 h3 | fontfamily fontsizeinput | bold italic underline strikethrough | removeformat | align | bullist numlist | forecolor |  table  | link',
+        paste_data_images: true,
+        paste_enable_default_filters: false,
+        paste_remove_styles_if_webkit: false,
+        paste_webkit_styles: 'all',
+        toolbar: '| h1 h2 h3 | fontfamily fontsizeinput | bold italic underline strikethrough | removeformat | align | bullist numlist | forecolor backcolor |  table  | link',
         toolbar_groups: {
           align: {
             icon: 'align-left',
