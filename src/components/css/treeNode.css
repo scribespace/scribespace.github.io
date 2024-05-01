@@ -1,0 +1,12 @@
+[role="treeitem"]:has(.node):hover {
+    background-color: rgb(211, 211, 211);
+}
+
+[role="treeitem"][aria-selected="true"]:has(.node) {
+    background-color: rgb(138, 138, 138);
+    font-weight: 700;
+}
+
+[role="treeitem"]:has(.willReceiveDrop) {
+    background-color: rgb(211, 211, 211);
+}
