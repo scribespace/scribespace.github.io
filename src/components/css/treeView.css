@@ -1,0 +1,8 @@
+.FolderTree {
+    height: 100%;
+    overflow: scroll;
+}
+
+.TreeNode {
+    width: 100%;
+}
