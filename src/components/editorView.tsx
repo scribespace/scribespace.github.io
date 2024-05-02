@@ -113,8 +113,6 @@ export function EditorView({selectedFile} : Props) {
         content_css: '/css/content.css',
         font_size_input_default_unit: 'pt',
         line_height_formats: '1 1.2 1.4 1.6 2',
-        browser_spellcheck: true,
-        contextmenu: false,
         setup: function(editor) {
             editor.on('PreInit', function() {
                 editor.getBody().style.fontSize = '8pt';
