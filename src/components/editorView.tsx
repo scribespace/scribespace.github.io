@@ -21,11 +21,11 @@ export function EditorView({selectedFile} : Props) {
         const result = await appGlobals.system?.getFileSystem().uploadFile(file, {content: new Blob([content])}, FileUploadMode.Replace)
         if (!!!result) throw Error('UploadTree: no result');
         if (result.status !== FileSystemStatus.Success) throw Error('Couldnt upload tree, status: ' + result.status);    
-        console.log('saved!')    
+        console.log(file+' saved!')    
     }
 
     function onSave(a: any ) {
-        Save( selectedFile, a.content );        
+        Save( currentFile.current, a.content );        
     }
 
       async function WaitForSave() {
