@@ -2,6 +2,7 @@ import { EventHandler, FunctionComponent, useEffect, useRef, useState } from 're
 import { Editor } from '@tinymce/tinymce-react';
 import { appGlobals } from '../system/appGlobals';
 import { FileSystemStatus, FileUploadMode } from '../interfaces/system/fs_interface';
+import { useDebouncedCallback } from "use-debounce";
 
 type Props = {
     selectedFile: string;
@@ -9,47 +10,46 @@ type Props = {
 
 export function EditorView({selectedFile} : Props) {
     const [fileLoaded, setFileLoaded] = useState<boolean>(false);
+    const [blockEdit, setBlockEdit] = useState<boolean>(false);
     const editorElement = useRef<Editor>(null)
-    const somethingChnaged = useRef<boolean>(false);
-    const saveCallback = useRef<()=>void>(()=>{})
+    const currentFile = useRef<string>('')
 
-    function Save( file: string, content: string, callback: () => void ) {
-        appGlobals.system?.getFileSystem().uploadFile(file, {content: new Blob([content])}, FileUploadMode.Replace).then((result) => {
-            if (!!!result) throw Error('UploadTree: no result');
-            if (result.status !== FileSystemStatus.Success) throw Error('Couldnt upload tree, status: ' + result.status);
-            callback();
-        })
+    async function Save( file: string, content: string ) {
+        const result = await appGlobals.system?.getFileSystem().uploadFile(file, {content: new Blob([content])}, FileUploadMode.Replace)
+        if (!!!result) throw Error('UploadTree: no result');
+        if (result.status !== FileSystemStatus.Success) throw Error('Couldnt upload tree, status: ' + result.status);        
     }
 
-    function onSave(a :any ) {
+    function onSave(a: any ) {
         console.log('onSave ' + selectedFile)
-        Save( selectedFile, a.content, ()=>{console.log('saved')} );        
-        somethingChnaged.current = false;
+        Save( selectedFile, a.content );        
     }
 
-    function onChange() {
-        somethingChnaged.current = true;
+    function onChange(a: any) {
+        if ( !debounced.isPending() )
+            debounced(a.level.content)
     }
 
-    useEffect(()=>{
-        saveCallback.current = () => {
-            console.log(fileLoaded + ' ' + (selectedFile != '') + ' ' + somethingChnaged.current)
-            if ( fileLoaded && (selectedFile != '') && somethingChnaged.current ) {
-                console.log('setInterval ' + selectedFile)
-                editorElement.current?.editor?.save();
-            }
+    const debounced = useDebouncedCallback((value) => {
+        console.log(fileLoaded + ' ' + (selectedFile != '') )
+        if ( fileLoaded && (selectedFile != '') ) {
+            console.log('setInterval ' + selectedFile)
+            editorElement.current?.editor?.save();
         }
-    },[fileLoaded, selectedFile, somethingChnaged])
-    
-    useEffect( () => {
-        const intervalID = setInterval(()=>{
-           saveCallback.current();
-        }, 5000)
+      }, 2000);
 
-        return () => clearInterval(intervalID)
-    }, [])
+      async function WaitForSave() {
+        if ( debounced.isPending()) {
+            debounced.cancel()
+            const content = editorElement.current?.editor?.getContent()
+            if ( content )
+                await Save(currentFile.current, content );
+        }
+      }
 
     useEffect(() => {
+        setBlockEdit(true);
+        WaitForSave().then(()=> {
         setFileLoaded(false);
         if ( selectedFile != '' ) {
             appGlobals.system?.getFileSystem().downloadFile(selectedFile).then((result) => {
@@ -60,18 +60,24 @@ export function EditorView({selectedFile} : Props) {
             result.file.content.text().then((noteText) => {
                 editorElement.current?.editor?.setContent(noteText)
                 setFileLoaded(true);
+                setBlockEdit(false);
+
+                currentFile.current = selectedFile
             })
 
             })
         } else {
             editorElement.current?.editor?.setContent('')
+            currentFile.current = ''
+            setBlockEdit(false);
         }
+    })
     },[selectedFile])
 
     return (
         <Editor
         ref={editorElement}
-        disabled={!fileLoaded}
+        disabled={blockEdit || !fileLoaded}
         tinymceScriptSrc='/tinymce/tinymce.min.js'
         licenseKey='gpl'
         onSaveContent={onSave}
