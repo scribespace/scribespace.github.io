@@ -43,7 +43,7 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
         })
     }
 
-    const OnAddElement = () => {
+     const OnAddElement = () => {
         if (treeElement.current == null) return;
         treeElement.current.createInternal();
     }
