@@ -1,8 +1,7 @@
-import { EventHandler, FunctionComponent, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import { appGlobals } from '../system/appGlobals';
 import { FileSystemStatus, FileUploadMode } from '../interfaces/system/fs_interface';
-import { useDebouncedCallback } from "use-debounce";
 
 type Props = {
     selectedFile: string;
@@ -13,39 +12,43 @@ export function EditorView({selectedFile} : Props) {
     const [blockEdit, setBlockEdit] = useState<boolean>(false);
     const editorElement = useRef<Editor>(null)
     const currentFile = useRef<string>('')
+    const intervalVersion = useRef<number>(0)
+    const saveCallback = useRef<()=>void>(()=>{})
 
     async function Save( file: string, content: string ) {
         const result = await appGlobals.system?.getFileSystem().uploadFile(file, {content: new Blob([content])}, FileUploadMode.Replace)
         if (!!!result) throw Error('UploadTree: no result');
-        if (result.status !== FileSystemStatus.Success) throw Error('Couldnt upload tree, status: ' + result.status);        
+        if (result.status !== FileSystemStatus.Success) throw Error('Couldnt upload tree, status: ' + result.status);    
+        console.log('saved!')    
     }
 
     function onSave(a: any ) {
-        console.log('onSave ' + selectedFile)
         Save( selectedFile, a.content );        
     }
 
-    function onChange(a: any) {
-        if ( !debounced.isPending() )
-            debounced(a.level.content)
-    }
-
-    const debounced = useDebouncedCallback((value) => {
-        console.log(fileLoaded + ' ' + (selectedFile != '') )
-        if ( fileLoaded && (selectedFile != '') ) {
-            console.log('setInterval ' + selectedFile)
-            editorElement.current?.editor?.save();
-        }
-      }, 2000);
-
       async function WaitForSave() {
-        if ( debounced.isPending()) {
-            debounced.cancel()
+        if ( editorElement.current?.editor?.isDirty()) {
+            
             const content = editorElement.current?.editor?.getContent()
             if ( content )
                 await Save(currentFile.current, content );
         }
       }
+
+      function TriggerSave() {
+        if ( editorElement.current?.editor?.isDirty() && fileLoaded && (selectedFile != '') ) {
+            editorElement.current?.editor?.save();
+        }
+      }
+
+      useEffect(()=>{
+        saveCallback.current = TriggerSave;
+      },[intervalVersion.current])
+
+      useEffect(()=>{
+        const intervalID = setInterval(() => { ++intervalVersion.current; saveCallback.current()}, 1000)
+        return () => clearInterval(intervalID)
+      },[])
 
     useEffect(() => {
         setBlockEdit(true);
@@ -81,7 +84,6 @@ export function EditorView({selectedFile} : Props) {
         tinymceScriptSrc='/tinymce/tinymce.min.js'
         licenseKey='gpl'
         onSaveContent={onSave}
-        onChange={onChange}
         init={{
         promotion: false,
         height: '100%',
@@ -94,6 +96,10 @@ export function EditorView({selectedFile} : Props) {
         paste_data_images: true,
         paste_remove_styles_if_webkit: false,
         paste_webkit_styles: 'all',
+        menu: {
+            file: { title: 'File', items: 'print' },
+        },
+        removed_menuitems: 'visualaid',
         toolbar: '| h1 h2 h3 | fontfamily fontsizeinput | bold italic underline strikethrough | removeformat | align | bullist numlist | forecolor backcolor |  table  | link',
         toolbar_groups: {
           align: {

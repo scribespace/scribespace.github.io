@@ -5,7 +5,7 @@ import { EditorView } from './editorView';
 import './css/mainView.css'
 
 import { authGlobal, AUTH_DISABLED } from '../system/authentication';
-import { FunctionComponent, useRef, useState } from 'react';
+import { FunctionComponent, useState } from 'react';
 
 type Props = {
   changeAuthButtonState: (state: number) => void;
