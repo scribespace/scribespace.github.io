@@ -1,8 +1,18 @@
 body { 
     font-family:Helvetica,Arial,sans-serif;
-    font-size:14px 
+    font-size:11pt 
 }
 
 p {
     margin: 0px;
+}
+
+@media print {
+    .mce-content-body table[data-mce-selected] {
+        outline: none !important;
+    }
+
+    .mce-content-body div.mce-resizehandle {
+        display: none;
+    }
 }
