@@ -1,6 +1,7 @@
   
 import { NodeApi, NodeRendererProps } from 'react-arborist';
 
+import { AiOutlineEdit } from "react-icons/ai";
 import { SlDoc, SlArrowDown, SlArrowRight } from "react-icons/sl";
 import { AddIcon, DeleteIcon } from "../global";
 import clsx from "clsx";
@@ -10,6 +11,11 @@ import './css/treeNode.css'
   
 export function Node({ node, style, dragHandle }: NodeRendererProps<any>) {
     /* This node instance can do many things. See the API reference. */
+
+    const OnEditNode = () => {
+        if (!node.tree.props.onRename) return; 
+        node.tree.edit(node); 
+    }
 
     const OnAddInternal = () => {
         if ( node.isInternal ) {
@@ -39,6 +45,7 @@ export function Node({ node, style, dragHandle }: NodeRendererProps<any>) {
         </span>
         <span>{node.isEditing ? <Input node={node} /> : node.data.name}</span>
         <span>{node.data.unread === 0 ? null : node.data.unread}</span>
+        <AiOutlineEdit className='nodeControl' onClick={OnEditNode}/>
         <AddIcon className='nodeControl' onClick={OnAddInternal}/>
         <DeleteIcon className='nodeControl' onClick={OnDeleteNode}/>
         </div>
