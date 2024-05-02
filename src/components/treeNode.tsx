@@ -14,6 +14,7 @@ export function Node({ node, style, dragHandle }: NodeRendererProps<any>) {
     const OnAddInternal = () => {
         if ( node.isInternal ) {
             node.select(); 
+            node.open();
             node.tree.createInternal()
         } 
     }
@@ -38,8 +39,8 @@ export function Node({ node, style, dragHandle }: NodeRendererProps<any>) {
         </span>
         <span>{node.isEditing ? <Input node={node} /> : node.data.name}</span>
         <span>{node.data.unread === 0 ? null : node.data.unread}</span>
-        <AddIcon style={{marginLeft: "10px"}} onClick={OnAddInternal}/>
-        <DeleteIcon style={{marginLeft: "10px"}} onClick={OnDeleteNode}/>
+        <AddIcon className='nodeControl' onClick={OnAddInternal}/>
+        <DeleteIcon className='nodeControl' onClick={OnDeleteNode}/>
         </div>
     );
     }

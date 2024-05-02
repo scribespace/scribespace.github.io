@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { MainView } from './components/mainView'
+import { WelcomeView } from './components/welcomeView'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <MainView />
+    <WelcomeView />
   </React.StrictMode>,
 )
