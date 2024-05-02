@@ -210,11 +210,11 @@ export function EditorView({selectedFile} : Props) {
             });
             editor.addShortcut('meta+shift+e', 'Set Red', () => {
                 editor.execCommand('ForeColor', false, '#FF0000');
-                editor.execCommand('Bold');
+                editor.formatter.apply('bold')
             });
             editor.addShortcut('meta+shift+d', 'Set Blue', () => {
                 editor.execCommand('ForeColor', false, '#0000FF');
-                editor.execCommand('Bold');
+                editor.formatter.apply('bold')
             });
             editor.addShortcut('alt+q', 'Justify Left', () => {
                 editor.execCommand('JustifyLeft');
