@@ -10,3 +10,12 @@
 [role="treeitem"]:has(.willReceiveDrop) {
     background-color: rgb(211, 211, 211);
 }
+
+.node .nodeControl {
+    margin-left: 10px;
+    visibility: hidden;
+}
+
+.node:hover .nodeControl {
+    visibility: visible;
+}
