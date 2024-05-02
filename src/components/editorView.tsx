@@ -111,6 +111,7 @@ export function EditorView({selectedFile} : Props) {
           }
         },
         content_css: '/css/content.css',
+        font_size_input_default_unit: 'pt',
         }}
       />
     )
