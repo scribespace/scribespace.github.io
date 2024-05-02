@@ -3,6 +3,8 @@ import { Editor } from '@tinymce/tinymce-react';
 import { appGlobals } from '../system/appGlobals';
 import { FileSystemStatus, FileUploadMode } from '../interfaces/system/fs_interface';
 
+import "./css/editorView.css"
+
 type Props = {
     selectedFile: string;
 }
@@ -108,7 +110,7 @@ export function EditorView({selectedFile} : Props) {
             items: 'alignleft aligncenter alignright alignjustify'
           }
         },
-        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+        content_css: '/css/content.css',
         }}
       />
     )
