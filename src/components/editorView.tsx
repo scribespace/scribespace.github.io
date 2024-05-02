@@ -65,6 +65,7 @@ export function EditorView({selectedFile} : Props) {
 
             result.file.content.text().then((noteText) => {
                 editorElement.current?.editor?.setContent(noteText)
+                editorElement.current?.editor?.undoManager.clear();
                 setFileLoaded(true);
                 setBlockEdit(false);
 
@@ -74,6 +75,7 @@ export function EditorView({selectedFile} : Props) {
             })
         } else {
             editorElement.current?.editor?.setContent('')
+            editorElement.current?.editor?.undoManager.clear();
             currentFile.current = ''
             setBlockEdit(false);
         }
