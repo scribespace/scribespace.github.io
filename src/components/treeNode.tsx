@@ -54,8 +54,9 @@ export function Node({ node, style, dragHandle }: NodeRendererProps<any>) {
 
     function FolderArrow({ node } : {node: NodeApi<any>}) {
     if (node.isLeaf) return <span></span>;
+    const visible = (node.children as NodeApi<any>[]).length > 0
     return (
-        <span>
+        <span style={{visibility: visible ? 'visible' : 'hidden'}}>
         {node.isOpen ? <SlArrowDown onClick={() => node.isInternal && node.toggle()}/> : <SlArrowRight onClick={() => node.isInternal && node.toggle()}/>}
         </span>
     );
