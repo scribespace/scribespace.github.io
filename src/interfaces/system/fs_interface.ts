@@ -37,4 +37,5 @@ export interface FileSystem {
     uploadFile(path: string, file: File, mode: FileUploadMode): Promise<UploadResult>;
     downloadFile(path: string): Promise<DownloadResult>;
     deleteFile(path: string): Promise<DeleteResults>;
+    getFileURL(path: string): Promise<string>;
 }
