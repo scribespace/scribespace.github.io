@@ -186,6 +186,10 @@ export function EditorView({selectedFile} : Props) {
                 onAction: () => openHelpDialog()
               });
 
+              editor.on('paste', function() {
+                editor.setDirty(true);
+            });
+
             editor.on('PreInit', function() {
                 editor.getBody().style.fontSize = '8pt';
             });
@@ -209,12 +213,16 @@ export function EditorView({selectedFile} : Props) {
                 editor.execCommand('RemoveFormat');
             });
             editor.addShortcut('meta+shift+e', 'Set Red', () => {
-                editor.execCommand('ForeColor', false, '#FF0000');
-                editor.formatter.apply('bold')
+                editor.undoManager.transact(function() {
+                    editor.execCommand('ForeColor', false, '#FF0000');
+                    editor.formatter.apply('bold')
+                })
             });
             editor.addShortcut('meta+shift+d', 'Set Blue', () => {
-                editor.execCommand('ForeColor', false, '#0000FF');
-                editor.formatter.apply('bold')
+                editor.undoManager.transact(function() {
+                    editor.execCommand('ForeColor', false, '#0000FF');
+                    editor.formatter.apply('bold')
+                });
             });
             editor.addShortcut('alt+q', 'Justify Left', () => {
                 editor.execCommand('JustifyLeft');
