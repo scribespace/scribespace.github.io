@@ -359,4 +359,26 @@ export class DropboxFS implements FileSystem {
         result.status = FileSystemStatus.Success;
         return result;
     }
+
+    async getFileURL(path: string): Promise<string> {
+        try {
+            const share = await this.dbx.sharingCreateSharedLinkWithSettings({
+                path: path,
+                settings: {
+                    audience: {'.tag': 'public'}
+                }
+            })
+
+            let url = share.result.url.slice(0, -4) // remove dl=0
+            url = url + 'raw=1' // add raw file
+
+            return url
+        } catch (error: any) {
+            var shareError = error.error;
+            if (!!!shareError.error) {
+                throw DropboxError(shareError);
+            }
+            return ""
+        }
+    }
 }

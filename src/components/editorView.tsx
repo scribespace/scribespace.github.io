@@ -1,10 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
+
 import { appGlobals } from '../system/appGlobals';
-import { FileSystemStatus, FileUploadMode } from '../interfaces/system/fs_interface';
+import { FileSystemStatus, FileUploadMode, UploadResult } from '../interfaces/system/fs_interface';
 
 import "./css/editorView.css"
 import {buildInShortcuts, customShortcuts} from './shortcuts'
+
+const IMAGES_PATH = '/images/'
+const IMAGES_LIST_FILE = '/image_list'
+
 
 type Props = {
     selectedFile: string;
@@ -17,6 +22,7 @@ export function EditorView({selectedFile} : Props) {
     const currentFile = useRef<string>('')
     const intervalVersion = useRef<number>(0)
     const saveCallback = useRef<()=>void>(()=>{})
+    const imagesMap = useRef<Map<string, string>>(new Map<string, string>)
 
     async function Save( file: string, content: string ) {
         const result = await appGlobals.system?.getFileSystem().uploadFile(file, {content: new Blob([content])}, FileUploadMode.Replace)
@@ -44,11 +50,57 @@ export function EditorView({selectedFile} : Props) {
         }
       }
 
+      async function UploadImage(blobInfo: any): Promise<string> {
+            let fileName = 'scribe-space-id-image-' + crypto.randomUUID() + (new Date().toJSON());
+            
+            const result: UploadResult | undefined = await appGlobals.system?.getFileSystem().uploadFile(IMAGES_PATH + fileName, {content: blobInfo.blob()}, FileUploadMode.Add)
+            if (!!!result) throw Error('onCreate note: no result');
+            if (result.status !== FileSystemStatus.Success) throw Error('Couldnt upload note, status: ' + result.status);
+            if (!!!result.fileInfo) throw Error('onCreate note: No fileInfo');
+            if (!!!result.fileInfo.hash) throw Error('onCreate note: No hash');
+
+            let imageURL = ""
+            if ( result.fileInfo.name) {
+                const urlResult = await appGlobals.system?.getFileSystem().getFileURL(result.fileInfo.name)
+                if ( urlResult )
+                    imageURL = urlResult
+
+                imagesMap.current.set(imageURL, result.fileInfo.name)
+
+                editorElement.current?.editor?.notificationManager.open({
+                    text: "Image Saved!",
+                    type: 'success',
+                    timeout: 2000
+                })
+
+                const array = Array.from(imagesMap.current.entries());
+                const imagesJSON = JSON.stringify(array)
+                appGlobals.system?.getFileSystem().uploadFile(IMAGES_LIST_FILE, {content: new Blob([imagesJSON])}, FileUploadMode.Replace).then((result) => {
+                    if (!!!result) throw Error('UploadImage -> upload images list: no result');
+                    if (result.status !== FileSystemStatus.Success) throw Error('Couldnt upload images list, status: ' + result.status);
+                })
+            }
+            if ( imageURL == "" )
+                imageURL = '/images/no-image.png'
+
+            return imageURL
+     }
+
+
       useEffect(()=>{
         saveCallback.current = TriggerSave;
       },[intervalVersion.current])
 
       useEffect(()=>{
+        appGlobals.system?.getFileSystem().downloadFile(IMAGES_LIST_FILE).then((result) => {
+            if ( result.status === FileSystemStatus.Success ) {
+                result.file?.content?.text().then((imagesJSON) => {
+                    const imagesArray = JSON.parse(imagesJSON)
+                    imagesMap.current = new Map(imagesArray)
+                })
+            } 
+        })
+
         const intervalID = setInterval(() => { ++intervalVersion.current; saveCallback.current()}, 1000)
         return () => clearInterval(intervalID)
       },[])
@@ -98,6 +150,8 @@ export function EditorView({selectedFile} : Props) {
             'autolink', 'codesample', 'link', 'lists', 'pagebreak', 'searchreplace', 'table'
         ],       
         paste_data_images: true,
+        images_upload_handler: UploadImage,
+        images_file_types: 'jpeg,jpg,png',
         paste_remove_styles_if_webkit: false,
         paste_webkit_styles: 'all',
         menubar: 'file edit insert format table help',
@@ -177,6 +231,18 @@ export function EditorView({selectedFile} : Props) {
                     }
                 })
             }
+
+            editor.on('remove', function (e) {
+                console.log(e)
+                // Check if the removed element is an image
+                if (e.target.nodeName.toLowerCase() === 'img') {
+                  // React to the image being deleted
+                  var deletedImage = e.target;
+                  console.log('Image deleted:', deletedImage);
+                  // Perform any other actions you need here
+                }
+              });
+
             editor.addShortcut('alt+0', 'Help Dialog', () => {
                 openHelpDialog();
             })
