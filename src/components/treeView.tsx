@@ -111,7 +111,7 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
         if (args.ids.length > 1) throw Error('onDelete: Too many files selected!');
         const id = args.ids[0];
 
-        const result: DeleteResults | undefined = await appGlobals.system?.getFileSystem().deleteFile(NOTES_PATH + id)
+        const result: DeleteResults | undefined = await appGlobals.system?.getFileSystem().deleteFile(id)
         if (!!!result) throw Error('onDelete note: no result');
         if (result.status !== FileSystemStatus.Success && result.status !== FileSystemStatus.NotFound) throw Error('Couldnt delete note, status: ' + result.status);
 
