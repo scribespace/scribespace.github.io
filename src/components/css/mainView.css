@@ -2,7 +2,6 @@
     display: grid;
     grid-template-columns: 30% auto;
     column-gap: 1%;
-    height: 100%;
     width: 100%;
 }
 
