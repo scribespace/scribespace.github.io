@@ -16,4 +16,10 @@ p {
     .mce-content-body div.mce-resizehandle {
         display: none;
     }
+
+    body, html {
+        -webkit-print-color-adjust: exact; /* Chrome, Safari */
+        color-adjust: exact;              /* Firefox */
+        background: inherit;              /* Ensure backgrounds are printed */
+    }
 }
