@@ -20,8 +20,7 @@ export function EditorView({selectedFile} : Props) {
     const [blockEdit, setBlockEdit] = useState<boolean>(false);
     const editorElement = useRef<Editor>(null)
     const currentFile = useRef<string>('')
-    const intervalVersion = useRef<number>(0)
-    const saveCallback = useRef<()=>void>(()=>{})
+    const [intervalVersion, setIntervalVersion] = useState<number>(0)
     const imagesMap = useRef<Map<string, string>>(new Map<string, string>)
 
     async function Save( file: string, content: string ) {
@@ -88,8 +87,9 @@ export function EditorView({selectedFile} : Props) {
 
 
       useEffect(()=>{
-        saveCallback.current = TriggerSave;
-      },[intervalVersion.current])
+        setTimeout(() => {setIntervalVersion((current)=>current + 1)}, 1000)
+        TriggerSave()
+      },[intervalVersion])
 
       useEffect(()=>{
         appGlobals.system?.getFileSystem().downloadFile(IMAGES_LIST_FILE).then((result) => {
@@ -100,9 +100,6 @@ export function EditorView({selectedFile} : Props) {
                 })
             } 
         })
-
-        const intervalID = setInterval(() => { ++intervalVersion.current; saveCallback.current()}, 1000)
-        return () => clearInterval(intervalID)
       },[])
 
     useEffect(() => {
