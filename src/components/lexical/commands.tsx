@@ -12,6 +12,7 @@ export const INCREASE_FONT_SIZE_COMMAND: LexicalCommand<void> = createCommand()
 export const DECREASE_FONT_SIZE_COMMAND: LexicalCommand<void> = createCommand()
 export const SET_FONT_SIZE_COMMAND: LexicalCommand<string> = createCommand()
 export const FONT_SIZE_CHANGED: LexicalCommand<void> = createCommand()
+export const SET_FONT_FAMILY_COMMAND: LexicalCommand<string> = createCommand()
 
 export default function RegisterCustomCommands() {
     const [editor] = useLexicalComposerContext();
@@ -117,7 +118,19 @@ export default function RegisterCustomCommands() {
             return false;
         },
         COMMAND_PRIORITY_LOW)
-        removeFunctionsArray.push( removeSetFontSize);
+        removeFunctionsArray.push( removeSetFontSize );
+
+        const removeSetFontFamily = editor.registerCommand(SET_FONT_FAMILY_COMMAND, (fontFamily: string) => {
+            const selection = $getSelection();
+            if ( $isRangeSelection(selection)) {
+                $patchStyleText( selection, {'font-family': fontFamily})
+                editor.dispatchCommand(FONT_SIZE_CHANGED, undefined);
+            }
+
+            return false;
+        },
+        COMMAND_PRIORITY_LOW)
+        removeFunctionsArray.push( removeSetFontFamily );
         
         return () => { 
             removeFunctionsArray.forEach(f => f());

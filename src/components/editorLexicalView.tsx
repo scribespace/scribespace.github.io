@@ -13,7 +13,7 @@ import {ListNode, ListItemNode } from '@lexical/list'
 import { appGlobals } from '../system/appGlobals';
 
 import './lexical/editor.css'
-import ToolbarPlugin from './lexical/plugins/toolbarPlugin';
+import ToolbarPlugin from './lexical/plugins/toolbarPlugin/toolbarPlugin';
 
 import EditorTheme from './lexical/editorTheme';
 import RegisterCustomCommands from './lexical/commands';
