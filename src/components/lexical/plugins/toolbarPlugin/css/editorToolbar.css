@@ -74,13 +74,12 @@
     line-height: 16px;
     font-size: 15px;
     display: flex;
-    align-content: center;
     flex-direction: row;
-    flex-shrink: 0;
     justify-content: space-between;
     background-color: #fff;
     border-radius: 8px;
     border: 0;
+    width: calc(100% - 16px);
   }
 
   .dropdown .item-buttons {

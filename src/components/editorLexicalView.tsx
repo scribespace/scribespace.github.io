@@ -13,11 +13,12 @@ import {ListNode, ListItemNode } from '@lexical/list'
 import { appGlobals } from '../system/appGlobals';
 
 import './lexical/editor.css'
-import ToolbarPlugin from './lexical/plugins/toolbarPlugin/toolbarPlugin';
+import { ToolbarPlugin } from './lexical/plugins/toolbarPlugin/toolbarPlugin';
 
 import EditorTheme from './lexical/editorTheme';
 import RegisterCustomCommands from './lexical/commands';
 import { ExtendedTextNode } from './lexical/nodes/extendedTextNode';
+import useResizeObserver from 'use-resize-observer';
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
@@ -60,6 +61,7 @@ function TestPlugin( {selectedFile} : Props ) {
 };
 
 export function EditorLexicalView({selectedFile} : Props) {
+  const { ref: toolbarRef, height: toolbarHeight = 1 } = useResizeObserver<HTMLDivElement>({box:'border-box'}); 
 
   const initialConfig = {
     namespace: 'MyEditor',
@@ -76,8 +78,8 @@ export function EditorLexicalView({selectedFile} : Props) {
   return (
     <LexicalComposer initialConfig={initialConfig}>
         <div className='editor-container'>
-            <ToolbarPlugin/>
-                    <div className='editor-inner'>
+            <ToolbarPlugin ref={toolbarRef}/>
+                    <div className='editor-inner' style={{height: `calc(100% - ${toolbarHeight}px)`}}>
                 <RichTextPlugin
                 contentEditable={<ContentEditable className="editor-input section-to-print" spellCheck={false}/>}
                 placeholder={null}

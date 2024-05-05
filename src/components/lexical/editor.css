@@ -5,8 +5,8 @@
 }
 
 .editor-container {
-    max-width: 210mm;
-    margin-top: 10px;
+    width: 210mm;
+    height: 100%;
 }
 
 .editor-inner {
@@ -14,6 +14,8 @@
     border: 1px solid rgb(173, 173, 173);
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .editor-input {
@@ -24,6 +26,9 @@
     tab-size: 1;
     outline: 0;
     padding: 15px 10px;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: auto;
   }
 
 .ltr {

@@ -27,5 +27,12 @@ body {
     position: absolute;
     left: 0;
     top: 0;
+    overflow: visible;
   }
+
+  body, html {
+    -webkit-print-color-adjust: exact; /* Chrome, Safari */
+    color-adjust: exact;              /* Firefox */
+    background: inherit;              /* Ensure backgrounds are printed */
+}
 }
