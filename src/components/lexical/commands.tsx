@@ -11,8 +11,12 @@ export const CLEAR_FORMAT_TEXT_COMMAND: LexicalCommand<void> = createCommand()
 export const INCREASE_FONT_SIZE_COMMAND: LexicalCommand<void> = createCommand()
 export const DECREASE_FONT_SIZE_COMMAND: LexicalCommand<void> = createCommand()
 export const SET_FONT_SIZE_COMMAND: LexicalCommand<string> = createCommand()
-export const FONT_SIZE_CHANGED: LexicalCommand<void> = createCommand()
+export const FONT_SIZE_CHANGED_COMMAND: LexicalCommand<void> = createCommand()
 export const SET_FONT_FAMILY_COMMAND: LexicalCommand<string> = createCommand()
+export const SET_FONT_COLOR_COMMAND: LexicalCommand<string> = createCommand()
+export const SET_BACKGROUND_COLOR_COMMAND: LexicalCommand<string> = createCommand()
+export const FONT_COLOR_CHANGE_COMMAND: LexicalCommand<void> = createCommand()
+export const BACKGROUND_COLOR_CHANGE_COMMAND: LexicalCommand<void> = createCommand()
 
 export default function RegisterCustomCommands() {
     const [editor] = useLexicalComposerContext();
@@ -79,7 +83,7 @@ export default function RegisterCustomCommands() {
                     return size + (unit ? unit[0] : '')
                 }})
 
-                editor.dispatchCommand(FONT_SIZE_CHANGED, undefined);
+                editor.dispatchCommand(FONT_SIZE_CHANGED_COMMAND, undefined);
             }
 
             return false;
@@ -100,7 +104,7 @@ export default function RegisterCustomCommands() {
                     size -= 1;
                     return size + (unit ? unit[0] : '')
                 }})
-                editor.dispatchCommand(FONT_SIZE_CHANGED, undefined);
+                editor.dispatchCommand(FONT_SIZE_CHANGED_COMMAND, undefined);
             }
 
             return false;
@@ -112,7 +116,7 @@ export default function RegisterCustomCommands() {
             const selection = $getSelection();
             if ( $isRangeSelection(selection)) {
                 $patchStyleText( selection, {'font-size': fontSize})
-                editor.dispatchCommand(FONT_SIZE_CHANGED, undefined);
+                editor.dispatchCommand(FONT_SIZE_CHANGED_COMMAND, undefined);
             }
 
             return false;
@@ -124,13 +128,37 @@ export default function RegisterCustomCommands() {
             const selection = $getSelection();
             if ( $isRangeSelection(selection)) {
                 $patchStyleText( selection, {'font-family': fontFamily})
-                editor.dispatchCommand(FONT_SIZE_CHANGED, undefined);
+                editor.dispatchCommand(FONT_SIZE_CHANGED_COMMAND, undefined);
             }
 
             return false;
         },
         COMMAND_PRIORITY_LOW)
         removeFunctionsArray.push( removeSetFontFamily );
+
+        const removeSetFontColor = editor.registerCommand(SET_FONT_COLOR_COMMAND, (color: string) => {
+            const selection = $getSelection();
+            if ( $isRangeSelection(selection)) {
+                $patchStyleText( selection, {'color': color})
+                editor.dispatchCommand(FONT_COLOR_CHANGE_COMMAND, undefined);
+            }
+
+            return false;
+        },
+        COMMAND_PRIORITY_LOW)
+        removeFunctionsArray.push( removeSetFontColor );
+
+        const removeSetBackgroundColor = editor.registerCommand(SET_BACKGROUND_COLOR_COMMAND, (color: string) => {
+            const selection = $getSelection();
+            if ( $isRangeSelection(selection)) {
+                $patchStyleText( selection, {'background-color': color})
+                editor.dispatchCommand(BACKGROUND_COLOR_CHANGE_COMMAND, undefined);
+            }
+
+            return false;
+        },
+        COMMAND_PRIORITY_LOW)
+        removeFunctionsArray.push( removeSetBackgroundColor );
         
         return () => { 
             removeFunctionsArray.forEach(f => f());

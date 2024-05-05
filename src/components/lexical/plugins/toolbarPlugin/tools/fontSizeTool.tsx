@@ -2,7 +2,7 @@ import { $getSelection, $isRangeSelection, SELECTION_CHANGE_COMMAND, COMMAND_PRI
 import {$getSelectionStyleValueForProperty} from '@lexical/selection'
 import { useRef, useCallback, useEffect } from "react";
 import { ImMinus, ImPlus } from "react-icons/im";
-import { FONT_SIZE_CHANGED, INCREASE_FONT_SIZE_COMMAND, DECREASE_FONT_SIZE_COMMAND, SET_FONT_SIZE_COMMAND } from "../../../commands";
+import { FONT_SIZE_CHANGED_COMMAND, INCREASE_FONT_SIZE_COMMAND, DECREASE_FONT_SIZE_COMMAND, SET_FONT_SIZE_COMMAND } from "../../../commands";
 import { ToolbarToolProps } from "./toolsProps";
 
 export default function FontSizeTool({editor}: ToolbarToolProps) {
@@ -29,7 +29,7 @@ export default function FontSizeTool({editor}: ToolbarToolProps) {
                 COMMAND_PRIORITY_LOW
               )
               const removeFontSizeChanage = editor.registerCommand(
-                FONT_SIZE_CHANGED,
+                FONT_SIZE_CHANGED_COMMAND,
                 () => {
                     updateStates();
                   return false;
@@ -69,7 +69,7 @@ export default function FontSizeTool({editor}: ToolbarToolProps) {
         }
         
         return (
-            <div>
+            <div style={{alignContent: 'center'}}>
                 <ImMinus className='item item-font-size-button' onClick={onClickFontSizeDecrease}/>
                 <input ref={fontInputRef} className='item-font-size' type='text' defaultValue={''} onKeyDown={onKeyDownFontSize}/>
                 <ImPlus className='item item-font-size-button' onClick={onClickFontSizeIncrease}/>

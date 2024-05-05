@@ -14,12 +14,12 @@
 }
 
 .editor-toolbar .item {
-    border-radius: 10px;
+    border-radius: 5px;
     padding: 8px;
     cursor: pointer;
     vertical-align: middle;
     border: 0 solid;
-    background-color: white;
+    background-color: transparent;
 }
 
 .editor-toolbar .item.disabled {
@@ -37,12 +37,16 @@
 .editor-toolbar .item-font-size {
     text-align: center;
     width: 3em;
+    border: none;
+    padding-top: 5px;
+    padding-bottom: 5px;
 
     -moz-appearance: textfield;
 }
 
 .editor-toolbar .item-font-size-button {
-    scale: 0.7;
+    width: 8px;
+    height: 8px;
 }
 
 .editor-toolbar .item-font-size::-webkit-outer-spin-button,

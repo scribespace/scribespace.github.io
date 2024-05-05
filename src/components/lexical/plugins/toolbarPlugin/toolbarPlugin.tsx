@@ -27,7 +27,8 @@ export const ToolbarPlugin = forwardRef<HTMLDivElement>(({}, ref) => {
             <Separator/>
             <AlignTool editor={editor}/>
             <Separator/>
-            <ColorTools/>
+            <ColorTools editor={editor}/>
+            <Separator/>
         </div>
     )
 })
