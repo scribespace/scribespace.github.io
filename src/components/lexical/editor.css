@@ -1,0 +1,64 @@
+
+:root {
+  --default-font-size: 10pt
+}
+
+.editor-container {
+    max-width: 210mm;
+    margin-top: 10px;
+}
+
+.editor-inner {
+    background-color: white;
+    border: 1px solid rgb(173, 173, 173);
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.editor-input {
+    min-height: 150px;
+    resize: none;
+    caret-color: rgb(5, 5, 5);
+    position: relative;
+    tab-size: 1;
+    outline: 0;
+    padding: 15px 10px;
+  }
+
+.ltr {
+    text-align: left;
+  }
+  
+  .rtl {
+    text-align: right;
+  }
+
+  .editor-paragraph {
+    margin: 0;
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .editor-text {
+    font-size: var(--default-font-size);
+  }
+
+  .editor-text-bold {
+    font-weight: bold;
+  }
+  
+  .editor-text-italic {
+    font-style: italic;
+  }
+  
+  .editor-text-underline {
+    text-decoration: underline;
+  }
+  
+  .editor-text-strikethrough {
+    text-decoration: line-through;
+  }
+  
+  .editor-text-underlineStrikethrough {
+    text-decoration: underline line-through;
+  }

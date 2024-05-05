@@ -11,10 +11,12 @@
     "postinstall": "node ./postinstall.js"
   },
   "dependencies": {
+    "@lexical/react": "^0.14.5",
     "@tinymce/tinymce-react": "^5.0.1",
     "clsx": "^2.1.1",
     "dropbox": "^10.34.0",
     "fs-extra": "^11.2.0",
+    "lexical": "^0.14.5",
     "react": "^18.2.0",
     "react-arborist": "^3.4.0",
     "react-dom": "^18.3.1",

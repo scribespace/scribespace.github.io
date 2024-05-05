@@ -230,7 +230,6 @@ export function EditorView({selectedFile} : Props) {
             }
 
             editor.on('remove', function (e) {
-                console.log(e)
                 // Check if the removed element is an image
                 if (e.target.nodeName.toLowerCase() === 'img') {
                   // React to the image being deleted

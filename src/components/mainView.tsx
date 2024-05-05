@@ -1,12 +1,12 @@
 import { TreeView } from './treeView';
 
-import { EditorView } from './editorView';
 
 import './css/mainView.css'
 
 import { authGlobal, AUTH_DISABLED } from '../system/authentication';
 import { FunctionComponent, useState } from 'react';
 import useResizeObserver from 'use-resize-observer';
+import { EditorLexicalView } from './editorLexicalView';
 
 type Props = {
   changeAuthButtonState: (state: number) => void;
@@ -31,7 +31,7 @@ export const MainView: FunctionComponent<Props> = ({changeAuthButtonState}) => {
           <TreeView setSelectedFile={setSelectedFile}/>
         </div>
         <div className='editor-view'>
-          <EditorView selectedFile={selectedFile}/>
+          <EditorLexicalView selectedFile={selectedFile}/>
         </div>
       </div>
     </div>
