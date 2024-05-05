@@ -15,9 +15,10 @@ import { createPortal } from "react-dom";
             const dropDown = dropboxListRef.current;
         
             if (parent !== null && dropDown !== null) {
-              const { top, left } = parent.getBoundingClientRect();
+              const { top, left, width } = parent.getBoundingClientRect();
+              const {width: listhWidth } = dropDown.getBoundingClientRect();
               dropDown.style.top = `${top + 40}px`;
-              dropDown.style.left = `${left}px`;
+              dropDown.style.left = `${left + (width * 0.5) - (listhWidth * 0.5)}px`;
             }
           }, [dropboxListRef]);
         
@@ -30,6 +31,7 @@ import { createPortal } from "react-dom";
 
     type DropdownToolProps = {
         Tool: ()=>React.ReactNode;
+        version?: number;
         children: React.ReactNode;
     }
 

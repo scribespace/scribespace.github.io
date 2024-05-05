@@ -5,7 +5,6 @@ import { SET_FONT_FAMILY_COMMAND } from "../../../commands";
 import DropdownTool from "./dropdownTool";
 import { ToolbarToolProps } from "./toolsProps";
 
-import '../css/editorToolbar.css'
 import { FaAngleDown } from "react-icons/fa";
 
 export default function FontFamilyTool({editor}: ToolbarToolProps) {

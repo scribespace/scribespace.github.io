@@ -5,6 +5,7 @@ import UndoRedoTool from './tools/undoRedoTool';
 import StyleTool from './tools/styleTool';
 import FontSizeTool from './tools/fontSizeTool';
 import FontFamilyTool from './tools/fontFamilyTool';
+import AlignTool from './tools/alignTool';
 
 export default function ToolbarPlugin() {
     const [editor] = useLexicalComposerContext();
@@ -22,6 +23,7 @@ export default function ToolbarPlugin() {
             <FontSizeTool editor={editor}/>
             <FontFamilyTool editor={editor}/>            
             <Separator/>
+            <AlignTool editor={editor}/>
         </div>
     )
 }

@@ -59,8 +59,8 @@
     box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1),
       inset 0 0 0 1px rgba(255, 255, 255, 0.5);
     border-radius: 8px;
-    min-width: 100px;
-    min-height: 40px;
+    min-width: 10px;
+    min-height: 10px;
     background-color: #fff;
     padding-bottom: 8px;
     padding-top: 8px;
@@ -81,7 +81,25 @@
     background-color: #fff;
     border-radius: 8px;
     border: 0;
-    min-width: 268px;
+  }
+
+  .dropdown .item-buttons {
+    margin: 0 8px 0 8px;
+    padding: 8px;
+    color: #050505;
+    cursor: pointer;
+    line-height: 16px;
+    font-size: 15px;
+    align-content: center;
+    flex-shrink: 0;
+    justify-content: space-between;
+    background-color: #fff;
+    border-radius: 8px;
+    border: 0;
+  }
+  
+  .dropdown .item-buttons:hover {
+    background-color: rgb(209, 209, 209);
   }
 
   .dropdown .item:hover {
