@@ -1,4 +1,5 @@
 import { SELECTION_CHANGE_COMMAND, COMMAND_PRIORITY_LOW, $getSelection, $isRangeSelection } from "lexical";
+import { mergeRegister } from '@lexical/utils'
 import {$getSelectionStyleValueForProperty} from '@lexical/selection'
 import { useEffect, useRef } from "react";
 import { SET_FONT_FAMILY_COMMAND } from "../../../commands";
@@ -44,22 +45,32 @@ export default function FontFamilyTool({editor}: ToolbarToolProps) {
         )
     }
 
+    const updateStates = () => {
+        const selection = $getSelection();
+        if ( $isRangeSelection(selection) ) {
+            if ( toolRef.current )
+                toolRef.current.innerHTML = ($getSelectionStyleValueForProperty(selection, 'font-family', defaultFontFamily.current))
+        }
+    }
+
     useEffect(() => {
         defaultFontFamily.current = getComputedStyle(document.documentElement).getPropertyValue("--default-font-family");
 
-            const removeSelectionChanage = editor.registerCommand(
-            SELECTION_CHANGE_COMMAND,
-            () => {
-                const selection = $getSelection();
-                if ( $isRangeSelection(selection) ) {
-                    if ( toolRef.current )
-                        toolRef.current.innerHTML = ($getSelectionStyleValueForProperty(selection, 'font-family', defaultFontFamily.current))
-                }
-              return false;
-            },
-            COMMAND_PRIORITY_LOW
-          )
-          return () => {removeSelectionChanage()}
+            return  mergeRegister(
+                editor.registerCommand(
+                SELECTION_CHANGE_COMMAND,
+                () => {
+                    updateStates();
+                return false;
+                },
+                COMMAND_PRIORITY_LOW
+            ),
+            editor.registerUpdateListener(({ editorState }) => {
+                editorState.read(() => {
+                    updateStates();
+                });
+            }),
+        )
     }, [])
 
     return (

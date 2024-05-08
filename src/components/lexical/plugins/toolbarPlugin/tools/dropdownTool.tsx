@@ -33,8 +33,7 @@ import { createPortal } from "react-dom";
             }
 
             const HandleClick = ({target}: MouseEvent) => {
-                if ( dropdownToolRef && !dropdownToolRef.current?.contains(target as Node) && 
-                    dropdownElementRef && !dropdownElementRef.current?.contains(target as Node)){
+                if ( dropdownToolRef && !dropdownToolRef.current?.contains(target as Node)){
                     ChangeShowDropdown(false);
                 }
             }
@@ -58,11 +57,11 @@ import { createPortal } from "react-dom";
             return (
                 <div ref={dropdownToolRef} onClick={() => {setShowDropdown((state) => {const newState = !state; ChangeShowDropdown(newState); return newState})}}>
                     <Tool/>
-                    {showDropdown && createPortal(
-                        <div ref={dropdownElementRef} className="dropdown-float">
+                    {showDropdown && (
+                        <div ref={dropdownElementRef} className="dropdown-float" onClick={(e)=>e.stopPropagation()}>
                             {children}
                         </div>
-                    , document.body)}
+                    )}
                 </div>
             )
     }

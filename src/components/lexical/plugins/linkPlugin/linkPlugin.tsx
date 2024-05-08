@@ -154,11 +154,11 @@ export default function LinkPlugin() {
                     }                    
                 }}/>
             <LexicalLinkPlugin validateUrl={validateUrl}/>
-            {(linkURL != '') && createPortal(
+            {(linkURL != '') && (
               <div ref={linkEditorRef} className={editorEmbeddedClassName}>
                 <LinkEditor editor={editor} composerContext={composerContext} url={linkURL} text={linkText} onTextChange={onTextChange} onURLChange={onURLChange}/>
               </div>
-            , document.body)}
+            )}
         </div>
     )
 }
