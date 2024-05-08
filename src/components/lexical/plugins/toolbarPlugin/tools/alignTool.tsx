@@ -28,7 +28,7 @@ export default function AlignTool({editor}: ToolbarToolProps) {
     }
 
     return (
-        <DropdownTool Tool={Tool} dropdownElementRef={dropdownListRef}>
+        <DropdownTool Tool={Tool}>
             <DropdownList ref={dropdownListRef}>
                 <ImParagraphLeft className="item-buttons" onClick={onClickLeft}/>
                 <ImParagraphCenter className="item-buttons" onClick={onClickCenter}/>

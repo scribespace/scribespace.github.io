@@ -63,7 +63,7 @@ export default function FontFamilyTool({editor}: ToolbarToolProps) {
     }, [])
 
     return (
-        <DropdownTool Tool={Tool} dropdownElementRef={dropdownListRef}>
+        <DropdownTool Tool={Tool}>
             <DropdownList ref={dropdownListRef}>
             {
                 fontFamilies.map((fontFamily, id) => {

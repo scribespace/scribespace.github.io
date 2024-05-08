@@ -60,7 +60,7 @@ export default function LinkTool({editor, composerContext} : LinkToolProps) {
         return <ImLink className='item'/>
     }
     return (
-        <DropdownTool Tool={Tool} dropdownElementRef={linkEditorRef}>
+        <DropdownTool Tool={Tool}>
             <LinkEditor ref={linkEditorRef} editor={editor} composerContext={composerContext} text={linkText} url={linkURL}/>
         </DropdownTool>
     )

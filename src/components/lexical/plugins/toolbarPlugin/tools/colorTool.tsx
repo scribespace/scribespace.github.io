@@ -29,7 +29,7 @@ export function BackgroundColorTool({editor}: ToolbarToolProps) {
      }
 
      return (
-        <DropdownTool Tool={Tool} dropdownElementRef={colorPickerRef}>
+        <DropdownTool Tool={Tool}>
                 <ColorPicker ref={colorPickerRef} onChange={onChange}/>
         </DropdownTool>
     )
@@ -47,7 +47,7 @@ export function TextColorTool({editor}: ToolbarToolProps) {
      }
  
      return (
-         <DropdownTool Tool={Tool} dropdownElementRef={colorPickerRef}>
+         <DropdownTool Tool={Tool}>
                  <ColorPicker ref={colorPickerRef} onChange={onChange}/>
          </DropdownTool>
      )

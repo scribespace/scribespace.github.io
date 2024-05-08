@@ -16,13 +16,14 @@ import { createPortal } from "react-dom";
     type DropdownToolProps = {
         Tool: ()=>React.ReactNode;
         version?: number;
-        dropdownElementRef: RefObject<HTMLElement>;
         children: React.ReactNode;
         onStateChange?: (visible:boolean) => void;
     }
 
-    export default function DropdownTool({Tool, dropdownElementRef, children, onStateChange}: DropdownToolProps) {
+    export default function DropdownTool({Tool, children, onStateChange}: DropdownToolProps) {
             const dropdownToolRef = useRef<HTMLDivElement>(null)
+            const dropdownElementRef = useRef<HTMLDivElement>(null)
+
             const [showDropdown, setShowDropdown] = useState<boolean>(false)
 
             function ChangeShowDropdown( visible: boolean ) {
@@ -58,7 +59,7 @@ import { createPortal } from "react-dom";
                 <div ref={dropdownToolRef} onClick={() => {setShowDropdown((state) => {const newState = !state; ChangeShowDropdown(newState); return newState})}}>
                     <Tool/>
                     {showDropdown && createPortal(
-                        <div>
+                        <div ref={dropdownElementRef} className="dropdown-float">
                             {children}
                         </div>
                     , document.body)}
