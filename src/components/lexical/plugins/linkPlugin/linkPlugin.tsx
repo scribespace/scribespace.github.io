@@ -155,8 +155,8 @@ export default function LinkPlugin() {
                 }}/>
             <LexicalLinkPlugin validateUrl={validateUrl}/>
             {(linkURL != '') && createPortal(
-              <div className={editorEmbeddedClassName}>
-                <LinkEditor ref={linkEditorRef} editor={editor} composerContext={composerContext} url={linkURL} text={linkText} onTextChange={onTextChange} onURLChange={onURLChange}/>
+              <div ref={linkEditorRef} className={editorEmbeddedClassName}>
+                <LinkEditor editor={editor} composerContext={composerContext} url={linkURL} text={linkText} onTextChange={onTextChange} onURLChange={onURLChange}/>
               </div>
             , document.body)}
         </div>
