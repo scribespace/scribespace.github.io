@@ -3,6 +3,7 @@ const EditorTheme = {
   rtl: "rtl",
   placeholder: "editor-placeholder",
   paragraph: "editor-paragraph",
+  link: "link",
   text: {
     base: "editor-text",
     bold: "editor-text-bold",

@@ -28,28 +28,8 @@ export class ExtendedTextNode extends TextNode {
     const importers = TextNode.importDOM();
     return {
       ...importers,
-      code: () => ({
-        conversion: patchStyleConversion(importers?.code),
-        priority: 1
-      }),
-      em: () => ({
-        conversion: patchStyleConversion(importers?.em),
-        priority: 1
-      }),
       span: () => ({
         conversion: patchStyleConversion(importers?.span),
-        priority: 1
-      }),
-      strong: () => ({
-        conversion: patchStyleConversion(importers?.strong),
-        priority: 1
-      }),
-      sub: () => ({
-        conversion: patchStyleConversion(importers?.sub),
-        priority: 1
-      }),
-      sup: () => ({
-        conversion: patchStyleConversion(importers?.sup),
         priority: 1
       }),
     };
@@ -86,7 +66,7 @@ export function $isExtendedTextNode(node: LexicalNode | null | undefined): node 
 function patchStyleConversion(
   originalDOMConverter?: (node: HTMLElement) => DOMConversion | null
 ): (node: HTMLElement) => DOMConversionOutput | null {
-    return (node) => {
+  return (node) => {
     const original = originalDOMConverter?.(node);
     if (!original) {
       return null;
@@ -116,7 +96,6 @@ function patchStyleConversion(
           ]
             .filter((value) => value != null)
             .join('; ');
-
           if (style.length) {
             return result.setStyle(style);
           }

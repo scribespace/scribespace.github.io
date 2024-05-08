@@ -1,9 +1,12 @@
 import { ImParagraphCenter, ImParagraphJustify, ImParagraphLeft, ImParagraphRight } from "react-icons/im"
-import DropdownTool from "./dropdownTool"
+import DropdownTool, { DropdownList } from "./dropdownTool"
 import { ToolbarToolProps } from "./toolsProps";
 import { FORMAT_ELEMENT_COMMAND } from "lexical";
+import { useRef } from "react";
 
 export default function AlignTool({editor}: ToolbarToolProps) {
+    const dropdownListRef = useRef<HTMLDivElement>(null)
+
     const onClickLeft = () => {
         editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'left')
     }
@@ -25,11 +28,13 @@ export default function AlignTool({editor}: ToolbarToolProps) {
     }
 
     return (
-        <DropdownTool Tool={Tool}>
-            <ImParagraphLeft className="item-buttons" onClick={onClickLeft}/>
-            <ImParagraphCenter className="item-buttons" onClick={onClickCenter}/>
-            <ImParagraphRight className="item-buttons" onClick={onClickRight}/>
-            <ImParagraphJustify className="item-buttons" onClick={onClickJustify}/>
+        <DropdownTool Tool={Tool} dropdownElementRef={dropdownListRef}>
+            <DropdownList ref={dropdownListRef}>
+                <ImParagraphLeft className="item-buttons" onClick={onClickLeft}/>
+                <ImParagraphCenter className="item-buttons" onClick={onClickCenter}/>
+                <ImParagraphRight className="item-buttons" onClick={onClickRight}/>
+                <ImParagraphJustify className="item-buttons" onClick={onClickJustify}/>
+            </DropdownList>
         </DropdownTool>
     )
 }

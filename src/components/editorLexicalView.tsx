@@ -10,15 +10,19 @@ import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 import { $generateNodesFromDOM } from '@lexical/html'
 import {ListNode, ListItemNode } from '@lexical/list'
+import {LinkNode} from '@lexical/link'
+import LinkPlugin from './lexical/plugins/linkPlugin/linkPlugin'
 import { appGlobals } from '../system/appGlobals';
 
 import './lexical/editor.css'
+
 import { ToolbarPlugin } from './lexical/plugins/toolbarPlugin/toolbarPlugin';
 
 import EditorTheme from './lexical/editorTheme';
 import RegisterCustomCommands from './lexical/commands';
 import { ExtendedTextNode } from './lexical/nodes/extendedTextNode';
 import useResizeObserver from 'use-resize-observer';
+
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
@@ -68,29 +72,31 @@ export function EditorLexicalView({selectedFile} : Props) {
     theme: EditorTheme,
     onError,
     nodes: [
-      ExtendedTextNode,
-      { replace: TextNode, with: (node: TextNode) => new ExtendedTextNode(node.__text) },
       ListNode,
       ListItemNode,
+      LinkNode,
+      ExtendedTextNode,
+      { replace: TextNode, withKlass: ExtendedTextNode, with: (node: TextNode) => new ExtendedTextNode(node.__text) },
     ]
   };
-
+ 
   return (
     <LexicalComposer initialConfig={initialConfig}>
         <div className='editor-container'>
             <ToolbarPlugin ref={toolbarRef}/>
-                    <div className='editor-inner' style={{height: `calc(100% - ${toolbarHeight}px)`}}>
-                <RichTextPlugin
-                contentEditable={<ContentEditable className="editor-input section-to-print" spellCheck={false}/>}
-                placeholder={null}
-                ErrorBoundary={LexicalErrorBoundary}
-                />
-                </div>
+            <div className='editor-inner' style={{height: `calc(100% - ${toolbarHeight}px)`}}>
+              <RichTextPlugin
+              contentEditable={<ContentEditable className="editor-input section-to-print" spellCheck={false}/>}
+              placeholder={null}
+              ErrorBoundary={LexicalErrorBoundary}
+              />
+            </div>
         </div>
         <TestPlugin selectedFile={selectedFile}/>
         <HistoryPlugin />
         <AutoFocusPlugin />
         <RegisterCustomCommands />
+        <LinkPlugin/>
     </LexicalComposer>
   );
 }

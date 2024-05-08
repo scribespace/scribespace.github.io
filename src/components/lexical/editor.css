@@ -45,6 +45,15 @@
     position: relative;
   }
 
+  .link {
+    color: rgb(33, 111, 219);
+    text-decoration: underline;
+  }
+
+  .link:visited {
+    color: rgb(109, 53, 131);
+  }
+
   .editor-text {
     font-size: var(--default-font-size);
     font-family: var(--default-font-family)

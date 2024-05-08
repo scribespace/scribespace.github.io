@@ -1,0 +1,45 @@
+.link-editor-default {
+    background-color: white;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.582);
+    border-radius: 5px;
+    padding: 5px;
+
+    z-index: 5;
+    display: block;
+    position: absolute;
+}
+
+.link-input-container-default {
+    margin: 3px;
+    width: 100%;
+}
+
+.link-input-text-default {
+    border: none;
+    border-radius: 3px;
+    padding: 3px;
+    background-color: rgb(230, 230, 230);
+    margin-left: auto;
+    vertical-align: middle;
+}
+
+.link-input-icon-default {
+    margin: 3px;
+    vertical-align: middle;
+}
+
+.link-input-icon-default {
+    cursor: pointer;
+    border-radius: 3px;
+}
+.link-input-icon-default:hover {
+    background-color: rgb(209, 209, 209);
+}
+
+.link-editor-embedded-default {
+    opacity: 0.2;
+}
+
+.link-editor-embedded-default:hover {
+    opacity: 1;
+}

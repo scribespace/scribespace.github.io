@@ -1,4 +1,5 @@
 import { $getSelection, $isRangeSelection, SELECTION_CHANGE_COMMAND, COMMAND_PRIORITY_LOW, FORMAT_TEXT_COMMAND } from "lexical";
+import { mergeRegister } from '@lexical/utils'
 import { useState, useCallback, useEffect } from "react";
 import { ImBold, ImItalic, ImUnderline, ImStrikethrough, ImClearFormatting } from "react-icons/im";
 import { CLEAR_FORMAT_TEXT_COMMAND } from "../../../commands";
@@ -21,15 +22,21 @@ export default function StyleTool({editor}: ToolbarToolProps) {
         }, [])
 
         useEffect(() => {
-            const removeSelectionChanage = editor.registerCommand(
-                SELECTION_CHANGE_COMMAND,
-                () => {
-                    updateStates();
-                  return false;
-                },
-                COMMAND_PRIORITY_LOW
-              )
-             return () => {removeSelectionChanage()}
+            return mergeRegister(
+                editor.registerCommand(
+                    SELECTION_CHANGE_COMMAND,
+                    () => {
+                        updateStates();
+                      return false;
+                    },
+                    COMMAND_PRIORITY_LOW
+                  ),
+                  editor.registerUpdateListener(({ editorState }) => {
+                    editorState.read(() => {
+                        updateStates();
+                    });
+                  }),
+            )
         }, [])
 
         const onClickBold = () => {
@@ -51,7 +58,7 @@ export default function StyleTool({editor}: ToolbarToolProps) {
         const onClickClearFormatting = () => {
             editor.dispatchCommand(CLEAR_FORMAT_TEXT_COMMAND, undefined);
         }
-
+        
         return (
             <div>
                 <ImBold className={'item' + (isBold ? " selected" : "")} onClick={onClickBold}/>

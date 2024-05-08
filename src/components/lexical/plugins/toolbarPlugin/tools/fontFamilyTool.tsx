@@ -2,7 +2,7 @@ import { SELECTION_CHANGE_COMMAND, COMMAND_PRIORITY_LOW, $getSelection, $isRange
 import {$getSelectionStyleValueForProperty} from '@lexical/selection'
 import { useEffect, useRef } from "react";
 import { SET_FONT_FAMILY_COMMAND } from "../../../commands";
-import DropdownTool from "./dropdownTool";
+import DropdownTool, { DropdownList } from "./dropdownTool";
 import { ToolbarToolProps } from "./toolsProps";
 
 import { FaAngleDown } from "react-icons/fa";
@@ -21,6 +21,7 @@ export default function FontFamilyTool({editor}: ToolbarToolProps) {
     ];
     const defaultFontFamily = useRef<string>('')
     const toolRef = useRef<HTMLButtonElement>(null)
+    const dropdownListRef = useRef<HTMLDivElement>(null)
 
     type FontFamilyProps = {
         fontFamily: string;
@@ -62,12 +63,14 @@ export default function FontFamilyTool({editor}: ToolbarToolProps) {
     }, [])
 
     return (
-        <DropdownTool Tool={Tool}>
+        <DropdownTool Tool={Tool} dropdownElementRef={dropdownListRef}>
+            <DropdownList ref={dropdownListRef}>
             {
                 fontFamilies.map((fontFamily, id) => {
                     return <FontFamilyButton key={id} fontFamily={fontFamily}/>
                 })
             }
+            </DropdownList>
         </DropdownTool>
     )
 }

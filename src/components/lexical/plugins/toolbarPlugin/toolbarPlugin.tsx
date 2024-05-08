@@ -8,9 +8,10 @@ import FontFamilyTool from './tools/fontFamilyTool';
 import AlignTool from './tools/alignTool';
 import ColorTools from './tools/colorTool';
 import { forwardRef } from 'react';
+import LinkTool from './tools/linkTool';
 
 export const ToolbarPlugin = forwardRef<HTMLDivElement>(({}, ref) => {
-    const [editor] = useLexicalComposerContext();
+    const [editor, composerContext] = useLexicalComposerContext();
 
     function Separator() {
         return <div className='separator'/>
@@ -28,6 +29,8 @@ export const ToolbarPlugin = forwardRef<HTMLDivElement>(({}, ref) => {
             <AlignTool editor={editor}/>
             <Separator/>
             <ColorTools editor={editor}/>
+            <Separator/>
+            <LinkTool editor={editor} composerContext={composerContext}/>
             <Separator/>
         </div>
     )

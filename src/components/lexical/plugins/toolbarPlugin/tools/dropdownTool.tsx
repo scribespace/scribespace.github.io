@@ -1,65 +1,66 @@
-import { useRef, useEffect, useState, forwardRef, useImperativeHandle } from "react";
+import { useRef, useEffect, useState, forwardRef, RefObject } from "react";
 import { createPortal } from "react-dom";
 
     type DropdownListProps = {
-        parentRef: React.RefObject<HTMLElement>;
         children: React.ReactNode;
     }
 
-    const DropdownList = forwardRef( ({parentRef, children}: DropdownListProps, ref) => {
-        const dropboxListRef = useRef<HTMLDivElement>(null)
-        useImperativeHandle(ref, ()=>dropboxListRef.current!,[])
-
-        useEffect(() => {
-            const parent = parentRef.current;
-            const dropDown = dropboxListRef.current;
-        
-            if (parent !== null && dropDown !== null) {
-              const { top, left, width } = parent.getBoundingClientRect();
-              const {width: listhWidth } = dropDown.getBoundingClientRect();
-              dropDown.style.top = `${top + 40}px`;
-              dropDown.style.left = `${left + (width * 0.5) - (listhWidth * 0.5)}px`;
-            }
-          }, [dropboxListRef]);
-        
-          return (
-            <div ref={dropboxListRef} className='dropdown'>
-                { children }
-            </div>
-            )
+    export const DropdownList = forwardRef<HTMLDivElement, DropdownListProps>( ({children}: DropdownListProps, ref) => {
+        return (
+        <div ref={ref} className='dropdown'>
+            { children }
+        </div>
+        )
     })
 
     type DropdownToolProps = {
         Tool: ()=>React.ReactNode;
         version?: number;
+        dropdownElementRef: RefObject<HTMLElement>;
         children: React.ReactNode;
+        onStateChange?: (visible:boolean) => void;
     }
 
-    export default function DropdownTool({Tool, children}: DropdownToolProps) {
+    export default function DropdownTool({Tool, dropdownElementRef, children, onStateChange}: DropdownToolProps) {
             const dropdownToolRef = useRef<HTMLDivElement>(null)
-            const dropdownListRef = useRef<HTMLDivElement>(null)
             const [showDropdown, setShowDropdown] = useState<boolean>(false)
+
+            function ChangeShowDropdown( visible: boolean ) {
+                setShowDropdown(visible)
+                if ( onStateChange )
+                    onStateChange(visible)
+            }
 
             const HandleClick = ({target}: MouseEvent) => {
                 if ( dropdownToolRef && !dropdownToolRef.current?.contains(target as Node) && 
-                    dropdownListRef && !dropdownListRef.current?.contains(target as Node)){
-                    setShowDropdown(false);
+                    dropdownElementRef && !dropdownElementRef.current?.contains(target as Node)){
+                    ChangeShowDropdown(false);
                 }
             }
 
             useEffect(()=> {
                 document.addEventListener('click', HandleClick)
-
                 return () => {document.removeEventListener('click', HandleClick)}
             },[])
 
+            useEffect(()=>{
+                const parentObject = dropdownToolRef.current;
+                const dropdownElementObject = dropdownElementRef.current;
+                if ( parentObject != null && dropdownElementObject != null ){
+                    const { top, left, width } = parentObject.getBoundingClientRect();
+                    const {width: listhWidth } = dropdownElementObject.getBoundingClientRect();
+                    dropdownElementObject.style.top = `${top + 40}px`;
+                    dropdownElementObject.style.left = `${left + (width * 0.5) - (listhWidth * 0.5)}px`;
+                }   
+            },[showDropdown])
+
             return (
-                <div ref={dropdownToolRef} onClick={() => {setShowDropdown((state) => !state)}}>
+                <div ref={dropdownToolRef} onClick={() => {setShowDropdown((state) => {const newState = !state; ChangeShowDropdown(newState); return newState})}}>
                     <Tool/>
                     {showDropdown && createPortal(
-                        <DropdownList ref={dropdownListRef} parentRef={dropdownToolRef}>
+                        <div>
                             {children}
-                        </DropdownList>
+                        </div>
                     , document.body)}
                 </div>
             )
