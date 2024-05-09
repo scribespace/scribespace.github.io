@@ -1,7 +1,7 @@
 import { ImLink } from "react-icons/im";
 import { LinkEditor } from "../../linkPlugin/linkEditor";
 import { LexicalComposerContextType } from "@lexical/react/LexicalComposerContext";
-import { $getSelection, $isRangeSelection, $isTextNode, COMMAND_PRIORITY_LOW, LexicalEditor, SELECTION_CHANGE_COMMAND } from "lexical";
+import { $getSelection, $isRangeSelection, $isTextNode, COMMAND_PRIORITY_LOW, LexicalEditor, ParagraphNode, SELECTION_CHANGE_COMMAND } from "lexical";
 import {LinkNode, $isLinkNode, $createLinkNode} from '@lexical/link'
 import { mergeRegister } from '@lexical/utils'
 import { useEffect, useRef, useState } from "react";
@@ -56,12 +56,50 @@ export default function LinkTool({editor, composerContext} : LinkToolProps) {
         );
       },[editor])
 
+      function onTextChange(text:string) {
+        editor.update(() => {
+         
+        })
+      }
+  
+      function onURLChange(url:string) {
+        editor.update(() => {
+            const selection = $getSelection();
+            if ( $isRangeSelection(selection) ){
+                const nodes = selection.getNodes()
+                let allText = true;
+                nodes.forEach((node) => {
+                    allText = allText && $isTextNode(node)
+                })
+
+                if ( allText ) {
+                    const textChildren = selection.extract();
+                    const childBefore = textChildren[0].getPreviousSibling();
+                    const parent = textChildren[0].getParent()
+                    const linkNode = $createLinkNode(url);
+                    linkNode.append(...textChildren)
+
+                    if ( childBefore ) {
+                        childBefore.insertAfter(linkNode)
+                    } else {
+                        const firstChild = parent?.getFirstChild()
+                        if ( firstChild ) {
+                            firstChild.insertBefore(linkNode)
+                        } else {
+                            parent?.append(linkNode)
+                        }
+                    }
+                }
+            }
+        })
+      }
+
     const Tool = () => {
         return <ImLink className='item'/>
     }
     return (
         <DropdownTool Tool={Tool}>
-            <LinkEditor ref={linkEditorRef} editor={editor} composerContext={composerContext} text={linkText} url={linkURL}/>
+            <LinkEditor ref={linkEditorRef} editor={editor} composerContext={composerContext} text={linkText} url={linkURL} onTextChange={onTextChange} onURLChange={onURLChange}/>
         </DropdownTool>
     )
 }

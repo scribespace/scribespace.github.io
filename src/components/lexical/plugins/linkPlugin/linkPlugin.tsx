@@ -1,7 +1,7 @@
 import { LinkPlugin as LexicalLinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import {LinkNode, $isLinkNode, $createLinkNode} from '@lexical/link'
 import { NodeEventPlugin } from '@lexical/react/LexicalNodeEventPlugin';
-import { $createTextNode, $getSelection, $isRangeSelection, $isTextNode, COMMAND_PRIORITY_LOW, LexicalEditor, NodeKey, SELECTION_CHANGE_COMMAND, TextNode } from "lexical";
+import { $createRangeSelection, $createTextNode, $getNodeByKey, $getPreviousSelection, $getSelection, $isRangeSelection, $isTextNode, COMMAND_PRIORITY_LOW, KEY_ENTER_COMMAND, KEY_SPACE_COMMAND, LexicalEditor, LexicalNode, NodeKey, SELECTION_CHANGE_COMMAND, TextNode } from "lexical";
 
 import './css/linkPluginDefault.css'
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -10,6 +10,7 @@ import { mergeRegister } from '@lexical/utils'
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { LinkEditor } from "./linkEditor";
+import { edit } from "react-arborist/dist/module/state/edit-slice";
 
 const urlRegExp = new RegExp(
   /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www\.)[A-Za-z0-9-]+\.[A-Za-z]{2,})((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/,
@@ -28,13 +29,78 @@ export default function LinkPlugin() {
     const theme = composerContext.getTheme();
     const editorEmbeddedClassName     = theme && theme.linkPlugin ? theme.linkPlugin.linkEditorEmbedded   : 'link-editor-embedded-default'
 
-    const SPACE_SEPARATOR = /[\s]/;
-    function StartsWithSeparator(text:string) {
-      return SPACE_SEPARATOR.test(text[0])
-    }
+    function TryCreateLink(lastNode: LexicalNode, lastNodeOffset: number) {
+      let testString = ''
+      let selectedNodes: TextNode[] = [];
+      let includesSpaceIndex = -1;
+      
+      // Get all nodes and text to the left from space. Break on something that isn't text or on space
+      // returns string sliced at the space
+      {
+        const nodes = lastNode.getPreviousSiblings()
 
-    function EndsWithSeparator(text:string) {
-      return SPACE_SEPARATOR.test(text[text.length-1])
+        if ( $isTextNode(lastNode)) {
+          selectedNodes.push(lastNode)
+          const nodeText = lastNode.getTextContent().slice(0, lastNodeOffset);
+          includesSpaceIndex = nodeText.lastIndexOf(' ');
+          if ( includesSpaceIndex && includesSpaceIndex > -1 ){
+            testString = nodeText.slice(includesSpaceIndex);
+          } else {
+            testString = nodeText;
+          }
+        }
+
+        if ( testString != '') {
+          for ( let nID = nodes.length - 1; nID >= 0; --nID ) {
+            const node = nodes[nID]
+            if ( $isTextNode(node) ) {
+              selectedNodes = [node, ...selectedNodes];
+              const nodeText = node.getTextContent();
+              includesSpaceIndex = nodeText.lastIndexOf(' ');
+              if ( includesSpaceIndex && includesSpaceIndex > -1 ){
+                testString = nodeText.slice(includesSpaceIndex) + testString;
+                break;
+              }
+              testString = nodeText + testString;
+            } else {
+              break;
+            }
+          }
+        }
+      }
+      
+      // Get regex matching nodes, cut first, cut last node, create link
+      {
+        const match = urlRegExp.exec( testString );
+        if ( match ) {
+          let matchingNodes: TextNode[] = []
+          let textLength = 0;
+          const matchStart = Math.max(0, includesSpaceIndex ) + match.index;
+          let firstNodeOffset = 0;
+          for ( const node of selectedNodes ) {
+            const nodeTextLength = node.getTextContentSize()
+            if ( textLength + nodeTextLength > matchStart ) {
+              if ( matchingNodes.length == 0 ) {
+                firstNodeOffset = matchStart - textLength;
+              }
+              matchingNodes.push(node)
+            }
+            textLength += nodeTextLength
+          }
+          const [,firstNode] = matchingNodes[0].splitText(firstNodeOffset);
+          if ( firstNode ) {
+            matchingNodes[0] = firstNode
+          }
+          const [lastNode,] = matchingNodes[matchingNodes.length-1].splitText(lastNodeOffset);
+          matchingNodes[matchingNodes.length-1] = lastNode
+
+          const linkNode = $createLinkNode(match[0])
+          matchingNodes[0].insertBefore(linkNode)
+          for ( const node of matchingNodes ) {
+              linkNode.append(node)
+          }
+        }
+      }
     }
 
     useEffect(()=> {
@@ -84,39 +150,43 @@ export default function LinkPlugin() {
           COMMAND_PRIORITY_LOW
         ),
 
-        editor.registerNodeTransform(TextNode, (textNode: TextNode) => {
-          const parent = textNode.getParentOrThrow();
-          const previous = textNode.getPreviousSibling();
-
-          const textContent = textNode.getTextContent()
-          if (!$isLinkNode(parent) && textNode.isSimpleText()) {
-            if ( $isLinkNode(previous) && !StartsWithSeparator(textContent) ) {
-              const previousLinkNode = previous as LinkNode;
-              let linkText = previousLinkNode.getTextContent();
-              linkText = linkText + textContent
-              previousLinkNode.append(textNode)
-              setLinkText(linkText)
-              if ( validateUrl(linkText)) {
-                previousLinkNode.setURL(linkText)
-                setLinkURL(linkText)
-              }
-            } else {
-              const match = urlRegExp.exec(textContent);
-              if ( match ) {
-                if ( match.index > 0 ) {
-                  textNode = textNode.splitText(match.index)[1]
+        editor.registerCommand(
+          KEY_SPACE_COMMAND,
+          () => {
+              editor.update(() => {
+                const selection = $getSelection()
+                if ( $isRangeSelection(selection )) {
+                  const startEnd = selection.getStartEndPoints()
+                  if ( startEnd ){
+                    const start = startEnd[0];
+                    TryCreateLink(selection.getNodes()[0], start.offset)
+                  }
                 }
+              })
+            return false;
+          },
+          COMMAND_PRIORITY_LOW
+        ),
 
-                const linkNode = $createLinkNode(match[0])
-                const linkTextNode = $createTextNode(match[0]);
-                linkTextNode.setFormat(textNode.getFormat());
-                linkTextNode.setDetail(textNode.getDetail());
-                linkNode.append(linkTextNode);
-                textNode.replace(linkNode)
-              }
-            }
-          }
-        }),
+        editor.registerCommand(
+          KEY_ENTER_COMMAND,
+          () => {
+              editor.update(() => {
+                const selection = $getPreviousSelection()
+                if ( $isRangeSelection(selection )) {
+                  const startEnd = selection.getStartEndPoints()
+                  if ( startEnd ){
+                    const start = startEnd[0];
+                    const node = $getNodeByKey(start.key)
+                    if ( node )
+                      TryCreateLink(node, start.offset)
+                  }
+                }
+              })
+            return false;
+          },
+          COMMAND_PRIORITY_LOW
+        ),
       );
     },[editor])
 

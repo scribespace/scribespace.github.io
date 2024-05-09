@@ -30,7 +30,6 @@ export const LinkEditor = forwardRef<HTMLDivElement, LinkEditorProps>( ({editor,
     function OpenURL() {
         const url = urlInput.current?.value;
         if ( url && validateUrl(url) ) {
-            console.log(url)
             window.open(url, '_blank')?.focus();
         }
     }

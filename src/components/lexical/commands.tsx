@@ -42,24 +42,24 @@ export default function RegisterCustomCommands() {
                         // We split the first and last node by the selection
                         // So that we don't format unselected text inside those nodes
                         if ($isTextNode(node)) {
-                        if (idx === 0 && anchor.offset !== 0) {
-                            node = node.splitText(anchor.offset)[1] || node;
-                        }
-                        if (idx === nodes.length - 1) {
-                            node = (node as TextNode).splitText(focus.offset)[0] || node;
-                        }
-            
-                        if ((node as TextNode).__style !== '') {
-                            (node as TextNode).setStyle('');
-                        }
-                        if ((node as TextNode).__format !== 0) {
-                            (node as TextNode).setFormat(0);
-                            $getNearestBlockElementAncestorOrThrow(node).setFormat('');
-                        }
+                            if (idx === 0 && anchor.offset !== 0) {
+                                node = node.splitText(anchor.offset)[1] || node;
+                            }
+                            if (idx === nodes.length - 1) {
+                                node = (node as TextNode).splitText(focus.offset)[0] || node;
+                            }
+                
+                            if ((node as TextNode).__style !== '') {
+                                (node as TextNode).setStyle('');
+                            }
+                            if ((node as TextNode).__format !== 0) {
+                                (node as TextNode).setFormat(0);
+                                $getNearestBlockElementAncestorOrThrow(node).setFormat('');
+                            }
                         } else if ($isHeadingNode(node) || $isQuoteNode(node)) {
-                        node.replace($createParagraphNode(), true);
+                            node.replace($createParagraphNode(), true);
                         } else if ($isDecoratorBlockNode(node)) {
-                        node.setFormat('');
+                            node.setFormat('');
                         }
                     });
                 }
