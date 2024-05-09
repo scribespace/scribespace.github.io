@@ -11,7 +11,7 @@ import { forwardRef } from 'react';
 import LinkTool from './tools/linkTool';
 
 export const ToolbarPlugin = forwardRef<HTMLDivElement>(({}, ref) => {
-    const [editor, composerContext] = useLexicalComposerContext();
+    const [editor] = useLexicalComposerContext();
 
     function Separator() {
         return <div className='separator'/>
@@ -30,7 +30,7 @@ export const ToolbarPlugin = forwardRef<HTMLDivElement>(({}, ref) => {
             <Separator/>
             <ColorTools editor={editor}/>
             <Separator/>
-            <LinkTool editor={editor} composerContext={composerContext}/>
+            <LinkTool editor={editor}/>
             <Separator/>
         </div>
     )

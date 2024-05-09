@@ -1,5 +1,4 @@
-import { useRef, useEffect, useState, forwardRef, RefObject } from "react";
-import { createPortal } from "react-dom";
+import { useRef, useEffect, useState, forwardRef } from "react";
 
     type DropdownListProps = {
         children: React.ReactNode;

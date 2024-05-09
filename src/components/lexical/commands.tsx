@@ -5,7 +5,6 @@ import { $isDecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode"
 import { $getNearestBlockElementAncestorOrThrow } from '@lexical/utils';
 import { $isHeadingNode, $isQuoteNode } from '@lexical/rich-text';
 import {$patchStyleText} from '@lexical/selection'
-import { edit } from "react-arborist/dist/module/state/edit-slice";
 
 export const CLEAR_FORMAT_TEXT_COMMAND: LexicalCommand<void> = createCommand()
 export const INCREASE_FONT_SIZE_COMMAND: LexicalCommand<void> = createCommand()

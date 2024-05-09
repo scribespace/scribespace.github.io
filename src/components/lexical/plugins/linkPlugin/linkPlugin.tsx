@@ -1,16 +1,14 @@
 import { LinkPlugin as LexicalLinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import {LinkNode, $isLinkNode, $createLinkNode} from '@lexical/link'
 import { NodeEventPlugin } from '@lexical/react/LexicalNodeEventPlugin';
-import { $createRangeSelection, $createTextNode, $getNodeByKey, $getPreviousSelection, $getSelection, $isRangeSelection, $isTextNode, COMMAND_PRIORITY_LOW, KEY_ENTER_COMMAND, KEY_SPACE_COMMAND, LexicalEditor, LexicalNode, NodeKey, SELECTION_CHANGE_COMMAND, TextNode } from "lexical";
+import { $getNodeByKey, $getPreviousSelection, $getSelection, $isRangeSelection, $isTextNode, COMMAND_PRIORITY_LOW, KEY_ENTER_COMMAND, KEY_SPACE_COMMAND, LexicalEditor, LexicalNode, NodeKey, SELECTION_CHANGE_COMMAND, TextNode } from "lexical";
 
 import './css/linkPluginDefault.css'
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from '@lexical/utils'
 
 import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
-import { LinkEditor } from "./linkEditor";
-import { edit } from "react-arborist/dist/module/state/edit-slice";
+import { LinkEditor, OpenURL } from "./linkEditor";
 
 const urlRegExp = new RegExp(
   /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www\.)[A-Za-z0-9-]+\.[A-Za-z]{2,})((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/,
@@ -96,9 +94,7 @@ export default function LinkPlugin() {
 
           const linkNode = $createLinkNode(match[0])
           matchingNodes[0].insertBefore(linkNode)
-          for ( const node of matchingNodes ) {
-              linkNode.append(node)
-          }
+          linkNode.append(...matchingNodes)
         }
       }
     }
@@ -125,7 +121,6 @@ export default function LinkPlugin() {
         editor.registerCommand(
           SELECTION_CHANGE_COMMAND,
           () => {
-              let element: HTMLElement | null = null
               linkNodeRef.current = null;
               let currentLinkURL ="";
               let currentLinkText ="";
@@ -136,7 +131,6 @@ export default function LinkPlugin() {
                   const parent = nodes[0].getParent();
                   if ( $isLinkNode(parent)) {
                     const linkNode = (parent as LinkNode)
-                    element = editor.getElementByKey(parent.getKey());
                     linkNodeRef.current = linkNode;
                     currentLinkURL = linkNode.getURL()
                     currentLinkText = linkNode.getTextContent()
@@ -220,13 +214,13 @@ export default function LinkPlugin() {
                     const element = editor.getElementByKey(nodeKey) as HTMLLinkElement
                     if ( (e as MouseEvent).ctrlKey && element) {
                         const url = element.href;
-                        window.open(url, '_blank')?.focus();
+                        OpenURL(url)
                     }                    
                 }}/>
             <LexicalLinkPlugin validateUrl={validateUrl}/>
-            {(linkURL != '') && (
+            {(linkNodeRef.current) && (
               <div ref={linkEditorRef} className={editorEmbeddedClassName}>
-                <LinkEditor editor={editor} composerContext={composerContext} url={linkURL} text={linkText} onTextChange={onTextChange} onURLChange={onURLChange}/>
+                <LinkEditor composerContext={composerContext} url={linkURL} text={linkText} onTextChange={onTextChange} onURLChange={onURLChange}/>
               </div>
             )}
         </div>

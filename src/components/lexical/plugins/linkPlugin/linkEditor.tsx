@@ -1,11 +1,9 @@
 import { LexicalComposerContextType } from "@lexical/react/LexicalComposerContext";
-import { LexicalEditor } from "lexical";
 import { forwardRef, useEffect, useRef } from "react";
 import { MdEdit, MdLink } from "react-icons/md";
 import { HiExternalLink } from "react-icons/hi";
 import { validateUrl } from "./linkPlugin";
 interface LinkEditorProps {
-    editor: LexicalEditor;
     composerContext: LexicalComposerContextType;
 
     text?: string;
@@ -15,7 +13,14 @@ interface LinkEditorProps {
     onURLChange?: (url:string) => void;
 }
 
-export const LinkEditor = forwardRef<HTMLDivElement, LinkEditorProps>( ({editor, composerContext, text, url, onTextChange, onURLChange}: LinkEditorProps, ref)  => {
+export function OpenURL(url: string) {
+    if ( validateUrl(url) ) {
+        const validURL = url;// url.match(/^https?:/) ? url : '//' + url;
+        window.open(validURL, '_blank')?.focus();
+    }
+}
+
+export const LinkEditor = forwardRef<HTMLDivElement, LinkEditorProps>( ({composerContext, text, url, onTextChange, onURLChange}: LinkEditorProps, ref)  => {
     const urlInput = useRef<HTMLInputElement>(null)
     const textInput = useRef<HTMLInputElement>(null)
     const currentURL = useRef<string>('')
@@ -27,11 +32,10 @@ export const LinkEditor = forwardRef<HTMLDivElement, LinkEditorProps>( ({editor,
     const inputTextClassName        = theme && theme.linkPlugin ? theme.linkPlugin.linkInputText                : 'link-input-text-default'
     const inputIconButtonClassName  = inputIconClassName + ' ' + (theme && theme.linkPlugin ? theme.linkPlugin.linkIconButtonContainer : 'link-input-icon-default')
 
-    function OpenURL() {
+    function OpenURLFromInput() {
         const url = urlInput.current?.value;
-        if ( url && validateUrl(url) ) {
-            window.open(url, '_blank')?.focus();
-        }
+        if ( url )
+            OpenURL(url)
     }
 
     function TextChangeAccepted(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -60,7 +64,7 @@ export const LinkEditor = forwardRef<HTMLDivElement, LinkEditorProps>( ({editor,
     },[text])
 
     useEffect(() => {
-        if ( urlInput.current && url ) {
+        if ( urlInput.current && url != undefined ) {
             urlInput.current.value = url;
             currentURL.current = url;
         }
@@ -75,7 +79,7 @@ export const LinkEditor = forwardRef<HTMLDivElement, LinkEditorProps>( ({editor,
         <div className={inputContainerClassName}>
             <MdLink className={inputIconClassName}/>
             <input ref={urlInput} type="text" className={inputTextClassName} defaultValue={url} onKeyDown={URLChangeAccepted}/>
-            <HiExternalLink className={inputIconButtonClassName} onClick={OpenURL}/>
+            <HiExternalLink className={inputIconButtonClassName} onClick={OpenURLFromInput}/>
         </div>
     </div>
 )
