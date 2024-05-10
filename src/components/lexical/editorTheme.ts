@@ -12,6 +12,10 @@ const EditorTheme = {
     strikethrough: "editor-text-strikethrough",
     underlineStrikethrough: "editor-text-underlineStrikethrough",
   },
+  table: 'editor-table',
+  tableCell: 'editor-table-cell',
+  tableRow: 'editor-table-row',
+  tableCellSelected: 'editor-table-cell-selected',
 };
 
 export default EditorTheme;

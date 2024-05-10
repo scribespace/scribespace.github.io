@@ -22,8 +22,8 @@ import EditorTheme from './lexical/editorTheme';
 import RegisterCustomCommands from './lexical/commands';
 import { ExtendedTextNode } from './lexical/nodes/extendedTextNode';
 import useResizeObserver from 'use-resize-observer';
-
-
+import { TableNode, TableRowNode, TableCellNode } from '@lexical/table'
+import TablePlugin from './lexical/plugins/tablePlugin/tablePlugin'
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
 // try to recover gracefully without losing user data.
@@ -77,6 +77,9 @@ export function EditorLexicalView({selectedFile} : Props) {
       LinkNode,
       ExtendedTextNode,
       { replace: TextNode, withKlass: ExtendedTextNode, with: (node: TextNode) => new ExtendedTextNode(node.__text) },
+      TableNode,
+      TableRowNode,
+      TableCellNode,      
     ]
   };
  
@@ -97,6 +100,7 @@ export function EditorLexicalView({selectedFile} : Props) {
         <AutoFocusPlugin />
         <RegisterCustomCommands />
         <LinkPlugin/>
+        <TablePlugin/>
     </LexicalComposer>
   );
 }

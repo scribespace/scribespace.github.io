@@ -117,6 +117,10 @@ export default function LinkPlugin() {
     },[linkURL, linkText])
 
     useEffect(()=> {
+      if (!editor.hasNodes([LinkNode])) {
+        throw new Error( "LinkPlugin: ListNode not registered on editor")
+      }
+
       return mergeRegister(
         editor.registerCommand(
           SELECTION_CHANGE_COMMAND,

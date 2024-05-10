@@ -78,3 +78,21 @@
   .editor-text-underlineStrikethrough {
     text-decoration: underline line-through;
   }
+
+  .editor-table{
+    border-collapse: collapse;
+    border-spacing: 0;
+    table-layout: fixed;
+    width: 100%;
+  }
+  .editor-table-cell{
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+  .editor-table-row{
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+  .editor-table-cell-selected {
+    background-color: antiquewhite;
+  }

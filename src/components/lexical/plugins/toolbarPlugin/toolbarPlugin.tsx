@@ -9,6 +9,7 @@ import AlignTool from './tools/alignTool';
 import ColorTools from './tools/colorTool';
 import { forwardRef } from 'react';
 import LinkTool from './tools/linkTool';
+import TableTool from './tools/tableTool';
 
 export const ToolbarPlugin = forwardRef<HTMLDivElement>(({}, ref) => {
     const [editor] = useLexicalComposerContext();
@@ -31,6 +32,8 @@ export const ToolbarPlugin = forwardRef<HTMLDivElement>(({}, ref) => {
             <ColorTools editor={editor}/>
             <Separator/>
             <LinkTool editor={editor}/>
+            <Separator/>
+            <TableTool editor={editor}/>
             <Separator/>
         </div>
     )
