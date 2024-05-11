@@ -10,6 +10,8 @@ export default function TableTool({editor} : ToolbarToolProps) {
     function onClick() {
         editor.update(()=>{
                 const tableNode = $createTableNodeWithDimensions(3, 3, false);
+                ((tableNode.getFirstChild() as TableRowNode).getFirstChild() as TableCellNode).setRowSpan(2);
+                (tableNode.getChildren()[1] as TableRowNode).getFirstChild()?.remove()
                 $insertNodes([tableNode])
         })
     }
