@@ -2,11 +2,8 @@ import { ImParagraphCenter, ImParagraphJustify, ImParagraphLeft, ImParagraphRigh
 import DropdownTool, { DropdownList } from "./dropdownTool"
 import { ToolbarToolProps } from "./toolsProps";
 import { FORMAT_ELEMENT_COMMAND } from "lexical";
-import { useRef } from "react";
 
 export default function AlignTool({editor}: ToolbarToolProps) {
-    const dropdownListRef = useRef<HTMLDivElement>(null)
-
     const onClickLeft = () => {
         editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'left')
     }
@@ -29,7 +26,7 @@ export default function AlignTool({editor}: ToolbarToolProps) {
 
     return (
         <DropdownTool Tool={Tool}>
-            <DropdownList ref={dropdownListRef}>
+            <DropdownList>
                 <ImParagraphLeft className="item-buttons" onClick={onClickLeft}/>
                 <ImParagraphCenter className="item-buttons" onClick={onClickCenter}/>
                 <ImParagraphRight className="item-buttons" onClick={onClickRight}/>

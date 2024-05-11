@@ -117,7 +117,7 @@ export default function LinkPlugin() {
     },[linkURL, linkText])
 
     useEffect(()=> {
-      if (!editor.hasNodes([LinkNode])) {
+      if (!editor.hasNode(LinkNode)) {
         throw new Error( "LinkPlugin: ListNode not registered on editor")
       }
 

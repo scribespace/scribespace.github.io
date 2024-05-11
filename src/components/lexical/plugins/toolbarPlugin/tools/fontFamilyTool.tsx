@@ -22,7 +22,6 @@ export default function FontFamilyTool({editor}: ToolbarToolProps) {
     ];
     const defaultFontFamily = useRef<string>('')
     const toolRef = useRef<HTMLButtonElement>(null)
-    const dropdownListRef = useRef<HTMLDivElement>(null)
 
     type FontFamilyProps = {
         fontFamily: string;
@@ -75,7 +74,7 @@ export default function FontFamilyTool({editor}: ToolbarToolProps) {
 
     return (
         <DropdownTool Tool={Tool}>
-            <DropdownList ref={dropdownListRef}>
+            <DropdownList>
             {
                 fontFamilies.map((fontFamily, id) => {
                     return <FontFamilyButton key={id} fontFamily={fontFamily}/>

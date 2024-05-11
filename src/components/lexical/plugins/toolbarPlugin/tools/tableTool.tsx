@@ -5,13 +5,18 @@ import { $createTableNodeWithDimensions } from '@lexical/table'
 import { $isTableSelection, $createTableRowNode, TableRowNode, $createTableCellNode, TableCellHeaderStates, $isTableCellNode, TableNode, TableCellNode, $isTableNode, $computeTableMap} from '@lexical/table';
 import { useEffect, useRef } from "react";
 import { $findMatchingParent } from "@lexical/utils";
+import { ExtendedTableNode } from "../../tablePlugin/nodes/extendedTableNode";
+import { FaClipboardList } from "react-icons/fa";
 
 export default function TableTool({editor} : ToolbarToolProps) {
     function onClick() {
         editor.update(()=>{
                 const tableNode = $createTableNodeWithDimensions(3, 3, false);
-                ((tableNode.getFirstChild() as TableRowNode).getFirstChild() as TableCellNode).setRowSpan(2);
-                (tableNode.getChildren()[1] as TableRowNode).getFirstChild()?.remove()
+                ((tableNode.getChildren()[0] as TableRowNode).getChildren()[0] as TableCellNode).setColSpan(2);
+                ((tableNode.getChildren()[0] as TableRowNode).getChildren()[1] as TableCellNode).remove();
+
+                (tableNode as ExtendedTableNode).updateColGroup()
+
                 $insertNodes([tableNode])
         })
     }

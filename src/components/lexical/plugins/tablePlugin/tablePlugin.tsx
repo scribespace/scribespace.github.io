@@ -1,12 +1,13 @@
 import { TablePlugin as LexicalTablePlugin } from '@lexical/react/LexicalTablePlugin'
 import { SELECTION_CHANGE_COMMAND, $getSelection, $isRangeSelection, $createTextNode, COMMAND_PRIORITY_LOW, $createParagraphNode, $insertNodes, BaseSelection, LexicalEditor, LexicalNode, ParagraphNode, RangeSelection, $isParagraphNode, $getNearestNodeFromDOMNode } from 'lexical';
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { TableDOMCell, $isTableSelection, $getTableNodeFromLexicalNodeOrThrow, $isTableCellNode, TableNode, TableCellNode, $isTableNode, $computeTableMap, getDOMCellFromTarget, $getTableRowIndexFromTableCellNode, $isTableRowNode, $getTableColumnIndexFromTableCellNode} from '@lexical/table';
+import { TableDOMCell, $isTableSelection, $getTableNodeFromLexicalNodeOrThrow, $isTableCellNode, TableNode, TableRowNode, TableCellNode, $isTableNode, $computeTableMap, getDOMCellFromTarget, $getTableRowIndexFromTableCellNode, $isTableRowNode, $getTableColumnIndexFromTableCellNode} from '@lexical/table';
 import { $findMatchingParent } from '@lexical/utils';
 import { act, useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import './css/tablePlugin.css'
+import { ExtendedTableNode } from './nodes/extendedTableNode';
 
 const DRAG_NONE = 0 as const
 const DRAG_HORIZONTAL = 1 as const
@@ -169,10 +170,11 @@ export default function TablePlugin() {
               if (!$isTableCellNode(tableCellNode)) {
                 throw new Error('updateRowHeight: Table cell node not found.');
               }
-    
               const tableNode = $getTableNodeFromLexicalNodeOrThrow(tableCellNode);
     
               let tableRowIndex = $getTableRowIndexFromTableCellNode(tableCellNode);
+
+              tableRowIndex += tableCellNode.getRowSpan() - 1
     
               const tableRows = tableNode.getChildren();
     
@@ -220,98 +222,100 @@ export default function TablePlugin() {
                 throw new Error('updateColumnWidth: Table cell node not found.');
               }
     
-              const tableNode = $getTableNodeFromLexicalNodeOrThrow(tableCellNode);
+              const tableNode = $getTableNodeFromLexicalNodeOrThrow(tableCellNode) as ExtendedTableNode;
     
-              let tableColumnIndex = $getTableColumnIndexFromTableCellNode(tableCellNode);
-    
-              const tableRows = tableNode.getChildren();
-    
-                for (let r = 0; r < tableRows.length; r++) {
-                    const tableRow = tableRows[r];
+              // Createc look up table for columns
+              let colLUT: {column:number;cell:TableCellNode}[][] = [];
+              const tableRows = tableNode.getChildren() as TableRowNode[];
+              const tableRowsCount = tableRows.length;
+              for ( let r = 0; r < tableRowsCount; ++r ) {
+                colLUT[r] = []
+                const rowCells = tableRows[r].getChildren() as TableCellNode[];
+                const cellsCount = rowCells.length;
+                let colID = 0;
+                for ( let c = 0; c < cellsCount; ++c) {
+                    const span = rowCells[c].getColSpan();
+                    colLUT[r][c] = {column: (colID + span - 1), cell: rowCells[c]};
+                    colID += span;
+                }
+              }
 
-                    if (!$isTableRowNode(tableRow)) {
-                    throw new Error('Expected table row');
-                    }
+              let tableRowIndex = $getTableRowIndexFromTableCellNode(tableCellNode);
 
-                    const rowCells = tableRow.getChildren<TableCellNode>();
-                    const rowCellsSpan = rowCells.map((cell) => cell.getColSpan());
+              let columnLUID = colLUT[tableRowIndex].findIndex((columnLU) => columnLU.cell == tableCellNode)
+              if ( columnLUID == -1 ) {
+                throw new Error('updateColumnWidth: Column not in the LUT.');
+              }
+              if ( cellPart == CELL_LEFT ) {
+                columnLUID -= 1;                        
+              }
 
-                    const aggregatedRowSpans = rowCellsSpan.reduce(
-                    (rowSpans: number[], cellSpan) => {
-                        const previousCell = rowSpans[rowSpans.length - 1] ?? 0;
-                        rowSpans.push(previousCell + cellSpan);
-                        return rowSpans;
-                    },
-                    [],
-                    );
-                    let rowColumnIndexWithSpan = aggregatedRowSpans.findIndex(
-                    (cellSpan: number) => cellSpan > tableColumnIndex,
-                    );
+              const realColumnID = colLUT[tableRowIndex][columnLUID].column;
+              let columnWidth = tableNode.getColumnWidth(realColumnID);
+              {
 
-                    if ( rowColumnIndexWithSpan >= rowCells.length || rowColumnIndexWithSpan < 0 ) {
-                        throw new Error('Expected table cell to be inside of table row.');
-                    }
-
-                    if ( cellPart == CELL_LEFT ) {
-                        if ( rowColumnIndexWithSpan == 0 ) {
-                            widthOffset = -widthOffset
-                        } else {
-                            rowColumnIndexWithSpan = aggregatedRowSpans.findIndex(
-                                (cellSpan: number) => cellSpan > (tableColumnIndex - 1),
-                                );
-                        }
-                      }
-
-                    const tableCell = rowCells[rowColumnIndexWithSpan];
-              
-                    if (!$isTableCellNode(tableCell)) {
-                        throw new Error('Expected table cell');
-                    }                    
-
-                    const cellElement = editor.getElementByKey(tableCell.getKey());
-                    if (!cellElement) {
+                if ( columnWidth == -1 ) {
+                    const currentCellNode = colLUT[tableRowIndex][columnLUID].cell;
+                    const currentCellElement = editor.getElementByKey(currentCellNode.getKey());
+                    if (!currentCellElement) {
                         throw new Error('updateColumnWidth: Cell element not found.');
                     }
 
-                    // Get next column
-                    let nextRowColumnIndexWithSpan = -1;
-
-                    if ( cellPart == CELL_LEFT ) {
-                        nextRowColumnIndexWithSpan = aggregatedRowSpans.findIndex(
-                            (cellSpan: number) => cellSpan > (tableColumnIndex),
-                        );
-                      } else {
-                        nextRowColumnIndexWithSpan = aggregatedRowSpans.findIndex(
-                            (cellSpan: number) => cellSpan > (tableColumnIndex + 1),
-                        );
-                      }
-                    
-                    if ( nextRowColumnIndexWithSpan >= rowCells.length || nextRowColumnIndexWithSpan < 0 ) {
-                        throw new Error('Expected table next cell to be inside of table row.');
+                    const currentCellWidth = currentCellElement.getBoundingClientRect().width;
+                    let knownWidth = 0;
+                    let setColumns = 0;
+                    const span = currentCellNode.getColSpan();
+                    for ( let s = 1; s < span; ++s) {
+                        const columnIDToCheck = realColumnID - s;
+                        const checkColumnWidth = tableNode.getColumnWidth(columnIDToCheck);
+                        if ( checkColumnWidth != -1 ) {
+                            knownWidth += checkColumnWidth;
+                            setColumns += 1;
+                        }
                     }
 
-                    const tableNextCell = rowCells[nextRowColumnIndexWithSpan];
-
-                    if (!$isTableCellNode(tableNextCell)) {
-                        throw new Error('Expected next table cell');
-                    }                    
-
-                    const nextCellElement = editor.getElementByKey(tableNextCell.getKey());
-                    if (!nextCellElement) {
-                        throw new Error('updateColumnWidth: Next cell element not found.');
-                    }
-    
-                    const cellWidth = cellElement?.getBoundingClientRect().width - 1/*border?*/;
-                    const nextCellWidth = nextCellElement?.getBoundingClientRect().width - 1/*border?*/;
-
-                    const range = [-(cellWidth - 10), nextCellWidth-10];
-                    widthOffset = Math.max(Math.min(range[1], widthOffset), range[0])
-
-                    // Offset
-                    tableCell.setWidth(cellWidth + widthOffset);
-
-                    tableNextCell.setWidth(nextCellWidth - widthOffset);
+                    const remainingCell = span - setColumns;
+                    const remainingWidth = currentCellWidth - knownWidth;
+                    columnWidth = remainingWidth / remainingCell;
                 }
+                columnWidth -= 1/* border? */
+            }
+
+            let nextColumnWidth = 0;
+            const nextRealColumnID = realColumnID + 1;
+              {
+                nextColumnWidth = tableNode.getColumnWidth(nextRealColumnID);
+                if ( nextColumnWidth == -1 ) {
+                    const columnLU = colLUT[tableRowIndex][columnLUID+1]
+                    const currentCellNode = columnLU.cell;
+                    const currentCellElement = editor.getElementByKey(currentCellNode.getKey());
+                    if (!currentCellElement) {
+                        throw new Error('updateColumnWidth: Cell element not found.');
+                    }
+
+                    const currentCellWidth = currentCellElement.getBoundingClientRect().width;
+                    let knownWidth = 0;
+                    let setColumns = 0;
+                    const span = currentCellNode.getColSpan();
+                    for ( let s = 0; s < span; ++s) {
+                        const columnIDToCheck = columnLU.column - s;
+                        const checkColumnWidth = tableNode.getColumnWidth(columnIDToCheck);
+                        if ( checkColumnWidth != -1 ) {
+                            knownWidth += checkColumnWidth;
+                            setColumns += 1;
+                        }
+                    }
+
+                    const remainingCell = span - setColumns;
+                    const remainingWidth = currentCellWidth - knownWidth;
+                    nextColumnWidth = remainingWidth / remainingCell;
+                }
+                nextColumnWidth -= 1/* border? */
+            }
+
+              
+             tableNode.setColumnWidth(realColumnID, columnWidth + widthOffset)
+             tableNode.setColumnWidth(nextRealColumnID, nextColumnWidth + widthOffset)
             },
             {tag: 'table-update-column-width'},
           );
@@ -349,7 +353,7 @@ export default function TablePlugin() {
     },[dragDirection, activeCell, editor])
     
     useEffect(()=>{
-        const lexicalRegisterCommands = editor.registerCommand(SELECTION_CHANGE_COMMAND, ()=>{
+      const lexicalRegisterCommands = editor.registerCommand(SELECTION_CHANGE_COMMAND, ()=>{
 
             const selection = $getSelection();
             const nodes = selection?.getNodes()
@@ -392,7 +396,6 @@ export default function TablePlugin() {
             
             return false;
         }, COMMAND_PRIORITY_LOW)
-
 
         return () => {
             lexicalRegisterCommands();

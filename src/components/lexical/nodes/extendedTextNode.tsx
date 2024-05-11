@@ -8,7 +8,8 @@ import {
   NodeKey,
   TextNode,
   SerializedTextNode,
-  LexicalNode
+  LexicalNode,
+  $applyNodeReplacement
 } from 'lexical';
 
 export class ExtendedTextNode extends TextNode {
@@ -56,7 +57,7 @@ export class ExtendedTextNode extends TextNode {
 }
 
 export function $createExtendedTextNode(text: string): ExtendedTextNode {
-	return new ExtendedTextNode(text);
+	return $applyNodeReplacement(new ExtendedTextNode(text));
 }
 
 export function $isExtendedTextNode(node: LexicalNode | null | undefined): node is ExtendedTextNode {
