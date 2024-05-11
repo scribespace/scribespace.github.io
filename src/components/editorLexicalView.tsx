@@ -1,5 +1,5 @@
-import {$getRoot, $insertNodes, TextNode} from 'lexical';
 
+import { $getRoot, $insertNodes, TextNode } from 'lexical';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext'
 
 import {AutoFocusPlugin} from '@lexical/react/LexicalAutoFocusPlugin';
