@@ -6,7 +6,6 @@
  *
  */
 
-'use strict';
-// This file is here for bootstrapping reasons so we can use it without
-// building anything and still comply with the monorepo conventions
-module.exports = require('./src/LexicalEslintPlugin.js');
+'use strict'
+const LexicalEslintPlugin = process.env.NODE_ENV === 'development' ? require('./LexicalEslintPlugin.dev.js') : require('./LexicalEslintPlugin.prod.js');
+module.exports = LexicalEslintPlugin;

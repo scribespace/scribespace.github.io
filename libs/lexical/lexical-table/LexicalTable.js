@@ -6,6 +6,6 @@
  *
  */
 
-'use strict';
-
-module.exports = require('./dist/LexicalTable.js');
+'use strict'
+const LexicalTable = process.env.NODE_ENV === 'development' ? require('./LexicalTable.dev.js') : require('./LexicalTable.prod.js');
+module.exports = LexicalTable;

@@ -6,6 +6,6 @@
  *
  */
 
-'use strict';
-
-module.exports = require('./dist/LexicalHashtag.js');
+'use strict'
+const LexicalHashtag = process.env.NODE_ENV === 'development' ? require('./LexicalHashtag.dev.js') : require('./LexicalHashtag.prod.js');
+module.exports = LexicalHashtag;

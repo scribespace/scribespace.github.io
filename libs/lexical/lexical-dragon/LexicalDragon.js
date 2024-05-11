@@ -6,6 +6,6 @@
  *
  */
 
-'use strict';
-
-module.exports = require('./dist/LexicalDragon.js');
+'use strict'
+const LexicalDragon = process.env.NODE_ENV === 'development' ? require('./LexicalDragon.dev.js') : require('./LexicalDragon.prod.js');
+module.exports = LexicalDragon;

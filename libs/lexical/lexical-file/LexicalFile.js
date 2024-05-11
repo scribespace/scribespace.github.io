@@ -6,6 +6,6 @@
  *
  */
 
-'use strict';
-
-module.exports = require('./dist/LexicalFile.js');
+'use strict'
+const LexicalFile = process.env.NODE_ENV === 'development' ? require('./LexicalFile.dev.js') : require('./LexicalFile.prod.js');
+module.exports = LexicalFile;

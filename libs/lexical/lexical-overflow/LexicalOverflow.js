@@ -6,6 +6,6 @@
  *
  */
 
-'use strict';
-
-module.exports = require('./dist/LexicalOverflow.js');
+'use strict'
+const LexicalOverflow = process.env.NODE_ENV === 'development' ? require('./LexicalOverflow.dev.js') : require('./LexicalOverflow.prod.js');
+module.exports = LexicalOverflow;

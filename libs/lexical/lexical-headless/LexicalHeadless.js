@@ -6,6 +6,6 @@
  *
  */
 
-'use strict';
-
-module.exports = require('./dist/LexicalHeadless.js');
+'use strict'
+const LexicalHeadless = process.env.NODE_ENV === 'development' ? require('./LexicalHeadless.dev.js') : require('./LexicalHeadless.prod.js');
+module.exports = LexicalHeadless;
