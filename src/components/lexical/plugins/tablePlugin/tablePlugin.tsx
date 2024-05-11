@@ -126,18 +126,18 @@ export default function TablePlugin() {
         const targetElement = target as HTMLElement;
 
         if ( dragDirection != DRAG_NONE ) {
-            setMousePosition({x: event.clientX, y: event.clientY})
-            return;
+          setMousePosition({x: event.clientX, y: event.clientY})
+          return;
         }
-
+        
         // prevent selecting resizer
         if ( resizerRef.current && resizerRef.current.contains(target as Node) ) {
-            return;
+          return;
         }
-
+        
         const cell = getDOMCellFromTarget(targetElement)
         setActiveCell(cell)
-
+        
         if ( cell ) {
             editor.update(()=>{
                 const tableCellNode = $getNearestNodeFromDOMNode(cell.elem)
@@ -278,7 +278,6 @@ export default function TablePlugin() {
                     const remainingWidth = currentCellWidth - knownWidth;
                     columnWidth = remainingWidth / remainingCell;
                 }
-                columnWidth -= 1/* border? */
             }
 
             let nextColumnWidth = 0;
@@ -310,12 +309,11 @@ export default function TablePlugin() {
                     const remainingWidth = currentCellWidth - knownWidth;
                     nextColumnWidth = remainingWidth / remainingCell;
                 }
-                nextColumnWidth -= 1/* border? */
             }
 
               
              tableNode.setColumnWidth(realColumnID, columnWidth + widthOffset)
-             tableNode.setColumnWidth(nextRealColumnID, nextColumnWidth + widthOffset)
+             tableNode.setColumnWidth(nextRealColumnID, nextColumnWidth - widthOffset)
             },
             {tag: 'table-update-column-width'},
           );

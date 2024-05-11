@@ -5,9 +5,9 @@ import {addClassNamesToElement} from '@lexical/utils';
 export class ExtendedTableNode extends TableNode {
     __columnsWidths: number[];
 
-  constructor(key?: NodeKey) {
-      super(key);
-      this.__columnsWidths = []
+  constructor(node?: ExtendedTableNode) {
+      super(node?.__key);
+      this.__columnsWidths = node ? node.__columnsWidths : [];
   }
 
   static getType(): string {
@@ -15,13 +15,15 @@ export class ExtendedTableNode extends TableNode {
   }
 
   static clone(node: ExtendedTableNode): ExtendedTableNode {
-    return new ExtendedTableNode(node.__key);
+    return new ExtendedTableNode( node );
   }
 
   updateColGroup() {
+    const self = this.getWritable()
+
     const columnsWidths: number[] = []
 
-    const rowsNodes = this.getChildren() as TableRowNode[]
+    const rowsNodes = self.getChildren() as TableRowNode[]
     const cellsNodes = rowsNodes[0].getChildren() as TableCellNode[]
     for ( const cell of cellsNodes ) {
         for ( let c = 0; c < cell.getColSpan(); ++c ) {
@@ -29,20 +31,21 @@ export class ExtendedTableNode extends TableNode {
         }
     }
 
-    this.getWritable().__columnsWidths = columnsWidths;
+    self.__columnsWidths = columnsWidths;
   }
 
   setColumnWidth(columnID: number, width: number) {
-    if ( columnID < 0 || columnID >= this.getLatest().__columnsWidths.length ) {
-        throw Error(`ExtendedTableNode -> setColumnWidth: wrong column ID: ${columnID}`)
+    const self = this.getWritable()
+    if ( columnID < 0 || columnID >= self.__columnsWidths.length ) {
+        throw Error(`ExtendedTableNode -> setColumnWidth: wrong column ID: ${columnID}. ColCount: ${self.__columnsWidths.length}`)
     }
 
-    this.getWritable().__columnsWidths[columnID] = width;
+    self.__columnsWidths[columnID] = width;
   }
 
   getRealColumnID( rowID: number, cellID: number ): number {
-    const latest = this.getLatest()
-    const rowsNodes = latest.getChildren() as TableRowNode[]
+    const self = this.getLatest()
+    const rowsNodes = self.getChildren() as TableRowNode[]
     if ( rowID < 0 || rowID >= rowsNodes.length ) {
         throw Error(`ExtendedTableNode -> getRealColumnID: wrong row ID: ${rowID}, rows count: ${rowsNodes.length}`)
     }
@@ -66,21 +69,22 @@ export class ExtendedTableNode extends TableNode {
   }
 
   getColumnWidth(columnID: number ): number {
-    const latest = this.getLatest()
-    if ( columnID < 0 || columnID >= latest.__columnsWidths.length ) {
-        throw Error(`ExtendedTableNode -> setColumnWidth: wrong column ID: ${columnID}. Or columns not updated: ${latest.__columnsWidths.length}`)
+    const self = this.getLatest()
+    if ( columnID < 0 || columnID >= self.__columnsWidths.length ) {
+        throw Error(`ExtendedTableNode -> setColumnWidth: wrong column ID: ${columnID}. Or columns not updated: ${self.__columnsWidths.length}`)
     }
     
-    return latest.__columnsWidths[columnID];
+    return self.__columnsWidths[columnID];
   }
 
   createDOM(config: EditorConfig, editor?: LexicalEditor): HTMLElement {
+    const self = this.getLatest()
     const tableElement = document.createElement('table');
 
     addClassNamesToElement(tableElement, config.theme.table);
 
     const colgroup = document.createElement('colgroup')
-    for ( const columnWidth of this.getWritable().__columnsWidths ) {
+    for ( const columnWidth of self.__columnsWidths ) {
         const colElement = document.createElement('col')
         if ( columnWidth != -1 )
             colElement.style.cssText = `width: ${columnWidth}px`;
@@ -91,7 +95,43 @@ export class ExtendedTableNode extends TableNode {
 
     return tableElement;
   }
+
+  
+  updateDOM(
+    _prevNode?: unknown,
+    dom?: HTMLElement,
+    _config?: EditorConfig,
+  ): boolean {
+    const self = this.getLatest()
+
+    if ( dom ) {
+      const colgroup = dom.firstElementChild;
+      if ( colgroup ) {
+        const colsElements = colgroup.getElementsByTagName('col')
+
+        if (colsElements.length != self.__columnsWidths.length) {
+          throw new Error('ExtendedTableNode -> updateDOM: Mismatch between colsElements count and columns widths. Did you run tableNode.updateColGroup()?');
+        }
+
+        const colsCount = colsElements.length;
+        for ( let c = 0; c < colsCount; ++c ) {
+          const colElement = colsElements[c] as HTMLTableColElement;
+          const colElementWidthMatch = colElement.style.width.match(/\d+/);
+          const colElementWidth = colElementWidthMatch ? Number(colElementWidthMatch[0]) : -1;
+
+          const colNodeWidth = self.__columnsWidths[c];
+
+          if ( colElementWidth != colNodeWidth ) {
+            colElement.style.cssText = `width: ${colNodeWidth}px`;
+          }
+        }
+      }
+    }
+
+    return false;
+  }
 }
+
 
 export function $createExtendedTableNode(): ExtendedTableNode {
 	return $applyNodeReplacement(new ExtendedTableNode());

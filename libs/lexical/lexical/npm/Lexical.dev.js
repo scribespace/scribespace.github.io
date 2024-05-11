@@ -9455,8 +9455,19 @@ class LexicalEditor {
         throw Error(`Node ${klass.name} has not been registered. Ensure node has been passed to createEditor.`);
       }
     }
+    let klassToMutate = klass;
+    const replaceKlass = registeredNode.replaceWithKlass;
+    if (replaceKlass) {
+      klassToMutate = replaceKlass;
+      const registeredReplaceNode = this._nodes.get(replaceKlass.getType());
+      if (registeredReplaceNode === undefined) {
+        {
+          throw Error(`Node ${replaceKlass.name} has not been registered. Ensure node has been passed to createEditor.`);
+        }
+      }
+    }
     const mutations = this._listeners.mutation;
-    mutations.set(listener, klass);
+    mutations.set(listener, klassToMutate);
     return () => {
       mutations.delete(listener);
     };
