@@ -176,14 +176,15 @@ export default function TablePlugin() {
     
               let tableRowIndex = $getTableRowIndexFromTableCellNode(tableCellNode);
 
-              tableRowIndex += tableCellNode.getRowSpan() - 1
+              if ( cellPart == CELL_BOTTOM )
+                tableRowIndex += tableCellNode.getRowSpan() - 1
     
               const tableRows = tableNode.getChildren();
     
               if (tableRowIndex >= tableRows.length || tableRowIndex < 0) {
                 throw new Error('Expected table cell to be inside of table row.');
               }
-              
+
               if ( cellPart == CELL_TOP ) {
                 if ( tableRowIndex == 0 ) {
                     heightOffset = -heightOffset
