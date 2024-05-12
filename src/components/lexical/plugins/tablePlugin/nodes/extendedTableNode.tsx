@@ -171,7 +171,7 @@ export class ExtendedTableNode extends TableNode {
 }
 
 export function $convertExtendedTableElement(_domNode: Node): DOMConversionOutput {
-  throw Error("ExtendedTableNode $convertExtendedTableElement not implemented")
+  return {node: $createExtendedTableNode()} 
 }
 
 export function $createExtendedTableNode(): ExtendedTableNode {
