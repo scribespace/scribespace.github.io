@@ -1,13 +1,22 @@
-import { TableNode, TableRowNode, TableCellNode } from '@lexical/table'
-import { $applyNodeReplacement, EditorConfig, LexicalEditor, LexicalNode, NodeKey } from 'lexical';
+import { TableNode, TableRowNode, TableCellNode, SerializedTableRowNode, SerializedTableNode } from '@lexical/table'
+import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, EditorConfig, LexicalEditor, LexicalNode, NodeKey, SerializedElementNode, Spread } from 'lexical';
 import {addClassNamesToElement} from '@lexical/utils';
+import { Children } from 'react';
+
+export type SerializedExtendedTableNode = Spread<
+  {
+    columnsWidths: number[];
+  },
+  SerializedElementNode
+>;
+
 
 export class ExtendedTableNode extends TableNode {
     __columnsWidths: number[];
 
   constructor(node?: ExtendedTableNode) {
       super(node?.__key);
-      this.__columnsWidths = node ? node.__columnsWidths : [];
+      this.__columnsWidths = node ? structuredClone(node.__columnsWidths) : [];
   }
 
   static getType(): string {
@@ -102,7 +111,6 @@ export class ExtendedTableNode extends TableNode {
 
     return tableElement;
   }
-
   
   updateDOM(
     _prevNode?: unknown,
@@ -110,7 +118,6 @@ export class ExtendedTableNode extends TableNode {
     _config?: EditorConfig,
   ): boolean {
     const self = this.getLatest()
-
     if ( dom ) {
       const colgroup = dom.firstElementChild;
       if ( colgroup ) {
@@ -137,8 +144,38 @@ export class ExtendedTableNode extends TableNode {
 
     return false;
   }
+
+  static importDOM(): DOMConversionMap | null {
+    return {
+      table: (_node: Node) => ({
+        conversion: $convertExtendedTableElement,
+        priority: 1,
+      }),
+    };
+  }
+
+  static importJSON(serializedNode: SerializedExtendedTableNode): ExtendedTableNode {
+    throw Error("ExtenedTableNode: importJSON not complited");
+    const tableNode = $createExtendedTableNode()
+    tableNode.setColumnsWidths(serializedNode.columnsWidths)
+
+    return tableNode
+  }
+
+  exportJSON(): SerializedExtendedTableNode {
+    return {
+      ...super.exportJSON(),
+      columnsWidths: this.getColumnsWidths(),
+      type: 'extended-table',
+      version: 1,
+    };
+  }
+
 }
 
+export function $convertExtendedTableElement(_domNode: Node): DOMConversionOutput {
+  throw Error("ExtendedTableNode $convertExtendedTableElement not implemented")
+}
 
 export function $createExtendedTableNode(): ExtendedTableNode {
 	return $applyNodeReplacement(new ExtendedTableNode());

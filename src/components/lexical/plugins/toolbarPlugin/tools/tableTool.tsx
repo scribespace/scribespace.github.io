@@ -11,7 +11,6 @@ import { FaClipboardList } from "react-icons/fa";
 export default function TableTool({editor} : ToolbarToolProps) {
     function onClick() {
         editor.update(()=>{
-
                 const tableNode = $createTableNodeWithDimensions(4, 5, false);
                 ((tableNode.getChildren()[0] as TableRowNode).getChildren()[0] as TableCellNode).setColSpan(2);
                 ((tableNode.getChildren()[0] as TableRowNode).getChildren()[1] as TableCellNode).remove();
