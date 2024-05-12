@@ -29,6 +29,8 @@ type CellClickPart = typeof CELL_TOP | typeof CELL_BOTTOM | typeof CELL_LEFT | t
 
 const INVALID_CELL_NODE = 1 as const
 
+const COLUMN_MARGIN = 10
+
 type MousePosition = {
     x: number;
     y: number;
@@ -119,6 +121,9 @@ export default function TablePlugin() {
     const tableRectRef = useRef<DOMRect | null>(null);
     const mouseStartPosition = useRef<MousePosition | null>(null)
     const cellClickPart = useRef<CellClickPart>(CELL_TOP)
+    const columnWidthsRef = useRef<{low:number, hight:number}>({low:-1,hight:-1})
+    const columnPositionRef = useRef<number>(-1)
+    const columnIDRef = useRef<number>(-1)
 
     function ClearState() {
         setActiveCell(null);
@@ -219,32 +224,34 @@ export default function TablePlugin() {
         [activeCell, editor],
       );
 
-      function GetColumnWidth(tableNode: ExtendedTableNode, columnID: number, cellLUT: (TableCellNode | null)[][]): number {
+      function GetColumnWidthWithPosition(tableNode: ExtendedTableNode, columnID: number, cellLUT: (TableCellNode | null)[][]): {width:number, position:number} {
         const columnsCount = cellLUT[0].length;
         let columnWidth = tableNode.getColumnWidth(columnID);
-        if ( columnWidth == -1 ) {
 
-          // Find node if first is a miss
-          let cellNode: TableCellNode | null = cellLUT[0][columnID]
-          if ( cellNode == null ) {
-            for ( ; columnID < columnsCount; ++columnID ) {
-              if ( cellLUT[0][columnID] != null ) {
-                cellNode = cellLUT[0][columnID] as TableCellNode
-                break;
-              }
+        // Find node if first is a miss
+        let cellNode: TableCellNode | null = cellLUT[0][columnID]
+        if ( cellNode == null ) {
+          for ( ; columnID < columnsCount; ++columnID ) {
+            if ( cellLUT[0][columnID] != null ) {
+              cellNode = cellLUT[0][columnID] as TableCellNode
+              break;
             }
           }
-
-          if ( cellNode == null ) {
-            throw Error("updateColumnWidth couldn't find cellNode in cellLUT")
-          }
-
-          const cellElement = editor.getElementByKey(cellNode.getKey())
-          if (!cellElement) {
-            throw new Error('updateColumnWidth: Cell element not found.');
         }
 
-          const cellWidth = cellElement.getBoundingClientRect().width;
+        if ( cellNode == null ) {
+          throw Error("updateColumnWidth couldn't find cellNode in cellLUT")
+        }
+
+        const cellElement = editor.getElementByKey(cellNode.getKey())
+        if (!cellElement) {
+          throw new Error('updateColumnWidth: Cell element not found.');
+        }
+
+        const {width: rectWidth, right: rectRight} = cellElement.getBoundingClientRect()
+        const columnPosition = rectRight;
+        if ( columnWidth == -1 ) {          
+          const cellWidth = rectWidth;
 
           let knownWidth = 0;
           let setColumns = 0;
@@ -264,11 +271,12 @@ export default function TablePlugin() {
           columnWidth = remainingWidth / remainingCell;
         }
 
-        return columnWidth;
+        return {width:columnWidth, position:columnPosition};
       }
 
-      const updateColumnWidth = useCallback(
-        (widthOffset: number, cellPart: CellClickPart) => {
+      const updateColumnsWidths = 
+        () => { 
+          const cellPart = cellClickPart.current;
           if (!activeCell) {
             throw new Error('updateColumnWidth: Expected active cell.');
           }
@@ -342,11 +350,39 @@ export default function TablePlugin() {
                 throw new Error('updateColumnWidth: cellColumnID outside of table. Probably wanted to resize border of table. Not supported')
               }
 
-              const columnWidth = GetColumnWidth(tableNode, columnID, cellLUT as (TableCellNode | null)[][])
-              const nextColumnWidth = GetColumnWidth(tableNode, columnID + 1, cellLUT as (TableCellNode | null)[][])
+              const {width: columnWidth, position: columnPosition } = GetColumnWidthWithPosition(tableNode, columnID, cellLUT as (TableCellNode | null)[][])
+              const nextColumnWidth = GetColumnWidthWithPosition(tableNode, columnID + 1, cellLUT as (TableCellNode | null)[][]).width
 
-             tableNode.setColumnWidth(columnID, columnWidth + widthOffset)
-             tableNode.setColumnWidth(columnID + 1, nextColumnWidth - widthOffset)
+              columnIDRef.current = columnID;
+              columnPositionRef.current = columnPosition;
+              columnWidthsRef.current = {low:columnWidth, hight:nextColumnWidth}
+            }
+          );
+        }
+
+      const updateColumnWidth = useCallback(
+        (widthOffset: number) => {
+
+          if (!activeCell) {
+            throw new Error('updateColumnWidth: Expected active cell.');
+          }
+    
+          editor.update(
+            () => {
+              const tableCellNode = $getNearestNodeFromDOMNode(activeCell.elem);
+              if (!$isTableCellNode(tableCellNode)) {
+                throw new Error('updateColumnWidth: Table cell node not found.');
+              }
+    
+              const tableNode = $getTableNodeFromLexicalNodeOrThrow(tableCellNode) as ExtendedTableNode;
+    
+              const columnWidth = columnWidthsRef.current.low;
+              const nextColumnWidth = columnWidthsRef.current.hight;
+
+              widthOffset = Math.min(columnWidthsRef.current.hight - COLUMN_MARGIN, Math.max(-columnWidthsRef.current.low + COLUMN_MARGIN, widthOffset) );
+
+             tableNode.setColumnWidth(columnIDRef.current, columnWidth + widthOffset)
+             tableNode.setColumnWidth(columnIDRef.current + 1, nextColumnWidth - widthOffset)
             },
             {tag: 'table-update-column-width'},
           );
@@ -364,7 +400,7 @@ export default function TablePlugin() {
 
         if ( dragDirection == DRAG_HORIZONTAL ) {
             const widthOffset = event.clientX - mouseStartPosition.current!.x
-            updateColumnWidth(widthOffset, cellClickPart.current)
+            updateColumnWidth(widthOffset)
         }
 
         ClearState();
@@ -455,7 +491,6 @@ export default function TablePlugin() {
 
         const {height, width, top, left} = activeCell.elem.getBoundingClientRect();
         const size = 3;
-        //const zoom = calculateZoomLevel(activeCell.elem);
 
         const styles = {
             bottom: {
@@ -497,6 +532,8 @@ export default function TablePlugin() {
             const dragColor = '#0000FF5F'
             const dragSize = 2;
 
+            const columnRange = [ columnPositionRef.current - columnWidthsRef.current.low + COLUMN_MARGIN, columnPositionRef.current + columnWidthsRef.current.hight - COLUMN_MARGIN ];
+
             if ( dragDirection == DRAG_HORIZONTAL ) {
                 styles.marker = {
                     backgroundColor: dragColor,
@@ -505,7 +542,7 @@ export default function TablePlugin() {
                     width: `${dragSize}px`,
                     top: `${window.scrollY + tableRectRef.current!.top}px`,
                     height: `${tableRectRef.current!.height}px`,
-                    left: `${window.scrollX + mousePosition.x - (0.5 * dragSize)}px`
+                    left: `${window.scrollX + Math.min( columnRange[1], Math.max(columnRange[0], mousePosition.x)) - (0.5 * dragSize)}px`
                 }
             }
 
@@ -530,6 +567,7 @@ export default function TablePlugin() {
     const onMouseDown = (direction: MouseDraggingDirection, cellPart: CellClickPart): React.MouseEventHandler<HTMLDivElement> => (event: React.MouseEvent<HTMLDivElement>) => {
         mouseStartPosition.current = { x: event.clientX, y: event.clientY }
         cellClickPart.current = cellPart;
+        updateColumnsWidths();
         setDragDirection(direction)
     }
 
