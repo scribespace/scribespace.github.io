@@ -1,9 +1,16 @@
 import { TablePlugin as LexicalTablePlugin } from '@lexical/react/LexicalTablePlugin'
-import { SELECTION_CHANGE_COMMAND, $getSelection, $isRangeSelection, $createTextNode, COMMAND_PRIORITY_LOW, $createParagraphNode, $insertNodes, BaseSelection, LexicalEditor, LexicalNode, ParagraphNode, RangeSelection, $isParagraphNode, $getNearestNodeFromDOMNode } from 'lexical';
+import { 
+  SELECTION_CHANGE_COMMAND, COMMAND_PRIORITY_LOW, 
+  $getSelection, $isRangeSelection, $createTextNode, $createParagraphNode, $isParagraphNode, $getNearestNodeFromDOMNode, 
+  LexicalEditor, LexicalNode, RangeSelection
+ } from 'lexical';
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { TableDOMCell, $isTableSelection, $getTableNodeFromLexicalNodeOrThrow, $isTableCellNode, TableNode, TableRowNode, TableCellNode, $isTableNode, $computeTableMap, getDOMCellFromTarget, $getTableRowIndexFromTableCellNode, $isTableRowNode, $getTableColumnIndexFromTableCellNode} from '@lexical/table';
+import { 
+  $isTableSelection, $getTableNodeFromLexicalNodeOrThrow, $isTableCellNode, $isTableNode, $computeTableMap, $getTableRowIndexFromTableCellNode, $isTableRowNode,
+  TableDOMCell, TableNode, TableRowNode, TableCellNode, getDOMCellFromTarget
+} from '@lexical/table';
 import { $findMatchingParent } from '@lexical/utils';
-import { act, useCallback, useEffect, useReducer, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import './css/tablePlugin.css'

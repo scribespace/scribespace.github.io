@@ -1,7 +1,6 @@
-import { TableNode, TableRowNode, TableCellNode, SerializedTableRowNode, SerializedTableNode } from '@lexical/table'
-import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, EditorConfig, LexicalEditor, LexicalNode, NodeKey, SerializedElementNode, Spread } from 'lexical';
+import { TableNode, TableRowNode, TableCellNode } from '@lexical/table'
+import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, EditorConfig, LexicalNode, SerializedElementNode, Spread } from 'lexical';
 import {addClassNamesToElement} from '@lexical/utils';
-import { Children } from 'react';
 
 export type SerializedExtendedTableNode = Spread<
   {
@@ -9,7 +8,6 @@ export type SerializedExtendedTableNode = Spread<
   },
   SerializedElementNode
 >;
-
 
 export class ExtendedTableNode extends TableNode {
     __columnsWidths: number[];
@@ -93,7 +91,7 @@ export class ExtendedTableNode extends TableNode {
     return self.__columnsWidths[columnID];
   }
 
-  createDOM(config: EditorConfig, editor?: LexicalEditor): HTMLElement {
+  createDOM(config: EditorConfig): HTMLElement {
     const self = this.getLatest()
     const tableElement = document.createElement('table');
 
@@ -155,7 +153,6 @@ export class ExtendedTableNode extends TableNode {
   }
 
   static importJSON(serializedNode: SerializedExtendedTableNode): ExtendedTableNode {
-    throw Error("ExtenedTableNode: importJSON not complited");
     const tableNode = $createExtendedTableNode()
     tableNode.setColumnsWidths(serializedNode.columnsWidths)
 
