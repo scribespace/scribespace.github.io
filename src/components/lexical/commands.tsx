@@ -5,6 +5,7 @@ import { $isDecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode"
 import { $getNearestBlockElementAncestorOrThrow } from '@lexical/utils';
 import { $isHeadingNode, $isQuoteNode } from '@lexical/rich-text';
 import {$patchStyleText} from '@lexical/selection'
+import { $isTableCellNode, $isTableSelection } from "@lexical/table";
 
 export const CLEAR_FORMAT_TEXT_COMMAND: LexicalCommand<void> = createCommand()
 export const INCREASE_FONT_SIZE_COMMAND: LexicalCommand<void> = createCommand()
@@ -152,7 +153,13 @@ export default function RegisterCustomCommands() {
             if ( $isRangeSelection(selection)) {
                 $patchStyleText( selection, {'background-color': color})
                 editor.dispatchCommand(BACKGROUND_COLOR_CHANGE_COMMAND, undefined);
-            }
+            } else if ($isTableSelection(selection)) { 
+                selection.getNodes().forEach((cellNode) => {
+                    if ( $isTableCellNode(cellNode)) {
+                        cellNode.setBackgroundColor(color)
+                    }
+                })
+             }
 
             return false;
         },
