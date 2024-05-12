@@ -20,6 +20,8 @@ const CELL_LEFT = 2 as const
 const CELL_RIGHT = 3 as const
 type CellClickPart = typeof CELL_TOP | typeof CELL_BOTTOM | typeof CELL_LEFT | typeof CELL_RIGHT;
 
+const INVALID_CELL_NODE = 1 as const
+
 type MousePosition = {
     x: number;
     y: number;
@@ -209,6 +211,54 @@ export default function TablePlugin() {
         [activeCell, editor],
       );
 
+      function GetColumnWidth(tableNode: ExtendedTableNode, columnID: number, cellLUT: (TableCellNode | null)[][]): number {
+        const columnsCount = cellLUT[0].length;
+        let columnWidth = tableNode.getColumnWidth(columnID);
+        if ( columnWidth == -1 ) {
+
+          // Find node if first is a miss
+          let cellNode: TableCellNode | null = cellLUT[0][columnID]
+          if ( cellNode == null ) {
+            for ( ; columnID < columnsCount; ++columnID ) {
+              if ( cellLUT[0][columnID] != null ) {
+                cellNode = cellLUT[0][columnID] as TableCellNode
+                break;
+              }
+            }
+          }
+
+          if ( cellNode == null ) {
+            throw Error("updateColumnWidth couldn't find cellNode in cellLUT")
+          }
+
+          const cellElement = editor.getElementByKey(cellNode.getKey())
+          if (!cellElement) {
+            throw new Error('updateColumnWidth: Cell element not found.');
+        }
+
+          const cellWidth = cellElement.getBoundingClientRect().width;
+
+          let knownWidth = 0;
+          let setColumns = 0;
+          const span = cellNode.getColSpan();
+
+          for ( let s = 0; s < span; ++s) {
+              const columnIDToCheck = columnID - s;
+              const checkColumnWidth = tableNode.getColumnWidth(columnIDToCheck);
+              if ( checkColumnWidth != -1 ) {
+                  knownWidth += checkColumnWidth;
+                  setColumns += 1;
+              }
+          }
+
+          const remainingCell = span - setColumns;
+          const remainingWidth = cellWidth - knownWidth;
+          columnWidth = remainingWidth / remainingCell;
+        }
+
+        return columnWidth;
+      }
+
       const updateColumnWidth = useCallback(
         (widthOffset: number, cellPart: CellClickPart) => {
           if (!activeCell) {
@@ -224,96 +274,71 @@ export default function TablePlugin() {
     
               const tableNode = $getTableNodeFromLexicalNodeOrThrow(tableCellNode) as ExtendedTableNode;
     
-              // Createc look up table for columns
-              let colLUT: {column:number;cell:TableCellNode}[][] = [];
-              const tableRows = tableNode.getChildren() as TableRowNode[];
-              const tableRowsCount = tableRows.length;
-              for ( let r = 0; r < tableRowsCount; ++r ) {
-                colLUT[r] = []
-                const rowCells = tableRows[r].getChildren() as TableCellNode[];
-                const cellsCount = rowCells.length;
-                let colID = 0;
-                for ( let c = 0; c < cellsCount; ++c) {
-                    const span = rowCells[c].getColSpan();
-                    colLUT[r][c] = {column: (colID + span - 1), cell: rowCells[c]};
-                    colID += span;
+              // Create look up table for cells
+              const columnsCount = tableNode.getColumnsWidths().length;
+              const rowsNodes = tableNode.getChildren() as TableRowNode[]
+              const rowsCount = rowsNodes.length;
+
+              // Clean table, we need 3 values. INVALID_CELL_NODE marks untouched cell.
+              const cellLUT: (TableCellNode | null | typeof INVALID_CELL_NODE)[][] = [];
+              for ( let r = 0; r < rowsCount; ++r ) {
+                cellLUT[r] = [];
+                for ( let c = 0; c < columnsCount; ++c ) {
+                  cellLUT[r][c] = INVALID_CELL_NODE
                 }
               }
 
-              let tableRowIndex = $getTableRowIndexFromTableCellNode(tableCellNode);
+              for ( let r = 0; r < rowsCount; ++r ) {
+                const rowNode = rowsNodes[r];
+                const cellsNodes = rowNode.getChildren() as TableCellNode[];
+                const cellsNodesCount = cellsNodes.length;
+                for ( let c = 0; c < cellsNodesCount; ++c ) {
+                  const cellNode = cellsNodes[c];
 
-              let columnLUID = colLUT[tableRowIndex].findIndex((columnLU) => columnLU.cell == tableCellNode)
-              if ( columnLUID == -1 ) {
-                throw new Error('updateColumnWidth: Column not in the LUT.');
-              }
-              if ( cellPart == CELL_LEFT ) {
-                columnLUID -= 1;                        
-              }
-
-              const realColumnID = colLUT[tableRowIndex][columnLUID].column;
-              let columnWidth = tableNode.getColumnWidth(realColumnID);
-              {
-
-                if ( columnWidth == -1 ) {
-                    const currentCellNode = colLUT[tableRowIndex][columnLUID].cell;
-                    const currentCellElement = editor.getElementByKey(currentCellNode.getKey());
-                    if (!currentCellElement) {
-                        throw new Error('updateColumnWidth: Cell element not found.');
+                  let cellIndexInLUT = 0;
+                  for ( let cLUT = 0; cLUT < columnsCount; ++cLUT ) {
+                    if ( cellLUT[r][cLUT] == INVALID_CELL_NODE) {
+                      break;
                     }
+                    ++cellIndexInLUT;
+                  }
 
-                    const currentCellWidth = currentCellElement.getBoundingClientRect().width;
-                    let knownWidth = 0;
-                    let setColumns = 0;
-                    const span = currentCellNode.getColSpan();
-                    for ( let s = 1; s < span; ++s) {
-                        const columnIDToCheck = realColumnID - s;
-                        const checkColumnWidth = tableNode.getColumnWidth(columnIDToCheck);
-                        if ( checkColumnWidth != -1 ) {
-                            knownWidth += checkColumnWidth;
-                            setColumns += 1;
-                        }
+                  const colSpan = cellNode.getColSpan()
+                  const rowSpan = cellNode.getRowSpan()
+                  for ( let rs = 0; rs < rowSpan; ++rs ) {
+                    for ( let cs = 0; cs < colSpan; ++cs ) {
+                      cellLUT[r + rs][cellIndexInLUT + cs] = null;
                     }
+                  }
 
-                    const remainingCell = span - setColumns;
-                    const remainingWidth = currentCellWidth - knownWidth;
-                    columnWidth = remainingWidth / remainingCell;
+                  cellLUT[r][cellIndexInLUT + colSpan - 1] = cellNode
                 }
-            }
-
-            let nextColumnWidth = 0;
-            const nextRealColumnID = realColumnID + 1;
-              {
-                nextColumnWidth = tableNode.getColumnWidth(nextRealColumnID);
-                if ( nextColumnWidth == -1 ) {
-                    const columnLU = colLUT[tableRowIndex][columnLUID+1]
-                    const currentCellNode = columnLU.cell;
-                    const currentCellElement = editor.getElementByKey(currentCellNode.getKey());
-                    if (!currentCellElement) {
-                        throw new Error('updateColumnWidth: Cell element not found.');
-                    }
-
-                    const currentCellWidth = currentCellElement.getBoundingClientRect().width;
-                    let knownWidth = 0;
-                    let setColumns = 0;
-                    const span = currentCellNode.getColSpan();
-                    for ( let s = 0; s < span; ++s) {
-                        const columnIDToCheck = columnLU.column - s;
-                        const checkColumnWidth = tableNode.getColumnWidth(columnIDToCheck);
-                        if ( checkColumnWidth != -1 ) {
-                            knownWidth += checkColumnWidth;
-                            setColumns += 1;
-                        }
-                    }
-
-                    const remainingCell = span - setColumns;
-                    const remainingWidth = currentCellWidth - knownWidth;
-                    nextColumnWidth = remainingWidth / remainingCell;
-                }
-            }
-
+              }
               
-             tableNode.setColumnWidth(realColumnID, columnWidth + widthOffset)
-             tableNode.setColumnWidth(nextRealColumnID, nextColumnWidth - widthOffset)
+              let tableRowIndex = $getTableRowIndexFromTableCellNode(tableCellNode);
+              let columnID = cellLUT[tableRowIndex].findIndex((node)=>node==tableCellNode);
+
+              if ( cellPart == CELL_LEFT ) {
+                columnID -=  tableCellNode.getColSpan() - 1
+              }
+
+              if ( columnID == -1 ) {
+                throw new Error('updateColumnWidth: Didnt find cellNode in cellLUT')
+              }
+
+              if ( cellPart == CELL_LEFT ) {
+                --columnID;
+              }
+
+              if ( columnID == -1 || (columnID == columnsCount - 1 && cellPart == CELL_RIGHT)) {
+                throw new Error('updateColumnWidth: cellColumnID outside of table. Probably wanted to resize border of table. Not supported')
+              }
+
+              const columnWidth = GetColumnWidth(tableNode, columnID, cellLUT as (TableCellNode | null)[][])
+              const nextColumnWidth = GetColumnWidth(tableNode, columnID + 1, cellLUT as (TableCellNode | null)[][])
+
+             tableNode.setColumnWidth(columnID, columnWidth + widthOffset)
+             tableNode.setColumnWidth(columnID + 1, nextColumnWidth - widthOffset)
             },
             {tag: 'table-update-column-width'},
           );

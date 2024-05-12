@@ -18,6 +18,13 @@ export class ExtendedTableNode extends TableNode {
     return new ExtendedTableNode( node );
   }
 
+  getColumnsWidths() {
+    return this.getLatest().__columnsWidths
+  }
+  setColumnsWidths(columns: number[]) {
+    this.getWritable().__columnsWidths = columns;
+  }
+
   updateColGroup() {
     const self = this.getWritable()
 
@@ -71,7 +78,7 @@ export class ExtendedTableNode extends TableNode {
   getColumnWidth(columnID: number ): number {
     const self = this.getLatest()
     if ( columnID < 0 || columnID >= self.__columnsWidths.length ) {
-        throw Error(`ExtendedTableNode -> setColumnWidth: wrong column ID: ${columnID}. Or columns not updated: ${self.__columnsWidths.length}`)
+        throw Error(`ExtendedTableNode -> getColumnWidth: wrong column ID: ${columnID}. Or columns not updated: ${self.__columnsWidths.length}`)
     }
     
     return self.__columnsWidths[columnID];
