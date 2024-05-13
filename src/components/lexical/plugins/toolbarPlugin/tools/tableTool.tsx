@@ -1,8 +1,7 @@
 import { ImTable2 } from "react-icons/im";
 import { ToolbarToolProps } from "./toolsProps";
 import { $insertNodes } from "lexical";
-import { TableRowNode, TableCellNode } from '@lexical/table';
-import { $createExtendedTableNodeWithDimensions, ExtendedTableNode } from "../../tablePlugin/nodes/extendedTableNode";
+import { $createExtendedTableNodeWithDimensions } from "../../tablePlugin/nodes/extendedTableNode";
 import DropdownTool from "./dropdownTool";
 import TableCreatorEditor from "../../tablePlugin/tableCreatorEditor";
 
