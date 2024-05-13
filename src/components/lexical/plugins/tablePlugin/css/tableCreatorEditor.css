@@ -1,0 +1,28 @@
+.table-creator-container-default {
+    display: grid;
+    grid-template-rows: auto min-content;
+
+    background-color: white;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.582);
+    border-radius: 5px;
+}
+
+.table-creator-cells-container-default {
+    display: grid;
+    padding: 5px;
+}
+
+.table-creator-cell-default {
+    background-color: rgb(177, 177, 177);
+    border: 1px solid rgb(146, 146, 146);
+    margin: 1px;
+}
+
+.table-creator-cell-default:hover {
+    background-color: rgb(209, 209, 209);
+}
+
+.table-creator-label-default {
+    height: fit-content;
+    text-align: center;
+}

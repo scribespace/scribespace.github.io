@@ -1,6 +1,5 @@
 import { MdFormatColorText, MdOutlineFormatColorFill  } from "react-icons/md";
 import { ColorChangeHandler, ColorResult, CompactPicker } from 'react-color'
-import { forwardRef, useRef } from "react";
 import { ToolbarToolProps } from "./toolsProps";
 import { SET_BACKGROUND_COLOR_COMMAND, SET_FONT_COLOR_COMMAND } from "../../../commands";
 import DropdownTool from "./dropdownTool";
@@ -9,16 +8,15 @@ type ColorPickerProps = {
     onChange: ColorChangeHandler;
 }
 
-const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(({onChange}: ColorPickerProps, ref) => {
+export function ColorPicker({onChange}: ColorPickerProps) {
     return (
-        <div ref={ref} style={{zIndex: '5', display: 'block', position: 'absolute', boxShadow:'0px 5px 10px rgba(0, 0, 0, 0.582)'}}>
+        <div style={{zIndex: '5', display: 'block', position: 'absolute', boxShadow:'0px 5px 10px rgba(0, 0, 0, 0.582)'}}>
             <CompactPicker onChange={onChange}/>
         </div>
     )
-})
+}
 
 export function BackgroundColorTool({editor}: ToolbarToolProps) {
-    const colorPickerRef = useRef<HTMLDivElement>(null)
 
     const onChange = (color: ColorResult) => {
         editor.dispatchCommand(SET_BACKGROUND_COLOR_COMMAND, color.hex);
@@ -30,13 +28,12 @@ export function BackgroundColorTool({editor}: ToolbarToolProps) {
 
      return (
         <DropdownTool Tool={Tool}>
-                <ColorPicker ref={colorPickerRef} onChange={onChange}/>
+                <ColorPicker onChange={onChange}/>
         </DropdownTool>
     )
 }
 
 export function TextColorTool({editor}: ToolbarToolProps) {
-    const colorPickerRef = useRef<HTMLDivElement>(null)
 
     const onChange = (color: ColorResult) => {
         editor.dispatchCommand(SET_FONT_COLOR_COMMAND, color.hex);
@@ -48,7 +45,7 @@ export function TextColorTool({editor}: ToolbarToolProps) {
  
      return (
          <DropdownTool Tool={Tool}>
-                 <ColorPicker ref={colorPickerRef} onChange={onChange}/>
+                 <ColorPicker onChange={onChange}/>
          </DropdownTool>
      )
 }

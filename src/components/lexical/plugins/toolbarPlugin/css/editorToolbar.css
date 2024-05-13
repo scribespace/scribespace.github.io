@@ -40,8 +40,13 @@
     border: none;
     padding-top: 5px;
     padding-bottom: 5px;
+    border-radius: 3px;
 
     -moz-appearance: textfield;
+}
+
+.editor-toolbar .item-font-size:hover:not(:focus) {
+    background-color: rgb(209, 209, 209);
 }
 
 .editor-toolbar .item-font-size-button {

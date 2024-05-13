@@ -1,69 +1,23 @@
 import { ImTable2 } from "react-icons/im";
 import { ToolbarToolProps } from "./toolsProps";
 import { $insertNodes } from "lexical";
-import { $createTableNodeWithDimensions } from '@lexical/table'
 import { TableRowNode, TableCellNode } from '@lexical/table';
-import { ExtendedTableNode } from "../../tablePlugin/nodes/extendedTableNode";
+import { $createExtendedTableNodeWithDimensions, ExtendedTableNode } from "../../tablePlugin/nodes/extendedTableNode";
+import DropdownTool from "./dropdownTool";
+import TableCreatorEditor from "../../tablePlugin/tableCreatorEditor";
 
 export default function TableTool({editor} : ToolbarToolProps) {
-    function onClick() {
-        editor.update(()=>{
-                const tableNode = $createTableNodeWithDimensions(4, 5, false);
-                ((tableNode.getChildren()[0] as TableRowNode).getChildren()[0] as TableCellNode).setColSpan(2);
-                ((tableNode.getChildren()[0] as TableRowNode).getChildren()[1] as TableCellNode).remove();
-                
-                // 2x2 collapsed
-                ((tableNode.getChildren()[0] as TableRowNode).getChildren()[0] as TableCellNode).setRowSpan(2);
-                ((tableNode.getChildren()[1] as TableRowNode).getChildren()[1] as TableCellNode).remove();
-                ((tableNode.getChildren()[1] as TableRowNode).getChildren()[0] as TableCellNode).remove();
-
-                ((tableNode.getChildren()[2] as TableRowNode).getChildren()[3] as TableCellNode).setColSpan(2);
-                ((tableNode.getChildren()[2] as TableRowNode).getChildren()[4] as TableCellNode).remove();
-                
-                // 2x2 collapsed
-                ((tableNode.getChildren()[2] as TableRowNode).getChildren()[3] as TableCellNode).setRowSpan(2);
-                ((tableNode.getChildren()[3] as TableRowNode).getChildren()[4] as TableCellNode).remove();
-                ((tableNode.getChildren()[3] as TableRowNode).getChildren()[3] as TableCellNode).remove();
-
-
-                // const tableNode = $createTableNodeWithDimensions(4, 4, false);
-                // ((tableNode.getChildren()[0] as TableRowNode).getChildren()[0] as TableCellNode).setColSpan(2);
-                // ((tableNode.getChildren()[0] as TableRowNode).getChildren()[1] as TableCellNode).remove();
-                
-                // // 2x2 collapsed
-                // ((tableNode.getChildren()[0] as TableRowNode).getChildren()[0] as TableCellNode).setRowSpan(2);
-                // ((tableNode.getChildren()[1] as TableRowNode).getChildren()[1] as TableCellNode).remove();
-                // ((tableNode.getChildren()[1] as TableRowNode).getChildren()[0] as TableCellNode).remove();
-
-                // ((tableNode.getChildren()[2] as TableRowNode).getChildren()[2] as TableCellNode).setColSpan(2);
-                // ((tableNode.getChildren()[2] as TableRowNode).getChildren()[3] as TableCellNode).remove();
-                
-                // // 2x2 collapsed
-                // ((tableNode.getChildren()[2] as TableRowNode).getChildren()[2] as TableCellNode).setRowSpan(2);
-                // ((tableNode.getChildren()[3] as TableRowNode).getChildren()[3] as TableCellNode).remove();
-                // ((tableNode.getChildren()[3] as TableRowNode).getChildren()[2] as TableCellNode).remove();
-
-
-                //const tableNode = $createTableNodeWithDimensions(3, 3, false);
-                //((tableNode.getChildren()[0] as TableRowNode).getChildren()[0] as TableCellNode).setColSpan(2);
-                //((tableNode.getChildren()[0] as TableRowNode).getChildren()[1] as TableCellNode).remove();
-                
-                // 2x2 collapsed
-                //((tableNode.getChildren()[0] as TableRowNode).getChildren()[0] as TableCellNode).setRowSpan(2);
-                //((tableNode.getChildren()[1] as TableRowNode).getChildren()[1] as TableCellNode).remove();
-                //((tableNode.getChildren()[1] as TableRowNode).getChildren()[0] as TableCellNode).remove();
-                
-                // bottom right collapsed
-                //((tableNode.getChildren()[2] as TableRowNode).getChildren()[1] as TableCellNode).setColSpan(2);
-                //((tableNode.getChildren()[2] as TableRowNode).getChildren()[2] as TableCellNode).remove();
-
-                (tableNode as ExtendedTableNode).updateColGroup()
-
-                $insertNodes([tableNode])
-        })
+    
+    function onClick(rowsCount: number, columnsCount: number) {
+        
     }
 
-    return ( 
-        <ImTable2 className="item" onClick={onClick}/>
-    )
+    const Tool = () => { 
+        return <ImTable2 className="item"/>
+    }
+     return (
+         <DropdownTool Tool={Tool}>
+                 <TableCreatorEditor gridSize="100px" rowsCount={10} columnsCount={10} onClick={onClick}/>
+         </DropdownTool>
+     )
 }   

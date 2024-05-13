@@ -9135,9 +9135,14 @@ function createEditor(editorConfig) {
         replace = options.with;
         replaceWithKlass = options.withKlass || null;
       }
-      // Ensure custom nodes implement required methods.
+      // Ensure custom nodes implement required methods and replaceWithKlass is instance of base klass.
       {
         const name = klass.name;
+        if (replaceWithKlass) {
+          if (!(replaceWithKlass.prototype instanceof klass)) {
+            throw Error(`${replaceWithKlass.name} doesn't extend the ${name}`);
+          }
+        }
         if (name !== 'RootNode') {
           const proto = klass.prototype;
           ['getType', 'clone'].forEach(method => {
@@ -9449,18 +9454,18 @@ class LexicalEditor {
    * @returns a teardown function that can be used to cleanup the listener.
    */
   registerMutationListener(klass, listener) {
-    const registeredNode = this._nodes.get(klass.getType());
+    let registeredNode = this._nodes.get(klass.getType());
     if (registeredNode === undefined) {
       {
         throw Error(`Node ${klass.name} has not been registered. Ensure node has been passed to createEditor.`);
       }
     }
     let klassToMutate = klass;
-    const replaceKlass = registeredNode.replaceWithKlass;
-    if (replaceKlass) {
+    let replaceKlass = null;
+    while (replaceKlass = registeredNode.replaceWithKlass) {
       klassToMutate = replaceKlass;
-      const registeredReplaceNode = this._nodes.get(replaceKlass.getType());
-      if (registeredReplaceNode === undefined) {
+      registeredNode = this._nodes.get(replaceKlass.getType());
+      if (registeredNode === undefined) {
         {
           throw Error(`Node ${replaceKlass.name} has not been registered. Ensure node has been passed to createEditor.`);
         }

@@ -1,4 +1,4 @@
-import { TableNode, TableRowNode, TableCellNode } from '@lexical/table'
+import { TableNode, TableRowNode, TableCellNode, $createTableNodeWithDimensions } from '@lexical/table'
 import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, EditorConfig, LexicalNode, SerializedElementNode, Spread } from 'lexical';
 import {addClassNamesToElement} from '@lexical/utils';
 
@@ -8,6 +8,7 @@ export type SerializedExtendedTableNode = Spread<
   },
   SerializedElementNode
 >;
+
 
 export class ExtendedTableNode extends TableNode {
     __columnsWidths: number[];
@@ -168,6 +169,13 @@ export class ExtendedTableNode extends TableNode {
     };
   }
 
+}
+
+export function $createExtendedTableNodeWithDimensions( rows: number, cols: number ): ExtendedTableNode {
+  const tableNode = $createTableNodeWithDimensions(rows, cols, false) as ExtendedTableNode;
+  tableNode.updateColGroup()
+
+  return tableNode
 }
 
 export function $convertExtendedTableElement(_domNode: Node): DOMConversionOutput {
