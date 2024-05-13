@@ -9,7 +9,10 @@ import TableCreatorEditor from "../../tablePlugin/tableCreatorEditor";
 export default function TableTool({editor} : ToolbarToolProps) {
     
     function onClick(rowsCount: number, columnsCount: number) {
-        
+        editor.update(()=>{
+            const tableNode = $createExtendedTableNodeWithDimensions(rowsCount, columnsCount);
+            $insertNodes([tableNode])
+        })
     }
 
     const Tool = () => { 

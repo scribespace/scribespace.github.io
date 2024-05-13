@@ -26,21 +26,36 @@ export default function TableCreatorEditor(props: TableCreatorEditorProps) {
     const themeRef = useRef<TableCreatorEditorTheme>({})
     const [cells, setCells] = useState<ReactElement[]>()
     const templateColumnsRef = useRef<string>('')
+    const [selectedCell, setSelectedCell] = useState<{row: number, column: number}>({row:-1,column:-1})
+
+    function onMouseOver(row: number, column: number) {
+        setSelectedCell({row, column})
+    }
+
+    function onMouseOut() {
+        setSelectedCell({row:-1,column:-1})
+    }
 
     useEffect(()=>{
         const cellsElement: ReactElement[] = [];
         let templateColumns: string = ''
         let key: number = 0;
-        for ( let c = 0; c < props.columnsCount; ++c ) {
-            templateColumns += 'auto ';
-            for ( let r = 0; r < props.rowsCount; ++r ) {
-                cellsElement.push( <div key={key++} className={themeRef.current.tableCreatorCell}/> );
+        for ( let r = 0; r < props.rowsCount; ++r ) {
+            const cellsArray: ReactElement[] = []
+            for ( let c = 0; c < props.columnsCount; ++c ) {
+                const cellClassName = themeRef.current.tableCreatorCell + ((r <= selectedCell.row && c <= selectedCell.column) ? ' selected' : '')
+                cellsArray.push( <td key={key++} className={cellClassName} onMouseOver={() => {onMouseOver(r, c)}} onMouseOut={onMouseOut}/> );
             }
+            cellsElement.push(
+                <tr key={key++}>
+                    {cellsArray}
+                </tr>
+            )
         }
 
         templateColumnsRef.current = templateColumns;
         setCells(cellsElement)
-    },[props.rowsCount, props.columnsCount])
+    },[props.rowsCount, props.columnsCount, selectedCell])
 
     useEffect(() => {
         const themeContext = props.composerContext ? props.composerContext?.getTheme() : null;
@@ -52,12 +67,18 @@ export default function TableCreatorEditor(props: TableCreatorEditorProps) {
         themeRef.current.tableCreatorLabel          = variableExists(themeRef.current.tableCreatorLabel)            ? themeRef.current.tableCreatorLabel            : 'table-creator-label-default'
     },[props.composerContext])
 
+    function onTableClick() {
+        props.onClick(selectedCell.row + 1, selectedCell.column + 1)
+    }
+
     return (
         <div className={themeRef.current.tableCreatorContainer}>
-            <div className={themeRef.current.tableCreatorCellContainer} style={{width: props.gridSize, height: props.gridSize, gridTemplateColumns: templateColumnsRef.current}}>
-                {cells}
-            </div>
-            <div className={themeRef.current.tableCreatorLabel}>test</div>
+            <table className={themeRef.current.tableCreatorCellContainer} style={{width: props.gridSize, height: props.gridSize}} onClick={onTableClick}>
+                <tbody>
+                    {cells}
+                </tbody>
+            </table>
+            <div className={themeRef.current.tableCreatorLabel}>{`${selectedCell.column+1} x ${selectedCell.row+1}`}</div>
         </div>
     )
 }
