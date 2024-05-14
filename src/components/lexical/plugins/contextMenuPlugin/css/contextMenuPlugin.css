@@ -1,0 +1,44 @@
+.context-menu-container-default {
+    z-index: 5;
+    display: block;
+    position: fixed;
+
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.582);
+    border-radius: 3px;
+    min-width: 200px;
+    min-height: 10px;
+    background-color: #fff;
+    padding-bottom: 8px;
+    padding-top: 8px;
+}
+
+.context-menu-item-default {
+    padding: 5px;
+    margin: 0 2px 0 2px;
+    border-radius: 3px;
+    vertical-align: middle;
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+
+.context-menu-item-icon-default {
+    margin-left: auto;
+}
+
+.context-menu-item-default:hover {
+    background-color: rgb(209, 209, 209);
+}
+
+.context-menu-item-default.selected {
+    background-color: rgb(177, 177, 177)
+}
+
+.context-menu-separator-default {
+    height: 1px;
+    background-color: rgb(173, 173, 173);
+    margin: 4px;
+}

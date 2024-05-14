@@ -25,6 +25,7 @@ import useResizeObserver from 'use-resize-observer';
 import { TableNode, TableRowNode, TableCellNode } from '@lexical/table'
 import { ExtendedTableNode } from './lexical/plugins/tablePlugin/nodes/extendedTableNode'
 import TablePlugin from './lexical/plugins/tablePlugin/tablePlugin'
+import ContextMenuPlugin from './lexical/plugins/contextMenuPlugin/contextMenuPlugin';
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
 // try to recover gracefully without losing user data.
@@ -66,7 +67,7 @@ function TestPlugin( {selectedFile} : Props ) {
 };
 
 export function EditorLexicalView({selectedFile} : Props) {
-  const { ref: toolbarRef, height: toolbarHeight = 1 } = useResizeObserver<HTMLDivElement>({box:'border-box'}); 
+  const { height: toolbarHeight = 1 } = useResizeObserver<HTMLDivElement>({box:'border-box'}); 
 
   const initialConfig = {
     namespace: 'MyEditor',
@@ -88,7 +89,7 @@ export function EditorLexicalView({selectedFile} : Props) {
   return (
     <LexicalComposer initialConfig={initialConfig}>
         <div className='editor-container'>
-            <ToolbarPlugin ref={toolbarRef}/>
+            <ToolbarPlugin/>
             <div className='editor-inner' style={{height: `calc(100% - ${toolbarHeight}px)`}}>
               <RichTextPlugin
               contentEditable={<ContentEditable className="editor-input section-to-print" spellCheck={false}/>}
@@ -103,6 +104,7 @@ export function EditorLexicalView({selectedFile} : Props) {
         <RegisterCustomCommands />
         <LinkPlugin/>
         <TablePlugin/>
+        <ContextMenuPlugin/>
     </LexicalComposer>
   );
 }

@@ -10,7 +10,7 @@ type ColorPickerProps = {
 
 export function ColorPicker({onChange}: ColorPickerProps) {
     return (
-        <div style={{zIndex: '5', display: 'block', position: 'absolute', boxShadow:'0px 5px 10px rgba(0, 0, 0, 0.582)'}}>
+        <div style={{boxShadow:'0px 5px 10px rgba(0, 0, 0, 0.582)'}}>
             <CompactPicker onChange={onChange}/>
         </div>
     )

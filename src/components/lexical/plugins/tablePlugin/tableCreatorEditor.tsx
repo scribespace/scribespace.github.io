@@ -1,6 +1,6 @@
 import { LexicalComposerContextType } from "@lexical/react/LexicalComposerContext";
 import { EditorThemeClassName } from "lexical";
-import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
+import { ReactElement, useEffect, useRef, useState } from "react";
 
 import { variableExists } from "../../../../common";
 
@@ -60,7 +60,7 @@ export default function TableCreatorEditor(props: TableCreatorEditorProps) {
     useEffect(() => {
         const themeContext = props.composerContext ? props.composerContext?.getTheme() : null;
 
-        themeRef.current = themeContext ? (themeContext.tableCreatorEditor as TableCreatorEditorTheme) : {};
+        themeRef.current = themeContext && themeContext.tableCreatorEditor ? (themeContext.tableCreatorEditor as TableCreatorEditorTheme) : {};
         themeRef.current.tableCreatorContainer      = variableExists(themeRef.current.tableCreatorContainer)        ? themeRef.current.tableCreatorContainer        : 'table-creator-container-default'
         themeRef.current.tableCreatorCellContainer  = variableExists(themeRef.current.tableCreatorCellContainer)    ? themeRef.current.tableCreatorCellContainer    : 'table-creator-cells-container-default'
         themeRef.current.tableCreatorCell           = variableExists(themeRef.current.tableCreatorCell)             ? themeRef.current.tableCreatorCell             : 'table-creator-cell-default'

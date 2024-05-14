@@ -7,11 +7,10 @@ import FontSizeTool from './tools/fontSizeTool';
 import FontFamilyTool from './tools/fontFamilyTool';
 import AlignTool from './tools/alignTool';
 import ColorTools from './tools/colorTool';
-import { forwardRef } from 'react';
 import LinkTool from './tools/linkTool';
 import TableTool from './tools/tableTool';
 
-export const ToolbarPlugin = forwardRef<HTMLDivElement>(({}, ref) => {
+export const ToolbarPlugin = ({}) => {
     const [editor] = useLexicalComposerContext();
 
     function Separator() {
@@ -19,7 +18,7 @@ export const ToolbarPlugin = forwardRef<HTMLDivElement>(({}, ref) => {
     }
 
     return (
-        <div ref={ref} className='editor-toolbar'>
+        <div className='editor-toolbar'>
             <UndoRedoTool editor={editor}/>
             <Separator/>
             <StyleTool editor={editor}/>            
@@ -37,4 +36,4 @@ export const ToolbarPlugin = forwardRef<HTMLDivElement>(({}, ref) => {
             <Separator/>
         </div>
     )
-})
+}

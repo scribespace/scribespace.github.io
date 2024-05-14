@@ -32,7 +32,7 @@ import { useRef, useEffect, useState, forwardRef } from "react";
             }
 
             const HandleClick = ({target}: MouseEvent) => {
-                if ( dropdownToolRef && !dropdownToolRef.current?.contains(target as Node)){
+                if ( dropdownToolRef.current && !dropdownToolRef.current.contains(target as Node)){
                     ChangeShowDropdown(false);
                 }
             }
