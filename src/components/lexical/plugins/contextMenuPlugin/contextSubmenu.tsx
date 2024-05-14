@@ -1,19 +1,23 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { ReactElement, useContext, useEffect, useRef, useState } from "react";
 import { ContextMenu } from "./contextMenu";
 import { FaAngleRight } from "react-icons/fa";
-import { ContextMenuContext, ContextMenuTheme } from "./contextMenuPlugin";
+import { ContextMenuContext, ContextMenuContextObject } from "./contextMenuPlugin";
+
+export interface CotextSubmenuOptionProps {
+    children?: ReactElement
+}
 
 interface ContextSubmenuProps {
-    Option: ()=>React.ReactNode;
+    Option: ({children}:CotextSubmenuOptionProps)=>React.ReactNode;
+    disableBackground?: boolean;
     children: React.ReactNode;
 }
 
 export default function ContextSubmenu(props: ContextSubmenuProps) {
-    const theme = useContext(ContextMenuContext)
+    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext)
 
     const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
 
-    const submenuRef = useRef<HTMLDivElement>(null)
     const contextMenuRef = useRef<HTMLDivElement>(null)
     const [position, setPosition] = useState<{x: number, y: number}>({x: -1, y: -1});
 
@@ -32,12 +36,11 @@ export default function ContextSubmenu(props: ContextSubmenuProps) {
     }
 
     return (
-        <div ref={submenuRef} onClick={onClick}>
-            <div className={theme.contextMenuItem + (showContextMenu ? ' selected' : '')}>
-                <props.Option/>
-                <FaAngleRight className={theme.contextMenuItemIcon}/>
-            </div>
-            <ContextMenu ref={contextMenuRef} showContextMenu={showContextMenu} setShowContextMenu={setShowContextMenu} position={{x: position.x, y: position.y}}>
+        <div onClick={onClick}>
+            <props.Option>
+                <FaAngleRight className={contextObject.theme.contextMenuItemSubmenuIcon}/>
+            </props.Option>
+            <ContextMenu ref={contextMenuRef} showContextMenu={showContextMenu} setShowContextMenu={setShowContextMenu} position={{x: position.x, y: position.y}} disableBackground={props.disableBackground}>
                 {props.children}
             </ContextMenu>
         </div>

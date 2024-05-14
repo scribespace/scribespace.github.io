@@ -2674,6 +2674,7 @@ exports.$createTableSelection = $createTableSelection;
 exports.$deleteTableColumn = $deleteTableColumn;
 exports.$deleteTableColumn__EXPERIMENTAL = $deleteTableColumn__EXPERIMENTAL;
 exports.$deleteTableRow__EXPERIMENTAL = $deleteTableRow__EXPERIMENTAL;
+exports.$findTableNode = $findTableNode;
 exports.$getElementForTableNode = $getElementForTableNode;
 exports.$getNodeTriplet = $getNodeTriplet;
 exports.$getTableCellNodeFromLexicalNode = $getTableCellNodeFromLexicalNode;

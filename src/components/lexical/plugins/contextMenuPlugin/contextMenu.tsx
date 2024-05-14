@@ -1,24 +1,25 @@
 import { forwardRef, useContext, useEffect,useImperativeHandle,useRef } from "react"
 
 import './css/contextMenuPlugin.css'
-import { ContextMenuContext } from "./contextMenuPlugin";
+import { ContextMenuContext, ContextMenuContextObject } from "./contextMenuPlugin";
 
 
 interface ContextMenuProps {
     position: {x: number, y: number};
+    disableBackground?: boolean
     showContextMenu: boolean
     setShowContextMenu: (show:boolean) => void;
     children: React.ReactNode;
 }
 
 export const ContextMenuSeparator = () => {
-    const theme = useContext(ContextMenuContext)
+    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext)
 
-    return <div className={theme.contextMenuSeparator}/>
+    return <div className={contextObject.theme.contextMenuSeparator}/>
 }
 
 export const ContextMenu = forwardRef<HTMLDivElement, ContextMenuProps>( (props: ContextMenuProps, outContextMenuRef) => {
-    const theme = useContext(ContextMenuContext)
+    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext)
     
     const contextMenuRef = useRef<HTMLDivElement>(null)   
     useImperativeHandle(outContextMenuRef, () => contextMenuRef.current!, []);
@@ -49,7 +50,7 @@ export const ContextMenu = forwardRef<HTMLDivElement, ContextMenuProps>( (props:
         <div ref={contextMenuRef}>
             {
             props.showContextMenu && 
-            <div className={theme.contextMenuContainer} style={{top:`${props.position.y}px`, left:`${props.position.x}px`}}>
+            <div className={contextObject.theme.contextMenuFloat + (props.disableBackground ? '' : (' ' + contextObject.theme.contextMenuContainer))} style={{top:`${props.position.y}px`, left:`${props.position.x}px`}}>
                 {props.children}
             </div>
             }

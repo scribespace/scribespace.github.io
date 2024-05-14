@@ -175,6 +175,8 @@ declare export function getTableObserverFromTableElement(
 
 declare export function getDOMCellFromTarget(node: Node): null | TableDOMCell;
 
+declare export function $findTableNode(node: LexicalNode): null | TableNode;
+
 /**
  * LexicalTableUtils
  */
