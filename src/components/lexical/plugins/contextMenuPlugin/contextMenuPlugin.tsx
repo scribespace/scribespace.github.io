@@ -5,13 +5,24 @@ import TableContextOptions from "./options/tableContextOptions";
 import { EditorThemeClassName } from "lexical";
 import { variableExists } from "../../../../common";
 
-export class ContextMenuTheme {
-    contextMenuFloat?: EditorThemeClassName = 'context-menu-float';
-    contextMenuContainer?: EditorThemeClassName = 'context-menu-container-default';
-    contextMenuItem?: EditorThemeClassName = 'context-menu-item-default';
-    contextMenuItemIcon?: EditorThemeClassName = 'context-menu-item-icon-default';
-    contextMenuItemSubmenuIcon?: EditorThemeClassName = 'context-menu-item-submenu-icon-default';
-    contextMenuSeparator?: EditorThemeClassName = 'context-menu-separator-default';
+export interface ContextMenuTheme {
+    contextMenuFloat?: EditorThemeClassName;
+    contextMenuContainer?: EditorThemeClassName;
+    contextMenuItem?: EditorThemeClassName;
+    contextMenuItemIcon?: EditorThemeClassName;
+    contextMenuItemSubmenuIcon?: EditorThemeClassName;
+    contextMenuSeparator?: EditorThemeClassName;
+    contextMenuSeparatorStrong?: EditorThemeClassName;
+}
+
+const CONTEXT_MENU_DEFAULT_THEME: ContextMenuTheme = {
+    contextMenuFloat: 'context-menu-float',
+    contextMenuContainer: 'context-menu-container-default',
+    contextMenuItem: 'context-menu-item-default',
+    contextMenuItemIcon: 'context-menu-item-icon-default',
+    contextMenuItemSubmenuIcon: 'context-menu-item-submenu-icon-default',
+    contextMenuSeparator: 'context-menu-separator-default',
+    contextMenuSeparatorStrong: 'context-menu-separator-strong-default',
 }
 
 interface ContextMenuPluginProps {
@@ -23,7 +34,7 @@ export interface ContextMenuContextObject {
     mousePosition: {x: number, y: number};
     closeContextMenu: () => void;
 }
-const NULL_CONTEXT_OBJECT = {theme: new ContextMenuTheme(), mousePosition: {x:-1, y:-1}, closeContextMenu: () => {}}
+const NULL_CONTEXT_OBJECT = {theme: CONTEXT_MENU_DEFAULT_THEME, mousePosition: {x:-1, y:-1}, closeContextMenu: () => {}}
 export const ContextMenuContext = createContext(NULL_CONTEXT_OBJECT)
 
 export default function ContextMenuPlugin({theme}: ContextMenuPluginProps) {
@@ -45,13 +56,12 @@ export default function ContextMenuPlugin({theme}: ContextMenuPluginProps) {
     }
 
     useEffect(()=>{
-            let newContextMenuTheme = theme ? theme : {};
-            newContextMenuTheme.contextMenuFloat            = variableExists(newContextMenuTheme.contextMenuFloat)              ? newContextMenuTheme.contextMenuFloat              : 'context-menu-float'
-            newContextMenuTheme.contextMenuContainer        = variableExists(newContextMenuTheme.contextMenuContainer)          ? newContextMenuTheme.contextMenuContainer          : 'context-menu-container-default'
-            newContextMenuTheme.contextMenuItem             = variableExists(newContextMenuTheme.contextMenuItem)               ? newContextMenuTheme.contextMenuItem               : 'context-menu-item-default'
-            newContextMenuTheme.contextMenuItemIcon         = variableExists(newContextMenuTheme.contextMenuItemIcon)           ? newContextMenuTheme.contextMenuItemIcon           : 'context-menu-item-icon-default'
-            newContextMenuTheme.contextMenuItemSubmenuIcon  = variableExists(newContextMenuTheme.contextMenuItemSubmenuIcon)    ? newContextMenuTheme.contextMenuItemSubmenuIcon    : 'context-menu-item-submenu-icon-default'
-            newContextMenuTheme.contextMenuSeparator        = variableExists(newContextMenuTheme.contextMenuSeparator)          ? newContextMenuTheme.contextMenuSeparator          : 'context-menu-separator-default'
+        let newContextMenuTheme: ContextMenuTheme = theme ? theme : {};
+        for ( const field in CONTEXT_MENU_DEFAULT_THEME ) {
+            if ( !variableExists((newContextMenuTheme as any)[field]) ) {
+                (newContextMenuTheme as any)[field] = (CONTEXT_MENU_DEFAULT_THEME as any)[field]
+            }
+        }
 
         setContextMenuContextObject((oldState) => {return {theme: newContextMenuTheme, mousePosition: oldState.mousePosition, closeContextMenu: oldState.closeContextMenu}})
     },[theme])

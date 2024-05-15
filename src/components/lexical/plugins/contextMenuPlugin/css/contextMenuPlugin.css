@@ -47,6 +47,12 @@
 
 .context-menu-separator-default {
     height: 1px;
+    background-color: rgb(197, 197, 197);
+    margin: 4px;
+}
+
+.context-menu-separator-strong-default {
+    height: 2px;
     background-color: rgb(173, 173, 173);
     margin: 4px;
 }

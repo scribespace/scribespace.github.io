@@ -8,6 +8,7 @@ import { $getSelection, $insertNodes, LexicalEditor } from "lexical";
 import { $createExtendedTableNodeWithDimensions } from "../../tablePlugin/nodes/extendedTableNode";
 import ContextMenuItem from "../contextMenuItem";
 import { $findTableNode } from "@lexical/table";
+import { ContextMenuSeparator, ContextMenuSeparatorStrong } from "../contextMenu";
 
 interface TableContextOptionProps {
     editor: LexicalEditor
@@ -67,9 +68,11 @@ export default function TableContextOptions({editor}: TableContextOptionProps) {
 
     return (
         <>
+            <ContextMenuSeparatorStrong/>
             <TableContextCreate editor={editor}/>
             {insideTable && (
             <>
+                <ContextMenuSeparator/>
                 <TableContextAddColumnRight editor={editor}/>
                 <TableContextAddColumnLeft editor={editor}/>
             </>

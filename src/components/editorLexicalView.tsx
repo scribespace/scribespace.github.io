@@ -67,7 +67,7 @@ function TestPlugin( {selectedFile} : Props ) {
 };
 
 export function EditorLexicalView({selectedFile} : Props) {
-  const { height: toolbarHeight = 1 } = useResizeObserver<HTMLDivElement>({box:'border-box'}); 
+  const { ref: toolbarRef, height: toolbarHeight = 1 } = useResizeObserver<HTMLDivElement>({box:'border-box'}); 
 
   const initialConfig = {
     namespace: 'MyEditor',
@@ -89,7 +89,7 @@ export function EditorLexicalView({selectedFile} : Props) {
   return (
     <LexicalComposer initialConfig={initialConfig}>
         <div className='editor-container'>
-            <ToolbarPlugin/>
+            <ToolbarPlugin ref={toolbarRef}/>
             <div className='editor-inner' style={{height: `calc(100% - ${toolbarHeight}px)`}}>
               <RichTextPlugin
               contentEditable={<ContentEditable className="editor-input section-to-print" spellCheck={false}/>}
