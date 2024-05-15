@@ -17,6 +17,7 @@ export const $createTableSelection = mod.$createTableSelection;
 export const $deleteTableColumn = mod.$deleteTableColumn;
 export const $deleteTableColumn__EXPERIMENTAL = mod.$deleteTableColumn__EXPERIMENTAL;
 export const $deleteTableRow__EXPERIMENTAL = mod.$deleteTableRow__EXPERIMENTAL;
+export const $findCellNode = mod.$findCellNode;
 export const $findTableNode = mod.$findTableNode;
 export const $getElementForTableNode = mod.$getElementForTableNode;
 export const $getNodeTriplet = mod.$getNodeTriplet;

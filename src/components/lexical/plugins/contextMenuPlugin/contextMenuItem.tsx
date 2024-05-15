@@ -5,10 +5,11 @@ import { ContextMenuContext, ContextMenuContextObject } from "./contextMenuPlugi
 export interface ContextMenuItemProps {
     Icon?: IconType;
     title: string
+    onClick?: () => void;
     children?: ReactElement;
 }
 
-export default function ContextMenuItem({Icon, title, children}: ContextMenuItemProps) {
+export default function ContextMenuItem({Icon, title, onClick, children}: ContextMenuItemProps) {
     const contextObject: ContextMenuContextObject = useContext(ContextMenuContext)
 
     const GetIcon = useCallback( () => {
@@ -19,7 +20,7 @@ export default function ContextMenuItem({Icon, title, children}: ContextMenuItem
     }, [Icon])
 
     return (
-        <div className={contextObject.theme.contextMenuItem}>
+        <div className={contextObject.theme.contextMenuItem} onClick={onClick}>
            <GetIcon/>
            <div>{title}</div>
            {children}

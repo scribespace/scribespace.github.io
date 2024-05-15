@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
+import type { TableCellNode } from './LexicalTableCellNode';
 import type { TableNode } from './LexicalTableNode';
 import type { TableDOMCell } from './LexicalTableObserver';
 import type { TableSelection } from './LexicalTableSelection';
@@ -26,5 +27,6 @@ export declare function $forEachTableCell(grid: TableDOMTable, cb: (cell: TableD
 }) => void): void;
 export declare function $addHighlightStyleToTable(editor: LexicalEditor, tableSelection: TableObserver): void;
 export declare function $removeHighlightStyleToTable(editor: LexicalEditor, tableObserver: TableObserver): void;
+export declare function $findCellNode(node: LexicalNode): null | TableCellNode;
 export declare function $findTableNode(node: LexicalNode): null | TableNode;
 export {};
