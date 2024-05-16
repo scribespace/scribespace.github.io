@@ -4,10 +4,10 @@ import { TbColumnInsertRight, TbColumnRemove, TbRowInsertBottom, TbRowInsertTop,
 import { ContextMenuContext, ContextMenuContextObject } from "../contextMenuPlugin";
 import ContextSubmenu, { CotextSubmenuOptionProps } from "../contextSubmenu";
 import TableCreatorEditor from "../../tablePlugin/tableCreatorEditor";
-import { $getNodeByKey, $getSelection, $insertNodes, $isRangeSelection, COMMAND_PRIORITY_LOW, LexicalEditor, SELECTION_CHANGE_COMMAND } from "lexical";
+import { $getNodeByKey, $getSelection, $insertNodes, $isRangeSelection, $setSelection, COMMAND_PRIORITY_LOW, LexicalEditor, SELECTION_CHANGE_COMMAND } from "lexical";
 import { $createExtendedTableNodeWithDimensions } from "../../tablePlugin/nodes/extendedTableNode";
 import ContextMenuItem from "../contextMenuItem";
-import { $findCellNode, $findTableNode, $isTableCellNode, $isTableNode, $isTableRowNode, $isTableSelection, TableCellNode, TableRowNode, TableSelection } from "@lexical/table";
+import { $findCellNode, $findTableNode, $isTableCellNode, $isTableNode, $isTableRowNode, $isTableSelection, TableCellNode, TableNode, TableRowNode, TableSelection } from "@lexical/table";
 import { ContextMenuSeparator, ContextMenuSeparatorStrong } from "../contextMenu";
 import { AiOutlineMergeCells, AiOutlineSplitCells } from "react-icons/ai";
 import { mergeRegister } from "@lexical/utils";
@@ -131,6 +131,7 @@ export function TableContextMergeCells( {editor}: TableContextOptionProps ) {
                     }
                 }
 
+                $setSelection(null)
                 contextObject.closeContextMenu()
             }
         })
