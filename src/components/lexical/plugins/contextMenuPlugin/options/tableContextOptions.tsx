@@ -78,11 +78,14 @@ export function TableContextMergeCells( {editor}: TableContextOptionProps ) {
             const selection = $getSelection()
             if ( $isTableSelection(selection) ) {
                 const selectedNodes = selection.getNodes();
+                const tableNodeID = 0;
                 const firstRowNodeID = 1;
                 const firstCellNodeID = 2;
                 if ( !$isTableNode(selectedNodes[0]) || !$isTableRowNode(selectedNodes[1]) || !$isTableCellNode(selectedNodes[2]) ) {
                     throw Error("Wrong selection. Cell isn't under index 2")
                 }
+
+                const tableNode = selectedNodes[tableNodeID] as TableNode;
 
                 let columnsToMerge = 0;
                 const firstRowNode = selectedNodes[firstRowNodeID];
@@ -102,7 +105,7 @@ export function TableContextMergeCells( {editor}: TableContextOptionProps ) {
                 const cellsInRowsAdded = new Set<TableCellNode>();
                 for ( let n = firstRowNodeID; n < selectedNodes.length; ++n ) {
                     const node = selectedNodes[n];
-                    if ( $isTableRowNode(node)) {
+                    if ( $isTableRowNode(node) && $findTableNode(node) == tableNode) {
                         if ( !rowsAdded.has(node) ) {
                             const cellNode = selectedNodes[n+1] as TableCellNode;
                             if ( !cellsInRowsAdded.has(cellNode) ) {
@@ -127,7 +130,7 @@ export function TableContextMergeCells( {editor}: TableContextOptionProps ) {
 
                 const removedCells = new Set<TableCellNode>()
                 for (const node of selectedNodes) {
-                    if ( $isTableCellNode(node) && node != firstCellNode && !removedCells.has(node) ) {
+                    if ( $isTableCellNode(node) && $findTableNode(node) == tableNode && node != firstCellNode && !removedCells.has(node) ) {
                         firstCellNode.append( ...node.getChildren() )
                         node.remove()
                     }
