@@ -7,7 +7,7 @@ import TableCreatorEditor from "../../tablePlugin/tableCreatorEditor";
 import { $getNodeByKey, $getSelection, $insertNodes, $isRangeSelection, $setSelection, COMMAND_PRIORITY_LOW, LexicalEditor, SELECTION_CHANGE_COMMAND } from "lexical";
 import { $createExtendedTableNodeWithDimensions } from "../../tablePlugin/nodes/extendedTableNode";
 import ContextMenuItem from "../contextMenuItem";
-import { $findCellNode, $findTableNode, $isTableCellNode, $isTableNode, $isTableRowNode, $isTableSelection, TableCellNode, TableNode, TableRowNode, TableSelection } from "@lexical/table";
+import { $createTableCellNode, $findCellNode, $findTableNode, $isTableCellNode, $isTableNode, $isTableRowNode, $isTableSelection, TableCellHeaderStates, TableCellNode, TableNode, TableRowNode, TableSelection, getTableObserverFromTableElement } from "@lexical/table";
 import { ContextMenuSeparator, ContextMenuSeparatorStrong } from "../contextMenu";
 import { AiOutlineMergeCells, AiOutlineSplitCells } from "react-icons/ai";
 import { mergeRegister } from "@lexical/utils";
@@ -125,8 +125,10 @@ export function TableContextMergeCells( {editor}: TableContextOptionProps ) {
                 firstCellNode.setColSpan(columnsToMerge)
                 firstCellNode.setRowSpan(rowsToMerge)
 
+                const removedCells = new Set<TableCellNode>()
                 for (const node of selectedNodes) {
-                    if ( $isTableCellNode(node) && node != firstCellNode ) {
+                    if ( $isTableCellNode(node) && node != firstCellNode && !removedCells.has(node) ) {
+                        firstCellNode.append( ...node.getChildren() )
                         node.remove()
                     }
                 }
@@ -141,7 +143,79 @@ export function TableContextMergeCells( {editor}: TableContextOptionProps ) {
 }
 
 export function TableContextSplitCells( {editor}: TableContextOptionProps ) {
-    return <ContextMenuItem Icon={AiOutlineSplitCells} title="Split Cells" onClick={onClickNotImplemented}/>
+    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext)
+    function SplitCell( cell: TableCellNode ) {
+        let columnID = 0;
+        for ( const prevCell of cell.getPreviousSiblings() ) {
+            columnID += (prevCell as TableCellNode).getColSpan();
+        }
+        
+        const colSpan = cell.getColSpan();
+        const rowSpan = cell.getRowSpan();
+
+        cell.setColSpan(1)
+        cell.setRowSpan(1)
+        
+        let row = cell.getParent() as TableRowNode;
+        for ( let r = 0; r < rowSpan; ++r) {
+            for ( let c = 0; c < colSpan - 1; ++c ) {
+                cell.insertAfter($createTableCellNode(TableCellHeaderStates.NO_STATUS));
+            }    
+
+            if ( r < rowSpan - 1 ) {
+                row = row.getNextSibling() as TableRowNode;
+                if ( columnID == 0 ) {
+                    const firstCell = row.getFirstChild();
+                    if ( firstCell ) {
+                        cell = firstCell.insertBefore($createTableCellNode(TableCellHeaderStates.NO_STATUS)) as TableCellNode;
+                    } else {
+                        cell = $createTableCellNode(TableCellHeaderStates.NO_STATUS)
+                        row.append(cell);
+                    }
+                } else {
+                    let currentColumnID = 0;
+                    for ( const node of row.getChildren() ) {
+                        const nodeCell = node as TableCellNode;
+                        currentColumnID += nodeCell.getColSpan()
+                        if ( currentColumnID == columnID ) {
+                            cell = nodeCell.insertAfter($createTableCellNode(TableCellHeaderStates.NO_STATUS)) as TableCellNode;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    const onClick = () => {
+            editor.update(()=>{
+            const selection = $getSelection();
+
+            const nodesKeys: string[] = []
+            if ( $isTableSelection(selection )) {
+                for ( const node of selection.getNodes()) {
+                    if ( $isTableCellNode(node)) {
+                        nodesKeys.push(node.getKey())
+                    }
+                }
+            }
+
+            if ( $isRangeSelection(selection )) {
+                const node = $findCellNode(selection.getNodes()[0])
+                if ( node ) nodesKeys.push(node.getKey())
+            }
+
+            for ( const nodeKey of nodesKeys) {
+                const node = $getNodeByKey(nodeKey) as TableCellNode
+                SplitCell(node);
+            }
+
+            $setSelection(null)
+            contextObject.closeContextMenu()
+        })
+    }
+
+    return <ContextMenuItem Icon={AiOutlineSplitCells} title="Split Cells" onClick={onClick}/>
 }
 
 export default function TableContextOptions({editor}: TableContextOptionProps) {
