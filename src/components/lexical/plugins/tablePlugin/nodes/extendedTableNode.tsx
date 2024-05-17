@@ -1,5 +1,5 @@
-import { TableNode, TableRowNode, TableCellNode, $createTableNodeWithDimensions } from '@lexical/table'
-import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, EditorConfig, LexicalNode, SerializedElementNode, Spread } from 'lexical';
+import { TableNode, TableRowNode, TableCellNode, $createTableNodeWithDimensions, $isTableRowNode } from '@lexical/table'
+import { $applyNodeReplacement, $isParagraphNode, DOMConversionMap, DOMConversionOutput, EditorConfig, LexicalNode, SerializedElementNode, Spread } from 'lexical';
 import {addClassNamesToElement} from '@lexical/utils';
 
 export type SerializedExtendedTableNode = Spread<
@@ -92,11 +92,88 @@ export class ExtendedTableNode extends TableNode {
     return self.__columnsWidths[columnID];
   }
 
+  getResolvedTable(): TableCellNode[][] {
+    const self = this.getLatest()
+
+    const resolvedTable: TableCellNode[][] = [];
+
+    let row = self.getChildren().find((node) => $isTableRowNode(node)) as TableRowNode | undefined | null
+    if ( !row ) throw Error("getResolvedTable: there is no row")
+
+    let rowID = 0;
+    do {
+      if ( resolvedTable[rowID] == undefined ) resolvedTable[rowID] = [];
+
+      const rowCells = row.getChildren() as TableCellNode[];
+      let columnID = 0;
+      for ( const cell of rowCells ) {
+        while ( resolvedTable[rowID][columnID] != undefined ) {
+          ++columnID;
+        }
+
+        const colSpan = cell.getColSpan();
+        const rowSpan = cell.getRowSpan();
+
+        for ( let r = 0; r < rowSpan; ++r ) {
+          if ( resolvedTable[rowID + r] == undefined ) resolvedTable[rowID + r] = []
+          for ( let c = 0; c < colSpan; ++c ) {
+            resolvedTable[rowID + r][columnID + c] = cell;
+          }
+        }
+
+        columnID += colSpan;
+      }
+      
+      ++rowID;
+    } while ( (row = row.getNextSibling() as TableRowNode | null) && $isTableRowNode(row) )
+
+    return resolvedTable;
+  }
+
+  mergeCells( startCell: TableCellNode, rowsCount: number, columnsCount: number ) {
+    const self = this.getWritable()
+
+    let columnID = 0;
+    for ( const prevNode of startCell.getPreviousSiblings() as TableCellNode[] ) {
+      columnID += prevNode.getColSpan()
+    }
+
+    let row = startCell.getParent() as TableRowNode | null;
+    let rowID = 0;
+    while ( (row = row!.getPreviousSibling()) && $isTableRowNode(row) ) {
+      ++rowID;
+    }
+
+    const resolvedTable = self.getResolvedTable();
+
+    const cellsToRemove = new Set<TableCellNode>()
+    for ( let r = 0; r < rowsCount; ++r ) {
+
+      let cellsToRemoveCount = 0;
+      for ( let c = 0; c < columnsCount; ++c ) {
+        const cell = resolvedTable[rowID + r][columnID + c];
+        if ( cell != startCell && !cellsToRemove.has(cell) ) {
+          cellsToRemove.add(cell)
+          ++cellsToRemoveCount;
+        }
+      }
+    }
+
+    for ( const cell of cellsToRemove ) {
+      for ( const cellChild of cell.getChildren() ) {
+        if ( !$isParagraphNode(cellChild) || cellChild.getTextContentSize() > 0 )
+          startCell.append(cellChild)
+      }
+      cell.remove();
+    }
+
+    startCell.setColSpan(columnsCount);
+    startCell.setRowSpan(rowsCount);
+  }
+
   createDOM(config: EditorConfig): HTMLElement {
     const self = this.getLatest()
     const tableElement = document.createElement('table');
-
-    addClassNamesToElement(tableElement, config.theme.table);
 
     const colgroup = document.createElement('colgroup')
     for ( const columnWidth of self.__columnsWidths ) {
@@ -107,6 +184,8 @@ export class ExtendedTableNode extends TableNode {
     }
 
     tableElement.appendChild(colgroup)
+
+    addClassNamesToElement(tableElement, config.theme.table);
 
     return tableElement;
   }

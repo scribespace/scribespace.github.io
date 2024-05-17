@@ -5,7 +5,7 @@ import { ContextMenuContext, ContextMenuContextObject } from "../contextMenuPlug
 import ContextSubmenu, { CotextSubmenuOptionProps } from "../contextSubmenu";
 import TableCreatorEditor from "../../tablePlugin/tableCreatorEditor";
 import { $getNodeByKey, $getSelection, $insertNodes, $isRangeSelection, $setSelection, COMMAND_PRIORITY_LOW, LexicalEditor, SELECTION_CHANGE_COMMAND } from "lexical";
-import { $createExtendedTableNodeWithDimensions } from "../../tablePlugin/nodes/extendedTableNode";
+import { $createExtendedTableNodeWithDimensions, ExtendedTableNode } from "../../tablePlugin/nodes/extendedTableNode";
 import ContextMenuItem from "../contextMenuItem";
 import { $createTableCellNode, $findCellNode, $findTableNode, $isTableCellNode, $isTableNode, $isTableRowNode, $isTableSelection, TableCellHeaderStates, TableCellNode, TableNode, TableRowNode, TableSelection, getTableObserverFromTableElement } from "@lexical/table";
 import { ContextMenuSeparator, ContextMenuSeparatorStrong } from "../contextMenu";
@@ -85,7 +85,7 @@ export function TableContextMergeCells( {editor}: TableContextOptionProps ) {
                     throw Error("Wrong selection. Cell isn't under index 2")
                 }
 
-                const tableNode = selectedNodes[tableNodeID] as TableNode;
+                const tableNode = selectedNodes[tableNodeID] as ExtendedTableNode;
 
                 let columnsToMerge = 0;
                 const firstRowNode = selectedNodes[firstRowNodeID];
@@ -125,16 +125,7 @@ export function TableContextMergeCells( {editor}: TableContextOptionProps ) {
                 }
                 
                 const firstCellNode = selectedNodes[firstCellNodeID] as TableCellNode;
-                firstCellNode.setColSpan(columnsToMerge)
-                firstCellNode.setRowSpan(rowsToMerge)
-
-                const removedCells = new Set<TableCellNode>()
-                for (const node of selectedNodes) {
-                    if ( $isTableCellNode(node) && $findTableNode(node) == tableNode && node != firstCellNode && !removedCells.has(node) ) {
-                        firstCellNode.append( ...node.getChildren() )
-                        node.remove()
-                    }
-                }
+                tableNode.mergeCells(firstCellNode, rowsToMerge, columnsToMerge);
 
                 $setSelection(null)
                 contextObject.closeContextMenu()
