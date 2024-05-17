@@ -511,6 +511,9 @@ export default function TablePlugin() {
         const {height, width, top, left} = activeCell.elem.getBoundingClientRect();
         const size = 3;
 
+        const isFirstCell = activeCell.elem.previousSibling == null;
+        const isLastCell = activeCell.elem.nextSibling == null
+
         const styles = {
             bottom: {
                 backgroundColor: 'none',
@@ -520,7 +523,7 @@ export default function TablePlugin() {
                 top: `${window.scrollY + top + height - size}px`,
                 width: `${width}px`,
             },
-            right: {
+            right: isLastCell ? new ResizerStyle() : {
                 backgroundColor: 'none',
                 cursor: 'col-resize',
                 height: `${height}px`,
@@ -528,7 +531,7 @@ export default function TablePlugin() {
                 top: `${window.scrollY + top}px`,
                 width: `${size}px`,
             },
-            left: {
+            left: isFirstCell ? new ResizerStyle() : {
                 backgroundColor: 'none',
                 cursor: 'col-resize',
                 height: `${height}px`,
