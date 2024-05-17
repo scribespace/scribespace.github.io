@@ -7,7 +7,7 @@ import TableCreatorEditor from "../../tablePlugin/tableCreatorEditor";
 import { $getNodeByKey, $getSelection, $insertNodes, $isRangeSelection, $setSelection, COMMAND_PRIORITY_LOW, LexicalEditor, SELECTION_CHANGE_COMMAND } from "lexical";
 import { $createExtendedTableNodeWithDimensions, ExtendedTableNode } from "../../tablePlugin/nodes/extendedTableNode";
 import ContextMenuItem from "../contextMenuItem";
-import { $createTableCellNode, $findCellNode, $findTableNode, $isTableCellNode, $isTableNode, $isTableRowNode, $isTableSelection, TableCellHeaderStates, TableCellNode, TableNode, TableRowNode, TableSelection, getTableObserverFromTableElement } from "@lexical/table";
+import { $createTableCellNode, $findCellNode, $findTableNode, $getTableNodeFromLexicalNodeOrThrow, $isTableCellNode, $isTableNode, $isTableRowNode, $isTableSelection, TableCellHeaderStates, TableCellNode, TableNode, TableRowNode, TableSelection, getTableObserverFromTableElement } from "@lexical/table";
 import { ContextMenuSeparator, ContextMenuSeparatorStrong } from "../contextMenu";
 import { AiOutlineMergeCells, AiOutlineSplitCells } from "react-icons/ai";
 import { mergeRegister } from "@lexical/utils";
@@ -139,70 +139,32 @@ export function TableContextMergeCells( {editor}: TableContextOptionProps ) {
 
 export function TableContextSplitCells( {editor}: TableContextOptionProps ) {
     const contextObject: ContextMenuContextObject = useContext(ContextMenuContext)
-    function SplitCell( cell: TableCellNode ) {
-        let columnID = 0;
-        for ( const prevCell of cell.getPreviousSiblings() ) {
-            columnID += (prevCell as TableCellNode).getColSpan();
-        }
-        
-        const colSpan = cell.getColSpan();
-        const rowSpan = cell.getRowSpan();
-
-        cell.setColSpan(1)
-        cell.setRowSpan(1)
-        
-        let row = cell.getParent() as TableRowNode;
-        for ( let r = 0; r < rowSpan; ++r) {
-            for ( let c = 0; c < colSpan - 1; ++c ) {
-                cell.insertAfter($createTableCellNodeWithParagraph());
-            }    
-
-            if ( r < rowSpan - 1 ) {
-                row = row.getNextSibling() as TableRowNode;
-                if ( columnID == 0 ) {
-                    const firstCell = row.getFirstChild();
-                    if ( firstCell ) {
-                        cell = firstCell.insertBefore($createTableCellNodeWithParagraph()) as TableCellNode;
-                    } else {
-                        cell = $createTableCellNodeWithParagraph()
-                        row.append(cell);
-                    }
-                } else {
-                    let currentColumnID = 0;
-                    for ( const node of row.getChildren() ) {
-                        const nodeCell = node as TableCellNode;
-                        currentColumnID += nodeCell.getColSpan()
-                        if ( currentColumnID == columnID ) {
-                            cell = nodeCell.insertAfter($createTableCellNodeWithParagraph()) as TableCellNode;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     const onClick = () => {
             editor.update(()=>{
             const selection = $getSelection();
+            let tableNode: ExtendedTableNode | null = null;
 
-            const nodesKeys: string[] = []
+            const nodesKeys = new Set<string>()
             if ( $isTableSelection(selection )) {
+                tableNode = $getNodeByKey( selection.tableKey )
                 for ( const node of selection.getNodes()) {
-                    if ( $isTableCellNode(node)) {
-                        nodesKeys.push(node.getKey())
+                    if ( $isTableCellNode(node) && !nodesKeys.has(node.getKey())) {
+                        nodesKeys.add(node.getKey())
                     }
                 }
             }
 
             if ( $isRangeSelection(selection )) {
                 const node = $findCellNode(selection.getNodes()[0])
-                if ( node ) nodesKeys.push(node.getKey())
+                if ( node ) { 
+                    tableNode = $getTableNodeFromLexicalNodeOrThrow(node) as ExtendedTableNode
+                    nodesKeys.add(node.getKey())
+                }
             }
 
             for ( const nodeKey of nodesKeys) {
                 const node = $getNodeByKey(nodeKey) as TableCellNode
-                SplitCell(node);
+                tableNode?.splitCell(editor, node)
             }
 
             $setSelection(null)

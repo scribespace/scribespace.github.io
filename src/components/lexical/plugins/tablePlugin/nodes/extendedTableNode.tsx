@@ -1,6 +1,8 @@
 import { TableNode, TableRowNode, TableCellNode, $createTableNodeWithDimensions, $isTableRowNode } from '@lexical/table'
 import { $applyNodeReplacement, $isParagraphNode, DOMConversionMap, DOMConversionOutput, EditorConfig, LexicalEditor, LexicalNode, SerializedElementNode, Spread } from 'lexical';
 import {addClassNamesToElement} from '@lexical/utils';
+import { edit } from 'react-arborist/dist/module/state/edit-slice';
+import { $createTableCellNodeWithParagraph } from '../tableHelpers';
 
 export type SerializedExtendedTableNode = Spread<
   {
@@ -187,6 +189,59 @@ export class ExtendedTableNode extends TableNode {
     startCell.setColSpan(columnsCount);
     startCell.setRowSpan(rowsCount);
 
+  }
+
+  splitCell( editor: LexicalEditor, cell: TableCellNode ) {
+    const self = this.getWritable()
+
+    const resolvedTable = self.getResolvedTable();
+    let columnID = -1;
+    let rowID = -1;
+    for ( let r = 0; r < resolvedTable.length; ++r ) {
+      for ( let c = 0; c < resolvedTable[0].length; ++c ) {
+        if ( resolvedTable[r][c] == cell ) {
+          columnID = c;
+          rowID = r;
+          break;
+        }
+      }
+      if ( columnID != -1 ) break;
+    }
+
+    const rowSpan = cell.getRowSpan()
+    const colSpan = cell.getColSpan()
+    let row = cell.getParentOrThrow() as TableRowNode | null
+
+    if ( colSpan == resolvedTable[0].length) {
+      const cellElement = editor.getElementByKey(cell.getKey())
+      if ( cellElement ) {
+        const {height} = cellElement?.getBoundingClientRect();
+        const cellHeight = height / rowSpan;
+        row!.setHeight(cellHeight)
+      }
+    }
+
+    for ( let c = 1; c < colSpan; ++c ) {
+      cell.insertAfter($createTableCellNodeWithParagraph())
+    }
+
+    columnID += colSpan;
+    for ( let r = 1; r < rowSpan; ++r ) {
+      if ( columnID == resolvedTable[0].length ) {
+        row = row!.getNextSibling()
+        for ( let c = 0; c < colSpan; ++c ) {
+          row!.append($createTableCellNodeWithParagraph())
+        }
+      } else {
+        const nextCell = resolvedTable[rowID + r][columnID];
+        for ( let c = 0; c < colSpan; ++c ) {
+          nextCell.insertBefore($createTableCellNodeWithParagraph())
+        }
+      }
+    }
+
+    cell.setColSpan(1)
+    cell.setRowSpan(1)
   }
 
   createDOM(config: EditorConfig): HTMLElement {
