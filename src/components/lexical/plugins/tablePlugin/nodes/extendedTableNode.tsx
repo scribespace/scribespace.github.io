@@ -1,5 +1,5 @@
 import { TableNode, TableRowNode, TableCellNode, $createTableNodeWithDimensions, $isTableRowNode } from '@lexical/table'
-import { $applyNodeReplacement, $isParagraphNode, DOMConversionMap, DOMConversionOutput, EditorConfig, LexicalNode, SerializedElementNode, Spread } from 'lexical';
+import { $applyNodeReplacement, $isParagraphNode, DOMConversionMap, DOMConversionOutput, EditorConfig, LexicalEditor, LexicalNode, SerializedElementNode, Spread } from 'lexical';
 import {addClassNamesToElement} from '@lexical/utils';
 
 export type SerializedExtendedTableNode = Spread<
@@ -130,7 +130,7 @@ export class ExtendedTableNode extends TableNode {
     return resolvedTable;
   }
 
-  mergeCells( startCell: TableCellNode, rowsCount: number, columnsCount: number ) {
+  mergeCells( editor: LexicalEditor, startCell: TableCellNode, rowsCount: number, columnsCount: number ) {
     const self = this.getWritable()
 
     const resolvedTable = self.getResolvedTable();
@@ -145,6 +145,23 @@ export class ExtendedTableNode extends TableNode {
         }
       }
       if ( columnID != -1 ) break;
+    }
+
+    if (columnsCount == resolvedTable[0].length ) {
+      let mergedRowHeight = 0;
+      const mergedRowHeightProcessed = new Set<TableCellNode>()
+      for ( let r= 0; r < rowsCount; ++r ) {
+        const cell = resolvedTable[r][0];
+        if ( !mergedRowHeightProcessed.has(cell) ) {
+          mergedRowHeightProcessed.add(cell);
+          const rowElement = editor.getElementByKey(cell.getKey())
+          if ( rowElement ) {
+            const {height} = rowElement?.getBoundingClientRect();
+            mergedRowHeight += height
+          }
+        }
+      }
+      (startCell.getParentOrThrow() as TableRowNode).setHeight(mergedRowHeight);
     }
 
     const cellsToRemove = new Set<TableCellNode>()
@@ -169,6 +186,7 @@ export class ExtendedTableNode extends TableNode {
 
     startCell.setColSpan(columnsCount);
     startCell.setRowSpan(rowsCount);
+
   }
 
   createDOM(config: EditorConfig): HTMLElement {

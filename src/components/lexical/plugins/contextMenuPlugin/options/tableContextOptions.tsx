@@ -126,7 +126,7 @@ export function TableContextMergeCells( {editor}: TableContextOptionProps ) {
                 }
                 
                 const firstCellNode = selectedNodes[firstCellNodeID] as TableCellNode;
-                tableNode.mergeCells(firstCellNode, rowsToMerge, columnsToMerge);
+                tableNode.mergeCells(editor, firstCellNode, rowsToMerge, columnsToMerge);
 
                 $setSelection(null)
                 contextObject.closeContextMenu()
