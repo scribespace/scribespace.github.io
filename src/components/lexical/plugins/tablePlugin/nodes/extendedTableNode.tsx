@@ -133,22 +133,22 @@ export class ExtendedTableNode extends TableNode {
   mergeCells( startCell: TableCellNode, rowsCount: number, columnsCount: number ) {
     const self = this.getWritable()
 
-    let columnID = 0;
-    for ( const prevNode of startCell.getPreviousSiblings() as TableCellNode[] ) {
-      columnID += prevNode.getColSpan()
-    }
-
-    let row = startCell.getParent() as TableRowNode | null;
-    let rowID = 0;
-    while ( (row = row!.getPreviousSibling()) && $isTableRowNode(row) ) {
-      ++rowID;
-    }
-
     const resolvedTable = self.getResolvedTable();
+    let columnID = -1;
+    let rowID = -1;
+    for ( let r = 0; r < resolvedTable.length; ++r ) {
+      for ( let c = 0; c < resolvedTable[0].length; ++c ) {
+        if ( resolvedTable[r][c] == startCell ) {
+          columnID = c;
+          rowID = r;
+          break;
+        }
+      }
+      if ( columnID != -1 ) break;
+    }
 
     const cellsToRemove = new Set<TableCellNode>()
     for ( let r = 0; r < rowsCount; ++r ) {
-
       let cellsToRemoveCount = 0;
       for ( let c = 0; c < columnsCount; ++c ) {
         const cell = resolvedTable[rowID + r][columnID + c];

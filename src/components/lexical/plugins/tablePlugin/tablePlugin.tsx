@@ -331,7 +331,6 @@ export default function TablePlugin() {
                   cellLUT[r][cellIndexInLUT + colSpan - 1] = cellNode
                 }
               }
-              
               let tableRowIndex = $getTableRowIndexFromTableCellNode(tableCellNode);
               let columnID = cellLUT[tableRowIndex].findIndex((node)=>node==tableCellNode);
 
@@ -426,7 +425,7 @@ export default function TablePlugin() {
           editor.update(()=>{
             for ( const key of keys ) {
               const node = $getNodeByKey(key[0]) as TableRowNode
-              if ( node.getChildrenSize() == 0 ) {
+              if ( node && node.getChildrenSize() == 0 ) {
                 const nodeElement = editor.getElementByKey(key[0]);
                 if ( nodeElement ) {
 
@@ -587,7 +586,8 @@ export default function TablePlugin() {
     const onMouseDown = (direction: MouseDraggingDirection, cellPart: CellClickPart): React.MouseEventHandler<HTMLDivElement> => (event: React.MouseEvent<HTMLDivElement>) => {
         mouseStartPosition.current = { x: event.clientX, y: event.clientY }
         cellClickPart.current = cellPart;
-        updateColumnsWidths();
+        if ( direction == DRAG_HORIZONTAL)
+          updateColumnsWidths();
         setDragDirection(direction)
     }
 
