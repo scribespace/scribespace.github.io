@@ -2,14 +2,15 @@ import { TablePlugin as LexicalTablePlugin } from '@lexical/react/LexicalTablePl
 import { 
   SELECTION_CHANGE_COMMAND, COMMAND_PRIORITY_LOW, 
   $getSelection, $isRangeSelection, $createTextNode, $createParagraphNode, $isParagraphNode, $getNearestNodeFromDOMNode, 
-  LexicalEditor, LexicalNode, RangeSelection
+  LexicalEditor, LexicalNode, RangeSelection,
+  $getNodeByKey
  } from 'lexical';
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { 
   $isTableSelection, $getTableNodeFromLexicalNodeOrThrow, $isTableCellNode, $isTableNode, $computeTableMap, $getTableRowIndexFromTableCellNode, $isTableRowNode,
   TableDOMCell, TableNode, TableRowNode, TableCellNode, getDOMCellFromTarget
 } from '@lexical/table';
-import { $findMatchingParent } from '@lexical/utils';
+import { $findMatchingParent, mergeRegister } from '@lexical/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -420,8 +421,30 @@ export default function TablePlugin() {
     },[dragDirection, activeCell, editor])
     
     useEffect(()=>{
-      const lexicalRegisterCommands = editor.registerCommand(SELECTION_CHANGE_COMMAND, ()=>{
+      return mergeRegister(
+        editor.registerMutationListener( TableRowNode, (keys) => {
+          editor.update(()=>{
+            for ( const key of keys ) {
+              const node = $getNodeByKey(key[0]) as TableRowNode
+              if ( node.getChildrenSize() == 0 ) {
+                const nodeElement = editor.getElementByKey(key[0]);
+                if ( nodeElement ) {
 
+                //@ts-expect-error: internal field
+                const element = nodeElement.__lexicalLineBreak;
+                if (element != null) {
+                  nodeElement.removeChild(element);
+                }
+                // @ts-expect-error: internal field
+                nodeElement.__lexicalLineBreak = null;
+
+                nodeElement.innerHTML = ''
+                }
+              }
+            }
+          })
+        }),
+        editor.registerCommand(SELECTION_CHANGE_COMMAND, ()=>{
             const selection = $getSelection();
             const nodes = selection?.getNodes()
             let tableNode: TableNode | null = null;
@@ -463,10 +486,7 @@ export default function TablePlugin() {
             
             return false;
         }, COMMAND_PRIORITY_LOW)
-
-        return () => {
-            lexicalRegisterCommands();
-        }
+      )
     },[])
 
     class ResizerStyle {

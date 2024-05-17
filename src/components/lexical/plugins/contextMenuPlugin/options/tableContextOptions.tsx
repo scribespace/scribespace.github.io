@@ -11,6 +11,7 @@ import { $createTableCellNode, $findCellNode, $findTableNode, $isTableCellNode, 
 import { ContextMenuSeparator, ContextMenuSeparatorStrong } from "../contextMenu";
 import { AiOutlineMergeCells, AiOutlineSplitCells } from "react-icons/ai";
 import { mergeRegister } from "@lexical/utils";
+import { $createTableCellNodeWithParagraph } from "../../tablePlugin/tableHelpers";
 
 interface TableContextOptionProps {
     editor: LexicalEditor
@@ -153,7 +154,7 @@ export function TableContextSplitCells( {editor}: TableContextOptionProps ) {
         let row = cell.getParent() as TableRowNode;
         for ( let r = 0; r < rowSpan; ++r) {
             for ( let c = 0; c < colSpan - 1; ++c ) {
-                cell.insertAfter($createTableCellNode(TableCellHeaderStates.NO_STATUS));
+                cell.insertAfter($createTableCellNodeWithParagraph());
             }    
 
             if ( r < rowSpan - 1 ) {
@@ -161,9 +162,9 @@ export function TableContextSplitCells( {editor}: TableContextOptionProps ) {
                 if ( columnID == 0 ) {
                     const firstCell = row.getFirstChild();
                     if ( firstCell ) {
-                        cell = firstCell.insertBefore($createTableCellNode(TableCellHeaderStates.NO_STATUS)) as TableCellNode;
+                        cell = firstCell.insertBefore($createTableCellNodeWithParagraph()) as TableCellNode;
                     } else {
-                        cell = $createTableCellNode(TableCellHeaderStates.NO_STATUS)
+                        cell = $createTableCellNodeWithParagraph()
                         row.append(cell);
                     }
                 } else {
@@ -172,7 +173,7 @@ export function TableContextSplitCells( {editor}: TableContextOptionProps ) {
                         const nodeCell = node as TableCellNode;
                         currentColumnID += nodeCell.getColSpan()
                         if ( currentColumnID == columnID ) {
-                            cell = nodeCell.insertAfter($createTableCellNode(TableCellHeaderStates.NO_STATUS)) as TableCellNode;
+                            cell = nodeCell.insertAfter($createTableCellNodeWithParagraph()) as TableCellNode;
                             break;
                         }
                     }
