@@ -24,6 +24,7 @@ body {
     visibility: visible;
   }
   .section-to-print {
+    width: 210mm;
     position: absolute;
     left: 0;
     top: 0;

@@ -235,6 +235,7 @@ export default function TableContextOptions({editor}: TableContextOptionProps) {
                 <TableContextAddColumnRight editor={editor}/>
                 <TableContextAddRowTop editor={editor}/>
                 <TableContextAddRowBottom editor={editor}/>
+                <ContextMenuSeparator/>
                 <TableContextColumnRemove editor={editor}/>
                 <TableContextRowRemove editor={editor}/>
                 
