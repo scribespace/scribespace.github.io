@@ -626,6 +626,9 @@ function $isLeafNode(node) {
 }
 function $setNodeKey(node, existingKey) {
   if (existingKey != null) {
+    {
+      errorOnNodeKeyConstructorMismatch(node, existingKey);
+    }
     node.__key = existingKey;
     return;
   }
@@ -644,6 +647,26 @@ function $setNodeKey(node, existingKey) {
   editor._cloneNotNeeded.add(key);
   editor._dirtyType = HAS_DIRTY_NODES;
   node.__key = key;
+}
+function errorOnNodeKeyConstructorMismatch(node, existingKey) {
+  const editorState = internalGetActiveEditorState();
+  if (!editorState) {
+    // tests expect to be able to do this kind of clone without an active editor state
+    return;
+  }
+  const existingNode = editorState._nodeMap.get(existingKey);
+  if (existingNode && existingNode.constructor !== node.constructor) {
+    // Lifted condition to if statement because the inverted logic is a bit confusing
+    if (node.constructor.name !== existingNode.constructor.name) {
+      {
+        throw Error(`Lexical node with constructor ${node.constructor.name} attempted to re-use key from node in active editor state with constructor ${existingNode.constructor.name}. Keys must not be re-used when the type is changed.`);
+      }
+    } else {
+      {
+        throw Error(`Lexical node with constructor ${node.constructor.name} attempted to re-use key from node in active editor state with different constructor with the same name (possibly due to invalid Hot Module Replacement). Keys must not be re-used when the type is changed.`);
+      }
+    }
+  }
 }
 function internalMarkParentElementsAsDirty(parentKey, nodeMap, dirtyElements) {
   let nextParentKey = parentKey;
@@ -1430,6 +1453,15 @@ function errorOnInsertTextNodeOnRoot(node, insertNode) {
       throw Error(`Only element or decorator nodes can be inserted in to the root node`);
     }
   }
+}
+function $getNodeByKeyOrThrow(key) {
+  const node = $getNodeByKey(key);
+  if (node === null) {
+    {
+      throw Error(`Expected node with key ${key} to exist but it's not in the nodeMap.`);
+    }
+  }
+  return node;
 }
 function createBlockCursorElement(editorConfig) {
   const theme = editorConfig.theme;
@@ -5143,43 +5175,8 @@ function convertSpanElement(domNode) {
   // domNode is a <span> since we matched it by nodeName
   const span = domNode;
   const style = span.style;
-  const fontWeight = style.fontWeight;
-  const textDecoration = style.textDecoration.split(' ');
-  // Google Docs uses span tags + font-weight for bold text
-  const hasBoldFontWeight = fontWeight === '700' || fontWeight === 'bold';
-  // Google Docs uses span tags + text-decoration: line-through for strikethrough text
-  const hasLinethroughTextDecoration = textDecoration.includes('line-through');
-  // Google Docs uses span tags + font-style for italic text
-  const hasItalicFontStyle = style.fontStyle === 'italic';
-  // Google Docs uses span tags + text-decoration: underline for underline text
-  const hasUnderlineTextDecoration = textDecoration.includes('underline');
-  // Google Docs uses span tags + vertical-align to specify subscript and superscript
-  const verticalAlign = style.verticalAlign;
   return {
-    forChild: lexicalNode => {
-      if (!$isTextNode(lexicalNode)) {
-        return lexicalNode;
-      }
-      if (hasBoldFontWeight) {
-        lexicalNode.toggleFormat('bold');
-      }
-      if (hasLinethroughTextDecoration) {
-        lexicalNode.toggleFormat('strikethrough');
-      }
-      if (hasItalicFontStyle) {
-        lexicalNode.toggleFormat('italic');
-      }
-      if (hasUnderlineTextDecoration) {
-        lexicalNode.toggleFormat('underline');
-      }
-      if (verticalAlign === 'sub') {
-        lexicalNode.toggleFormat('subscript');
-      }
-      if (verticalAlign === 'super') {
-        lexicalNode.toggleFormat('superscript');
-      }
-      return lexicalNode;
-    },
+    forChild: applyTextFormatFromStyle(style),
     node: null
   };
 }
@@ -5189,12 +5186,7 @@ function convertBringAttentionToElement(domNode) {
   // Google Docs wraps all copied HTML in a <b> with font-weight normal
   const hasNormalFontWeight = b.style.fontWeight === 'normal';
   return {
-    forChild: lexicalNode => {
-      if ($isTextNode(lexicalNode) && !hasNormalFontWeight) {
-        lexicalNode.toggleFormat('bold');
-      }
-      return lexicalNode;
-    },
+    forChild: applyTextFormatFromStyle(b.style, hasNormalFontWeight ? undefined : 'bold'),
     node: null
   };
 }
@@ -5340,12 +5332,7 @@ function convertTextFormatElement(domNode) {
     };
   }
   return {
-    forChild: lexicalNode => {
-      if ($isTextNode(lexicalNode) && !lexicalNode.hasFormat(format)) {
-        lexicalNode.toggleFormat(format);
-      }
-      return lexicalNode;
-    },
+    forChild: applyTextFormatFromStyle(domNode.style, format),
     node: null
   };
 }
@@ -5354,6 +5341,47 @@ function $createTextNode(text = '') {
 }
 function $isTextNode(node) {
   return node instanceof TextNode;
+}
+function applyTextFormatFromStyle(style, shouldApply) {
+  const fontWeight = style.fontWeight;
+  const textDecoration = style.textDecoration.split(' ');
+  // Google Docs uses span tags + font-weight for bold text
+  const hasBoldFontWeight = fontWeight === '700' || fontWeight === 'bold';
+  // Google Docs uses span tags + text-decoration: line-through for strikethrough text
+  const hasLinethroughTextDecoration = textDecoration.includes('line-through');
+  // Google Docs uses span tags + font-style for italic text
+  const hasItalicFontStyle = style.fontStyle === 'italic';
+  // Google Docs uses span tags + text-decoration: underline for underline text
+  const hasUnderlineTextDecoration = textDecoration.includes('underline');
+  // Google Docs uses span tags + vertical-align to specify subscript and superscript
+  const verticalAlign = style.verticalAlign;
+  return lexicalNode => {
+    if (!$isTextNode(lexicalNode)) {
+      return lexicalNode;
+    }
+    if (hasBoldFontWeight && !lexicalNode.hasFormat('bold')) {
+      lexicalNode.toggleFormat('bold');
+    }
+    if (hasLinethroughTextDecoration && !lexicalNode.hasFormat('strikethrough')) {
+      lexicalNode.toggleFormat('strikethrough');
+    }
+    if (hasItalicFontStyle && !lexicalNode.hasFormat('italic')) {
+      lexicalNode.toggleFormat('italic');
+    }
+    if (hasUnderlineTextDecoration && !lexicalNode.hasFormat('underline')) {
+      lexicalNode.toggleFormat('underline');
+    }
+    if (verticalAlign === 'sub' && !lexicalNode.hasFormat('subscript')) {
+      lexicalNode.toggleFormat('subscript');
+    }
+    if (verticalAlign === 'super' && !lexicalNode.hasFormat('superscript')) {
+      lexicalNode.toggleFormat('superscript');
+    }
+    if (shouldApply && !lexicalNode.hasFormat(shouldApply)) {
+      lexicalNode.toggleFormat(shouldApply);
+    }
+    return lexicalNode;
+  };
 }
 
 /**
@@ -7514,6 +7542,9 @@ function getActiveEditor() {
 }
 function internalGetActiveEditor() {
   return activeEditor;
+}
+function internalGetActiveEditorState() {
+  return activeEditorState;
 }
 function $applyTransforms(editor, node, transformsCache) {
   const type = node.__type;
@@ -9788,4 +9819,4 @@ class LexicalEditor {
   }
 }
 
-export { $addUpdateTag, $applyNodeReplacement, $copyNode, $createLineBreakNode, $createNodeSelection, $createParagraphNode, $createPoint, $createRangeSelection, $createRangeSelectionFromDom, $createTabNode, $createTextNode, $getAdjacentNode, $getCharacterOffsets, $getEditor, $getNearestNodeFromDOMNode, $getNearestRootOrShadowRoot, $getNodeByKey, $getPreviousSelection, $getRoot, $getSelection, $getTextContent, $hasAncestor, $hasUpdateTag, $insertNodes, $isBlockElementNode, $isDecoratorNode, $isElementNode, $isInlineElementOrDecoratorNode, $isLeafNode, $isLineBreakNode, $isNodeSelection, $isParagraphNode, $isRangeSelection, $isRootNode, $isRootOrShadowRoot, $isTabNode, $isTextNode, $nodesOfType, $normalizeSelection as $normalizeSelection__EXPERIMENTAL, $parseSerializedNode, $selectAll, $setCompositionKey, $setSelection, $splitNode, ArtificialNode__DO_NOT_USE, BLUR_COMMAND, CAN_REDO_COMMAND, CAN_UNDO_COMMAND, CLEAR_EDITOR_COMMAND, CLEAR_HISTORY_COMMAND, CLICK_COMMAND, COMMAND_PRIORITY_CRITICAL, COMMAND_PRIORITY_EDITOR, COMMAND_PRIORITY_HIGH, COMMAND_PRIORITY_LOW, COMMAND_PRIORITY_NORMAL, CONTROLLED_TEXT_INSERTION_COMMAND, COPY_COMMAND, CUT_COMMAND, DELETE_CHARACTER_COMMAND, DELETE_LINE_COMMAND, DELETE_WORD_COMMAND, DRAGEND_COMMAND, DRAGOVER_COMMAND, DRAGSTART_COMMAND, DROP_COMMAND, DecoratorNode, ElementNode, FOCUS_COMMAND, FORMAT_ELEMENT_COMMAND, FORMAT_TEXT_COMMAND, INDENT_CONTENT_COMMAND, INSERT_LINE_BREAK_COMMAND, INSERT_PARAGRAPH_COMMAND, INSERT_TAB_COMMAND, KEY_ARROW_DOWN_COMMAND, KEY_ARROW_LEFT_COMMAND, KEY_ARROW_RIGHT_COMMAND, KEY_ARROW_UP_COMMAND, KEY_BACKSPACE_COMMAND, KEY_DELETE_COMMAND, KEY_DOWN_COMMAND, KEY_ENTER_COMMAND, KEY_ESCAPE_COMMAND, KEY_MODIFIER_COMMAND, KEY_SPACE_COMMAND, KEY_TAB_COMMAND, LineBreakNode, MOVE_TO_END, MOVE_TO_START, OUTDENT_CONTENT_COMMAND, PASTE_COMMAND, ParagraphNode, REDO_COMMAND, REMOVE_TEXT_COMMAND, RootNode, SELECTION_CHANGE_COMMAND, SELECTION_INSERT_CLIPBOARD_NODES_COMMAND, SELECT_ALL_COMMAND, TabNode, TextNode, UNDO_COMMAND, createCommand, createEditor, getNearestEditorFromDOMNode, isBlockDomNode, isCurrentlyReadOnlyMode, isHTMLAnchorElement, isHTMLElement, isInlineDomNode, isSelectionCapturedInDecoratorInput, isSelectionWithinEditor };
+export { $addUpdateTag, $applyNodeReplacement, $copyNode, $createLineBreakNode, $createNodeSelection, $createParagraphNode, $createPoint, $createRangeSelection, $createRangeSelectionFromDom, $createTabNode, $createTextNode, $getAdjacentNode, $getCharacterOffsets, $getEditor, $getNearestNodeFromDOMNode, $getNearestRootOrShadowRoot, $getNodeByKey, $getNodeByKeyOrThrow, $getPreviousSelection, $getRoot, $getSelection, $getTextContent, $hasAncestor, $hasUpdateTag, $insertNodes, $isBlockElementNode, $isDecoratorNode, $isElementNode, $isInlineElementOrDecoratorNode, $isLeafNode, $isLineBreakNode, $isNodeSelection, $isParagraphNode, $isRangeSelection, $isRootNode, $isRootOrShadowRoot, $isTabNode, $isTextNode, $nodesOfType, $normalizeSelection as $normalizeSelection__EXPERIMENTAL, $parseSerializedNode, $selectAll, $setCompositionKey, $setSelection, $splitNode, ArtificialNode__DO_NOT_USE, BLUR_COMMAND, CAN_REDO_COMMAND, CAN_UNDO_COMMAND, CLEAR_EDITOR_COMMAND, CLEAR_HISTORY_COMMAND, CLICK_COMMAND, COMMAND_PRIORITY_CRITICAL, COMMAND_PRIORITY_EDITOR, COMMAND_PRIORITY_HIGH, COMMAND_PRIORITY_LOW, COMMAND_PRIORITY_NORMAL, CONTROLLED_TEXT_INSERTION_COMMAND, COPY_COMMAND, CUT_COMMAND, DELETE_CHARACTER_COMMAND, DELETE_LINE_COMMAND, DELETE_WORD_COMMAND, DRAGEND_COMMAND, DRAGOVER_COMMAND, DRAGSTART_COMMAND, DROP_COMMAND, DecoratorNode, ElementNode, FOCUS_COMMAND, FORMAT_ELEMENT_COMMAND, FORMAT_TEXT_COMMAND, INDENT_CONTENT_COMMAND, INSERT_LINE_BREAK_COMMAND, INSERT_PARAGRAPH_COMMAND, INSERT_TAB_COMMAND, KEY_ARROW_DOWN_COMMAND, KEY_ARROW_LEFT_COMMAND, KEY_ARROW_RIGHT_COMMAND, KEY_ARROW_UP_COMMAND, KEY_BACKSPACE_COMMAND, KEY_DELETE_COMMAND, KEY_DOWN_COMMAND, KEY_ENTER_COMMAND, KEY_ESCAPE_COMMAND, KEY_MODIFIER_COMMAND, KEY_SPACE_COMMAND, KEY_TAB_COMMAND, LineBreakNode, MOVE_TO_END, MOVE_TO_START, OUTDENT_CONTENT_COMMAND, PASTE_COMMAND, ParagraphNode, REDO_COMMAND, REMOVE_TEXT_COMMAND, RootNode, SELECTION_CHANGE_COMMAND, SELECTION_INSERT_CLIPBOARD_NODES_COMMAND, SELECT_ALL_COMMAND, TabNode, TextNode, UNDO_COMMAND, createCommand, createEditor, getNearestEditorFromDOMNode, isBlockDomNode, isCurrentlyReadOnlyMode, isHTMLAnchorElement, isHTMLElement, isInlineDomNode, isSelectionCapturedInDecoratorInput, isSelectionWithinEditor };

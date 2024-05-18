@@ -1,7 +1,7 @@
 import { ReactElement, useContext, useEffect, useRef, useState } from "react";
 import { ContextMenu } from "./contextMenu";
-import { FaAngleRight } from "react-icons/fa";
 import { ContextMenuContext, ContextMenuContextObject } from "./contextMenuPlugin";
+import { IconBaseProps } from "react-icons";
 
 export interface CotextSubmenuOptionProps {
     children?: ReactElement
@@ -35,10 +35,14 @@ export default function ContextSubmenu(props: ContextSubmenuProps) {
         setShowContextMenu(true)
     }
 
+    function SubmenuIcon(props: IconBaseProps) {
+        return contextObject.icons.SubmenuIcon(props)
+    }
+    
     return (
         <div onClick={onClick}>
             <props.Option>
-                <FaAngleRight className={contextObject.theme.contextMenuItemSubmenuIcon}/>
+                <SubmenuIcon className={contextObject.theme.contextMenuItemSubmenuIcon}/>
             </props.Option>
             <ContextMenu ref={contextMenuRef} showContextMenu={showContextMenu} setShowContextMenu={setShowContextMenu} position={{x: position.x, y: position.y}} disableBackground={props.disableBackground}>
                 {props.children}

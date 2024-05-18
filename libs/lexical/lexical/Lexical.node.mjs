@@ -24,6 +24,7 @@ export const $getEditor = mod.$getEditor;
 export const $getNearestNodeFromDOMNode = mod.$getNearestNodeFromDOMNode;
 export const $getNearestRootOrShadowRoot = mod.$getNearestRootOrShadowRoot;
 export const $getNodeByKey = mod.$getNodeByKey;
+export const $getNodeByKeyOrThrow = mod.$getNodeByKeyOrThrow;
 export const $getPreviousSelection = mod.$getPreviousSelection;
 export const $getRoot = mod.$getRoot;
 export const $getSelection = mod.$getSelection;

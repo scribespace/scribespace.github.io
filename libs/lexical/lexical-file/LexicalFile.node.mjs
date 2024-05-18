@@ -7,5 +7,7 @@
  */
 
 const mod = await (process.env.NODE_ENV === 'development' ? import('./LexicalFile.dev.mjs') : import('./LexicalFile.prod.mjs'));
+export const editorStateFromSerializedDocument = mod.editorStateFromSerializedDocument;
 export const exportFile = mod.exportFile;
 export const importFile = mod.importFile;
+export const serializedDocumentFromEditorState = mod.serializedDocumentFromEditorState;

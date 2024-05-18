@@ -3,7 +3,17 @@ import { ContextMenu} from "./contextMenu";
 import { createContext, useEffect, useState } from "react";
 import TableContextOptions from "./options/tableContextOptions";
 import { EditorThemeClassName } from "lexical";
-import { variableExists } from "../../../../common";
+import { copyExistingValues } from "../../../../common";
+import { IconType } from "react-icons";
+import { FaAngleRight } from "react-icons/fa";
+
+export interface ContextMenuIcons {
+    SubmenuIcon: IconType;
+}
+
+const CONTEXT_MENU_DEFAULT_ICONS: ContextMenuIcons = {
+    SubmenuIcon: FaAngleRight,
+}
 
 export interface ContextMenuTheme {
     contextMenuFloat?: EditorThemeClassName;
@@ -11,8 +21,8 @@ export interface ContextMenuTheme {
     contextMenuItem?: EditorThemeClassName;
     contextMenuItemIcon?: EditorThemeClassName;
     contextMenuItemSubmenuIcon?: EditorThemeClassName;
-    contextMenuSeparator?: EditorThemeClassName;
-    contextMenuSeparatorStrong?: EditorThemeClassName;
+    contextMenuEditorContainer?: EditorThemeClassName;
+    contextMenuEditorButton?: EditorThemeClassName;
 }
 
 const CONTEXT_MENU_DEFAULT_THEME: ContextMenuTheme = {
@@ -21,23 +31,25 @@ const CONTEXT_MENU_DEFAULT_THEME: ContextMenuTheme = {
     contextMenuItem: 'context-menu-item-default',
     contextMenuItemIcon: 'context-menu-item-icon-default',
     contextMenuItemSubmenuIcon: 'context-menu-item-submenu-icon-default',
-    contextMenuSeparator: 'context-menu-separator-default',
-    contextMenuSeparatorStrong: 'context-menu-separator-strong-default',
+    contextMenuEditorContainer: 'context-menu-editor-container-default',
+    contextMenuEditorButton: 'context-menu-editor-button-default',
 }
 
 interface ContextMenuPluginProps {
-    theme?: ContextMenuTheme
+    theme?: ContextMenuTheme;
+    icons?: Partial<ContextMenuIcons>;
 }
 
 export interface ContextMenuContextObject {
     theme: ContextMenuTheme;
+    icons: ContextMenuIcons;
     mousePosition: {x: number, y: number};
     closeContextMenu: () => void;
 }
-const NULL_CONTEXT_OBJECT = {theme: CONTEXT_MENU_DEFAULT_THEME, mousePosition: {x:-1, y:-1}, closeContextMenu: () => {}}
+const NULL_CONTEXT_OBJECT = {theme: CONTEXT_MENU_DEFAULT_THEME, icons: CONTEXT_MENU_DEFAULT_ICONS, mousePosition: {x:-1, y:-1}, closeContextMenu: () => {}}
 export const ContextMenuContext = createContext(NULL_CONTEXT_OBJECT)
 
-export default function ContextMenuPlugin({theme}: ContextMenuPluginProps) {
+export default function ContextMenuPlugin({theme, icons}: ContextMenuPluginProps) {
     const [editor] = useLexicalComposerContext();
 
     const [showContextMenu, setShowContextMenu] = useState<boolean>(false)
@@ -45,7 +57,7 @@ export default function ContextMenuPlugin({theme}: ContextMenuPluginProps) {
 
     const openContextMenu = (e: MouseEvent) => {
         setShowContextMenu(true)
-        setContextMenuContextObject((oldState) => {return {theme: oldState.theme, mousePosition: {x: (window.scrollX + e.clientX), y: (window.scrollY + e.clientY)}, closeContextMenu: oldState.closeContextMenu}})
+        setContextMenuContextObject((oldState) => {return {theme: oldState.theme, icons: oldState.icons, mousePosition: {x: (window.scrollX + e.clientX), y: (window.scrollY + e.clientY)}, closeContextMenu: oldState.closeContextMenu}})
         
         e.preventDefault()
         e.stopPropagation()
@@ -56,18 +68,17 @@ export default function ContextMenuPlugin({theme}: ContextMenuPluginProps) {
     }
 
     useEffect(()=>{
-        let newContextMenuTheme: ContextMenuTheme = theme ? theme : {};
-        for ( const field in CONTEXT_MENU_DEFAULT_THEME ) {
-            if ( !variableExists((newContextMenuTheme as any)[field]) ) {
-                (newContextMenuTheme as any)[field] = (CONTEXT_MENU_DEFAULT_THEME as any)[field]
-            }
-        }
-
-        setContextMenuContextObject((oldState) => {return {theme: newContextMenuTheme, mousePosition: oldState.mousePosition, closeContextMenu: oldState.closeContextMenu}})
+        const newTheme = copyExistingValues(theme, CONTEXT_MENU_DEFAULT_THEME);
+        setContextMenuContextObject((oldState) => {return {theme: newTheme, icons: oldState.icons, mousePosition: oldState.mousePosition, closeContextMenu: oldState.closeContextMenu}})
     },[theme])
 
     useEffect(()=>{
-        setContextMenuContextObject((oldState) => {return {theme: oldState.theme, mousePosition: oldState.mousePosition, closeContextMenu: closeContextMenu}})
+        const newIcons = copyExistingValues(icons, CONTEXT_MENU_DEFAULT_ICONS);
+        setContextMenuContextObject((oldState) => {return {theme: oldState.theme, icons: newIcons, mousePosition: oldState.mousePosition, closeContextMenu: oldState.closeContextMenu}})
+    },[icons])
+
+    useEffect(()=>{
+        setContextMenuContextObject((oldState) => {return {theme: oldState.theme, icons: oldState.icons, mousePosition: oldState.mousePosition, closeContextMenu: closeContextMenu}})
 
         const removeRootListeners = editor.registerRootListener((rootElement, prevElement) => {
             if (rootElement !== null) {

@@ -1,0 +1,46 @@
+.number-input-editor-container-default {
+    align-content: center;
+    display: flex;
+    align-items: center
+}
+
+.number-input-editor-input-default {
+    text-align: center;
+    vertical-align: middle;
+    width: 3em;
+    border: none;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-radius: 3px;
+
+    -moz-appearance: textfield;
+}
+
+.number-input-editor-input-default:hover:not(:focus) {
+    background-color: rgb(209, 209, 209);
+}
+
+.number-input-editor-input-default::-webkit-outer-spin-button,
+.number-input-editor-input-default::-webkit-inner-spin-button
+ {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.number-input-editor-button-default {
+    border-radius: 3px;
+    padding: 5px;
+    cursor: pointer;
+    vertical-align: middle;
+    border: 0 solid;
+    background-color: transparent;
+
+    user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+}
+
+.number-input-editor-button-default:hover {
+    background-color: rgb(209, 209, 209);
+  }

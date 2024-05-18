@@ -15,6 +15,7 @@ export declare function errorOnInfiniteTransforms(): void;
 export declare function getActiveEditorState(): EditorState;
 export declare function getActiveEditor(): LexicalEditor;
 export declare function internalGetActiveEditor(): LexicalEditor | null;
+export declare function internalGetActiveEditorState(): EditorState | null;
 export declare function $applyTransforms(editor: LexicalEditor, node: LexicalNode, transformsCache: Map<string, Array<Transform<LexicalNode>>>): void;
 export declare function $parseSerializedNode(serializedNode: SerializedLexicalNode): LexicalNode;
 export declare function parseEditorState(serializedEditorState: SerializedEditorState, editor: LexicalEditor, updateFn: void | (() => void)): EditorState;

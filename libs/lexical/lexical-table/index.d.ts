@@ -18,5 +18,5 @@ export { $createTableRowNode, $isTableRowNode, TableRowNode, } from './LexicalTa
 export type { TableSelection, TableSelectionShape, } from './LexicalTableSelection';
 export { $createTableSelection, $isTableSelection, } from './LexicalTableSelection';
 export type { HTMLTableElementWithWithTableSelectionState } from './LexicalTableSelectionHelpers';
-export { applyTableHandlers, getDOMCellFromTarget, getTableObserverFromTableElement, $findTableNode, $findCellNode, } from './LexicalTableSelectionHelpers';
+export { $findCellNode, $findTableNode, applyTableHandlers, getDOMCellFromTarget, getTableObserverFromTableElement, } from './LexicalTableSelectionHelpers';
 export { $computeTableMap, $computeTableMapSkipCellCheck, $createTableNodeWithDimensions, $deleteTableColumn, $deleteTableColumn__EXPERIMENTAL, $deleteTableRow__EXPERIMENTAL, $getNodeTriplet, $getTableCellNodeFromLexicalNode, $getTableCellNodeRect, $getTableColumnIndexFromTableCellNode, $getTableNodeFromLexicalNodeOrThrow, $getTableRowIndexFromTableCellNode, $getTableRowNodeFromTableCellNodeOrThrow, $insertTableColumn, $insertTableColumn__EXPERIMENTAL, $insertTableRow, $insertTableRow__EXPERIMENTAL, $removeTableRowAtIndex, $unmergeCell, } from './LexicalTableUtils';

@@ -20,6 +20,32 @@ var version = "0.15.0";
  *
  */
 
+/**
+ * Generates a SerializedDocument from the given EditorState
+ * @param editorState - the EditorState to serialize
+ * @param config - An object that optionally contains source and lastSaved.
+ * source defaults to Lexical and lastSaved defaults to the current time in
+ * epoch milliseconds.
+ */
+function serializedDocumentFromEditorState(editorState, config = Object.freeze({})) {
+  return {
+    editorState: editorState.toJSON(),
+    lastSaved: config.lastSaved || Date.now(),
+    source: config.source || 'Lexical',
+    version
+  };
+}
+
+/**
+ * Parse an EditorState from the given editor and document
+ *
+ * @param editor - The lexical editor
+ * @param maybeStringifiedDocument - The contents of a .lexical file (as a JSON string, or already parsed)
+ */
+function editorStateFromSerializedDocument(editor, maybeStringifiedDocument) {
+  const json = typeof maybeStringifiedDocument === 'string' ? JSON.parse(maybeStringifiedDocument) : maybeStringifiedDocument;
+  return editor.parseEditorState(json.editorState);
+}
 
 /**
  * Takes a file and inputs its content into the editor state as an input field.
@@ -27,9 +53,7 @@ var version = "0.15.0";
  */
 function importFile(editor) {
   readTextFileFromSystem(text => {
-    const json = JSON.parse(text);
-    const editorState = editor.parseEditorState(JSON.stringify(json.editorState));
-    editor.setEditorState(editorState);
+    editor.setEditorState(editorStateFromSerializedDocument(editor, text));
     editor.dispatchCommand(lexical.CLEAR_HISTORY_COMMAND, undefined);
   });
 }
@@ -53,23 +77,21 @@ function readTextFileFromSystem(callback) {
   });
   input.click();
 }
+
 /**
  * Generates a .lexical file to be downloaded by the browser containing the current editor state.
  * @param editor - The lexical editor.
  * @param config - An object that optionally contains fileName and source. fileName defaults to
- * the current date (as a string) and source defaults to lexical.
+ * the current date (as a string) and source defaults to Lexical.
  */
 function exportFile(editor, config = Object.freeze({})) {
   const now = new Date();
-  const editorState = editor.getEditorState();
-  const documentJSON = {
-    editorState: editorState,
-    lastSaved: now.getTime(),
-    source: config.source || 'Lexical',
-    version
-  };
+  const serializedDocument = serializedDocumentFromEditorState(editor.getEditorState(), {
+    ...config,
+    lastSaved: now.getTime()
+  });
   const fileName = config.fileName || now.toISOString();
-  exportBlob(documentJSON, `${fileName}.lexical`);
+  exportBlob(serializedDocument, `${fileName}.lexical`);
 }
 
 // Adapted from https://stackoverflow.com/a/19328891/2013580
@@ -93,5 +115,7 @@ function exportBlob(data, fileName) {
   a.remove();
 }
 
+exports.editorStateFromSerializedDocument = editorStateFromSerializedDocument;
 exports.exportFile = exportFile;
 exports.importFile = importFile;
+exports.serializedDocumentFromEditorState = serializedDocumentFromEditorState;

@@ -52,6 +52,11 @@
 .editor-toolbar .item-font-size-button {
     width: 8px;
     height: 8px;
+
+    user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
 }
 
 .editor-toolbar .item-font-size::-webkit-outer-spin-button,

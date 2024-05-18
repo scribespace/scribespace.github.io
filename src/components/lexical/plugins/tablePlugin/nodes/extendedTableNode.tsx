@@ -1,4 +1,4 @@
-import { TableNode, TableRowNode, TableCellNode, $createTableNodeWithDimensions, $isTableRowNode } from '@lexical/table'
+import { TableNode, TableRowNode, TableCellNode, $createTableNodeWithDimensions, $isTableRowNode, $getTableRowIndexFromTableCellNode, $createTableRowNode, $getTableRowNodeFromTableCellNodeOrThrow } from '@lexical/table'
 import { $applyNodeReplacement, $isParagraphNode, DOMConversionMap, DOMConversionOutput, EditorConfig, LexicalEditor, LexicalNode, SerializedElementNode, Spread } from 'lexical';
 import {addClassNamesToElement} from '@lexical/utils';
 import { edit } from 'react-arborist/dist/module/state/edit-slice';
@@ -242,6 +242,44 @@ export class ExtendedTableNode extends TableNode {
 
     cell.setColSpan(1)
     cell.setRowSpan(1)
+  }
+
+  addRowsAfter(cellNode: TableCellNode, rowsCount: number ) {
+    const self = this.getWritable()
+    const resolvedTable = self.getResolvedTable();
+
+    const rowID = $getTableRowIndexFromTableCellNode(cellNode) + cellNode.getRowSpan() - 1;
+    let rowNode = $getTableRowNodeFromTableCellNodeOrThrow(cellNode);
+    for ( let r = 1; r < cellNode.getRowSpan(); ++r) {
+      rowNode = rowNode.getNextSibling() as TableRowNode;
+    }
+
+    let cellsToAdd = 0;
+    if ( rowID == resolvedTable.length - 1 ) {
+      cellsToAdd = self.getColumnsWidths().length
+    } else {
+      for ( let c = 0; c < resolvedTable[0].length;) {
+        const testCell = resolvedTable[rowID + 1][c];
+        const colSpan = testCell.getColSpan();
+        const rowSpan = testCell.getRowSpan();
+        if ( rowSpan > 1 && testCell == resolvedTable[rowID][c] ) {
+          testCell.setRowSpan(rowSpan + rowsCount);
+        } else {
+          cellsToAdd += colSpan;
+        }
+
+        c += colSpan;
+      }
+    }
+
+    for ( let r = 0; r < rowsCount; ++r ) {
+      const newRow = $createTableRowNode();
+      for ( let c = 0; c < cellsToAdd; ++c ) {
+        const newCell = $createTableCellNodeWithParagraph();
+        newRow.append(newCell)
+      }
+      rowNode.insertAfter(newRow)
+    }
   }
 
   createDOM(config: EditorConfig): HTMLElement {

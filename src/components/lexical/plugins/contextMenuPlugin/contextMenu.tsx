@@ -12,18 +12,6 @@ interface ContextMenuProps {
     children: React.ReactNode;
 }
 
-export const ContextMenuSeparatorStrong = () => {
-    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext)
-
-    return <div className={contextObject.theme.contextMenuSeparatorStrong}/>
-}
-
-export const ContextMenuSeparator = () => {
-    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext)
-
-    return <div className={contextObject.theme.contextMenuSeparator}/>
-}
-
 export const ContextMenu = forwardRef<HTMLDivElement, ContextMenuProps>( (props: ContextMenuProps, outContextMenuRef) => {
     const contextObject: ContextMenuContextObject = useContext(ContextMenuContext)
     

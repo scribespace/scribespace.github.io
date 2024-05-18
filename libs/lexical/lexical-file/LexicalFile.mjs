@@ -9,5 +9,7 @@
 import * as modDev from './LexicalFile.dev.mjs';
 import * as modProd from './LexicalFile.prod.mjs';
 const mod = process.env.NODE_ENV === 'development' ? modDev : modProd;
+export const editorStateFromSerializedDocument = mod.editorStateFromSerializedDocument;
 export const exportFile = mod.exportFile;
 export const importFile = mod.importFile;
+export const serializedDocumentFromEditorState = mod.serializedDocumentFromEditorState;
