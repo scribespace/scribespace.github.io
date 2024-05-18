@@ -11,7 +11,7 @@ import { AiOutlineSplitCells } from "react-icons/ai";
 import { TableContextOptionProps } from "../tableContextOptions";
 
 
-export default function TableContextSplitCells({ editor }: TableContextOptionProps) {
+export default function TableContextSplitCells({ editor, icons }: TableContextOptionProps) {
     const contextObject: ContextMenuContextObject = useContext(ContextMenuContext);
     const onClick = () => {
         editor.update(() => {
@@ -46,5 +46,5 @@ export default function TableContextSplitCells({ editor }: TableContextOptionPro
         });
     };
 
-    return <ContextMenuItem Icon={AiOutlineSplitCells} title="Split Cells" onClick={onClick} />;
+    return <ContextMenuItem Icon={icons.SplitCellIcon} title="Split Cells" onClick={onClick} />;
 }

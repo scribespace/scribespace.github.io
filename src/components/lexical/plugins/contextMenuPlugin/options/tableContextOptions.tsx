@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from "react";
-import { TbColumnInsertLeft, TbColumnInsertRight, TbColumnRemove, TbRowInsertBottom, TbRowInsertTop, TbRowRemove } from "react-icons/tb";
+import { useContext, useEffect, useMemo, useState } from "react";
+import { TbColumnInsertLeft, TbColumnInsertRight, TbColumnRemove, TbRowInsertBottom, TbRowInsertTop, TbRowRemove, TbTableOff, TbTablePlus } from "react-icons/tb";
 import { ContextMenuContext, ContextMenuContextObject } from "../contextMenuPlugin";
 import ContextSubmenu, { CotextSubmenuOptionProps } from "../contextSubmenu";
 import { $getNodeByKey, $getNodeByKeyOrThrow, $getSelection, $isRangeSelection, LexicalEditor } from "lexical";
@@ -15,9 +15,41 @@ import TableContextSplitCells from "./tableContext/tableContextSplitCells";
 import TableContextMergeCells from "./tableContext/tableContextMergeCells";
 import TableContextCreate from "./tableContext/tableContextCreate";
 import { ExtendedTableNode } from "../../tablePlugin/nodes/extendedTableNode";
+import { IconType } from "react-icons";
+import { AiOutlineMergeCells, AiOutlineSplitCells } from "react-icons/ai";
+import { copyExistingValues } from "../../../../../common";
+import { TableContextDelete } from "./tableContext/tableContextDelete";
+
+
+export interface TableContextMenuIcons {
+    AddTableIcon: IconType;
+    DeleteTableIcon: IconType;
+    MergeCellIcon: IconType;
+    SplitCellIcon: IconType;
+    AddRowBeforeIcon: IconType;
+    AddRowAfterIcon: IconType;
+    AddColumnBeforeIcon: IconType;
+    AddColumnAfterIcon: IconType;
+    RemoveRowIcon: IconType;
+    RemoveColumnIcon: IconType;
+}
+
+const TABLE_CONTEXT_MENU_DEFAULT_ICONS: TableContextMenuIcons = {
+    AddTableIcon: TbTablePlus,
+    DeleteTableIcon: TbTableOff,
+    MergeCellIcon: AiOutlineMergeCells,
+    SplitCellIcon: AiOutlineSplitCells,
+    AddRowBeforeIcon: TbRowInsertTop,
+    AddRowAfterIcon: TbRowInsertBottom,
+    AddColumnBeforeIcon: TbColumnInsertLeft,
+    AddColumnAfterIcon: TbColumnInsertRight,
+    RemoveRowIcon: TbRowRemove,
+    RemoveColumnIcon: TbColumnRemove,
+}
 
 export interface TableContextOptionProps {
-    editor: LexicalEditor
+    editor: LexicalEditor,
+    icons: TableContextMenuIcons,
 }
 const onClickNotImplemented = () => {
     throw Error("Not implemented")
@@ -36,10 +68,10 @@ function TableContextNumberInputEditor({onInputAccepted}: TableContextNumberInpu
     )
 }
 
-export function TableContextAddColumnAfter( {editor}: TableContextOptionProps ) {
+export function TableContextAddColumnAfter( {editor, icons}: TableContextOptionProps ) {
     const OptionElement = ({children}: CotextSubmenuOptionProps) => {
         return (
-         <ContextMenuItem Icon={TbColumnInsertRight} title="Insert Column After">
+         <ContextMenuItem Icon={icons.AddColumnAfterIcon} title="Insert Column After">
              {children}
          </ContextMenuItem>
         )
@@ -52,10 +84,10 @@ export function TableContextAddColumnAfter( {editor}: TableContextOptionProps ) 
     )
 }
 
-export function TableContextAddColumnBefore( {editor}: TableContextOptionProps ) {
+export function TableContextAddColumnBefore( {editor, icons}: TableContextOptionProps ) {
     const OptionElement = ({children}: CotextSubmenuOptionProps) => {
         return (
-         <ContextMenuItem Icon={TbColumnInsertLeft} title="Insert Column Before">
+         <ContextMenuItem Icon={icons.AddColumnBeforeIcon} title="Insert Column Before">
              {children}
          </ContextMenuItem>
         )
@@ -68,12 +100,12 @@ export function TableContextAddColumnBefore( {editor}: TableContextOptionProps )
     )
 }
 
-export function TableContextAddRowBefore( {editor}: TableContextOptionProps ) {
+export function TableContextAddRowBefore( {editor, icons}: TableContextOptionProps ) {
     const contextObject: ContextMenuContextObject = useContext(ContextMenuContext)
     
     const OptionElement = ({children}: CotextSubmenuOptionProps) => {
         return (
-         <ContextMenuItem Icon={TbRowInsertTop} title="Insert Row Before">
+         <ContextMenuItem Icon={icons.AddRowBeforeIcon} title="Insert Row Before">
              {children}
          </ContextMenuItem>
         )
@@ -116,12 +148,12 @@ export function TableContextAddRowBefore( {editor}: TableContextOptionProps ) {
     )
 }
 
-export function TableContextAddRowAfter( {editor}: TableContextOptionProps ) {
+export function TableContextAddRowAfter( {editor, icons}: TableContextOptionProps ) {
     const contextObject: ContextMenuContextObject = useContext(ContextMenuContext)
 
     const OptionElement = ({children}: CotextSubmenuOptionProps) => {
         return (
-         <ContextMenuItem Icon={TbRowInsertBottom} title="Insert Row After">
+         <ContextMenuItem Icon={icons.AddRowAfterIcon} title="Insert Row After">
              {children}
          </ContextMenuItem>
         )
@@ -172,20 +204,27 @@ export function TableContextAddRowAfter( {editor}: TableContextOptionProps ) {
     )
 }
 
-export function TableContextColumnRemove( {editor}: TableContextOptionProps ) {
-    return <ContextMenuItem Icon={TbColumnRemove} title="Remove Column" onClick={onClickNotImplemented}/>
+export function TableContextColumnRemove( {editor, icons}: TableContextOptionProps ) {
+    return <ContextMenuItem Icon={icons.RemoveColumnIcon} title="Remove Column" onClick={onClickNotImplemented}/>
 }
 
-export function TableContextRowRemove( {editor}: TableContextOptionProps ) {
-    return <ContextMenuItem Icon={TbRowRemove} title="Remove Row" onClick={onClickNotImplemented}/>
+export function TableContextRowRemove( {editor, icons}: TableContextOptionProps ) {
+    return <ContextMenuItem Icon={icons.RemoveRowIcon} title="Remove Row" onClick={onClickNotImplemented}/>
 }
 
-export default function TableContextOptions({editor}: TableContextOptionProps) {
+interface TableContextOptionsProps {
+    editor: LexicalEditor,
+    icons?: TableContextMenuIcons
+}
+
+export default function TableContextOptions({editor, icons}: TableContextOptionsProps) {
     const contextObject: ContextMenuContextObject = useContext(ContextMenuContext)
 
     const [insideTable, setInsideTable] = useState<boolean>(false)
     const [cellsSelected, setCellsSelected] = useState<boolean>(false)
     const [mergedCellSelected, setMergedCellSelected] = useState<boolean>(false)
+
+    const currentIcons = useMemo(() => copyExistingValues<TableContextMenuIcons>(icons, TABLE_CONTEXT_MENU_DEFAULT_ICONS), [icons])
 
     useEffect(()=>{
         editor.update(()=>{
@@ -232,25 +271,27 @@ export default function TableContextOptions({editor}: TableContextOptionProps) {
     return (
         <>
             <SeparatorHorizontalStrong/>
-            <TableContextCreate editor={editor}/>
+            <TableContextCreate editor={editor} icons={currentIcons}/>
+            {insideTable && 
+                <TableContextDelete editor={editor} icons={currentIcons}/>
+            }
             {(cellsSelected || mergedCellSelected) && (
                 <>
                 <SeparatorHorizontal/>
-                {cellsSelected && <TableContextMergeCells editor={editor}/>}
-                {mergedCellSelected && <TableContextSplitCells editor={editor}/>}
+                {cellsSelected && <TableContextMergeCells editor={editor} icons={currentIcons}/>}
+                {mergedCellSelected && <TableContextSplitCells editor={editor} icons={currentIcons}/>}
                 </>
             )}
             {insideTable && (
             <>
                 <SeparatorHorizontal/>
-                <TableContextColumnRemove editor={editor}/>
-                <TableContextRowRemove editor={editor}/>
+                <TableContextColumnRemove editor={editor} icons={currentIcons}/>
+                <TableContextRowRemove editor={editor} icons={currentIcons}/>
                 <SeparatorHorizontal/>
-                <TableContextAddColumnBefore editor={editor}/>
-                <TableContextAddColumnAfter editor={editor}/>
-                <TableContextAddRowBefore editor={editor}/>
-                <TableContextAddRowAfter editor={editor}/>
-                
+                <TableContextAddColumnBefore editor={editor} icons={currentIcons}/>
+                <TableContextAddColumnAfter editor={editor} icons={currentIcons}/>
+                <TableContextAddRowBefore editor={editor} icons={currentIcons}/>
+                <TableContextAddRowAfter editor={editor} icons={currentIcons}/>
             </>
             )}           
         </>

@@ -11,7 +11,7 @@ import { AiOutlineMergeCells } from "react-icons/ai";
 import { TableContextOptionProps } from "../tableContextOptions";
 
 
-export default function TableContextMergeCells({ editor }: TableContextOptionProps) {
+export default function TableContextMergeCells({ editor, icons }: TableContextOptionProps) {
     const contextObject: ContextMenuContextObject = useContext(ContextMenuContext);
 
     const onClick = () => {
@@ -74,5 +74,5 @@ export default function TableContextMergeCells({ editor }: TableContextOptionPro
         });
     };
 
-    return <ContextMenuItem Icon={AiOutlineMergeCells} title="Merge Cells" onClick={onClick} />;
+    return <ContextMenuItem Icon={icons.MergeCellIcon} title="Merge Cells" onClick={onClick} />;
 }

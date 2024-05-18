@@ -8,12 +8,12 @@ import { $createExtendedTableNodeWithDimensions } from "../../../tablePlugin/nod
 import ContextMenuItem from "../../contextMenuItem";
 import { TableContextOptionProps } from "../tableContextOptions";
 
-export default function TableContextCreate({ editor }: TableContextOptionProps) {
+export default function TableContextCreate({ editor, icons }: TableContextOptionProps) {
     const contextObject: ContextMenuContextObject = useContext(ContextMenuContext);
 
     const OptionElement = ({ children }: CotextSubmenuOptionProps) => {
         return (
-            <ContextMenuItem Icon={ImTable2} title="Create Table">
+            <ContextMenuItem Icon={icons.AddTableIcon} title="Create Table">
                 {children}
             </ContextMenuItem>
         );
