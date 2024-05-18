@@ -11,6 +11,13 @@ export type SerializedExtendedTableNode = Spread<
   SerializedElementNode
 >;
 
+export class ResolvedRow {
+  rowNode: TableRowNode;
+  cells: TableCellNode[] = [];
+  constructor(row: TableRowNode) {
+    this.rowNode = row;
+  }
+}
 
 export class ExtendedTableNode extends TableNode {
     __columnsWidths: number[];
@@ -94,33 +101,35 @@ export class ExtendedTableNode extends TableNode {
     return self.__columnsWidths[columnID];
   }
 
-  getResolvedTable(): TableCellNode[][] {
+  getResolvedTable(): ResolvedRow[] {
     const self = this.getLatest()
 
-    const resolvedTable: TableCellNode[][] = [];
+    const resolvedTable: ResolvedRow[] = [];
 
     let row = self.getChildren().find((node) => $isTableRowNode(node)) as TableRowNode | undefined | null
     if ( !row ) throw Error("getResolvedTable: there is no row")
 
     let rowID = 0;
     do {
-      if ( resolvedTable[rowID] == undefined ) resolvedTable[rowID] = [];
+      if ( resolvedTable[rowID] == undefined ) resolvedTable[rowID] = new ResolvedRow(row);
 
       const rowCells = row.getChildren() as TableCellNode[];
       let columnID = 0;
       for ( const cell of rowCells ) {
-        while ( resolvedTable[rowID][columnID] != undefined ) {
+        while ( resolvedTable[rowID].cells[columnID] != undefined ) {
           ++columnID;
         }
 
         const colSpan = cell.getColSpan();
         const rowSpan = cell.getRowSpan();
 
+        let spanRow = row;
         for ( let r = 0; r < rowSpan; ++r ) {
-          if ( resolvedTable[rowID + r] == undefined ) resolvedTable[rowID + r] = []
+          if ( resolvedTable[rowID + r] == undefined ) resolvedTable[rowID + r] = new ResolvedRow(spanRow)
           for ( let c = 0; c < colSpan; ++c ) {
-            resolvedTable[rowID + r][columnID + c] = cell;
+            resolvedTable[rowID + r].cells[columnID + c] = cell;
           }
+          spanRow = spanRow.getNextSibling() as TableRowNode;
         }
 
         columnID += colSpan;
@@ -139,8 +148,8 @@ export class ExtendedTableNode extends TableNode {
     let columnID = -1;
     let rowID = -1;
     for ( let r = 0; r < resolvedTable.length; ++r ) {
-      for ( let c = 0; c < resolvedTable[0].length; ++c ) {
-        if ( resolvedTable[r][c] == startCell ) {
+      for ( let c = 0; c < resolvedTable[0].cells.length; ++c ) {
+        if ( resolvedTable[r].cells[c] == startCell ) {
           columnID = c;
           rowID = r;
           break;
@@ -149,11 +158,11 @@ export class ExtendedTableNode extends TableNode {
       if ( columnID != -1 ) break;
     }
 
-    if (columnsCount == resolvedTable[0].length ) {
+    if (columnsCount == resolvedTable[0].cells.length ) {
       let mergedRowHeight = 0;
       const mergedRowHeightProcessed = new Set<TableCellNode>()
       for ( let r= 0; r < rowsCount; ++r ) {
-        const cell = resolvedTable[r][0];
+        const cell = resolvedTable[r].cells[0];
         if ( !mergedRowHeightProcessed.has(cell) ) {
           mergedRowHeightProcessed.add(cell);
           const rowElement = editor.getElementByKey(cell.getKey())
@@ -170,7 +179,7 @@ export class ExtendedTableNode extends TableNode {
     for ( let r = 0; r < rowsCount; ++r ) {
       let cellsToRemoveCount = 0;
       for ( let c = 0; c < columnsCount; ++c ) {
-        const cell = resolvedTable[rowID + r][columnID + c];
+        const cell = resolvedTable[rowID + r].cells[columnID + c];
         if ( cell != startCell && !cellsToRemove.has(cell) ) {
           cellsToRemove.add(cell)
           ++cellsToRemoveCount;
@@ -198,8 +207,8 @@ export class ExtendedTableNode extends TableNode {
     let columnID = -1;
     let rowID = -1;
     for ( let r = 0; r < resolvedTable.length; ++r ) {
-      for ( let c = 0; c < resolvedTable[0].length; ++c ) {
-        if ( resolvedTable[r][c] == cell ) {
+      for ( let c = 0; c < resolvedTable[0].cells.length; ++c ) {
+        if ( resolvedTable[r].cells[c] == cell ) {
           columnID = c;
           rowID = r;
           break;
@@ -212,7 +221,7 @@ export class ExtendedTableNode extends TableNode {
     const colSpan = cell.getColSpan()
     let row = cell.getParentOrThrow() as TableRowNode | null
 
-    if ( colSpan == resolvedTable[0].length) {
+    if ( colSpan == resolvedTable[0].cells.length) {
       const cellElement = editor.getElementByKey(cell.getKey())
       if ( cellElement ) {
         const {height} = cellElement?.getBoundingClientRect();
@@ -227,13 +236,13 @@ export class ExtendedTableNode extends TableNode {
 
     columnID += colSpan;
     for ( let r = 1; r < rowSpan; ++r ) {
-      if ( columnID == resolvedTable[0].length ) {
+      if ( columnID == resolvedTable[0].cells.length ) {
         row = row!.getNextSibling()
         for ( let c = 0; c < colSpan; ++c ) {
           row!.append($createTableCellNodeWithParagraph())
         }
       } else {
-        const nextCell = resolvedTable[rowID + r][columnID];
+        const nextCell = resolvedTable[rowID + r].cells[columnID];
         for ( let c = 0; c < colSpan; ++c ) {
           nextCell.insertBefore($createTableCellNodeWithParagraph())
         }
@@ -244,6 +253,65 @@ export class ExtendedTableNode extends TableNode {
     cell.setRowSpan(1)
   }
   
+  removeRows(cellNode: TableCellNode, rowsCount: number ) {
+    const self = this.getWritable()
+    const resolvedTable = self.getResolvedTable();
+
+    const rowID = $getTableRowIndexFromTableCellNode(cellNode);
+
+    if ( rowsCount == resolvedTable.length ) {
+      self.remove()
+      return;
+    }
+
+    if ( rowID > 0 ) {
+      for ( let c = 0; c < resolvedTable[0].cells.length; ) {
+        const cellNode = resolvedTable[rowID].cells[c];
+        let rowSpan = 0;
+        for ( let r = rowID - 1; r >= 0; --r ) {
+          if ( resolvedTable[r].cells[c] != cellNode ) break;
+          ++rowSpan;
+        }
+        cellNode.setRowSpan(rowSpan);
+
+        c += cellNode.getColSpan();
+      }
+    }
+
+    if ( (rowID + rowsCount) < resolvedTable.length ) {
+      const lastRowID = rowID + rowsCount - 1;
+      for ( let c = 0; c < resolvedTable[0].cells.length; ) {
+        const cellNode = resolvedTable[lastRowID].cells[c];
+        const colSpan = cellNode.getColSpan();
+        let rowSpan = 0;
+        for ( let r = lastRowID + 1; r < resolvedTable.length; ++r ) {
+          if ( resolvedTable[r].cells[c] != cellNode ) break;
+          ++rowSpan;
+        }
+
+        if ( rowSpan > 0 ) {
+          if ( rowID > 0 && resolvedTable[rowID - 1].cells[c] == cellNode ) {
+            cellNode.setRowSpan(cellNode.getWritable().getRowSpan() + rowSpan);
+          } else {
+            cellNode.setRowSpan(rowSpan);
+            const nextCellID = c + colSpan;
+            if ( nextCellID == resolvedTable[0].cells.length ) {
+              resolvedTable[lastRowID+1].rowNode.append(cellNode);
+            } else {
+              resolvedTable[lastRowID+1].cells[nextCellID].insertBefore(cellNode);
+            }
+          }
+        }
+
+        c += colSpan;
+      }
+    }
+
+    for ( let r = 0; r < rowsCount; ++r ) {
+      resolvedTable[rowID + r].rowNode.remove()
+    }
+  }
+
   addRowsBefore(cellNode: TableCellNode, rowsCount: number ) {
     const self = this.getWritable()
     const resolvedTable = self.getResolvedTable();
@@ -255,12 +323,12 @@ export class ExtendedTableNode extends TableNode {
     if ( rowID == 0) {
       cellsToAdd = self.getColumnsWidths().length;
     } else {
-      for ( let c = 0; c < resolvedTable[0].length; ) {
-        const testCell = resolvedTable[rowID - 1][c];
+      for ( let c = 0; c < resolvedTable[0].cells.length; ) {
+        const testCell = resolvedTable[rowID - 1].cells[c];
         const colSpan = testCell.getColSpan();
         const rowSpan = testCell.getRowSpan();
 
-        if ( rowSpan > 1 && testCell == resolvedTable[rowID][c] ) {
+        if ( rowSpan > 1 && testCell == resolvedTable[rowID].cells[c] ) {
           testCell.setRowSpan(rowSpan + rowsCount);
         } else {
           cellsToAdd += colSpan;
@@ -294,11 +362,11 @@ export class ExtendedTableNode extends TableNode {
     if ( rowID == resolvedTable.length - 1 ) {
       cellsToAdd = self.getColumnsWidths().length
     } else {
-      for ( let c = 0; c < resolvedTable[0].length;) {
-        const testCell = resolvedTable[rowID + 1][c];
+      for ( let c = 0; c < resolvedTable[0].cells.length;) {
+        const testCell = resolvedTable[rowID + 1].cells[c];
         const colSpan = testCell.getColSpan();
         const rowSpan = testCell.getRowSpan();
-        if ( rowSpan > 1 && testCell == resolvedTable[rowID][c] ) {
+        if ( rowSpan > 1 && testCell == resolvedTable[rowID].cells[c] ) {
           testCell.setRowSpan(rowSpan + rowsCount);
         } else {
           cellsToAdd += colSpan;
