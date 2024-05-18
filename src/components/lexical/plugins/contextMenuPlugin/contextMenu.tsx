@@ -1,8 +1,7 @@
-import { forwardRef, useContext, useEffect,useImperativeHandle,useRef } from "react"
+import { useContext, useEffect, useRef } from "react";
 
-import './css/contextMenuPlugin.css'
+import './css/contextMenuPlugin.css';
 import { ContextMenuContext, ContextMenuContextObject } from "./contextMenuPlugin";
-
 
 interface ContextMenuProps {
     position: {x: number, y: number};
@@ -12,11 +11,9 @@ interface ContextMenuProps {
     children: React.ReactNode;
 }
 
-export const ContextMenu = forwardRef<HTMLDivElement, ContextMenuProps>( (props: ContextMenuProps, outContextMenuRef) => {
+export const ContextMenu = (props: ContextMenuProps) => {
     const contextObject: ContextMenuContextObject = useContext(ContextMenuContext)
-    
     const contextMenuRef = useRef<HTMLDivElement>(null)   
-    useImperativeHandle(outContextMenuRef, () => contextMenuRef.current!, []);
 
     const handleClick = ({target}: MouseEvent) =>
     {
@@ -50,4 +47,4 @@ export const ContextMenu = forwardRef<HTMLDivElement, ContextMenuProps>( (props:
             }
         </div>
     )
-})
+}
