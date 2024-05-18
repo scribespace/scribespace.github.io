@@ -19,17 +19,20 @@ export default function ContextSubmenu(props: ContextSubmenuProps) {
     const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
 
     const menuOptionRef = useRef<HTMLDivElement>(null)
-    const [position, setPosition] = useState<{x: number, y: number}>({x: -1, y: -1});
+    const [rect, setRect] = useState<{x: number, y: number, width: number, height: number}>({x: -1, y: -1, width: 0, height: 0});
+
+    useEffect(()=>{
+        setShowContextMenu(false)
+    },[props.Option])
 
     useEffect(()=>{
         const menuOption = menuOptionRef.current;
         if ( menuOption != null ){
-            const { right, top } = menuOption.getBoundingClientRect();
-            setPosition({x: right, y:top})
-        }   
-        setShowContextMenu(false)
-
-    },[props.Option])
+            const { left, top, width, height } = menuOption.getBoundingClientRect();
+            const rect = {x: left, y: top, width, height}
+            setRect(rect)
+        } 
+    },[showContextMenu])
 
     function onClick() {
         setShowContextMenu(true)
@@ -44,7 +47,7 @@ export default function ContextSubmenu(props: ContextSubmenuProps) {
             <props.Option>
                 <SubmenuIcon className={contextObject.theme.contextMenuItemSubmenuIcon}/>
             </props.Option>
-            <ContextMenu showContextMenu={showContextMenu} setShowContextMenu={setShowContextMenu} position={{x: position.x, y: position.y}} disableBackground={props.disableBackground}>
+            <ContextMenu showContextMenu={showContextMenu} setShowContextMenu={setShowContextMenu} parentRect={rect} disableBackground={props.disableBackground}>
                 {props.children}
             </ContextMenu>
         </div>

@@ -57,7 +57,7 @@ export default function ContextMenuPlugin({theme, icons}: ContextMenuPluginProps
 
     const openContextMenu = (e: MouseEvent) => {
         setShowContextMenu(true)
-        setContextMenuContextObject((oldState) => {return {theme: oldState.theme, icons: oldState.icons, mousePosition: {x: (window.scrollX + e.clientX), y: (window.scrollY + e.clientY)}, closeContextMenu: oldState.closeContextMenu}})
+        setContextMenuContextObject((oldState) => {return {theme: oldState.theme, icons: oldState.icons, mousePosition: {x: e.clientX, y: e.clientY}, closeContextMenu: oldState.closeContextMenu}})
         
         e.preventDefault()
         e.stopPropagation()
@@ -97,7 +97,7 @@ export default function ContextMenuPlugin({theme, icons}: ContextMenuPluginProps
     return (
         <ContextMenuContext.Provider value={contextMenuContextObject}>
             <div>
-                <ContextMenu showContextMenu={showContextMenu} setShowContextMenu={setShowContextMenu} position={{x: contextMenuContextObject.mousePosition.x, y: contextMenuContextObject.mousePosition.y}}>
+                <ContextMenu showContextMenu={showContextMenu} setShowContextMenu={setShowContextMenu} parentRect={{x: contextMenuContextObject.mousePosition.x, y: contextMenuContextObject.mousePosition.y, width: 0, height: 0}}>
                     <TableContextOptions editor={editor}/>
                 </ContextMenu>
             </div>
