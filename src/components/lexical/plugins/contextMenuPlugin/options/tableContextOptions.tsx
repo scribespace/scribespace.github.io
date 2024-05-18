@@ -36,10 +36,10 @@ function TableContextNumberInputEditor({onInputAccepted}: TableContextNumberInpu
     )
 }
 
-export function TableContextAddColumnRight( {editor}: TableContextOptionProps ) {
+export function TableContextAddColumnAfter( {editor}: TableContextOptionProps ) {
     const OptionElement = ({children}: CotextSubmenuOptionProps) => {
         return (
-         <ContextMenuItem Icon={TbColumnInsertRight} title="Insert Column Right">
+         <ContextMenuItem Icon={TbColumnInsertRight} title="Insert Column After">
              {children}
          </ContextMenuItem>
         )
@@ -52,10 +52,10 @@ export function TableContextAddColumnRight( {editor}: TableContextOptionProps ) 
     )
 }
 
-export function TableContextAddColumnLeft( {editor}: TableContextOptionProps ) {
+export function TableContextAddColumnBefore( {editor}: TableContextOptionProps ) {
     const OptionElement = ({children}: CotextSubmenuOptionProps) => {
         return (
-         <ContextMenuItem Icon={TbColumnInsertLeft} title="Insert Column Left">
+         <ContextMenuItem Icon={TbColumnInsertLeft} title="Insert Column Before">
              {children}
          </ContextMenuItem>
         )
@@ -68,28 +68,12 @@ export function TableContextAddColumnLeft( {editor}: TableContextOptionProps ) {
     )
 }
 
-export function TableContextAddRowTop( {editor}: TableContextOptionProps ) {
-    const OptionElement = ({children}: CotextSubmenuOptionProps) => {
-        return (
-         <ContextMenuItem Icon={TbRowInsertTop} title="Insert Row Top">
-             {children}
-         </ContextMenuItem>
-        )
-     }
-
-    return (
-        <ContextSubmenu Option={OptionElement} disableBackground={true}>
-            <TableContextNumberInputEditor onInputAccepted={onClickNotImplemented}/>
-        </ContextSubmenu>
-    )
-}
-
-export function TableContextAddRowBottom( {editor}: TableContextOptionProps ) {
+export function TableContextAddRowBefore( {editor}: TableContextOptionProps ) {
     const contextObject: ContextMenuContextObject = useContext(ContextMenuContext)
-
+    
     const OptionElement = ({children}: CotextSubmenuOptionProps) => {
         return (
-         <ContextMenuItem Icon={TbRowInsertBottom} title="Insert Row Bottom">
+         <ContextMenuItem Icon={TbRowInsertTop} title="Insert Row Before">
              {children}
          </ContextMenuItem>
         )
@@ -105,7 +89,55 @@ export function TableContextAddRowBottom( {editor}: TableContextOptionProps ) {
             let cellNode: TableCellNode | null = null;
             if ( $isRangeSelection(selection) ) {
                 cellNode = $getTableCellNodeFromLexicalNode(selection.getNodes()[0]);
-                if ( !cellNode ) throw Error("AddRow: couldn't find node");
+                if ( !cellNode ) throw Error("AddRowBefore: couldn't find node");
+                tableNode = $getTableNodeFromLexicalNodeOrThrow(cellNode) as ExtendedTableNode
+            }
+
+            if ( $isTableSelection(selection) ) {
+                tableNode = $getNodeByKeyOrThrow<ExtendedTableNode>(selection.tableKey);
+                if ( selection.anchor.isBefore(selection.focus) ) {
+                    cellNode = selection.anchor.getNode() as TableCellNode;
+                } else {
+                    cellNode = selection.focus.getNode() as TableCellNode;
+                }
+            }
+
+            if ( !cellNode ) throw Error("AddRowBefore: node not found")
+            tableNode?.addRowsBefore( cellNode, value );
+        })
+
+        contextObject.closeContextMenu();
+     }
+
+    return (
+        <ContextSubmenu Option={OptionElement} disableBackground={true}>
+            <TableContextNumberInputEditor onInputAccepted={onInputAccepted}/>
+        </ContextSubmenu>
+    )
+}
+
+export function TableContextAddRowAfter( {editor}: TableContextOptionProps ) {
+    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext)
+
+    const OptionElement = ({children}: CotextSubmenuOptionProps) => {
+        return (
+         <ContextMenuItem Icon={TbRowInsertBottom} title="Insert Row After">
+             {children}
+         </ContextMenuItem>
+        )
+     }
+
+     const onInputAccepted = (input: HTMLInputElement) => {
+        const value = input.valueAsNumber;
+
+        editor.update(()=>{
+            const selection = $getSelection();
+
+            let tableNode: ExtendedTableNode | null = null;
+            let cellNode: TableCellNode | null = null;
+            if ( $isRangeSelection(selection) ) {
+                cellNode = $getTableCellNodeFromLexicalNode(selection.getNodes()[0]);
+                if ( !cellNode ) throw Error("AddRowAfter: couldn't find node");
                 tableNode = $getTableNodeFromLexicalNodeOrThrow(cellNode) as ExtendedTableNode
             }
 
@@ -113,17 +145,20 @@ export function TableContextAddRowBottom( {editor}: TableContextOptionProps ) {
                 tableNode = $getNodeByKeyOrThrow<ExtendedTableNode>(selection.tableKey);
                 let rowID = -1;
                 for ( const node of selection.getNodes() ) {
-                    if ( $isTableCellNode(node) ) {
-                        const nodesRowID = $getTableRowIndexFromTableCellNode(node);
-                        if ( nodesRowID > rowID ) {
-                            rowID == nodesRowID
-                            cellNode = node;
+                    if ( $isTableCellNode(node)) {
+                        const cellsTableNode = $getTableNodeFromLexicalNodeOrThrow(node);
+                        if ( cellsTableNode == tableNode ) {
+                            const nodesRowID = $getTableRowIndexFromTableCellNode(node);
+                            if ( nodesRowID > rowID ) {
+                                rowID == nodesRowID
+                                cellNode = node;
+                            }
                         }
                     }
                 }
             }
 
-            if ( !cellNode ) throw Error("AddRowBottom: node not found")
+            if ( !cellNode ) throw Error("AddRowAfter: node not found")
             tableNode?.addRowsAfter( cellNode, value );
         })
 
@@ -211,10 +246,10 @@ export default function TableContextOptions({editor}: TableContextOptionProps) {
                 <TableContextColumnRemove editor={editor}/>
                 <TableContextRowRemove editor={editor}/>
                 <SeparatorHorizontal/>
-                <TableContextAddColumnLeft editor={editor}/>
-                <TableContextAddColumnRight editor={editor}/>
-                <TableContextAddRowTop editor={editor}/>
-                <TableContextAddRowBottom editor={editor}/>
+                <TableContextAddColumnBefore editor={editor}/>
+                <TableContextAddColumnAfter editor={editor}/>
+                <TableContextAddRowBefore editor={editor}/>
+                <TableContextAddRowAfter editor={editor}/>
                 
             </>
             )}           

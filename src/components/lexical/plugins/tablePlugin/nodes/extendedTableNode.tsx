@@ -243,6 +243,42 @@ export class ExtendedTableNode extends TableNode {
     cell.setColSpan(1)
     cell.setRowSpan(1)
   }
+  
+  addRowsBefore(cellNode: TableCellNode, rowsCount: number ) {
+    const self = this.getWritable()
+    const resolvedTable = self.getResolvedTable();
+
+    const rowID = $getTableRowIndexFromTableCellNode(cellNode);
+    const rowNode = $getTableRowNodeFromTableCellNodeOrThrow(cellNode);
+
+    let cellsToAdd = 0;
+    if ( rowID == 0) {
+      cellsToAdd = self.getColumnsWidths().length;
+    } else {
+      for ( let c = 0; c < resolvedTable[0].length; ) {
+        const testCell = resolvedTable[rowID - 1][c];
+        const colSpan = testCell.getColSpan();
+        const rowSpan = testCell.getRowSpan();
+
+        if ( rowSpan > 1 && testCell == resolvedTable[rowID][c] ) {
+          testCell.setRowSpan(rowSpan + rowsCount);
+        } else {
+          cellsToAdd += colSpan;
+        }
+
+        c += colSpan;
+      }
+    }
+
+    for ( let r = 0; r < rowsCount; ++r ) {
+      const newRow = $createTableRowNode();
+      for ( let c = 0; c < cellsToAdd; ++c ) {
+        const newCell = $createTableCellNodeWithParagraph();
+        newRow.append(newCell)
+      }
+      rowNode.insertBefore(newRow)
+    }
+  }
 
   addRowsAfter(cellNode: TableCellNode, rowsCount: number ) {
     const self = this.getWritable()
