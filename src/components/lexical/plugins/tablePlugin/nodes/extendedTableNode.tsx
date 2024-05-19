@@ -449,26 +449,18 @@ export class ExtendedTableNode extends TableNode {
     const columnID = $getTableColumnIndexFromTableCellNode(cellNode, resolvedTable) + cellNode.getColSpan() - 1;
    
     for ( let r = 0; r < resolvedTable.length; ) {
-      const rowSpan = resolvedTable[r].cells[columnID].cellNode.getRowSpan();
+      const resolvedRow = resolvedTable[r];
+      const rowSpan = resolvedRow.cells[columnID].cellNode.getRowSpan();
+      const resolvedCell = resolvedRow.cells[columnID];
 
-      if ( columnID == resolvedTable[0].cells.length - 1 ) {
+      if ( columnID < resolvedRow.cells.length - 1 && resolvedCell.cellNode == resolvedRow.cells[columnID + 1].cellNode ) {
+        const colSpan = resolvedCell.cellNode.getColSpan();
+        resolvedCell.cellNode.setColSpan(colSpan + columnsCount);
+      } else {
         for ( let c = 0; c < columnsCount; ++c ) {
           const newCell = $createTableCellNodeWithParagraph();
           newCell.setRowSpan(rowSpan);
-          resolvedTable[r].rowNode.append(newCell);
-        }
-      } else {
-        const resolvedCell = resolvedTable[r].cells[columnID];
-        const nextResolvedCell = resolvedTable[r].cells[columnID + 1];
-        if ( resolvedCell.cellNode == nextResolvedCell.cellNode ) {
-          const colSpan = cellNode.getColSpan();
-          cellNode.setColSpan(colSpan + columnsCount);
-        } else {
-          for ( let c = 0; c < columnsCount; ++c ) {
-            const newCell = $createTableCellNodeWithParagraph();
-            newCell.setRowSpan(rowSpan);
-            resolvedCell.cellNode.insertAfter(newCell);
-          }
+          resolvedCell.cellNode.insertAfter(newCell);
         }
       }
 
