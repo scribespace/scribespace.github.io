@@ -8,7 +8,8 @@ import {
     TableCellNode
 } from "@lexical/table";
 import { ExtendedTableNode } from "../../../tablePlugin/nodes/extendedTableNode";
-import { TableContextOptionProps, TableContextNumberInputEditor } from "../tableContextOptions";
+import { TableContextOptionProps } from "../tableContextOptions";
+import TableContextNumberInputEditor from "./tableContextNumberInputEditor";
 
 
 export function TableContextAddRowBefore({ editor, icons }: TableContextOptionProps) {

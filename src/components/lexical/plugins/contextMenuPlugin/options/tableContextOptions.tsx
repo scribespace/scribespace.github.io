@@ -2,14 +2,14 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { TbColumnInsertLeft, TbColumnInsertRight, TbColumnRemove, TbRowInsertBottom, TbRowInsertTop, TbRowRemove, TbTableOff, TbTablePlus } from "react-icons/tb";
 import { ContextMenuContext, ContextMenuContextObject } from "../contextMenuPlugin";
 import ContextSubmenu, { CotextSubmenuOptionProps } from "../contextSubmenu";
-import { $getNodeByKey, $getSelection, $isRangeSelection, LexicalEditor } from "lexical";
+import { $getNodeByKey, $getNodeByKeyOrThrow, $getSelection, $isRangeSelection, LexicalEditor } from "lexical";
 import ContextMenuItem from "../contextMenuItem";
 import { 
-    $findCellNode, $getTableRowNodeFromTableCellNodeOrThrow, $isTableCellNode, $isTableSelection,
+    $findCellNode, $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $getTableRowIndexFromTableCellNode, $getTableRowNodeFromTableCellNodeOrThrow, $isTableCellNode, $isTableSelection,
+    TableCellNode,
     TableRowNode,  
 } from "@lexical/table";
 import { SeparatorHorizontal, SeparatorHorizontalStrong } from "../../../editors/separator";
-import NumberInputEditor from "../../../editors/numberInputEditor";
 import TableContextSplitCells from "./tableContext/tableContextSplitCells";
 import TableContextMergeCells from "./tableContext/tableContextMergeCells";
 import TableContextCreate from "./tableContext/tableContextCreate";
@@ -18,6 +18,9 @@ import { AiOutlineMergeCells, AiOutlineSplitCells } from "react-icons/ai";
 import { copyExistingValues } from "../../../../../common";
 import { TableContextDelete } from "./tableContext/tableContextDelete";
 import { TableContextRowRemove, TableContextAddRowBefore, TableContextAddRowAfter } from "./tableContext/tableContextRowOptions";
+import TableContextNumberInputEditor from "./tableContext/tableContextNumberInputEditor";
+import { ExtendedTableNode } from "../../tablePlugin/nodes/extendedTableNode";
+import { $getTableColumnIndexFromTableCellNode } from "../../tablePlugin/tableHelpers";
 
 
 export interface TableContextMenuIcons {
@@ -50,25 +53,14 @@ export interface TableContextOptionProps {
     editor: LexicalEditor,
     icons: TableContextMenuIcons,
 }
+
 const onClickNotImplemented = () => {
     throw Error("Not implemented")
 }
 
-interface TableContextNumberInputEditorProps {
-    onInputAccepted: (target: HTMLInputElement) => void;
-}
-
-export function TableContextNumberInputEditor({onInputAccepted}: TableContextNumberInputEditorProps) {
-    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext)
-
-    return (
-        <div className={contextObject.theme.contextMenuEditorContainer}>
-            <NumberInputEditor type="number" defaultValue="1" min={1} useAcceptButton={true} onInputAccepted={onInputAccepted}/>
-        </div>
-    )
-}
-
 export function TableContextAddColumnAfter( {editor, icons}: TableContextOptionProps ) {
+    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext);
+
     const OptionElement = ({children}: CotextSubmenuOptionProps) => {
         return (
          <ContextMenuItem Icon={icons.AddColumnAfterIcon} title="Insert Column After">
@@ -77,9 +69,49 @@ export function TableContextAddColumnAfter( {editor, icons}: TableContextOptionP
         )
      }
 
+     const onInputAccepted = (input: HTMLInputElement) => {
+        const value = input.valueAsNumber;
+
+        editor.update(() => {
+            const selection = $getSelection();
+
+            let tableNode: ExtendedTableNode | null = null;
+            let cellNode: TableCellNode | null = null;
+            if ($isRangeSelection(selection)) {
+                cellNode = $getTableCellNodeFromLexicalNode(selection.getNodes()[0]);
+                if (!cellNode) throw Error("AddColumnAfter: couldn't find node");
+                tableNode = $getTableNodeFromLexicalNodeOrThrow(cellNode) as ExtendedTableNode;
+            }
+
+            if ($isTableSelection(selection)) {
+                tableNode = $getNodeByKeyOrThrow<ExtendedTableNode>(selection.tableKey);
+                const resolvedTable = tableNode.getResolvedTable()
+                let columnID = -1;
+                for (const node of selection.getNodes()) {
+                    if ($isTableCellNode(node)) {
+                        const cellsTableNode = $getTableNodeFromLexicalNodeOrThrow(node);
+                        if (cellsTableNode == tableNode) {
+                            const nodesColumnID = $getTableColumnIndexFromTableCellNode(node, resolvedTable);
+                            if (nodesColumnID > columnID) {
+                                columnID == columnID;
+                                cellNode = node;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!cellNode) throw Error("AddColumnAfter: node not found");
+            tableNode?.addColumnsAfter(cellNode, value);
+        },
+        { tag: 'table-add-column-after' });
+
+        contextObject.closeContextMenu();
+    };
+
     return (
         <ContextSubmenu Option={OptionElement} disableBackground={true}>
-            <TableContextNumberInputEditor onInputAccepted={onClickNotImplemented}/>
+            <TableContextNumberInputEditor onInputAccepted={onInputAccepted}/>
         </ContextSubmenu>
     )
 }
