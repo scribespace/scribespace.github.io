@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { ContextMenuContext, ContextMenuContextObject } from "../../contextMenuPlugin";
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical";
 import ContextMenuItem from "../../contextMenuItem";
-import { $getTableNodeFromLexicalNodeOrThrow, $isTableSelection } from "@lexical/table";
+import { $isTableSelection } from "@lexical/table";
 import { TableContextOptionProps } from "../tableContextOptions";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../tablePlugin/nodes/extendedTableNode";
 

@@ -96,6 +96,20 @@ export class TableColumnsGroupNode extends TextNode {
     columnsWidths.splice(columnID + 1, 0, ...newColumns);
   }
 
+  removeColumns(columnID: number, columnsToRemove: number) {
+    const self = this.getWritable();
+    const columnsWidths = self.getColumnsWidths();
+    const sizeScale = columnsWidths.length / (columnsWidths.length - columnsToRemove);
+
+    columnsWidths.splice(columnID, columnsToRemove);
+
+    for ( let c = 0; c < columnsWidths.length; ++c ) {
+      if ( columnsWidths[c] > -1 ) {
+        columnsWidths[c] *= sizeScale
+      }
+    }
+  }
+
 
   createDOM(): HTMLElement {
     const self = this.getLatest()

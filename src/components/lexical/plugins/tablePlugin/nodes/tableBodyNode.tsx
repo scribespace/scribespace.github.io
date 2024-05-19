@@ -1,4 +1,4 @@
-import { TableNode, TableRowNode, TableCellNode, $createTableNodeWithDimensions, $isTableRowNode, $getTableRowIndexFromTableCellNode, $createTableRowNode } from '@lexical/table'
+import { TableNode, TableRowNode, TableCellNode, $createTableNodeWithDimensions, $isTableRowNode, $getTableRowIndexFromTableCellNode, $createTableRowNode, $createTableCellNode, TableCellHeaderStates } from '@lexical/table'
 import { $applyNodeReplacement, $isParagraphNode, DOMConversionMap, DOMConversionOutput, EditorConfig, LexicalEditor, LexicalNode, SerializedElementNode } from 'lexical';
 import { $createTableCellNodeWithParagraph, $getTableColumnIndexFromTableCellNode } from '../tableHelpers';
 import { TableColumnsGroupNode } from './tableColumnsGroupNode';
@@ -200,11 +200,6 @@ export class TableBodyNode extends TableNode {
 
     const rowID = $getTableRowIndexFromTableCellNode(cellNode);
 
-    if ( rowsCount == resolvedTable.length ) {
-      self.remove()
-      return;
-    }
-
     if ( rowID > 0 ) {
       for ( let c = 0; c < resolvedTable[0].cells.length; ) {
         const cellNode = resolvedTable[rowID].cells[c].cellNode;
@@ -381,6 +376,91 @@ export class TableBodyNode extends TableNode {
     }
 
     columnsGroup?.addColumnsAfter(columnID, columnsCount);
+  }
+
+  removeColumns(cellNode: TableCellNode, columnsToRemove: number, columnsGroup?: TableColumnsGroupNode ) {
+
+    const self = this.getWritable()
+    const resolvedTable = self.getResolvedTable();
+    const rowsCount = resolvedTable.length;
+    const columnsCount = resolvedTable[0].cells.length;
+    const columnID = $getTableColumnIndexFromTableCellNode(cellNode, resolvedTable);
+    const lastColumnID = columnID + columnsToRemove - 1;
+
+    if ( columnID < lastColumnID ) {
+        for ( let r = 0; r < rowsCount; ) {
+            const resolvedCellNode = resolvedTable[r].cells[columnID];
+            const rowSpan = resolvedCellNode.cellNode.getRowSpan();
+            const colSpan = resolvedCellNode.cellNode.getColSpan();
+
+            if ( resolvedCellNode.columnID < columnID && (resolvedCellNode.columnID + colSpan - 1) <= lastColumnID ) {
+                resolvedCellNode.cellNode.setColSpan( columnID - resolvedCellNode.columnID );
+            }
+
+            if ( resolvedCellNode.columnID == columnID && resolvedCellNode.rowID == r ) {
+                resolvedCellNode.cellNode.remove();
+            }
+
+            r += rowSpan;
+        }  
+    }
+
+    for ( let r = 0; r < rowsCount; ) {
+        const resolvedRow = resolvedTable[r];
+        const resolvedCell = resolvedRow.cells[lastColumnID];
+        const rowSpan = resolvedCell.cellNode.getRowSpan();
+        const colSpan = resolvedCell.cellNode.getColSpan();
+
+        if ( (resolvedCell.columnID + colSpan - 1) > lastColumnID ) {
+            if ( resolvedCell.columnID < columnID )
+                resolvedCell.cellNode.setColSpan( colSpan - (lastColumnID - columnID + 1) );
+            else {
+                let nextColumnID = lastColumnID + (colSpan - (lastColumnID - resolvedCell.columnID + 1)) + 1;
+                while ( nextColumnID < columnsCount ) {
+                    const nextResolvedCell = resolvedRow.cells[nextColumnID];
+                    if ( nextResolvedCell.rowID == r ) break;
+
+                    nextColumnID += nextResolvedCell.cellNode.getColSpan();
+                }
+
+                let newCell = $createTableCellNode(TableCellHeaderStates.NO_STATUS);
+                for ( const cellChild of resolvedCell.cellNode.getChildren() ) {
+                    if ( !$isParagraphNode(cellChild) || cellChild.getTextContentSize() > 0 )
+                        newCell.append(cellChild)
+                }
+
+                newCell.setRowSpan(rowSpan);
+                newCell.setColSpan((colSpan - (lastColumnID - resolvedCell.columnID + 1)))
+
+                if ( nextColumnID == columnsCount ) {
+                    resolvedRow.rowNode.append(newCell);
+                } else {
+                    resolvedRow.cells[nextColumnID].cellNode.insertBefore(newCell)
+                }
+            }
+        }
+
+        if ( resolvedCell.columnID == lastColumnID && resolvedCell.rowID == r ) {
+                resolvedCell.cellNode.remove();
+        }
+
+        r += rowSpan;
+    }
+
+    for ( let c = 1; c < columnsToRemove - 1; ++c ) {
+        for ( let r = 0; r < rowsCount; ) {
+            const currentColumnID = columnID + c;
+            const resolvedCellNode = resolvedTable[r].cells[currentColumnID];
+            const rowSpan = resolvedCellNode.cellNode.getRowSpan();
+            if ( resolvedCellNode.columnID == currentColumnID && resolvedCellNode.rowID == r ) {
+                resolvedCellNode.cellNode.remove();
+            }
+    
+            r += rowSpan;
+        }
+    }
+
+    columnsGroup?.removeColumns(columnID, columnsToRemove);
   }
 
   createDOM(_config: EditorConfig): HTMLElement {

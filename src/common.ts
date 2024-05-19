@@ -30,3 +30,8 @@ export function copyExistingValues<T>(values: T | Partial<T> | null | undefined,
 
     return newValues;
 }
+
+// @ts-ignore: Unused function
+export const notImplemented = () => {
+    throw Error("Not implemented");
+};

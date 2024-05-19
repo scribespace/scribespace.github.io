@@ -69,6 +69,11 @@ export class ExtendedTableNode extends ElementNode {
   }
   
   removeRows(cellNode: TableCellNode, rowsCount: number ) {
+    if ( rowsCount == this.getTableBodyNode().getChildrenSize() ) {
+      this.remove();
+      return;
+    }
+
     this.getTableBodyNodeWritable().removeRows(cellNode, rowsCount)
   }
 
@@ -86,6 +91,14 @@ export class ExtendedTableNode extends ElementNode {
 
   addColumnsAfter(cellNode: TableCellNode, columnsToAdd: number ) {
     this.getTableBodyNodeWritable().addColumnsAfter(cellNode, columnsToAdd, this.getTableColumnsGroupNodeWritable())
+  }
+
+  removeColumns(cellNode: TableCellNode, columnsCount: number ) {
+    if ( columnsCount == this.getTableColumnsGroupNode().getColumnsWidths().length ) {
+      this.remove();
+      return;
+    }
+    this.getTableBodyNodeWritable().removeColumns(cellNode, columnsCount, this.getTableColumnsGroupNodeWritable())
   }
 
   createDOM(config: EditorConfig): HTMLElement {

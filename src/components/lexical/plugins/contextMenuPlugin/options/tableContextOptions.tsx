@@ -1,12 +1,9 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { TbColumnInsertLeft, TbColumnInsertRight, TbColumnRemove, TbRowInsertBottom, TbRowInsertTop, TbRowRemove, TbTableOff, TbTablePlus } from "react-icons/tb";
 import { ContextMenuContext, ContextMenuContextObject } from "../contextMenuPlugin";
-import ContextSubmenu, { CotextSubmenuOptionProps } from "../contextSubmenu";
-import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection, LexicalEditor } from "lexical";
-import ContextMenuItem from "../contextMenuItem";
+import { $getSelection, $isRangeSelection, LexicalEditor } from "lexical";
 import { 
-    $findCellNode, $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $isTableCellNode, $isTableSelection,
-    TableCellNode,  
+    $findCellNode, $isTableCellNode, $isTableSelection,  
 } from "@lexical/table";
 import { SeparatorHorizontal, SeparatorHorizontalStrong } from "../../../editors/separator";
 import TableContextSplitCells from "./tableContext/tableContextSplitCells";
@@ -17,10 +14,7 @@ import { AiOutlineMergeCells, AiOutlineSplitCells } from "react-icons/ai";
 import { copyExistingValues } from "../../../../../common";
 import { TableContextDelete } from "./tableContext/tableContextDelete";
 import { TableContextRowRemove, TableContextAddRowBefore, TableContextAddRowAfter } from "./tableContext/tableContextRowOptions";
-import TableContextNumberInputEditor from "./tableContext/tableContextNumberInputEditor";
-import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../tablePlugin/nodes/extendedTableNode";
-import { $getTableColumnIndexFromTableCellNode } from "../../tablePlugin/tableHelpers";
-import { TableBodyNode } from "../../tablePlugin/nodes/tableBodyNode";
+import { TableContextColumnRemove, TableContextAddColumnBefore, TableContextAddColumnAfter } from "./tableContext/tableContextColumnOptions";
 
 
 export interface TableContextMenuIcons {
@@ -53,133 +47,6 @@ export interface TableContextOptionProps {
     editor: LexicalEditor,
     icons: TableContextMenuIcons,
 }
-
-const onClickNotImplemented = () => {
-    throw Error("Not implemented")
-}
-
-export function TableContextAddColumnAfter( {editor, icons}: TableContextOptionProps ) {
-    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext);
-
-    const OptionElement = ({children}: CotextSubmenuOptionProps) => {
-        return (
-         <ContextMenuItem Icon={icons.AddColumnAfterIcon} title="Insert Column After">
-             {children}
-         </ContextMenuItem>
-        )
-     }
-
-     const onInputAccepted = (input: HTMLInputElement) => {
-        const value = input.valueAsNumber;
-
-        editor.update(() => {
-            const selection = $getSelection();
-
-            let tableNode: ExtendedTableNode | null = null;
-            let cellNode: TableCellNode | null = null;
-            if ($isRangeSelection(selection)) {
-                cellNode = $getTableCellNodeFromLexicalNode(selection.getNodes()[0]);
-                if (!cellNode) throw Error("AddColumnAfter: couldn't find node");
-                tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(cellNode) as ExtendedTableNode;
-            }
-
-            if ($isTableSelection(selection)) {
-                const tableBodyNode = $getNodeByKeyOrThrow<TableBodyNode>(selection.tableKey);
-                tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>()
-                const resolvedTable = tableBodyNode.getResolvedTable()
-                let columnID = -1;
-                for (const node of selection.getNodes()) {
-                    if ($isTableCellNode(node)) {
-                        const cellsTableNode = $getTableNodeFromLexicalNodeOrThrow(node);
-                        if (cellsTableNode == tableBodyNode) {
-                            const nodesColumnID = $getTableColumnIndexFromTableCellNode(node, resolvedTable);
-                            if (nodesColumnID > columnID) {
-                                columnID == columnID;
-                                cellNode = node;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (!cellNode) throw Error("AddColumnAfter: node not found");
-            tableNode?.addColumnsAfter(cellNode, value);
-        },
-        { tag: 'table-add-column-after' });
-
-        contextObject.closeContextMenu();
-    };
-
-    return (
-        <ContextSubmenu Option={OptionElement} disableBackground={true}>
-            <TableContextNumberInputEditor onInputAccepted={onInputAccepted}/>
-        </ContextSubmenu>
-    )
-}
-
-export function TableContextAddColumnBefore( {editor, icons}: TableContextOptionProps ) {
-    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext);
-
-    const OptionElement = ({children}: CotextSubmenuOptionProps) => {
-        return (
-         <ContextMenuItem Icon={icons.AddColumnBeforeIcon} title="Insert Column Before">
-             {children}
-         </ContextMenuItem>
-        )
-     }
-
-     const onInputAccepted = (input: HTMLInputElement) => {
-        const value = input.valueAsNumber;
-
-        editor.update(() => {
-            const selection = $getSelection();
-
-            let tableNode: ExtendedTableNode | null = null;
-            let cellNode: TableCellNode | null = null;
-            if ($isRangeSelection(selection)) {
-                cellNode = $getTableCellNodeFromLexicalNode(selection.getNodes()[0]);
-                if (!cellNode) throw Error("AddColumnBefore: couldn't find node");
-                tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(cellNode);
-            }
-
-            if ($isTableSelection(selection)) {
-                const tableBodyNode = $getNodeByKeyOrThrow<TableBodyNode>(selection.tableKey);
-                tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>();
-                const resolvedTable = tableBodyNode.getResolvedTable()
-                let columnID = resolvedTable[0].cells.length;
-                for (const node of selection.getNodes()) {
-                    if ($isTableCellNode(node)) {
-                        const cellsTableNode = $getTableNodeFromLexicalNodeOrThrow(node);
-                        if (cellsTableNode == tableBodyNode) {
-                            const nodesColumnID = $getTableColumnIndexFromTableCellNode(node, resolvedTable);
-                            if (nodesColumnID < columnID) {
-                                columnID == columnID;
-                                cellNode = node;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (!cellNode) throw Error("AddColumnBefore: node not found");
-            tableNode?.addColumnsBefore(cellNode, value);
-        },
-        { tag: 'table-add-column-before' });
-
-        contextObject.closeContextMenu();
-    };
-
-    return (
-        <ContextSubmenu Option={OptionElement} disableBackground={true}>
-            <TableContextNumberInputEditor onInputAccepted={onInputAccepted}/>
-        </ContextSubmenu>
-    )
-}
-
-export function TableContextColumnRemove( {icons}: TableContextOptionProps ) {
-    return <ContextMenuItem Icon={icons.RemoveColumnIcon} title="Remove Column" onClick={onClickNotImplemented}/>
-}
-
 
 interface TableContextOptionsProps {
     editor: LexicalEditor,
