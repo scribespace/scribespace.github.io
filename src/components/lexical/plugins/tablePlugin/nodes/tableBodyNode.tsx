@@ -199,7 +199,6 @@ export class TableBodyNode extends TableNode {
     const resolvedTable = self.getResolvedTable();
 
     const rowID = $getTableRowIndexFromTableCellNode(cellNode);
-
     if ( rowID > 0 ) {
       for ( let c = 0; c < resolvedTable[0].cells.length; ) {
         const cellNode = resolvedTable[rowID].cells[c].cellNode;
@@ -230,7 +229,12 @@ export class TableBodyNode extends TableNode {
             cellNode.setRowSpan(cellNode.getWritable().getRowSpan() + rowSpan);
           } else {
             cellNode.setRowSpan(rowSpan);
-            const nextCellID = c + colSpan;
+            let nextCellID = c + colSpan;
+            while( nextCellID < resolvedTable[0].cells.length ) {
+                if ( resolvedTable[lastRowID+1].cells[nextCellID].rowID == lastRowID + 1 ) break;
+                nextCellID += resolvedTable[lastRowID+1].cells[nextCellID].cellNode.getColSpan();
+            }
+
             if ( nextCellID == resolvedTable[0].cells.length ) {
               resolvedTable[lastRowID+1].rowNode.append(cellNode);
             } else {
