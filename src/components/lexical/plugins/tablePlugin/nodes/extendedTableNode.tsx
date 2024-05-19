@@ -328,39 +328,40 @@ export class ExtendedTableNode extends TableNode {
     }
   }
 
-  addRowsBefore(cellNode: TableCellNode, rowsCount: number ) {
+  addRowsBefore(cellNode: TableCellNode, rowsToAdd: number ) {
     const self = this.getWritable()
     const resolvedTable = self.getResolvedTable();
 
     const rowID = $getTableRowIndexFromTableCellNode(cellNode);
-    const rowNode = $getTableRowNodeFromTableCellNodeOrThrow(cellNode);
+    const resolvedRow = resolvedTable[rowID];
+    const columnsCount = resolvedRow.cells.length;
 
-    let cellsToAdd = 0;
-    if ( rowID == 0) {
-      cellsToAdd = self.getColumnsWidths().length;
-    } else {
-      for ( let c = 0; c < resolvedTable[0].cells.length; ) {
-        const testCell = resolvedTable[rowID - 1].cells[c].cellNode;
-        const colSpan = testCell.getColSpan();
-        const rowSpan = testCell.getRowSpan();
+    const cellColSpans: number[] = [];
+    for ( let c = 0; c < columnsCount; ) {
+      const resolvedCell = resolvedRow.cells[c];
+      const colSpan = resolvedCell.cellNode.getColSpan();
 
-        if ( rowSpan > 1 && testCell == resolvedTable[rowID].cells[c].cellNode ) {
-          testCell.setRowSpan(rowSpan + rowsCount);
-        } else {
-          cellsToAdd += colSpan;
-        }
-
-        c += colSpan;
+      if ( 0 < rowID && resolvedTable[rowID-1].cells[c].cellNode == resolvedCell.cellNode ) {
+        const rowSpan = resolvedCell.cellNode.getRowSpan();
+        resolvedCell.cellNode.setRowSpan(rowSpan + rowsToAdd);
+      } else {
+        cellColSpans.push(colSpan);
       }
+
+      c += colSpan;
     }
 
-    for ( let r = 0; r < rowsCount; ++r ) {
-      const newRow = $createTableRowNode();
-      for ( let c = 0; c < cellsToAdd; ++c ) {
-        const newCell = $createTableCellNodeWithParagraph();
-        newRow.append(newCell)
+    for ( let r = 0; r < rowsToAdd; ++r ) {
+      const newCellsNodes: TableCellNode[] = [];
+      for ( const colSpan of cellColSpans ) {
+        const newCellNode = $createTableCellNodeWithParagraph();
+        newCellNode.setColSpan(colSpan);
+        newCellsNodes.push(newCellNode);
       }
-      rowNode.insertBefore(newRow)
+
+      const newRowNode = $createTableRowNode();
+      newRowNode.append(...newCellsNodes);
+      resolvedRow.rowNode.insertBefore(newRowNode);
     }
   }
 
