@@ -15,7 +15,6 @@ const EditorTheme = {
   table: 'editor-table',
   tableCell: 'editor-table-cell',
   tableRow: 'editor-table-row',
-  tableCellSelected: 'editor-table-cell-selected',
 };
 
 export default EditorTheme;
