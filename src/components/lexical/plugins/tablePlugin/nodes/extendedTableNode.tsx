@@ -217,28 +217,34 @@ export class ExtendedTableNode extends TableNode {
     const self = this.getWritable()
 
     const resolvedTable = self.getResolvedTable();
-    let columnID = -1;
-    let rowID = -1;
+    let resolvedCell = resolvedTable[0].cells[0];
+    const columnsCount = resolvedTable[0].cells.length
+
     for ( let r = 0; r < resolvedTable.length; ++r ) {
-      for ( let c = 0; c < resolvedTable[0].cells.length; ++c ) {
+      for ( let c = 0; c < columnsCount; ++c ) {
         if ( resolvedTable[r].cells[c].cellNode == cell ) {
-          columnID = c;
-          rowID = r;
+          resolvedCell = resolvedTable[r].cells[c]
           break;
         }
       }
-      if ( columnID != -1 ) break;
+      if ( resolvedCell.cellNode == cell ) break;
     }
 
     const rowSpan = cell.getRowSpan()
     const colSpan = cell.getColSpan()
     let row = cell.getParentOrThrow() as TableRowNode | null
 
-    if ( colSpan == resolvedTable[0].cells.length) {
+    let allRowMerged = true;
+    for ( const testResolvedCell of resolvedTable[resolvedCell.rowID].cells ) {
+      allRowMerged = allRowMerged && (testResolvedCell.cellNode.getRowSpan() == rowSpan );
+    }
+
+    if ( allRowMerged ) {
       const cellElement = editor.getElementByKey(cell.getKey())
       if ( cellElement ) {
         const {height} = cellElement?.getBoundingClientRect();
         const cellHeight = height / rowSpan;
+
         row!.setHeight(cellHeight)
       }
     }
@@ -247,20 +253,28 @@ export class ExtendedTableNode extends TableNode {
       cell.insertAfter($createTableCellNodeWithParagraph())
     }
 
-    columnID += colSpan;
     for ( let r = 1; r < rowSpan; ++r ) {
-      if ( columnID == resolvedTable[0].cells.length ) {
-        row = row!.getNextSibling()
+      const resolvedRow = resolvedTable[resolvedCell.rowID + r];
+      let nextCellColumnID = resolvedCell.columnID + colSpan;
+      while ( nextCellColumnID < columnsCount ) {
+        const nextResolvedCell = resolvedRow.cells[nextCellColumnID];
+        if ( nextResolvedCell.rowID == resolvedCell.rowID + r )
+          break;
+
+        nextCellColumnID += nextResolvedCell.cellNode.getColSpan();
+      }
+
+      if ( nextCellColumnID == columnsCount ) {
         for ( let c = 0; c < colSpan; ++c ) {
-          row!.append($createTableCellNodeWithParagraph())
+          resolvedRow.rowNode.append($createTableCellNodeWithParagraph())
         }
       } else {
-        const nextCell = resolvedTable[rowID + r].cells[columnID].cellNode;
+        const nextCellNode = resolvedRow.cells[nextCellColumnID].cellNode;
         for ( let c = 0; c < colSpan; ++c ) {
-          nextCell.insertBefore($createTableCellNodeWithParagraph())
+          nextCellNode.insertBefore($createTableCellNodeWithParagraph())
         }
       }
-    }
+    } 
 
     cell.setColSpan(1)
     cell.setRowSpan(1)
@@ -405,10 +419,14 @@ export class ExtendedTableNode extends TableNode {
 
     const columnID = $getTableColumnIndexFromTableCellNode(cellNode, resolvedTable) + cellNode.getColSpan() - 1;
    
-    for ( let r = 0; r < resolvedTable.length; ++r ) {
+    for ( let r = 0; r < resolvedTable.length; ) {
+      const rowSpan = resolvedTable[r].cells[columnID].cellNode.getRowSpan();
+
       if ( columnID == resolvedTable[0].cells.length - 1 ) {
         for ( let c = 0; c < columnsCount; ++c ) {
-          resolvedTable[r].rowNode.append($createTableCellNodeWithParagraph());
+          const newCell = $createTableCellNodeWithParagraph();
+          newCell.setRowSpan(rowSpan);
+          resolvedTable[r].rowNode.append(newCell);
         }
       } else {
         const resolvedCell = resolvedTable[r].cells[columnID];
@@ -417,16 +435,15 @@ export class ExtendedTableNode extends TableNode {
           const colSpan = cellNode.getColSpan();
           cellNode.setColSpan(colSpan + columnsCount);
         } else {
-          let nextCellNode = nextResolvedCell.cellNode;
-          if ( r != nextResolvedCell.rowID ) {
-            nextCellNode = resolvedTable[r].cells[columnID + 1 + nextResolvedCell.cellNode.getColSpan()].cellNode
-          }
-
           for ( let c = 0; c < columnsCount; ++c ) {
-            nextCellNode.insertBefore($createTableCellNodeWithParagraph());
+            const newCell = $createTableCellNodeWithParagraph();
+            newCell.setRowSpan(rowSpan);
+            resolvedCell.cellNode.insertAfter(newCell);
           }
         }
       }
+
+      r += rowSpan;
     }
 
     const columnsWidths = self.getWritable().__columnsWidths;
