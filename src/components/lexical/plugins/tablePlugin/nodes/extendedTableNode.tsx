@@ -364,41 +364,41 @@ export class ExtendedTableNode extends TableNode {
     }
   }
 
-  addRowsAfter(cellNode: TableCellNode, rowsCount: number ) {
+  addRowsAfter(cellNode: TableCellNode, rowsToAdd: number ) {
     const self = this.getWritable()
     const resolvedTable = self.getResolvedTable();
 
     const rowID = $getTableRowIndexFromTableCellNode(cellNode) + cellNode.getRowSpan() - 1;
-    let rowNode = $getTableRowNodeFromTableCellNodeOrThrow(cellNode);
-    for ( let r = 1; r < cellNode.getRowSpan(); ++r) {
-      rowNode = rowNode.getNextSibling() as TableRowNode;
+    const resolvedRow = resolvedTable[rowID];
+    const columnsCount = resolvedRow.cells.length;
+    const rowsCount = resolvedTable.length;
+
+    const cellColSpans: number[] = [];
+    for ( let c = 0; c < columnsCount; ) {
+      const resolvedCell = resolvedRow.cells[c];
+      const colSpan = resolvedCell.cellNode.getColSpan();
+
+      if ( rowID < rowsCount - 1 && resolvedTable[rowID+1].cells[c].cellNode == resolvedCell.cellNode ) {
+        const rowSpan = resolvedCell.cellNode.getRowSpan();
+        resolvedCell.cellNode.setRowSpan(rowSpan + rowsToAdd);
+      } else {
+        cellColSpans.push(colSpan);
+      }
+
+      c += colSpan;
     }
 
-    let cellsToAdd = 0;
-    if ( rowID == resolvedTable.length - 1 ) {
-      cellsToAdd = self.getColumnsWidths().length
-    } else {
-      for ( let c = 0; c < resolvedTable[0].cells.length;) {
-        const testCell = resolvedTable[rowID + 1].cells[c].cellNode;
-        const colSpan = testCell.getColSpan();
-        const rowSpan = testCell.getRowSpan();
-        if ( rowSpan > 1 && testCell == resolvedTable[rowID].cells[c].cellNode ) {
-          testCell.setRowSpan(rowSpan + rowsCount);
-        } else {
-          cellsToAdd += colSpan;
-        }
-
-        c += colSpan;
+    for ( let r = 0; r < rowsToAdd; ++r ) {
+      const newCellsNodes: TableCellNode[] = [];
+      for ( const colSpan of cellColSpans ) {
+        const newCellNode = $createTableCellNodeWithParagraph();
+        newCellNode.setColSpan(colSpan);
+        newCellsNodes.push(newCellNode);
       }
-    }
 
-    for ( let r = 0; r < rowsCount; ++r ) {
-      const newRow = $createTableRowNode();
-      for ( let c = 0; c < cellsToAdd; ++c ) {
-        const newCell = $createTableCellNodeWithParagraph();
-        newRow.append(newCell)
-      }
-      rowNode.insertAfter(newRow)
+      const newRowNode = $createTableRowNode();
+      newRowNode.append(...newCellsNodes);
+      resolvedRow.rowNode.insertAfter(newRowNode);
     }
   }
 
