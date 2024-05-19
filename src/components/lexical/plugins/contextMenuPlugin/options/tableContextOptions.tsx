@@ -117,6 +117,8 @@ export function TableContextAddColumnAfter( {editor, icons}: TableContextOptionP
 }
 
 export function TableContextAddColumnBefore( {editor, icons}: TableContextOptionProps ) {
+    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext);
+
     const OptionElement = ({children}: CotextSubmenuOptionProps) => {
         return (
          <ContextMenuItem Icon={icons.AddColumnBeforeIcon} title="Insert Column Before">
@@ -125,9 +127,49 @@ export function TableContextAddColumnBefore( {editor, icons}: TableContextOption
         )
      }
 
+     const onInputAccepted = (input: HTMLInputElement) => {
+        const value = input.valueAsNumber;
+
+        editor.update(() => {
+            const selection = $getSelection();
+
+            let tableNode: ExtendedTableNode | null = null;
+            let cellNode: TableCellNode | null = null;
+            if ($isRangeSelection(selection)) {
+                cellNode = $getTableCellNodeFromLexicalNode(selection.getNodes()[0]);
+                if (!cellNode) throw Error("AddColumnBefore: couldn't find node");
+                tableNode = $getTableNodeFromLexicalNodeOrThrow(cellNode) as ExtendedTableNode;
+            }
+
+            if ($isTableSelection(selection)) {
+                tableNode = $getNodeByKeyOrThrow<ExtendedTableNode>(selection.tableKey);
+                const resolvedTable = tableNode.getResolvedTable()
+                let columnID = resolvedTable[0].cells.length;
+                for (const node of selection.getNodes()) {
+                    if ($isTableCellNode(node)) {
+                        const cellsTableNode = $getTableNodeFromLexicalNodeOrThrow(node);
+                        if (cellsTableNode == tableNode) {
+                            const nodesColumnID = $getTableColumnIndexFromTableCellNode(node, resolvedTable);
+                            if (nodesColumnID < columnID) {
+                                columnID == columnID;
+                                cellNode = node;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!cellNode) throw Error("AddColumnBefore: node not found");
+            tableNode?.addColumnsBefore(cellNode, value);
+        },
+        { tag: 'table-add-column-before' });
+
+        contextObject.closeContextMenu();
+    };
+
     return (
         <ContextSubmenu Option={OptionElement} disableBackground={true}>
-            <TableContextNumberInputEditor onInputAccepted={onClickNotImplemented}/>
+            <TableContextNumberInputEditor onInputAccepted={onInputAccepted}/>
         </ContextSubmenu>
     )
 }

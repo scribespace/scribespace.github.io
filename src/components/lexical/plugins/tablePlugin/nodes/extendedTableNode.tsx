@@ -402,6 +402,46 @@ export class ExtendedTableNode extends TableNode {
     }
   }
 
+  addColumnsBefore(cellNode: TableCellNode, columnsToAdd: number ) {
+    const self = this.getWritable()
+    const resolvedTable = self.getResolvedTable();
+
+    const columnID = $getTableColumnIndexFromTableCellNode(cellNode, resolvedTable);
+    
+    for ( let r = 0; r < resolvedTable.length; ) {
+      const rowSpan = resolvedTable[r].cells[columnID].cellNode.getRowSpan();
+      const resolvedRow = resolvedTable[r];
+
+      const resolvedCell = resolvedRow.cells[columnID];
+      if ( columnID > 0 && resolvedCell.cellNode == resolvedRow.cells[columnID - 1].cellNode ) {
+        const colSpan = resolvedCell.cellNode.getColSpan();
+        resolvedCell.cellNode.setColSpan(colSpan + columnsToAdd);
+      } else {
+        for ( let c = 0; c < columnsToAdd; ++c ) {
+          const newCell = $createTableCellNodeWithParagraph();
+          newCell.setRowSpan(rowSpan);
+          resolvedCell.cellNode.insertBefore(newCell);
+        }
+      }
+      r += rowSpan;
+    }
+
+    const columnsWidths = self.getWritable().__columnsWidths;
+    const sizeScale = columnsWidths.length / (columnsWidths.length + columnsToAdd);
+
+    for ( let c = 0; c < columnsWidths.length; ++c ) {
+      if ( columnsWidths[c] > -1 ) {
+        columnsWidths[c] *= sizeScale
+      }
+    }
+
+    const newColumns: number[] = []
+    for ( let c = 0; c < columnsToAdd; ++c ) 
+      newColumns[c] = -1;
+
+    columnsWidths.splice(columnID, 0, ...newColumns);
+  }
+
   addColumnsAfter(cellNode: TableCellNode, columnsCount: number ) {
     const self = this.getWritable()
     const resolvedTable = self.getResolvedTable();
