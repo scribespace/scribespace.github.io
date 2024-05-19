@@ -15,7 +15,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import './css/tablePlugin.css'
-import { ExtendedTableNode } from './nodes/extendedTableNode';
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from './nodes/extendedTableNode';
 
 const DRAG_NONE = 0 as const
 const DRAG_HORIZONTAL = 1 as const
@@ -227,7 +227,8 @@ export default function TablePlugin() {
 
       function GetColumnWidthWithPosition(tableNode: ExtendedTableNode, columnID: number, cellLUT: (TableCellNode | null)[][]): {width:number, position:number} {
         const columnsCount = cellLUT[0].length;
-        let columnWidth = tableNode.getColumnWidth(columnID);
+        const columnsGroupNode = tableNode.getTableColumnsGroupNodeWritable()
+        let columnWidth = columnsGroupNode.getColumnWidth(columnID);
 
         // Find node if first is a miss
         let cellNode: TableCellNode | null = cellLUT[0][columnID]
@@ -260,7 +261,7 @@ export default function TablePlugin() {
 
           for ( let s = 0; s < span; ++s) {
               const columnIDToCheck = columnID - s;
-              const checkColumnWidth = tableNode.getColumnWidth(columnIDToCheck);
+              const checkColumnWidth = columnsGroupNode.getColumnWidth(columnIDToCheck);
               if ( checkColumnWidth != -1 ) {
                   knownWidth += checkColumnWidth;
                   setColumns += 1;
@@ -289,11 +290,13 @@ export default function TablePlugin() {
                 throw new Error('updateColumnWidth: Table cell node not found.');
               }
     
-              const tableNode = $getTableNodeFromLexicalNodeOrThrow(tableCellNode) as ExtendedTableNode;
-    
+              const tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(tableCellNode);
+              const columnsGroupNode = tableNode.getTableColumnsGroupNodeWritable()
+              const tableBodyNode = tableNode.getTableBodyNodeWritable()
+                
               // Create look up table for cells
-              const columnsCount = tableNode.getColumnsWidths().length;
-              const rowsNodes = tableNode.getChildren() as TableRowNode[]
+              const columnsCount = columnsGroupNode.getColumnsWidths().length;
+              const rowsNodes = tableBodyNode.getChildren() as TableRowNode[]
               const rowsCount = rowsNodes.length;
 
               // Clean table, we need 3 values. INVALID_CELL_NODE marks untouched cell.
@@ -374,15 +377,17 @@ export default function TablePlugin() {
                 throw new Error('updateColumnWidth: Table cell node not found.');
               }
     
-              const tableNode = $getTableNodeFromLexicalNodeOrThrow(tableCellNode) as ExtendedTableNode;
+              const tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(tableCellNode);
     
               const columnWidth = columnWidthsRef.current.low;
               const nextColumnWidth = columnWidthsRef.current.hight;
 
               widthOffset = Math.min(columnWidthsRef.current.hight - COLUMN_MARGIN, Math.max(-columnWidthsRef.current.low + COLUMN_MARGIN, widthOffset) );
+              
+              const columnsGroupNode = tableNode.getTableColumnsGroupNodeWritable()
 
-             tableNode.setColumnWidth(columnIDRef.current, columnWidth + widthOffset)
-             tableNode.setColumnWidth(columnIDRef.current + 1, nextColumnWidth - widthOffset)
+              columnsGroupNode.setColumnWidth(columnIDRef.current, columnWidth + widthOffset)
+              columnsGroupNode.setColumnWidth(columnIDRef.current + 1, nextColumnWidth - widthOffset)
             },
             {tag: 'table-update-column-width'},
           );

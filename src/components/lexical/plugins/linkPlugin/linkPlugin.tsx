@@ -106,7 +106,7 @@ export default function LinkPlugin() {
           if ( linkElement ) {
             const linkEditorObject = linkEditorRef.current;
             if ( linkEditorObject != null ){
-                const { top, left, width, bottom } = linkElement.getBoundingClientRect();
+                const { left, width, bottom } = linkElement.getBoundingClientRect();
                 const {width: listhWidth } = linkEditorObject.getBoundingClientRect();
                 linkEditorObject.style.top = `${bottom}px`;
                 linkEditorObject.style.left = `${left + (width * 0.5) - (listhWidth * 0.5)}px`;

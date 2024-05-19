@@ -2,12 +2,11 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { TbColumnInsertLeft, TbColumnInsertRight, TbColumnRemove, TbRowInsertBottom, TbRowInsertTop, TbRowRemove, TbTableOff, TbTablePlus } from "react-icons/tb";
 import { ContextMenuContext, ContextMenuContextObject } from "../contextMenuPlugin";
 import ContextSubmenu, { CotextSubmenuOptionProps } from "../contextSubmenu";
-import { $getNodeByKey, $getNodeByKeyOrThrow, $getSelection, $isRangeSelection, LexicalEditor } from "lexical";
+import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection, LexicalEditor } from "lexical";
 import ContextMenuItem from "../contextMenuItem";
 import { 
-    $findCellNode, $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $getTableRowIndexFromTableCellNode, $getTableRowNodeFromTableCellNodeOrThrow, $isTableCellNode, $isTableSelection,
-    TableCellNode,
-    TableRowNode,  
+    $findCellNode, $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $isTableCellNode, $isTableSelection,
+    TableCellNode,  
 } from "@lexical/table";
 import { SeparatorHorizontal, SeparatorHorizontalStrong } from "../../../editors/separator";
 import TableContextSplitCells from "./tableContext/tableContextSplitCells";
@@ -19,8 +18,9 @@ import { copyExistingValues } from "../../../../../common";
 import { TableContextDelete } from "./tableContext/tableContextDelete";
 import { TableContextRowRemove, TableContextAddRowBefore, TableContextAddRowAfter } from "./tableContext/tableContextRowOptions";
 import TableContextNumberInputEditor from "./tableContext/tableContextNumberInputEditor";
-import { ExtendedTableNode } from "../../tablePlugin/nodes/extendedTableNode";
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../tablePlugin/nodes/extendedTableNode";
 import { $getTableColumnIndexFromTableCellNode } from "../../tablePlugin/tableHelpers";
+import { TableBodyNode } from "../../tablePlugin/nodes/tableBodyNode";
 
 
 export interface TableContextMenuIcons {
@@ -80,17 +80,18 @@ export function TableContextAddColumnAfter( {editor, icons}: TableContextOptionP
             if ($isRangeSelection(selection)) {
                 cellNode = $getTableCellNodeFromLexicalNode(selection.getNodes()[0]);
                 if (!cellNode) throw Error("AddColumnAfter: couldn't find node");
-                tableNode = $getTableNodeFromLexicalNodeOrThrow(cellNode) as ExtendedTableNode;
+                tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(cellNode) as ExtendedTableNode;
             }
 
             if ($isTableSelection(selection)) {
-                tableNode = $getNodeByKeyOrThrow<ExtendedTableNode>(selection.tableKey);
-                const resolvedTable = tableNode.getResolvedTable()
+                const tableBodyNode = $getNodeByKeyOrThrow<TableBodyNode>(selection.tableKey);
+                tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>()
+                const resolvedTable = tableBodyNode.getResolvedTable()
                 let columnID = -1;
                 for (const node of selection.getNodes()) {
                     if ($isTableCellNode(node)) {
                         const cellsTableNode = $getTableNodeFromLexicalNodeOrThrow(node);
-                        if (cellsTableNode == tableNode) {
+                        if (cellsTableNode == tableBodyNode) {
                             const nodesColumnID = $getTableColumnIndexFromTableCellNode(node, resolvedTable);
                             if (nodesColumnID > columnID) {
                                 columnID == columnID;
@@ -138,17 +139,18 @@ export function TableContextAddColumnBefore( {editor, icons}: TableContextOption
             if ($isRangeSelection(selection)) {
                 cellNode = $getTableCellNodeFromLexicalNode(selection.getNodes()[0]);
                 if (!cellNode) throw Error("AddColumnBefore: couldn't find node");
-                tableNode = $getTableNodeFromLexicalNodeOrThrow(cellNode) as ExtendedTableNode;
+                tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(cellNode);
             }
 
             if ($isTableSelection(selection)) {
-                tableNode = $getNodeByKeyOrThrow<ExtendedTableNode>(selection.tableKey);
-                const resolvedTable = tableNode.getResolvedTable()
+                const tableBodyNode = $getNodeByKeyOrThrow<TableBodyNode>(selection.tableKey);
+                tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>();
+                const resolvedTable = tableBodyNode.getResolvedTable()
                 let columnID = resolvedTable[0].cells.length;
                 for (const node of selection.getNodes()) {
                     if ($isTableCellNode(node)) {
                         const cellsTableNode = $getTableNodeFromLexicalNodeOrThrow(node);
-                        if (cellsTableNode == tableNode) {
+                        if (cellsTableNode == tableBodyNode) {
                             const nodesColumnID = $getTableColumnIndexFromTableCellNode(node, resolvedTable);
                             if (nodesColumnID < columnID) {
                                 columnID == columnID;
@@ -174,7 +176,7 @@ export function TableContextAddColumnBefore( {editor, icons}: TableContextOption
     )
 }
 
-export function TableContextColumnRemove( {editor, icons}: TableContextOptionProps ) {
+export function TableContextColumnRemove( {icons}: TableContextOptionProps ) {
     return <ContextMenuItem Icon={icons.RemoveColumnIcon} title="Remove Column" onClick={onClickNotImplemented}/>
 }
 

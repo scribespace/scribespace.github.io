@@ -1,6 +1,6 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { ContextMenu} from "./contextMenu";
-import { createContext, useEffect, useReducer, useRef, useState } from "react";
+import { ContextMenu } from "./contextMenu";
+import { createContext, useEffect, useState } from "react";
 import TableContextOptions from "./options/tableContextOptions";
 import { EditorThemeClassName } from "lexical";
 import { copyExistingValues } from "../../../../common";

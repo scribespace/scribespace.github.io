@@ -1366,7 +1366,7 @@ class TableObserver {
           const record = records[i];
           const target = record.target;
           const nodeName = target.nodeName;
-          if (nodeName === 'TABLE' || nodeName === 'TR') {
+          if (nodeName === 'TABLE' || nodeName === 'TBODY' || nodeName === 'TR') {
             gridNeedsRedraw = true;
             break;
           }

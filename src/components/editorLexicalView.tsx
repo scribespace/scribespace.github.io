@@ -26,6 +26,8 @@ import { TableNode, TableRowNode, TableCellNode } from '@lexical/table'
 import { ExtendedTableNode } from './lexical/plugins/tablePlugin/nodes/extendedTableNode'
 import TablePlugin from './lexical/plugins/tablePlugin/tablePlugin'
 import ContextMenuPlugin from './lexical/plugins/contextMenuPlugin/contextMenuPlugin';
+import { TableColumnsGroupNode } from './lexical/plugins/tablePlugin/nodes/tableColumnsGroupNode';
+import { TableBodyNode } from './lexical/plugins/tablePlugin/nodes/tableBodyNode';
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
 // try to recover gracefully without losing user data.
@@ -80,7 +82,9 @@ export function EditorLexicalView({selectedFile} : Props) {
       ExtendedTextNode,
       { replace: TextNode, withKlass: ExtendedTextNode, with: (node: TextNode) => new ExtendedTextNode(node.__text) },
       ExtendedTableNode,
-      { replace: TableNode, withKlass: ExtendedTableNode, with: (_node: TableNode) => new ExtendedTableNode() },
+      TableColumnsGroupNode,
+      TableBodyNode,
+      { replace: TableNode, withKlass: TableBodyNode, with: (_node: TableNode) => new TableBodyNode() },
       TableRowNode,
       TableCellNode,      
     ]

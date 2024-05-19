@@ -4,20 +4,22 @@ import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical"
 import ContextMenuItem from "../../contextMenuItem";
 import { $getTableNodeFromLexicalNodeOrThrow, $isTableSelection } from "@lexical/table";
 import { TableContextOptionProps } from "../tableContextOptions";
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../tablePlugin/nodes/extendedTableNode";
 
 
 export function TableContextDelete({ editor, icons }: TableContextOptionProps) {
     const contextObject: ContextMenuContextObject = useContext(ContextMenuContext);
     const onClick = () => {
         editor.update(() => {
-            let tableNode = null;
+            let tableNode: ExtendedTableNode | null = null;
 
             const selection = $getSelection();
             if ($isRangeSelection(selection)) {
-                tableNode = $getTableNodeFromLexicalNodeOrThrow(selection.anchor.getNode());
+                tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(selection.anchor.getNode());
             }
             if ($isTableSelection(selection)) {
-                tableNode = $getNodeByKeyOrThrow(selection.tableKey);
+                const tableBodyNode = $getNodeByKeyOrThrow(selection.tableKey);
+                tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>()
             }
 
             if (!tableNode) throw Error("TableContextDelete: expected table");

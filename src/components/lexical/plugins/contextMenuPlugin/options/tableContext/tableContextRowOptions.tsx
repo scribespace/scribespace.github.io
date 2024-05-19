@@ -7,9 +7,10 @@ import {
     $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $getTableRowIndexFromTableCellNode, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
-import { ExtendedTableNode } from "../../../tablePlugin/nodes/extendedTableNode";
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../tablePlugin/nodes/extendedTableNode";
 import { TableContextOptionProps } from "../tableContextOptions";
 import TableContextNumberInputEditor from "./tableContextNumberInputEditor";
+import { TableBodyNode } from "../../../tablePlugin/nodes/tableBodyNode";
 
 
 export function TableContextAddRowBefore({ editor, icons }: TableContextOptionProps) {
@@ -34,11 +35,12 @@ export function TableContextAddRowBefore({ editor, icons }: TableContextOptionPr
             if ($isRangeSelection(selection)) {
                 cellNode = $getTableCellNodeFromLexicalNode(selection.getNodes()[0]);
                 if (!cellNode) throw Error("AddRowBefore: couldn't find node");
-                tableNode = $getTableNodeFromLexicalNodeOrThrow(cellNode) as ExtendedTableNode;
+                tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(cellNode);
             }
 
             if ($isTableSelection(selection)) {
-                tableNode = $getNodeByKeyOrThrow<ExtendedTableNode>(selection.tableKey);
+                const tableBodyNode = $getNodeByKeyOrThrow<TableBodyNode>(selection.tableKey);
+                tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>();
                 if (selection.anchor.isBefore(selection.focus)) {
                     cellNode = selection.anchor.getNode() as TableCellNode;
                 } else {
@@ -48,10 +50,11 @@ export function TableContextAddRowBefore({ editor, icons }: TableContextOptionPr
 
             if (!cellNode) throw Error("AddRowBefore: node not found");
             tableNode?.addRowsBefore(cellNode, value);
+
+            $setSelection(null);
+            contextObject.closeContextMenu();
         },
             { tag: 'table-add-row-before' });
-
-        contextObject.closeContextMenu();
     };
 
     return (
@@ -83,16 +86,17 @@ export function TableContextAddRowAfter({ editor, icons }: TableContextOptionPro
             if ($isRangeSelection(selection)) {
                 cellNode = $getTableCellNodeFromLexicalNode(selection.getNodes()[0]);
                 if (!cellNode) throw Error("AddRowAfter: couldn't find node");
-                tableNode = $getTableNodeFromLexicalNodeOrThrow(cellNode) as ExtendedTableNode;
+                tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(cellNode);
             }
 
             if ($isTableSelection(selection)) {
-                tableNode = $getNodeByKeyOrThrow<ExtendedTableNode>(selection.tableKey);
+                const tableBodyNode = $getNodeByKeyOrThrow<TableBodyNode>(selection.tableKey);
+                tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>()
                 let rowID = -1;
                 for (const node of selection.getNodes()) {
                     if ($isTableCellNode(node)) {
                         const cellsTableNode = $getTableNodeFromLexicalNodeOrThrow(node);
-                        if (cellsTableNode == tableNode) {
+                        if (cellsTableNode == tableBodyNode) {
                             const nodesRowID = $getTableRowIndexFromTableCellNode(node);
                             if (nodesRowID > rowID) {
                                 rowID == nodesRowID;
@@ -131,7 +135,7 @@ export function TableContextRowRemove({ editor, icons }: TableContextOptionProps
             if ($isRangeSelection(selection)) {
                 cellNode = $getTableCellNodeFromLexicalNode(selection.anchor.getNode());
                 if (!$isTableCellNode(cellNode)) throw Error("TableContextRowRemove: expecetd cell node");
-                tableNode = $getTableNodeFromLexicalNodeOrThrow(cellNode) as ExtendedTableNode;
+                tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(cellNode);
                 rowsCount = 1;
             }
 
@@ -141,12 +145,13 @@ export function TableContextRowRemove({ editor, icons }: TableContextOptionProps
                 } else {
                     cellNode = selection.focus.getNode() as TableCellNode;
                 }
-                tableNode = $getTableNodeFromLexicalNodeOrThrow(cellNode) as ExtendedTableNode;
-
+                const tableBodyNode = $getTableNodeFromLexicalNodeOrThrow(cellNode) as TableBodyNode;
+                tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>();
+                
                 const rowID = $getTableRowIndexFromTableCellNode(cellNode);
                 for (const node of selection.getNodes()) {
                     if ($isTableCellNode(node)) {
-                        if (tableNode == $getTableNodeFromLexicalNodeOrThrow(node)) {
+                        if (tableBodyNode == $getTableNodeFromLexicalNodeOrThrow(node)) {
                             const testRowID = $getTableRowIndexFromTableCellNode(node);
 
                             rowsCount = Math.max(rowsCount, testRowID - rowID);

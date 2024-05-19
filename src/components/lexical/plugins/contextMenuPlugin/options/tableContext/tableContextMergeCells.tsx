@@ -7,8 +7,8 @@ import {
     $findTableNode, $isTableCellNode, $isTableNode, $isTableRowNode, $isTableSelection,
     TableCellNode, TableRowNode
 } from "@lexical/table";
-import { AiOutlineMergeCells } from "react-icons/ai";
 import { TableContextOptionProps } from "../tableContextOptions";
+import { TableBodyNode } from "../../../tablePlugin/nodes/tableBodyNode";
 
 
 export default function TableContextMergeCells({ editor, icons }: TableContextOptionProps) {
@@ -26,7 +26,7 @@ export default function TableContextMergeCells({ editor, icons }: TableContextOp
                     throw Error("Wrong selection. Cell isn't under index 2");
                 }
 
-                const tableNode = selectedNodes[tableNodeID] as ExtendedTableNode;
+                const tableBodyNode = selectedNodes[tableNodeID] as TableBodyNode;
 
                 let columnsToMerge = 0;
                 const firstRowNode = selectedNodes[firstRowNodeID];
@@ -46,7 +46,7 @@ export default function TableContextMergeCells({ editor, icons }: TableContextOp
                 const cellsInRowsAdded = new Set<TableCellNode>();
                 for (let n = firstRowNodeID; n < selectedNodes.length; ++n) {
                     const node = selectedNodes[n];
-                    if ($isTableRowNode(node) && $findTableNode(node) == tableNode) {
+                    if ($isTableRowNode(node) && $findTableNode(node) == tableBodyNode) {
                         if (!rowsAdded.has(node)) {
                             const cellNode = selectedNodes[n + 1] as TableCellNode;
                             if (!cellsInRowsAdded.has(cellNode)) {
@@ -66,7 +66,7 @@ export default function TableContextMergeCells({ editor, icons }: TableContextOp
                 }
 
                 const firstCellNode = selectedNodes[firstCellNodeID] as TableCellNode;
-                tableNode.mergeCells(editor, firstCellNode, rowsToMerge, columnsToMerge);
+                tableBodyNode.getParentOrThrow<ExtendedTableNode>().mergeCells(editor, firstCellNode, rowsToMerge, columnsToMerge);
 
                 $setSelection(null);
                 contextObject.closeContextMenu();

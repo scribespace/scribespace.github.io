@@ -1,5 +1,4 @@
 import { useContext } from "react";
-import { ImTable2 } from "react-icons/im";
 import { ContextMenuContext, ContextMenuContextObject } from "../../contextMenuPlugin";
 import ContextSubmenu, { CotextSubmenuOptionProps } from "../../contextSubmenu";
 import TableCreatorEditor from "../../../tablePlugin/tableCreatorEditor";

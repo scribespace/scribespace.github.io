@@ -1,4 +1,4 @@
-import { $createTableCellNode, $getTableRowIndexFromTableCellNode, $getTableRowNodeFromTableCellNodeOrThrow, TableCellHeaderStates, TableCellNode } from "@lexical/table";
+import { $createTableCellNode, $getTableRowIndexFromTableCellNode, TableCellHeaderStates, TableCellNode } from "@lexical/table";
 import { $createParagraphNode } from "lexical";
 import { ResolvedRow } from "./nodes/extendedTableNode";
 
