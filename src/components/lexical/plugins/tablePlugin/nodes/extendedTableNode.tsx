@@ -158,41 +158,46 @@ export class ExtendedTableNode extends TableNode {
     const self = this.getWritable()
 
     const resolvedTable = self.getResolvedTable();
-    let columnID = -1;
-    let rowID = -1;
+    let resolvedCell = resolvedTable[0].cells[0];
+
     for ( let r = 0; r < resolvedTable.length; ++r ) {
       for ( let c = 0; c < resolvedTable[0].cells.length; ++c ) {
         if ( resolvedTable[r].cells[c].cellNode == startCell ) {
-          columnID = c;
-          rowID = r;
+          resolvedCell = resolvedTable[r].cells[c]
           break;
         }
       }
-      if ( columnID != -1 ) break;
+      if ( resolvedCell.cellNode == startCell ) break;
     }
 
-    if (columnsCount == resolvedTable[0].cells.length ) {
-      let mergedRowHeight = 0;
-      const mergedRowHeightProcessed = new Set<TableCellNode>()
-      for ( let r= 0; r < rowsCount; ++r ) {
-        const cell = resolvedTable[r].cells[0].cellNode;
-        if ( !mergedRowHeightProcessed.has(cell) ) {
-          mergedRowHeightProcessed.add(cell);
-          const rowElement = editor.getElementByKey(cell.getKey())
-          if ( rowElement ) {
-            const {height} = rowElement?.getBoundingClientRect();
-            mergedRowHeight += height
-          }
+    let defaultRowHeight = 0;
+    let r = 0;
+    for ( ; r < rowsCount; ++r ) {
+      const rowNode = resolvedTable[resolvedCell.rowID + r].rowNode;
+      const rowHeight = rowNode.getHeight()
+      if ( !rowHeight ) {
+        const rowElement = editor.getElementByKey(rowNode.getKey());
+        if ( rowElement ) {
+          const { height } = rowElement?.getBoundingClientRect();
+          defaultRowHeight = height;
+          break;
         }
       }
-      (startCell.getParentOrThrow() as TableRowNode).setHeight(mergedRowHeight);
+    }
+
+    for ( ; r < rowsCount; ++r ) {
+      const rowNode = resolvedTable[resolvedCell.rowID + r].rowNode;
+      const rowHeight = rowNode.getHeight()
+      if ( !rowHeight ) {
+        rowNode.setHeight(defaultRowHeight);
+      }
     }
 
     const cellsToRemove = new Set<TableCellNode>()
     for ( let r = 0; r < rowsCount; ++r ) {
       let cellsToRemoveCount = 0;
       for ( let c = 0; c < columnsCount; ++c ) {
-        const cell = resolvedTable[rowID + r].cells[columnID + c].cellNode;
+        const cell = resolvedTable[resolvedCell.rowID + r].cells[resolvedCell.columnID + c].cellNode;
         if ( cell != startCell && !cellsToRemove.has(cell) ) {
           cellsToRemove.add(cell)
           ++cellsToRemoveCount;
@@ -232,22 +237,6 @@ export class ExtendedTableNode extends TableNode {
 
     const rowSpan = cell.getRowSpan()
     const colSpan = cell.getColSpan()
-    let row = cell.getParentOrThrow() as TableRowNode | null
-
-    let allRowMerged = true;
-    for ( const testResolvedCell of resolvedTable[resolvedCell.rowID].cells ) {
-      allRowMerged = allRowMerged && (testResolvedCell.cellNode.getRowSpan() == rowSpan );
-    }
-
-    if ( allRowMerged ) {
-      const cellElement = editor.getElementByKey(cell.getKey())
-      if ( cellElement ) {
-        const {height} = cellElement?.getBoundingClientRect();
-        const cellHeight = height / rowSpan;
-
-        row!.setHeight(cellHeight)
-      }
-    }
 
     for ( let c = 1; c < colSpan; ++c ) {
       cell.insertAfter($createTableCellNodeWithParagraph())
