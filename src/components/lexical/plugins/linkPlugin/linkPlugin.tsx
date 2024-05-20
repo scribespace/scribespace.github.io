@@ -3,12 +3,12 @@ import {LinkNode, $isLinkNode, $createLinkNode} from '@lexical/link'
 import { NodeEventPlugin } from '@lexical/react/LexicalNodeEventPlugin';
 import { $getNodeByKey, $getPreviousSelection, $getSelection, $isRangeSelection, $isTextNode, COMMAND_PRIORITY_LOW, KEY_ENTER_COMMAND, KEY_SPACE_COMMAND, LexicalEditor, LexicalNode, NodeKey, SELECTION_CHANGE_COMMAND, TextNode } from "lexical";
 
-import './css/linkPluginDefault.css'
+import '../../components/link/css/link.css'
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from '@lexical/utils'
 
 import { useEffect, useRef, useState } from "react";
-import { LinkEditor, OpenURL } from "./linkEditor";
+import { LinkEditor, OpenURL } from "../../components/link/linkEditor";
 
 const urlRegExp = new RegExp(
   /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www\.)[A-Za-z0-9-]+\.[A-Za-z]{2,})((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/,

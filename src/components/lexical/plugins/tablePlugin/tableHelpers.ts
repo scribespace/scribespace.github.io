@@ -1,6 +1,6 @@
 import { $createTableCellNode, $getTableRowIndexFromTableCellNode, TableCellHeaderStates, TableCellNode } from "@lexical/table";
 import { $createParagraphNode } from "lexical";
-import { ResolvedRow } from "./nodes/extendedTableNode";
+import { ResolvedRow } from "../../nodes/table/extendedTableNode";
 
 export function $createTableCellNodeWithParagraph(): TableCellNode {
     const tableCellNode = $createTableCellNode(TableCellHeaderStates.NO_STATUS);

@@ -1,27 +1,28 @@
 import { useContext } from "react";
-import { ContextMenuContext, ContextMenuContextObject } from "../../contextMenuPlugin";
-import ContextSubmenu, { CotextSubmenuOptionProps } from "../../contextSubmenu";
+import Submenu, { CotextSubmenuOptionProps } from "../../menu/submenu";
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection, $setSelection } from "lexical";
-import ContextMenuItem from "../../contextMenuItem";
+import MenuItem from "../../menu/menuItem";
 import {
     $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
 import TableContextNumberInputEditor from "./tableContextNumberInputEditor";
-import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../tablePlugin/nodes/extendedTableNode";
-import { $getTableColumnIndexFromTableCellNode } from "../../../tablePlugin/tableHelpers";
-import { TableBodyNode } from "../../../tablePlugin/nodes/tableBodyNode";
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../nodes/table/extendedTableNode";
+import { $getTableColumnIndexFromTableCellNode } from "../../../plugins/tablePlugin/tableHelpers";
+import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
 import { TableContextOptionProps } from "../tableContextOptions";
+import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuPlugin";
+import { MenuContext } from "../../menu/menu";
 
 
-export function TableContextAddColumnAfter({ editor, icons }: TableContextOptionProps) {
-    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext);
+export function TableContextAddColumnAfter({ editor }: TableContextOptionProps) {
+    const menuContext = useContext(MenuContext) as ContextMenuContextData
 
     const OptionElement = ({ children }: CotextSubmenuOptionProps) => {
         return (
-            <ContextMenuItem Icon={icons.AddColumnAfterIcon} title="Insert Column After">
+            <MenuItem Icon={menuContext.icons.tableIcons.AddColumnAfterIcon} title="Insert Column After">
                 {children}
-            </ContextMenuItem>
+            </MenuItem>
         );
     };
 
@@ -63,24 +64,24 @@ export function TableContextAddColumnAfter({ editor, icons }: TableContextOption
         },
             { tag: 'table-add-column-after' });
 
-        contextObject.closeContextMenu();
+        menuContext.closeMenu();
     };
 
     return (
-        <ContextSubmenu Option={OptionElement} disableBackground={true}>
+        <Submenu Option={OptionElement} disableBackground={true}>
             <TableContextNumberInputEditor onInputAccepted={onInputAccepted} />
-        </ContextSubmenu>
+        </Submenu>
     );
 }
 
-export function TableContextAddColumnBefore({ editor, icons }: TableContextOptionProps) {
-    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext);
+export function TableContextAddColumnBefore({ editor }: TableContextOptionProps) {
+    const menuContext = useContext(MenuContext) as ContextMenuContextData
 
     const OptionElement = ({ children }: CotextSubmenuOptionProps) => {
         return (
-            <ContextMenuItem Icon={icons.AddColumnBeforeIcon} title="Insert Column Before">
+            <MenuItem Icon={menuContext.icons.tableIcons.AddColumnBeforeIcon} title="Insert Column Before">
                 {children}
-            </ContextMenuItem>
+            </MenuItem>
         );
     };
 
@@ -122,18 +123,18 @@ export function TableContextAddColumnBefore({ editor, icons }: TableContextOptio
         },
             { tag: 'table-add-column-before' });
 
-        contextObject.closeContextMenu();
+            menuContext.closeMenu();
     };
 
     return (
-        <ContextSubmenu Option={OptionElement} disableBackground={true}>
+        <Submenu Option={OptionElement} disableBackground={true}>
             <TableContextNumberInputEditor onInputAccepted={onInputAccepted} />
-        </ContextSubmenu>
+        </Submenu>
     );
 }
 
-export function TableContextColumnRemove({ editor, icons }: TableContextOptionProps) {
-    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext);
+export function TableContextColumnRemove({ editor }: TableContextOptionProps) {
+    const menuContext = useContext(MenuContext) as ContextMenuContextData
 
     const onClick = () => {
         editor.update(() => {
@@ -178,10 +179,10 @@ export function TableContextColumnRemove({ editor, icons }: TableContextOptionPr
 
             tableNode.removeColumns(cellNode, columnsCount);
             $setSelection(null);
-            contextObject.closeContextMenu();
+            menuContext.closeMenu();
         },
             { tag: 'table-column-remove' });
     };
 
-    return <ContextMenuItem Icon={icons.RemoveColumnIcon} title="Remove Column" onClick={onClick} />;
+    return <MenuItem Icon={menuContext.icons.tableIcons.RemoveColumnIcon} title="Remove Column" onClick={onClick} />;
 }

@@ -1,7 +1,7 @@
-import { useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 
-import './css/contextMenuPlugin.css';
-import { ContextMenuContext, ContextMenuContextObject } from "./contextMenuPlugin";
+import { EditorThemeClassName } from "lexical";
+import { IconType } from "react-icons";
 
 interface ContextMenuProps {
     parentRect: {x: number, y: number, width: number, height: number};
@@ -11,8 +11,29 @@ interface ContextMenuProps {
     children: React.ReactNode;
 }
 
-export const ContextMenu = (props: ContextMenuProps) => {
-    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext)
+export interface MenuTheme {
+    menuFloat?: EditorThemeClassName;
+    menuContainer?: EditorThemeClassName;
+    menuItem?: EditorThemeClassName;
+    menuItemIcon?: EditorThemeClassName;
+    menuItemSubmenuIcon?: EditorThemeClassName;
+    [key: string]: any
+}
+
+export interface MenuIcons {
+    SubmenuIcon?: IconType;
+    [key: string]: any
+}
+
+export interface MenuContextData {
+    theme?: MenuTheme;
+    icons?: MenuIcons;
+    closeMenu?: () => void;
+}
+
+export const MenuContext = createContext({})
+export const Menu = (props: ContextMenuProps) => {
+    const menuContext: MenuContextData = useContext(MenuContext)
 
     const [position, setPosition] = useState<{left: string, top: string}>({left:'-1px', top:'-1px'});
 
@@ -69,7 +90,7 @@ export const ContextMenu = (props: ContextMenuProps) => {
         <div ref={contextMenuContainerRef}>
             {
             props.showContextMenu && 
-            <div ref={contextMenuRef} className={contextObject.theme.contextMenuFloat + (props.disableBackground ? '' : (' ' + contextObject.theme.contextMenuContainer))} style={{left:position.left, top:position.top}}>
+            <div ref={contextMenuRef} className={menuContext.theme?.menuFloat + (props.disableBackground ? '' : (' ' + menuContext.theme?.menuContainer))} style={{left:position.left, top:position.top}}>
                 {props.children}
             </div>
             }

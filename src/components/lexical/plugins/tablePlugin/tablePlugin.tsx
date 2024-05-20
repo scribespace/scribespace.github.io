@@ -15,7 +15,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import './css/tablePlugin.css'
-import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from './nodes/extendedTableNode';
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from '../../nodes/table/extendedTableNode';
 
 const DRAG_NONE = 0 as const
 const DRAG_HORIZONTAL = 1 as const

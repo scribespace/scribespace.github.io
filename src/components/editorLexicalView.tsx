@@ -23,10 +23,10 @@ import RegisterCustomCommands from './lexical/commands';
 import { ExtendedTextNode } from './lexical/nodes/extendedTextNode';
 import useResizeObserver from 'use-resize-observer';
 import { TableNode, TableRowNode, TableCellNode } from '@lexical/table'
-import { ExtendedTableNode } from './lexical/plugins/tablePlugin/nodes/extendedTableNode'
+import { ExtendedTableNode } from './lexical/nodes/table/extendedTableNode'
 import TablePlugin from './lexical/plugins/tablePlugin/tablePlugin'
 import ContextMenuPlugin from './lexical/plugins/contextMenuPlugin/contextMenuPlugin';
-import { TableBodyNode } from './lexical/plugins/tablePlugin/nodes/tableBodyNode';
+import { TableBodyNode } from './lexical/nodes/table/tableBodyNode';
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
 // try to recover gracefully without losing user data.

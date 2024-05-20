@@ -1,66 +1,33 @@
-import { useContext, useEffect, useMemo, useState } from "react";
-import { TbColumnInsertLeft, TbColumnInsertRight, TbColumnRemove, TbRowInsertBottom, TbRowInsertTop, TbRowRemove, TbTableOff, TbTablePlus } from "react-icons/tb";
-import { ContextMenuContext, ContextMenuContextObject } from "../contextMenuPlugin";
+import { useContext, useEffect, useState } from "react";
 import { $getSelection, $isRangeSelection, LexicalEditor } from "lexical";
 import { 
     $findCellNode, $isTableCellNode, $isTableSelection,  
 } from "@lexical/table";
-import { SeparatorHorizontal, SeparatorHorizontalStrong } from "../../../editors/separator";
+import { SeparatorHorizontal, SeparatorHorizontalStrong } from "../separator";
 import TableContextSplitCells from "./tableContext/tableContextSplitCells";
 import TableContextMergeCells from "./tableContext/tableContextMergeCells";
 import TableContextCreate from "./tableContext/tableContextCreate";
-import { IconType } from "react-icons";
-import { AiOutlineMergeCells, AiOutlineSplitCells } from "react-icons/ai";
-import { copyExistingValues } from "../../../../../common";
 import { TableContextDelete } from "./tableContext/tableContextDelete";
 import { TableContextRowRemove, TableContextAddRowBefore, TableContextAddRowAfter } from "./tableContext/tableContextRowOptions";
 import { TableContextColumnRemove, TableContextAddColumnBefore, TableContextAddColumnAfter } from "./tableContext/tableContextColumnOptions";
+import { MenuContext } from "../menu/menu";
+import { ContextMenuContextData } from "../../plugins/contextMenuPlugin/contextMenuPlugin";
 
-
-export interface TableContextMenuIcons {
-    AddTableIcon: IconType;
-    DeleteTableIcon: IconType;
-    MergeCellIcon: IconType;
-    SplitCellIcon: IconType;
-    AddRowBeforeIcon: IconType;
-    AddRowAfterIcon: IconType;
-    AddColumnBeforeIcon: IconType;
-    AddColumnAfterIcon: IconType;
-    RemoveRowIcon: IconType;
-    RemoveColumnIcon: IconType;
-}
-
-const TABLE_CONTEXT_MENU_DEFAULT_ICONS: TableContextMenuIcons = {
-    AddTableIcon: TbTablePlus,
-    DeleteTableIcon: TbTableOff,
-    MergeCellIcon: AiOutlineMergeCells,
-    SplitCellIcon: AiOutlineSplitCells,
-    AddRowBeforeIcon: TbRowInsertTop,
-    AddRowAfterIcon: TbRowInsertBottom,
-    AddColumnBeforeIcon: TbColumnInsertLeft,
-    AddColumnAfterIcon: TbColumnInsertRight,
-    RemoveRowIcon: TbRowRemove,
-    RemoveColumnIcon: TbColumnRemove,
-}
 
 export interface TableContextOptionProps {
     editor: LexicalEditor,
-    icons: TableContextMenuIcons,
 }
 
 interface TableContextOptionsProps {
     editor: LexicalEditor,
-    icons?: TableContextMenuIcons
 }
 
-export default function TableContextOptions({editor, icons}: TableContextOptionsProps) {
-    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext)
+export default function TableContextOptions({editor}: TableContextOptionsProps) {
+    const menuContext = useContext(MenuContext) as ContextMenuContextData
 
     const [insideTable, setInsideTable] = useState<boolean>(false)
     const [cellsSelected, setCellsSelected] = useState<boolean>(false)
     const [mergedCellSelected, setMergedCellSelected] = useState<boolean>(false)
-
-    const currentIcons = useMemo(() => copyExistingValues<TableContextMenuIcons>(icons, TABLE_CONTEXT_MENU_DEFAULT_ICONS), [icons])
 
     useEffect(()=>{
         editor.update(()=>{
@@ -102,32 +69,32 @@ export default function TableContextOptions({editor, icons}: TableContextOptions
             setCellsSelected(cellsSelectedState)
             setMergedCellSelected(mergedCellSelectedState)
         })
-    },[contextObject.mousePosition])
+    },[menuContext.mousePosition])
 
     return (
         <>
             <SeparatorHorizontalStrong/>
-            <TableContextCreate editor={editor} icons={currentIcons}/>
+            <TableContextCreate editor={editor}/>
             {insideTable && 
-                <TableContextDelete editor={editor} icons={currentIcons}/>
+                <TableContextDelete editor={editor}/>
             }
             {(cellsSelected || mergedCellSelected) && (
                 <>
                 <SeparatorHorizontal/>
-                {cellsSelected && <TableContextMergeCells editor={editor} icons={currentIcons}/>}
-                {mergedCellSelected && <TableContextSplitCells editor={editor} icons={currentIcons}/>}
+                {cellsSelected && <TableContextMergeCells editor={editor}/>}
+                {mergedCellSelected && <TableContextSplitCells editor={editor}/>}
                 </>
             )}
             {insideTable && (
             <>
                 <SeparatorHorizontal/>
-                <TableContextColumnRemove editor={editor} icons={currentIcons}/>
-                <TableContextRowRemove editor={editor} icons={currentIcons}/>
+                <TableContextColumnRemove editor={editor}/>
+                <TableContextRowRemove editor={editor}/>
                 <SeparatorHorizontal/>
-                <TableContextAddColumnBefore editor={editor} icons={currentIcons}/>
-                <TableContextAddColumnAfter editor={editor} icons={currentIcons}/>
-                <TableContextAddRowBefore editor={editor} icons={currentIcons}/>
-                <TableContextAddRowAfter editor={editor} icons={currentIcons}/>
+                <TableContextAddColumnBefore editor={editor}/>
+                <TableContextAddColumnAfter editor={editor}/>
+                <TableContextAddRowBefore editor={editor}/>
+                <TableContextAddRowAfter editor={editor}/>
             </>
             )}           
         </>

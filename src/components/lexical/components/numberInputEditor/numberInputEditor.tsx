@@ -1,11 +1,11 @@
 import { useMemo, useRef } from "react";
 import { PiCheckSquareOffsetBold } from "react-icons/pi";
-import { copyExistingValues, separateValueAndUnit, variableExists } from "../../../common";
+import { copyExistingValues, separateValueAndUnit, variableExists } from "../../../../common";
 import { EditorThemeClassName } from "lexical";
 import { IconBaseProps, IconType } from "react-icons";
 
 import './css/numberInputEditor.css';
-import { SeparatorVertical } from "./separator";
+import { SeparatorVertical } from "../separator";
 import { HiPlusSm, HiMinusSm } from "react-icons/hi";
 
 export interface NumberInputEditorIcons {

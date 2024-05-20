@@ -1,9 +1,9 @@
 import { ImTable2 } from "react-icons/im";
 import { ToolbarToolProps } from "./toolsProps";
 import { $insertNodes } from "lexical";
-import { $createExtendedTableNodeWithDimensions } from "../../tablePlugin/nodes/extendedTableNode";
+import { $createExtendedTableNodeWithDimensions } from "../../../nodes/table/extendedTableNode";
 import DropdownTool from "./dropdownTool";
-import TableCreatorEditor from "../../tablePlugin/tableCreatorEditor";
+import TableCreatorEditor from "../../../components/table/tableCreatorEditor";
 
 export default function TableTool({editor} : ToolbarToolProps) {
     

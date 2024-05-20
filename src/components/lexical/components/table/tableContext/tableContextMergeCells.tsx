@@ -1,18 +1,19 @@
 import { useContext } from "react";
-import { ContextMenuContext, ContextMenuContextObject } from "../../contextMenuPlugin";
 import { $getSelection, $setSelection } from "lexical";
-import { ExtendedTableNode } from "../../../tablePlugin/nodes/extendedTableNode";
-import ContextMenuItem from "../../contextMenuItem";
+import { ExtendedTableNode } from "../../../nodes/table/extendedTableNode";
+import MenuItem from "../../menu/menuItem";
 import {
     $findTableNode, $isTableCellNode, $isTableNode, $isTableRowNode, $isTableSelection,
     TableCellNode, TableRowNode
 } from "@lexical/table";
 import { TableContextOptionProps } from "../tableContextOptions";
-import { TableBodyNode } from "../../../tablePlugin/nodes/tableBodyNode";
+import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
+import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuPlugin";
+import { MenuContext } from "../../menu/menu";
 
 
-export default function TableContextMergeCells({ editor, icons }: TableContextOptionProps) {
-    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext);
+export default function TableContextMergeCells({ editor }: TableContextOptionProps) {
+    const menuContext = useContext(MenuContext) as ContextMenuContextData
 
     const onClick = () => {
         editor.update(() => {
@@ -69,10 +70,10 @@ export default function TableContextMergeCells({ editor, icons }: TableContextOp
                 tableBodyNode.getParentOrThrow<ExtendedTableNode>().mergeCells(editor, firstCellNode, rowsToMerge, columnsToMerge);
 
                 $setSelection(null);
-                contextObject.closeContextMenu();
+                menuContext.closeMenu();
             }
         });
     };
 
-    return <ContextMenuItem Icon={icons.MergeCellIcon} title="Merge Cells" onClick={onClick} />;
+    return <MenuItem Icon={menuContext.icons.tableIcons.MergeCellIcon} title="Merge Cells" onClick={onClick} />;
 }

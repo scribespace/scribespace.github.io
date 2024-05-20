@@ -1,18 +1,19 @@
 import { useContext } from "react";
-import { ContextMenuContext, ContextMenuContextObject } from "../../contextMenuPlugin";
 import { $getNodeByKey, $getSelection, $isRangeSelection, $setSelection } from "lexical";
-import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../tablePlugin/nodes/extendedTableNode";
-import ContextMenuItem from "../../contextMenuItem";
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../nodes/table/extendedTableNode";
+import MenuItem from "../../menu/menuItem";
 import {
     $findCellNode, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
 import { TableContextOptionProps } from "../tableContextOptions";
-import { TableBodyNode } from "../../../tablePlugin/nodes/tableBodyNode";
+import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
+import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuPlugin";
+import { MenuContext } from "../../menu/menu";
 
 
-export default function TableContextSplitCells({ editor, icons }: TableContextOptionProps) {
-    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext);
+export default function TableContextSplitCells({ editor }: TableContextOptionProps) {
+    const menuContext = useContext(MenuContext) as ContextMenuContextData
     const onClick = () => {
         editor.update(() => {
             const selection = $getSelection();
@@ -43,9 +44,9 @@ export default function TableContextSplitCells({ editor, icons }: TableContextOp
             }
 
             $setSelection(null);
-            contextObject.closeContextMenu();
+            menuContext.closeMenu();
         });
     };
 
-    return <ContextMenuItem Icon={icons.SplitCellIcon} title="Split Cells" onClick={onClick} />;
+    return <MenuItem Icon={menuContext.icons.tableIcons.SplitCellIcon} title="Split Cells" onClick={onClick} />;
 }

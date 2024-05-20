@@ -1,14 +1,15 @@
 import { useContext } from "react";
-import { ContextMenuContext, ContextMenuContextObject } from "../../contextMenuPlugin";
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical";
-import ContextMenuItem from "../../contextMenuItem";
+import MenuItem from "../../menu/menuItem";
 import { $isTableSelection } from "@lexical/table";
 import { TableContextOptionProps } from "../tableContextOptions";
-import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../tablePlugin/nodes/extendedTableNode";
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../nodes/table/extendedTableNode";
+import { MenuContext } from "../../menu/menu";
+import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuPlugin";
 
 
-export function TableContextDelete({ editor, icons }: TableContextOptionProps) {
-    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext);
+export function TableContextDelete({ editor }: TableContextOptionProps) {
+    const menuContext = useContext(MenuContext) as ContextMenuContextData
     const onClick = () => {
         editor.update(() => {
             let tableNode: ExtendedTableNode | null = null;
@@ -26,8 +27,8 @@ export function TableContextDelete({ editor, icons }: TableContextOptionProps) {
 
             tableNode.remove();
         });
-        contextObject.closeContextMenu();
+        menuContext.closeMenu();
     };
 
-    return <ContextMenuItem Icon={icons.DeleteTableIcon} title="Delete Table" onClick={onClick} />;
+    return <MenuItem Icon={menuContext.icons.tableIcons.DeleteTableIcon} title="Delete Table" onClick={onClick} />;
 }

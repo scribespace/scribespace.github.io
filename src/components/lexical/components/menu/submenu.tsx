@@ -1,6 +1,5 @@
 import { ReactElement, useContext, useEffect, useRef, useState } from "react";
-import { ContextMenu } from "./contextMenu";
-import { ContextMenuContext, ContextMenuContextObject } from "./contextMenuPlugin";
+import { Menu, MenuContext, MenuContextData } from "./menu";
 import { IconBaseProps } from "react-icons";
 
 export interface CotextSubmenuOptionProps {
@@ -13,8 +12,8 @@ interface ContextSubmenuProps {
     children: React.ReactNode;
 }
 
-export default function ContextSubmenu(props: ContextSubmenuProps) {
-    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext)
+export default function Submenu(props: ContextSubmenuProps) {
+    const menuContext: MenuContextData = useContext(MenuContext)
 
     const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
 
@@ -39,17 +38,19 @@ export default function ContextSubmenu(props: ContextSubmenuProps) {
     }
 
     function SubmenuIcon(props: IconBaseProps) {
-        return contextObject.icons.SubmenuIcon(props)
+        if ( menuContext.icons?.SubmenuIcon )
+            return menuContext.icons?.SubmenuIcon(props)
+        return null;
     }
     
     return (
         <div ref={menuOptionRef} onClick={onClick}>
             <props.Option>
-                <SubmenuIcon className={contextObject.theme.contextMenuItemSubmenuIcon}/>
+                <SubmenuIcon className={menuContext.theme?.menuItemSubmenuIcon}/>
             </props.Option>
-            <ContextMenu showContextMenu={showContextMenu} setShowContextMenu={setShowContextMenu} parentRect={rect} disableBackground={props.disableBackground}>
+            <Menu showContextMenu={showContextMenu} setShowContextMenu={setShowContextMenu} parentRect={rect} disableBackground={props.disableBackground}>
                 {props.children}
-            </ContextMenu>
+            </Menu>
         </div>
     )
 }

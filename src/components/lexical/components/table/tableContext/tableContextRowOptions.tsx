@@ -1,26 +1,27 @@
 import { useContext } from "react";
-import { ContextMenuContext, ContextMenuContextObject } from "../../contextMenuPlugin";
-import ContextSubmenu, { CotextSubmenuOptionProps } from "../../contextSubmenu";
+import Submenu, { CotextSubmenuOptionProps } from "../../menu/submenu";
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection, $setSelection } from "lexical";
-import ContextMenuItem from "../../contextMenuItem";
+import MenuItem from "../../menu/menuItem";
 import {
     $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $getTableRowIndexFromTableCellNode, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
-import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../tablePlugin/nodes/extendedTableNode";
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../nodes/table/extendedTableNode";
 import { TableContextOptionProps } from "../tableContextOptions";
 import TableContextNumberInputEditor from "./tableContextNumberInputEditor";
-import { TableBodyNode } from "../../../tablePlugin/nodes/tableBodyNode";
+import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
+import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuPlugin";
+import { MenuContext } from "../../menu/menu";
 
 
-export function TableContextAddRowBefore({ editor, icons }: TableContextOptionProps) {
-    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext);
+export function TableContextAddRowBefore({ editor }: TableContextOptionProps) {
+    const menuContext = useContext(MenuContext) as ContextMenuContextData
 
     const OptionElement = ({ children }: CotextSubmenuOptionProps) => {
         return (
-            <ContextMenuItem Icon={icons.AddRowBeforeIcon} title="Insert Row Before">
+            <MenuItem Icon={menuContext.icons.tableIcons.AddRowBeforeIcon} title="Insert Row Before">
                 {children}
-            </ContextMenuItem>
+            </MenuItem>
         );
     };
 
@@ -52,26 +53,26 @@ export function TableContextAddRowBefore({ editor, icons }: TableContextOptionPr
             tableNode?.addRowsBefore(cellNode, value);
 
             $setSelection(null);
-            contextObject.closeContextMenu();
+            menuContext.closeMenu();
         },
             { tag: 'table-add-row-before' });
     };
 
     return (
-        <ContextSubmenu Option={OptionElement} disableBackground={true}>
+        <Submenu Option={OptionElement} disableBackground={true}>
             <TableContextNumberInputEditor onInputAccepted={onInputAccepted} />
-        </ContextSubmenu>
+        </Submenu>
     );
 }
 
-export function TableContextAddRowAfter({ editor, icons }: TableContextOptionProps) {
-    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext);
+export function TableContextAddRowAfter({ editor }: TableContextOptionProps) {
+    const menuContext = useContext(MenuContext) as ContextMenuContextData
 
     const OptionElement = ({ children }: CotextSubmenuOptionProps) => {
         return (
-            <ContextMenuItem Icon={icons.AddRowAfterIcon} title="Insert Row After">
+            <MenuItem Icon={menuContext.icons.tableIcons.AddRowAfterIcon} title="Insert Row After">
                 {children}
-            </ContextMenuItem>
+            </MenuItem>
         );
     };
 
@@ -112,18 +113,18 @@ export function TableContextAddRowAfter({ editor, icons }: TableContextOptionPro
         },
             { tag: 'table-add-row-after' });
 
-        contextObject.closeContextMenu();
+        menuContext.closeMenu();
     };
 
     return (
-        <ContextSubmenu Option={OptionElement} disableBackground={true}>
+        <Submenu Option={OptionElement} disableBackground={true}>
             <TableContextNumberInputEditor onInputAccepted={onInputAccepted} />
-        </ContextSubmenu>
+        </Submenu>
     );
 }
 
-export function TableContextRowRemove({ editor, icons }: TableContextOptionProps) {
-    const contextObject: ContextMenuContextObject = useContext(ContextMenuContext);
+export function TableContextRowRemove({ editor }: TableContextOptionProps) {
+    const menuContext = useContext(MenuContext) as ContextMenuContextData
 
     const onClick = () => {
         editor.update(() => {
@@ -166,10 +167,10 @@ export function TableContextRowRemove({ editor, icons }: TableContextOptionProps
 
             tableNode.removeRows(cellNode, rowsCount);
             $setSelection(null);
-            contextObject.closeContextMenu();
+            menuContext.closeMenu();
         },
             { tag: 'table-row-remove' });
     };
 
-    return <ContextMenuItem Icon={icons.RemoveRowIcon} title="Remove Row" onClick={onClick} />;
+    return <MenuItem Icon={menuContext.icons.tableIcons.RemoveRowIcon} title="Remove Row" onClick={onClick} />;
 }
