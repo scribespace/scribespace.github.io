@@ -86,9 +86,10 @@ export function $getTableEdgeCursorPosition(
 
   export function $insertParagraphAtTableEdge(
     edgePosition: 'first' | 'last',
-    tableNode: TableNode,
+    tableBodyNode: TableNode,
     children?: LexicalNode[],
   ) {
+      const tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>()
       if (edgePosition === 'first') {
           const prevSibiling = tableNode.getPreviousSibling()
         if ( prevSibiling && $isParagraphNode(prevSibiling) ) {
