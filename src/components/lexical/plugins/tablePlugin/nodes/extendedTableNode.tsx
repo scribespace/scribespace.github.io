@@ -222,6 +222,9 @@ export class ExtendedTableNode extends ElementNode {
     };
   }
 
+  extractWithChild(): true {
+    return true;
+  }
 }
 
 export function $createExtendedTableNodeWithDimensions( rows: number, cols: number ): ExtendedTableNode {

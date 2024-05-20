@@ -517,6 +517,10 @@ export class TableBodyNode extends TableNode {
     return false;
   }
 
+  exportDOM(editor: LexicalEditor) {
+    return {...super.exportDOM(editor), after: undefined}
+  }
+
   static importDOM(): DOMConversionMap | null {
     return {
       table: (_node: Node) => ({
@@ -530,6 +534,7 @@ export class TableBodyNode extends TableNode {
     const tableNode = $createTableBodyNode()
     return tableNode
   }
+  
 
   exportJSON(): SerializedElementNode {
     return {
