@@ -11,16 +11,23 @@ import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "
 import { $getTableColumnIndexFromTableCellNode } from "../../../plugins/tablePlugin/tableHelpers";
 import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
 import { TableContextOptionProps } from "../tableContextOptions";
-import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuPlugin";
+import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuContext";
 import { MenuContext } from "../../menu/menu";
 
 
 export function TableContextAddColumnAfter({ editor }: TableContextOptionProps) {
     const menuContext = useContext(MenuContext) as ContextMenuContextData
 
+    function AddColumnAfterIcon() {
+        if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.AddColumnAfterIcon ) 
+            throw Error("No theme for table menu!");
+
+        return menuContext.theme.tableMenuTheme.AddColumnAfterIcon
+    }
+
     const OptionElement = ({ children }: CotextSubmenuOptionProps) => {
         return (
-            <MenuItem Icon={menuContext.icons.tableIcons.AddColumnAfterIcon} title="Insert Column After">
+            <MenuItem Icon={AddColumnAfterIcon()} title="Insert Column After">
                 {children}
             </MenuItem>
         );
@@ -77,9 +84,16 @@ export function TableContextAddColumnAfter({ editor }: TableContextOptionProps) 
 export function TableContextAddColumnBefore({ editor }: TableContextOptionProps) {
     const menuContext = useContext(MenuContext) as ContextMenuContextData
 
+    function AddColumnBeforeIcon() {
+        if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.AddColumnBeforeIcon ) 
+            throw Error("No theme for table menu!");
+
+        return menuContext.theme.tableMenuTheme.AddColumnBeforeIcon
+    }
+
     const OptionElement = ({ children }: CotextSubmenuOptionProps) => {
         return (
-            <MenuItem Icon={menuContext.icons.tableIcons.AddColumnBeforeIcon} title="Insert Column Before">
+            <MenuItem Icon={AddColumnBeforeIcon()} title="Insert Column Before">
                 {children}
             </MenuItem>
         );
@@ -136,6 +150,13 @@ export function TableContextAddColumnBefore({ editor }: TableContextOptionProps)
 export function TableContextColumnRemove({ editor }: TableContextOptionProps) {
     const menuContext = useContext(MenuContext) as ContextMenuContextData
 
+    function RemoveColumnIcon() {
+        if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.RemoveColumnIcon ) 
+            throw Error("No theme for table menu!");
+
+        return menuContext.theme.tableMenuTheme.RemoveColumnIcon
+    }
+
     const onClick = () => {
         editor.update(() => {
             let tableNode: ExtendedTableNode | null = null;
@@ -184,5 +205,5 @@ export function TableContextColumnRemove({ editor }: TableContextOptionProps) {
             { tag: 'table-column-remove' });
     };
 
-    return <MenuItem Icon={menuContext.icons.tableIcons.RemoveColumnIcon} title="Remove Column" onClick={onClick} />;
+    return <MenuItem Icon={RemoveColumnIcon()} title="Remove Column" onClick={onClick} />;
 }

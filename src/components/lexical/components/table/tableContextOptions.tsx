@@ -11,7 +11,7 @@ import { TableContextDelete } from "./tableContext/tableContextDelete";
 import { TableContextRowRemove, TableContextAddRowBefore, TableContextAddRowAfter } from "./tableContext/tableContextRowOptions";
 import { TableContextColumnRemove, TableContextAddColumnBefore, TableContextAddColumnAfter } from "./tableContext/tableContextColumnOptions";
 import { MenuContext } from "../menu/menu";
-import { ContextMenuContextData } from "../../plugins/contextMenuPlugin/contextMenuPlugin";
+import { ContextMenuContextData } from "../../plugins/contextMenuPlugin/contextMenuContext";
 
 
 export interface TableContextOptionProps {

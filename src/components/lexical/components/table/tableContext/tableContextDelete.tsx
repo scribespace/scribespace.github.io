@@ -5,11 +5,19 @@ import { $isTableSelection } from "@lexical/table";
 import { TableContextOptionProps } from "../tableContextOptions";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../nodes/table/extendedTableNode";
 import { MenuContext } from "../../menu/menu";
-import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuPlugin";
+import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuContext";
 
 
 export function TableContextDelete({ editor }: TableContextOptionProps) {
     const menuContext = useContext(MenuContext) as ContextMenuContextData
+
+    function DeleteTableIcon() {
+        if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.DeleteTableIcon ) 
+            throw Error("No theme for table menu!");
+
+        return menuContext.theme.tableMenuTheme.DeleteTableIcon
+    }
+
     const onClick = () => {
         editor.update(() => {
             let tableNode: ExtendedTableNode | null = null;
@@ -30,5 +38,5 @@ export function TableContextDelete({ editor }: TableContextOptionProps) {
         menuContext.closeMenu();
     };
 
-    return <MenuItem Icon={menuContext.icons.tableIcons.DeleteTableIcon} title="Delete Table" onClick={onClick} />;
+    return <MenuItem Icon={DeleteTableIcon()} title="Delete Table" onClick={onClick} />;
 }

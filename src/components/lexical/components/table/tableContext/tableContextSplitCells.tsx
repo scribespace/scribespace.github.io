@@ -8,12 +8,19 @@ import {
 } from "@lexical/table";
 import { TableContextOptionProps } from "../tableContextOptions";
 import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
-import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuPlugin";
+import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuContext";
 import { MenuContext } from "../../menu/menu";
-
 
 export default function TableContextSplitCells({ editor }: TableContextOptionProps) {
     const menuContext = useContext(MenuContext) as ContextMenuContextData
+
+    function SplitCellIcon() {
+        if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.SplitCellIcon ) 
+            throw Error("No theme for table menu!");
+
+        return menuContext.theme.tableMenuTheme.SplitCellIcon
+    }
+
     const onClick = () => {
         editor.update(() => {
             const selection = $getSelection();
@@ -48,5 +55,5 @@ export default function TableContextSplitCells({ editor }: TableContextOptionPro
         });
     };
 
-    return <MenuItem Icon={menuContext.icons.tableIcons.SplitCellIcon} title="Split Cells" onClick={onClick} />;
+    return <MenuItem Icon={SplitCellIcon()} title="Split Cells" onClick={onClick} />;
 }

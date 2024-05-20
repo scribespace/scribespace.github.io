@@ -1,4 +1,4 @@
-const EditorTheme = {
+const EditorInputTheme = {
   ltr: "ltr",
   rtl: "rtl",
   placeholder: "editor-placeholder",
@@ -17,4 +17,4 @@ const EditorTheme = {
   tableRow: 'editor-table-row',
 };
 
-export default EditorTheme;
+export default EditorInputTheme;

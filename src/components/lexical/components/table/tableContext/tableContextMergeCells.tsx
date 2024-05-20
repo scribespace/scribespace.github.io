@@ -8,12 +8,19 @@ import {
 } from "@lexical/table";
 import { TableContextOptionProps } from "../tableContextOptions";
 import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
-import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuPlugin";
+import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuContext";
 import { MenuContext } from "../../menu/menu";
 
 
 export default function TableContextMergeCells({ editor }: TableContextOptionProps) {
     const menuContext = useContext(MenuContext) as ContextMenuContextData
+
+    function MergeCellIcon() {
+        if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.MergeCellIcon ) 
+            throw Error("No theme for table menu!");
+
+        return menuContext.theme.tableMenuTheme.MergeCellIcon
+    }
 
     const onClick = () => {
         editor.update(() => {
@@ -75,5 +82,5 @@ export default function TableContextMergeCells({ editor }: TableContextOptionPro
         });
     };
 
-    return <MenuItem Icon={menuContext.icons.tableIcons.MergeCellIcon} title="Merge Cells" onClick={onClick} />;
+    return <MenuItem Icon={MergeCellIcon()} title="Merge Cells" onClick={onClick} />;
 }

@@ -17,17 +17,12 @@ export interface MenuTheme {
     menuItem?: EditorThemeClassName;
     menuItemIcon?: EditorThemeClassName;
     menuItemSubmenuIcon?: EditorThemeClassName;
-    [key: string]: any
-}
 
-export interface MenuIcons {
     SubmenuIcon?: IconType;
-    [key: string]: any
 }
 
 export interface MenuContextData {
     theme?: MenuTheme;
-    icons?: MenuIcons;
     closeMenu?: () => void;
 }
 

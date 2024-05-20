@@ -2,21 +2,19 @@ import { TbColumnInsertLeft, TbColumnInsertRight, TbColumnRemove, TbRowInsertBot
 import { IconType } from "react-icons";
 import { AiOutlineMergeCells, AiOutlineSplitCells } from "react-icons/ai";
 
-
-
-export interface TableMenuIcons {
-    AddTableIcon: IconType;
-    DeleteTableIcon: IconType;
-    MergeCellIcon: IconType;
-    SplitCellIcon: IconType;
-    AddRowBeforeIcon: IconType;
-    AddRowAfterIcon: IconType;
-    AddColumnBeforeIcon: IconType;
-    AddColumnAfterIcon: IconType;
-    RemoveRowIcon: IconType;
-    RemoveColumnIcon: IconType;
+export interface TableMenuTheme {
+    AddTableIcon?: IconType;
+    DeleteTableIcon?: IconType;
+    MergeCellIcon?: IconType;
+    SplitCellIcon?: IconType;
+    AddRowBeforeIcon?: IconType;
+    AddRowAfterIcon?: IconType;
+    AddColumnBeforeIcon?: IconType;
+    AddColumnAfterIcon?: IconType;
+    RemoveRowIcon?: IconType;
+    RemoveColumnIcon?: IconType;
 }
-export const TABLE_MENU_DEFAULT_ICONS: TableMenuIcons = {
+export const TABLE_MENU_THEME_DEFAULT: TableMenuTheme = {
     AddTableIcon: TbTablePlus,
     DeleteTableIcon: TbTableOff,
     MergeCellIcon: AiOutlineMergeCells,

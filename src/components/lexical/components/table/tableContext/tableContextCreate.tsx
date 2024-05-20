@@ -5,15 +5,22 @@ import { $insertNodes } from "lexical";
 import { $createExtendedTableNodeWithDimensions } from "../../../nodes/table/extendedTableNode";
 import MenuItem from "../../menu/menuItem";
 import { TableContextOptionProps } from "../tableContextOptions";
-import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuPlugin";
+import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuContext";
 import { MenuContext } from "../../menu/menu";
 
 export default function TableContextCreate({ editor }: TableContextOptionProps) {
     const menuContext = useContext(MenuContext) as ContextMenuContextData
 
+    function AddTableIcon() {
+        if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.AddTableIcon ) 
+            throw Error("No theme for table menu!");
+
+        return menuContext.theme.tableMenuTheme.AddTableIcon
+    }
+
     const OptionElement = ({ children }: CotextSubmenuOptionProps) => {
         return (
-            <MenuItem Icon={menuContext.icons.tableIcons.AddTableIcon} title="Create Table">
+            <MenuItem Icon={AddTableIcon()} title="Create Table">
                 {children}
             </MenuItem>
         );

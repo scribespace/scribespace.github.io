@@ -10,16 +10,23 @@ import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "
 import { TableContextOptionProps } from "../tableContextOptions";
 import TableContextNumberInputEditor from "./tableContextNumberInputEditor";
 import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
-import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuPlugin";
+import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuContext";
 import { MenuContext } from "../../menu/menu";
 
 
 export function TableContextAddRowBefore({ editor }: TableContextOptionProps) {
     const menuContext = useContext(MenuContext) as ContextMenuContextData
 
+    function AddRowBeforeIcon() {
+        if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.AddRowBeforeIcon ) 
+            throw Error("No theme for table menu!");
+
+        return menuContext.theme.tableMenuTheme.AddRowBeforeIcon
+    }
+
     const OptionElement = ({ children }: CotextSubmenuOptionProps) => {
         return (
-            <MenuItem Icon={menuContext.icons.tableIcons.AddRowBeforeIcon} title="Insert Row Before">
+            <MenuItem Icon={AddRowBeforeIcon()} title="Insert Row Before">
                 {children}
             </MenuItem>
         );
@@ -68,9 +75,16 @@ export function TableContextAddRowBefore({ editor }: TableContextOptionProps) {
 export function TableContextAddRowAfter({ editor }: TableContextOptionProps) {
     const menuContext = useContext(MenuContext) as ContextMenuContextData
 
+    function AddRowAfterIcon() {
+        if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.AddRowAfterIcon ) 
+            throw Error("No theme for table menu!");
+
+        return menuContext.theme.tableMenuTheme.AddRowAfterIcon
+    }
+
     const OptionElement = ({ children }: CotextSubmenuOptionProps) => {
         return (
-            <MenuItem Icon={menuContext.icons.tableIcons.AddRowAfterIcon} title="Insert Row After">
+            <MenuItem Icon={AddRowAfterIcon()} title="Insert Row After">
                 {children}
             </MenuItem>
         );
@@ -126,6 +140,13 @@ export function TableContextAddRowAfter({ editor }: TableContextOptionProps) {
 export function TableContextRowRemove({ editor }: TableContextOptionProps) {
     const menuContext = useContext(MenuContext) as ContextMenuContextData
 
+    function RemoveRowIcon() {
+        if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.RemoveRowIcon ) 
+            throw Error("No theme for table menu!");
+
+        return menuContext.theme.tableMenuTheme.RemoveRowIcon
+    }
+
     const onClick = () => {
         editor.update(() => {
             let tableNode: ExtendedTableNode | null = null;
@@ -172,5 +193,5 @@ export function TableContextRowRemove({ editor }: TableContextOptionProps) {
             { tag: 'table-row-remove' });
     };
 
-    return <MenuItem Icon={menuContext.icons.tableIcons.RemoveRowIcon} title="Remove Row" onClick={onClick} />;
+    return <MenuItem Icon={RemoveRowIcon()} title="Remove Row" onClick={onClick} />;
 }

@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import NumberInputEditor from "../../numberInputEditor/numberInputEditor";
-import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuPlugin";
+import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuContext";
 import { MenuContext } from "../../menu/menu";
 
 interface TableContextNumberInputEditorProps {

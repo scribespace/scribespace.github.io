@@ -14,11 +14,11 @@ import {LinkNode} from '@lexical/link'
 import LinkPlugin from './lexical/plugins/linkPlugin/linkPlugin'
 import { appGlobals } from '../system/appGlobals';
 
-import './lexical/editor.css'
+import './lexical/editorInputTheme.css'
 
 import { ToolbarPlugin } from './lexical/plugins/toolbarPlugin/toolbarPlugin';
 
-import EditorTheme from './lexical/editorTheme';
+import EditorInputTheme from './lexical/editorInputTheme';
 import RegisterCustomCommands from './lexical/commands';
 import { ExtendedTextNode } from './lexical/nodes/extendedTextNode';
 import useResizeObserver from 'use-resize-observer';
@@ -27,6 +27,9 @@ import { ExtendedTableNode } from './lexical/nodes/table/extendedTableNode'
 import TablePlugin from './lexical/plugins/tablePlugin/tablePlugin'
 import ContextMenuPlugin from './lexical/plugins/contextMenuPlugin/contextMenuPlugin';
 import { TableBodyNode } from './lexical/nodes/table/tableBodyNode';
+import { useEffect, useState } from 'react';
+import { EDITOR_THEME_DEFAULT, EditorThemeContext, EditorTheme } from './lexical/editorThemeContext';
+import { copyExistingValues } from '../common';
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
 // try to recover gracefully without losing user data.
@@ -36,6 +39,7 @@ function onError(error: Error) {
 
 type Props = {
     selectedFile: string;
+    theme?: EditorTheme;
 }
 
 function TestPlugin( {selectedFile} : Props ) {
@@ -67,12 +71,14 @@ function TestPlugin( {selectedFile} : Props ) {
     return null;
 };
 
-export function EditorLexicalView({selectedFile} : Props) {
+export function EditorLexicalView({selectedFile, theme} : Props) {
+  const [editorTheme, setEditorTheme] = useState<EditorTheme>(EDITOR_THEME_DEFAULT);
+
   const { ref: toolbarRef, height: toolbarHeight = 1 } = useResizeObserver<HTMLDivElement>({box:'border-box'}); 
 
   const initialConfig = {
-    namespace: 'MyEditor',
-    theme: EditorTheme,
+    namespace: 'ScribleSpace',
+    theme: EditorInputTheme,
     onError,
     nodes: [
       ListNode,
@@ -87,27 +93,34 @@ export function EditorLexicalView({selectedFile} : Props) {
       TableCellNode,      
     ]
   };
+
+  useEffect(()=>{
+    const newTheme = copyExistingValues(theme, EDITOR_THEME_DEFAULT);
+    setEditorTheme(newTheme)
+  },[theme])
  
   return (
-    <LexicalComposer initialConfig={initialConfig}>
-        <div className='editor-container'>
-            <ToolbarPlugin ref={toolbarRef}/>
-            <div className='editor-inner' style={{height: `calc(100% - ${toolbarHeight}px)`}}>
-              <RichTextPlugin
-              contentEditable={<ContentEditable className="editor-input section-to-print" spellCheck={false}/>}
-              placeholder={null}
-              ErrorBoundary={LexicalErrorBoundary}
-              />
-            </div>
-        </div>
-        <TestPlugin selectedFile={selectedFile}/>
-        <HistoryPlugin />
-        <AutoFocusPlugin />
-        <RegisterCustomCommands />
-        <LinkPlugin/>
-        <TablePlugin/>
-        <ContextMenuPlugin/>
-    </LexicalComposer>
+        <EditorThemeContext.Provider value={editorTheme}>
+          <LexicalComposer initialConfig={initialConfig}>
+          <div className={editorTheme.editorContainer}>
+              <ToolbarPlugin ref={toolbarRef}/>
+              <div className={editorTheme.editorInner} style={{height: `calc(100% - ${toolbarHeight}px)`}}>
+                <RichTextPlugin
+                contentEditable={<ContentEditable className={editorTheme.editorEditable} spellCheck={false}/>}
+                placeholder={null}
+                ErrorBoundary={LexicalErrorBoundary}
+                />
+              </div>
+          </div>
+          <TestPlugin selectedFile={selectedFile}/>
+          <HistoryPlugin />
+          <AutoFocusPlugin />
+          <RegisterCustomCommands />
+          <LinkPlugin/>
+          <TablePlugin/>
+          <ContextMenuPlugin/>
+      </LexicalComposer>
+    </EditorThemeContext.Provider>
   );
 }
 
