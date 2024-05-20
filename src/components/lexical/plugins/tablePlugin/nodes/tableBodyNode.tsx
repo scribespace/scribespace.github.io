@@ -544,6 +544,10 @@ export class TableBodyNode extends TableNode {
     };
   }
 
+  isShadowRoot(): false {
+    return false;
+  }
+
 }
 
 export function $createTableBodyNodeWithDimensions( rows: number, cols: number ): TableBodyNode {

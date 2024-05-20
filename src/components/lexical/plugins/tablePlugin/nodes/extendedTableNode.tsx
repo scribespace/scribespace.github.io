@@ -197,6 +197,12 @@ export class ExtendedTableNode extends ElementNode {
     return false;
   }
 
+  exportDOM(editor: LexicalEditor) {
+    return {
+      ...super.exportDOM(editor)
+    }
+  }
+
   static importDOM(): DOMConversionMap | null {
     return {
       table: (_node: Node) => ({
