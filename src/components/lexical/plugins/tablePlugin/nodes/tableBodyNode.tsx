@@ -1,7 +1,6 @@
 import { TableNode, TableRowNode, TableCellNode, $createTableNodeWithDimensions, $isTableRowNode, $getTableRowIndexFromTableCellNode, $createTableRowNode, $createTableCellNode, TableCellHeaderStates } from '@lexical/table'
 import { $applyNodeReplacement, $isParagraphNode, DOMConversionMap, DOMConversionOutput, EditorConfig, LexicalEditor, LexicalNode, SerializedElementNode } from 'lexical';
 import { $createTableCellNodeWithParagraph, $getTableColumnIndexFromTableCellNode } from '../tableHelpers';
-import { TableColumnsGroupNode } from './tableColumnsGroupNode';
 
 export class ResolvedCell {
   columnID: number;
@@ -23,8 +22,6 @@ export class ResolvedRow {
 }
 
 export class TableBodyNode extends TableNode {
-  __columnsGroupNode: TableColumnsGroupNode | null = null
-
   constructor(node?: TableBodyNode) {
       super(node?.__key);
   }
@@ -35,6 +32,50 @@ export class TableBodyNode extends TableNode {
 
   static clone(node: TableBodyNode): TableBodyNode {
     return new TableBodyNode( node );
+  }
+
+  static addColumnsGroupBefore( columnsWidths: number[], columnID: number, columnsToAdd: number) {
+    const sizeScale = columnsWidths.length / (columnsWidths.length + columnsToAdd);
+
+    for ( let c = 0; c < columnsWidths.length; ++c ) {
+      if ( columnsWidths[c] > -1 ) {
+        columnsWidths[c] *= sizeScale
+      }
+    }
+
+    const newColumns: number[] = []
+    for ( let c = 0; c < columnsToAdd; ++c ) 
+      newColumns[c] = -1;
+
+    columnsWidths.splice(columnID, 0, ...newColumns);
+  }
+
+  static addColumnsGroupAfter(columnsWidths: number[], columnID: number, columnsToAdd: number ) {
+    const sizeScale = columnsWidths.length / (columnsWidths.length + columnsToAdd);
+
+    for ( let c = 0; c < columnsWidths.length; ++c ) {
+      if ( columnsWidths[c] > -1 ) {
+        columnsWidths[c] *= sizeScale
+      }
+    }
+
+    const newColumns: number[] = []
+    for ( let c = 0; c < columnsToAdd; ++c ) 
+      newColumns[c] = -1;
+
+    columnsWidths.splice(columnID + 1, 0, ...newColumns);
+  }
+
+  static removeColumnsGroup(columnsWidths: number[], columnID: number, columnsToRemove: number) {
+    const sizeScale = columnsWidths.length / (columnsWidths.length - columnsToRemove);
+
+    columnsWidths.splice(columnID, columnsToRemove);
+
+    for ( let c = 0; c < columnsWidths.length; ++c ) {
+      if ( columnsWidths[c] > -1 ) {
+        columnsWidths[c] *= sizeScale
+      }
+    }
   }
 
   getResolvedTable(): ResolvedRow[] {
@@ -327,7 +368,7 @@ export class TableBodyNode extends TableNode {
     }
   }
 
-  addColumnsBefore(cellNode: TableCellNode, columnsToAdd: number, columnsGroup?: TableColumnsGroupNode ) {
+  addColumnsBefore(cellNode: TableCellNode, columnsToAdd: number, columnsWidths: number[] ) {
     const self = this.getWritable()
     const resolvedTable = self.getResolvedTable();
 
@@ -351,10 +392,10 @@ export class TableBodyNode extends TableNode {
       r += rowSpan;
     }
 
-    columnsGroup?.addColumnsBefore(columnID, columnsToAdd);
+    TableBodyNode.addColumnsGroupBefore(columnsWidths, columnID, columnsToAdd);
   }
 
-  addColumnsAfter(cellNode: TableCellNode, columnsCount: number, columnsGroup?: TableColumnsGroupNode ) {
+  addColumnsAfter(cellNode: TableCellNode, columnsCount: number, columnsWidths: number[] ) {
     const self = this.getWritable()
     const resolvedTable = self.getResolvedTable();
 
@@ -379,10 +420,10 @@ export class TableBodyNode extends TableNode {
       r += rowSpan;
     }
 
-    columnsGroup?.addColumnsAfter(columnID, columnsCount);
+    TableBodyNode.addColumnsGroupAfter(columnsWidths, columnID, columnsCount);
   }
 
-  removeColumns(cellNode: TableCellNode, columnsToRemove: number, columnsGroup?: TableColumnsGroupNode ) {
+  removeColumns(cellNode: TableCellNode, columnsToRemove: number, columnsWidths: number[] ) {
 
     const self = this.getWritable()
     const resolvedTable = self.getResolvedTable();
@@ -464,7 +505,7 @@ export class TableBodyNode extends TableNode {
         }
     }
 
-    columnsGroup?.removeColumns(columnID, columnsToRemove);
+    TableBodyNode.removeColumnsGroup(columnsWidths, columnID, columnsToRemove);
   }
 
   createDOM(_config: EditorConfig): HTMLElement {

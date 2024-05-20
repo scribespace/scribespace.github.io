@@ -228,8 +228,7 @@ export default function TablePlugin() {
 
       function GetColumnWidthWithPosition(tableNode: ExtendedTableNode, columnID: number, cellLUT: (TableCellNode | null)[][]): {width:number, position:number} {
         const columnsCount = cellLUT[0].length;
-        const columnsGroupNode = tableNode.getTableColumnsGroupNodeWritable()
-        let columnWidth = columnsGroupNode.getColumnWidth(columnID);
+        let columnWidth = tableNode.getColumnWidth(columnID);
 
         // Find node if first is a miss
         let cellNode: TableCellNode | null = cellLUT[0][columnID]
@@ -262,7 +261,7 @@ export default function TablePlugin() {
 
           for ( let s = 0; s < span; ++s) {
               const columnIDToCheck = columnID - s;
-              const checkColumnWidth = columnsGroupNode.getColumnWidth(columnIDToCheck);
+              const checkColumnWidth = tableNode.getColumnWidth(columnIDToCheck);
               if ( checkColumnWidth != -1 ) {
                   knownWidth += checkColumnWidth;
                   setColumns += 1;
@@ -292,11 +291,10 @@ export default function TablePlugin() {
               }
     
               const tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(tableCellNode);
-              const columnsGroupNode = tableNode.getTableColumnsGroupNodeWritable()
               const tableBodyNode = tableNode.getTableBodyNodeWritable()
                 
               // Create look up table for cells
-              const columnsCount = columnsGroupNode.getColumnsWidths().length;
+              const columnsCount = tableNode.getColumnsWidths().length;
               const rowsNodes = tableBodyNode.getChildren() as TableRowNode[]
               const rowsCount = rowsNodes.length;
 
@@ -385,10 +383,9 @@ export default function TablePlugin() {
 
               widthOffset = Math.min(columnWidthsRef.current.hight - COLUMN_MARGIN, Math.max(-columnWidthsRef.current.low + COLUMN_MARGIN, widthOffset) );
               
-              const columnsGroupNode = tableNode.getTableColumnsGroupNodeWritable()
 
-              columnsGroupNode.setColumnWidth(columnIDRef.current, columnWidth + widthOffset)
-              columnsGroupNode.setColumnWidth(columnIDRef.current + 1, nextColumnWidth - widthOffset)
+              tableNode.setColumnWidth(columnIDRef.current, columnWidth + widthOffset)
+              tableNode.setColumnWidth(columnIDRef.current + 1, nextColumnWidth - widthOffset)
             },
             {tag: 'table-update-column-width'},
           );
