@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import Submenu, { CotextSubmenuOptionProps } from "../../menu/submenu";
-import TableCreatorEditor from "../tableCreatorEditor";
+import TableCreator from "../tableCreator";
 import { $insertNodes } from "lexical";
 import { $createExtendedTableNodeWithDimensions } from "../../../nodes/table/extendedTableNode";
 import MenuItem from "../../menu/menuItem";
@@ -37,7 +37,7 @@ export default function TableContextCreate({ editor }: TableContextOptionProps) 
 
     return (
         <Submenu Option={OptionElement} disableBackground={true}>
-            <TableCreatorEditor gridSize="100px" rowsCount={10} columnsCount={10} onClick={onClick} />
+            <TableCreator gridSize="100px" rowsCount={10} columnsCount={10} onClick={onClick} />
         </Submenu>
     );
 }

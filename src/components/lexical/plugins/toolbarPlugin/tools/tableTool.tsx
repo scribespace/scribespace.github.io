@@ -3,7 +3,7 @@ import { ToolbarToolProps } from "./toolsProps";
 import { $insertNodes } from "lexical";
 import { $createExtendedTableNodeWithDimensions } from "../../../nodes/table/extendedTableNode";
 import DropdownTool from "./dropdownTool";
-import TableCreatorEditor from "../../../components/table/tableCreatorEditor";
+import TableCreator from "../../../components/table/tableCreator";
 
 export default function TableTool({editor} : ToolbarToolProps) {
     
@@ -19,7 +19,7 @@ export default function TableTool({editor} : ToolbarToolProps) {
     }
      return (
          <DropdownTool Tool={Tool}>
-                 <TableCreatorEditor gridSize="100px" rowsCount={10} columnsCount={10} onClick={onClick}/>
+                 <TableCreator gridSize="100px" rowsCount={10} columnsCount={10} onClick={onClick}/>
          </DropdownTool>
      )
 }   
