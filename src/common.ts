@@ -20,16 +20,32 @@ export function separateValueAndUnit(valueUnit: string): ValueUnit {
     }
 }
 
+export function isObject(item: any ){
+    return item !== null && typeof item === 'object' && !Array.isArray(item);
+}
+
 export function copyExistingValues<T>(values: T | Partial<T> | null | undefined, defaultValues: T): T {
     if ( !values ) return defaultValues;
 
     const newValues = defaultValues;
     for ( const field in values ) {
-        (newValues as any)[field] = (values as any)[field]
+        const fieldValue = (values as any)[field];
+        if ( isObject(fieldValue) ) {
+            (newValues as any)[field] = copyExistingValues<T>(fieldValue, (newValues as any)[field] );
+        } else {
+            (newValues as any)[field] = fieldValue;
+        }
     }
 
     return newValues;
 }
+
+export const urlRegExp = new RegExp(
+    /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www\.)[A-Za-z0-9-]+\.[A-Za-z]{2,})((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/,
+  );
+  export function validateUrl(url: string): boolean {
+    return url === 'https://' || urlRegExp.test(url);
+  }
 
 // @ts-ignore: Unused function
 export const notImplemented = () => {

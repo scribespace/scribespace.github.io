@@ -9,13 +9,7 @@ import { mergeRegister } from '@lexical/utils'
 
 import { useEffect, useRef, useState } from "react";
 import { LinkEditor, OpenURL } from "../../components/link/linkEditor";
-
-const urlRegExp = new RegExp(
-  /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www\.)[A-Za-z0-9-]+\.[A-Za-z]{2,})((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/,
-);
-export function validateUrl(url: string): boolean {
-  return url === 'https://' || urlRegExp.test(url);
-}
+import { urlRegExp, validateUrl } from "../../../../common";
 
 export default function LinkPlugin() {
     const [editor, composerContext] = useLexicalComposerContext();
@@ -114,7 +108,7 @@ export default function LinkPlugin() {
           }
         }
       })
-    },[linkURL, linkText])
+    },[linkURL, linkText, editor])
 
     useEffect(()=> {
       if (!editor.hasNode(LinkNode)) {

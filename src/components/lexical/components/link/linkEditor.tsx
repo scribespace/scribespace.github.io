@@ -2,7 +2,7 @@ import { LexicalComposerContextType } from "@lexical/react/LexicalComposerContex
 import { forwardRef, useEffect, useRef } from "react";
 import { MdEdit, MdLink } from "react-icons/md";
 import { HiExternalLink } from "react-icons/hi";
-import { validateUrl } from "../../plugins/linkPlugin/linkPlugin";
+import { validateUrl } from "../../../../common";
 interface LinkEditorProps {
     composerContext: LexicalComposerContextType;
 
