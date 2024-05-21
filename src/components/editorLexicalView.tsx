@@ -20,7 +20,7 @@ import { ToolbarPlugin } from './lexical/plugins/toolbarPlugin/toolbarPlugin';
 
 import EditorInputTheme from './lexical/editorInputTheme';
 import RegisterCustomCommands from './lexical/commands';
-import { ExtendedTextNode } from './lexical/nodes/text/extendedTextNode';
+import ExtendedTextNode from './lexical/nodes/text';
 import useResizeObserver from 'use-resize-observer';
 import { TableNode, TableRowNode, TableCellNode } from '@lexical/table'
 import { ExtendedTableNode, TableBodyNode } from './lexical/nodes/table'
