@@ -5,7 +5,7 @@ import {
     TableCellNode
 } from "@lexical/table";
 import TableContextNumberInput from "./tableContextNumberInput";
-import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
+import { useContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
 import { PropsWithChildren } from "react";
 import { TableContextOptionProps } from "./tableContextCommon";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "../../../nodes/table";
@@ -13,7 +13,7 @@ import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBo
 
 
 export default function TableContextAddRowBefore({ editor }: TableContextOptionProps) {
-    const menuContext = getContextMenuContext();
+    const menuContext = useContextMenuContext();
 
     function AddRowBeforeIcon() {
         if (!menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.AddRowBeforeIcon)

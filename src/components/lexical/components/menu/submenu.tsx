@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, PropsWithChildren } from "react";
 import Menu from "./menu";
-import { MenuContextData, getMenuContext } from "./context";
+import { MenuContextData, useMenuContext } from "./context";
 import { IconBaseProps } from "react-icons";
 
 interface SubmenuProps {
@@ -10,7 +10,7 @@ interface SubmenuProps {
 }
 
 export default function Submenu(props: SubmenuProps) {
-    const menuContext: MenuContextData = getMenuContext()
+    const menuContext: MenuContextData = useMenuContext()
 
     const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
 

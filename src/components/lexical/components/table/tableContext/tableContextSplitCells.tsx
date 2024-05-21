@@ -5,11 +5,11 @@ import {
     TableCellNode
 } from "@lexical/table";
 import { TableContextOptionProps } from "./tableContextCommon";
-import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
+import { useContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "../../../nodes/table";
 
 export default function TableContextSplitCells({ editor }: TableContextOptionProps) {
-    const menuContext = getContextMenuContext()
+    const menuContext = useContextMenuContext()
 
     function SplitCellIcon() {
         if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.SplitCellIcon ) 

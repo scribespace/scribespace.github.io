@@ -1,8 +1,8 @@
-import { ReactElement, useEffect, useRef, useState } from "react";
+import { ReactElement, useEffect, useMemo, useRef, useState } from "react";
 
 
 import './css/tableCreator.css';
-import { EditorTheme, getEditorThemeContext } from "../../editorThemeContext";
+import { EditorTheme, useEditorThemeContext } from "../../editorThemeContext";
 
 interface TableCreatorProps {
     gridSize: string;
@@ -12,11 +12,11 @@ interface TableCreatorProps {
 }
 
 export default function TableCreator(props: TableCreatorProps) {
-    const editorTheme: EditorTheme = getEditorThemeContext()
+    const editorTheme: EditorTheme = useEditorThemeContext()
 
-    function getTheme() {
+    const tableTheme = useMemo(()=>{
         return editorTheme.tableCreatorTheme!;
-    }
+    },[editorTheme])
     
     const [cells, setCells] = useState<ReactElement[]>()
     const templateColumnsRef = useRef<string>('')
@@ -37,7 +37,7 @@ export default function TableCreator(props: TableCreatorProps) {
         for ( let r = 0; r < props.rowsCount; ++r ) {
             const cellsArray: ReactElement[] = []
             for ( let c = 0; c < props.columnsCount; ++c ) {
-                const cellClassName = getTheme().cell + ((r <= selectedCell.row && c <= selectedCell.column) ? ' selected' : '')
+                const cellClassName = tableTheme.cell + ((r <= selectedCell.row && c <= selectedCell.column) ? ' selected' : '')
                 cellsArray.push( <td key={key++} className={cellClassName} onMouseOver={() => {onMouseOver(r, c)}} onMouseOut={onMouseOut}/> );
             }
             cellsElement.push(
@@ -49,20 +49,20 @@ export default function TableCreator(props: TableCreatorProps) {
 
         templateColumnsRef.current = templateColumns;
         setCells(cellsElement)
-    },[props.rowsCount, props.columnsCount, selectedCell])
+    },[props.rowsCount, props.columnsCount, selectedCell, tableTheme])
 
     function onTableClick() {
         props.onClick(selectedCell.row + 1, selectedCell.column + 1)
     }
 
     return (
-        <div className={getTheme().container}>
-            <table className={getTheme().cellContainer} style={{width: props.gridSize, height: props.gridSize}} onClick={onTableClick}>
+        <div className={tableTheme.container}>
+            <table className={tableTheme.cellContainer} style={{width: props.gridSize, height: props.gridSize}} onClick={onTableClick}>
                 <tbody>
                     {cells}
                 </tbody>
             </table>
-            <div className={getTheme().label}>{`${selectedCell.column+1} x ${selectedCell.row+1}`}</div>
+            <div className={tableTheme.label}>{`${selectedCell.column+1} x ${selectedCell.row+1}`}</div>
         </div>
     )
 }

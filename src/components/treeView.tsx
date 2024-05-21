@@ -26,7 +26,7 @@ type Props = {
 }
 
 export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
-    const [_dataVersion, setDataVersion] = useState<number>(0)
+    const [, setDataVersion] = useState<number>(0)
     const [tree, setTree] = useState<SimpleTree<NodeData> | null>(null);
     const { ref: treeParent, height: treeParentHeight = 1 } = useResizeObserver<HTMLDivElement>(); 
     const { ref: controlButtonsRef, height: controlButtonsHeight = 1 } = useResizeObserver<HTMLDivElement>(); 

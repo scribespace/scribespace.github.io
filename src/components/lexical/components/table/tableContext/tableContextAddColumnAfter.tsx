@@ -6,13 +6,13 @@ import {
 import TableContextNumberInput from "./tableContextNumberInput";
 import { ExtendedTableNode, TableBodyNode, $getExtendedTableNodeFromLexicalNodeOrThrow } from '../../../nodes/table'
 import { $getTableColumnIndexFromTableCellNode } from "../../../plugins/tablePlugin/utils";
-import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
+import { useContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
 import { PropsWithChildren } from "react";
 import { TableContextOptionProps } from "./tableContextCommon";
 import { MenuItem, Submenu } from "../../menu";
 
 export default function TableContextAddColumnAfter({ editor }: TableContextOptionProps) {
-    const menuContext = getContextMenuContext();
+    const menuContext = useContextMenuContext();
 
     function AddColumnAfterIcon() {
         if (!menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.AddColumnAfterIcon)

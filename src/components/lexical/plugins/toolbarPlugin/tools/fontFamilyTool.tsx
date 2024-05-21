@@ -70,7 +70,7 @@ export default function FontFamilyTool({editor}: ToolbarToolProps) {
                 });
             }),
         )
-    }, [])
+    }, [editor])
 
     return (
         <DropdownTool Tool={Tool}>

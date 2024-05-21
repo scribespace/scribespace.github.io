@@ -18,14 +18,14 @@ import {
     TableContextRowRemove, 
     TableContextSplitCells 
 } from "./tableContext";
-import { getContextMenuContext } from "../../plugins/contextMenuPlugin/context";
+import { useContextMenuContext } from "../../plugins/contextMenuPlugin/context";
 
 interface TableContextOptionsProps {
     editor: LexicalEditor,
 }
 
 export default function TableContextOptions({editor}: TableContextOptionsProps) {
-    const menuContext = getContextMenuContext();
+    const menuContext = useContextMenuContext();
 
     const [insideTable, setInsideTable] = useState<boolean>(false)
     const [cellsSelected, setCellsSelected] = useState<boolean>(false)
@@ -71,7 +71,7 @@ export default function TableContextOptions({editor}: TableContextOptionsProps) 
             setCellsSelected(cellsSelectedState)
             setMergedCellSelected(mergedCellSelectedState)
         })
-    },[menuContext.mousePosition])
+    },[editor, menuContext.mousePosition])
 
     return (
         <>

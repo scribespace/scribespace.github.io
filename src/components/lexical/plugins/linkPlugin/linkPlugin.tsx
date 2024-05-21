@@ -11,11 +11,11 @@ import { useEffect, useRef, useState } from "react";
 import LinkEditor from "../../components/link";
 import { OpenURL } from "../../../../common";
 import { urlRegExp, validateUrl } from "../../../../common";
-import { EditorTheme, getEditorThemeContext } from "../../editorThemeContext";
+import { EditorTheme, useEditorThemeContext } from "../../editorThemeContext";
 
 export default function LinkPlugin() {
     const [editor] = useLexicalComposerContext();
-    const editorTheme: EditorTheme = getEditorThemeContext()
+    const editorTheme: EditorTheme = useEditorThemeContext()
 
     const linkEditorRef = useRef<HTMLDivElement>(null)
     const linkNodeRef = useRef<LinkNode | null>(null)

@@ -3,12 +3,12 @@ import { useEffect, useState } from "react";
 import { TableContextOptions } from "../../components/table";
 import './css/contextMenuPlugin.css';
 import { ContextMenuContextData, CONTEXT_MENU_CONTEX_DEFAULT } from "./context";
-import { EditorTheme, getEditorThemeContext } from "../../editorThemeContext";
+import { EditorTheme, useEditorThemeContext } from "../../editorThemeContext";
 import { MenuContext } from "../../components/menu/context";
 import { Menu } from "../../components/menu";
 
 export default function ContextMenuPlugin() {
-    const editorTheme: EditorTheme = getEditorThemeContext()
+    const editorTheme: EditorTheme = useEditorThemeContext()
     const [editor] = useLexicalComposerContext();
 
     const [showContextMenu, setShowContextMenu] = useState<boolean>(false)
@@ -45,7 +45,7 @@ export default function ContextMenuPlugin() {
             return () => {
                 removeRootListeners()
             }
-    },[])
+    },[editor])
 
     return (
         <MenuContext.Provider value={contextMenuContextObject}>

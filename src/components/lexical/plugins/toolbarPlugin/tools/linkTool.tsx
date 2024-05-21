@@ -11,24 +11,6 @@ interface LinkToolProps {
 export default function LinkTool({editor} : LinkToolProps) {
     const [isLinkSelected, setIsLinkSelected] = useState<boolean>(false)
 
-    function updateState() {
-        editor.update(()=>{
-            const selection = $getSelection();
-            if ( $isRangeSelection(selection)) {
-                const nodes = selection.getNodes()
-
-                let allLinkNode = true;
-                const nodeParent = nodes[0].getParent()
-                const isParentLinkNode= $isLinkNode(nodeParent)
-                for ( const node of nodes ) {
-                    allLinkNode = allLinkNode && isParentLinkNode && (node.getParent() == nodeParent)
-                }
-
-                setIsLinkSelected(allLinkNode)
-            }
-        })
-    }
-
     function onClick(e: React.MouseEvent) {
         editor.update(()=>{
             const selection = $getSelection();
@@ -72,6 +54,24 @@ export default function LinkTool({editor} : LinkToolProps) {
     }
 
     useEffect(()=>{
+        function updateState() {
+            editor.update(()=>{
+                const selection = $getSelection();
+                if ( $isRangeSelection(selection)) {
+                    const nodes = selection.getNodes()
+    
+                    let allLinkNode = true;
+                    const nodeParent = nodes[0].getParent()
+                    const isParentLinkNode= $isLinkNode(nodeParent)
+                    for ( const node of nodes ) {
+                        allLinkNode = allLinkNode && isParentLinkNode && (node.getParent() == nodeParent)
+                    }
+    
+                    setIsLinkSelected(allLinkNode)
+                }
+            })
+        }
+
         return editor.registerCommand(
             SELECTION_CHANGE_COMMAND,
             () => {

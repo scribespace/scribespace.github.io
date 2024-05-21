@@ -20,7 +20,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Property } from 'csstype';
 
-import { getEditorThemeContext } from '../../editorThemeContext';
+import { useEditorThemeContext } from '../../editorThemeContext';
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from '../../nodes/table';
 
 const DRAG_NONE = 0 as const
@@ -115,9 +115,27 @@ function insertParagraphAtTableEdge(
   }
 }
 
+class ResizerStyle {
+  position: Property.Position = "absolute";
+  backgroundColor: string = "none";
+  cursor?: string;
+  height?: string;
+  left?: string;
+  top?: string;
+  width?: string;
+}
+
+interface ResizerStyles {
+bottom: ResizerStyle;
+right: ResizerStyle;
+top: ResizerStyle;
+left: ResizerStyle;
+marker: ResizerStyle;
+}
+
 export default function TablePlugin() {
     const [editor] = useLexicalComposerContext();
-    const editorTheme = getEditorThemeContext();
+    const editorTheme = useEditorThemeContext();
 
     const [activeCell, setActiveCell] = useState<TableDOMCell | null>(null)
     const [dragDirection, setDragDirection] = useState<MouseDraggingDirection>(DRAG_NONE)
@@ -141,42 +159,7 @@ export default function TablePlugin() {
         mouseStartPosition.current = null;
     }
 
-    const onMouseMove = (event: MouseEvent) => {
-        const target = event.target;
-        const targetElement = target as HTMLElement;
-
-        if ( dragDirection != DRAG_NONE ) {
-          setMousePosition({x: event.clientX, y: event.clientY})
-          return;
-        }
-        
-        // prevent selecting resizer
-        if ( resizerRef.current && resizerRef.current.contains(target as Node) ) {
-          return;
-        }
-        
-        const cell = getDOMCellFromTarget(targetElement)
-        setActiveCell(cell)
-        
-        if ( cell ) {
-            editor.update(()=>{
-                const tableCellNode = $getNearestNodeFromDOMNode(cell.elem)
-            if (!tableCellNode) {
-                throw new Error('TableCellResizer: Table cell node not found.');
-              }
-
-              const tableNode =
-                $getTableNodeFromLexicalNodeOrThrow(tableCellNode);
-              const tableElement = editor.getElementByKey(tableNode.getKey());
-
-              if (!tableElement) {
-                throw new Error('TableCellResizer: Table element not found.');
-              }
-
-              tableRectRef.current = tableElement.getBoundingClientRect();
-            })
-        }
-    }
+    
 
     const updateRowHeight = useCallback(
         (heightOffset: number, cellPart: CellClickPart) => {
@@ -397,7 +380,47 @@ export default function TablePlugin() {
         [activeCell, editor],
       );
 
-    const onMouseUp = (event: MouseEvent) => {
+    
+
+    useEffect(()=>{
+      const onMouseMove = (event: MouseEvent) => {
+        const target = event.target;
+        const targetElement = target as HTMLElement;
+
+        if ( dragDirection != DRAG_NONE ) {
+          setMousePosition({x: event.clientX, y: event.clientY})
+          return;
+        }
+        
+        // prevent selecting resizer
+        if ( resizerRef.current && resizerRef.current.contains(target as Node) ) {
+          return;
+        }
+        
+        const cell = getDOMCellFromTarget(targetElement)
+        setActiveCell(cell)
+        
+        if ( cell ) {
+            editor.update(()=>{
+                const tableCellNode = $getNearestNodeFromDOMNode(cell.elem)
+            if (!tableCellNode) {
+                throw new Error('TableCellResizer: Table cell node not found.');
+              }
+
+              const tableNode =
+                $getTableNodeFromLexicalNodeOrThrow(tableCellNode);
+              const tableElement = editor.getElementByKey(tableNode.getKey());
+
+              if (!tableElement) {
+                throw new Error('TableCellResizer: Table element not found.');
+              }
+
+              tableRectRef.current = tableElement.getBoundingClientRect();
+            })
+        }
+    }
+
+      const onMouseUp = (event: MouseEvent) => {
         if ( !activeCell || dragDirection == DRAG_NONE) return;
 
         if ( dragDirection == DRAG_VERTICAL ) {
@@ -416,7 +439,6 @@ export default function TablePlugin() {
         event.stopPropagation();
     }   
 
-    useEffect(()=>{
         document.addEventListener('mousemove', onMouseMove);
         document.addEventListener('mouseup', onMouseUp)
 
@@ -424,7 +446,7 @@ export default function TablePlugin() {
             document.removeEventListener('mousemove', onMouseMove);
             document.removeEventListener('mouseup', onMouseUp);
         }
-    },[dragDirection, activeCell, editor])
+    },[dragDirection, activeCell, editor, updateColumnWidth, updateRowHeight])
     
     useEffect(()=>{
       return mergeRegister(
@@ -493,25 +515,7 @@ export default function TablePlugin() {
             return false;
         }, COMMAND_PRIORITY_LOW)
       )
-    },[])
-
-    class ResizerStyle {
-        position: Property.Position = "absolute";
-        backgroundColor: string = "none";
-        cursor?: string;
-        height?: string;
-        left?: string;
-        top?: string;
-        width?: string;
-    }
-
-    interface ResizerStyles {
-      bottom: ResizerStyle;
-      right: ResizerStyle;
-      top: ResizerStyle;
-      left: ResizerStyle;
-      marker: ResizerStyle;
-    }
+    },[editor])
 
     const getStyles: () => ResizerStyles = useCallback(()=>{
         if ( !activeCell ) {

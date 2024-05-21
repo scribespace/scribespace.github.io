@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { MenuContextData, getMenuContext } from "./context";
+import { MenuContextData, useMenuContext } from "./context";
 
 interface ContextMenuProps {
     parentRect: {x: number, y: number, width: number, height: number};
@@ -10,25 +10,29 @@ interface ContextMenuProps {
 }
 
 export default function Menu(props: ContextMenuProps) {
-    const menuContext: MenuContextData = getMenuContext();
+    const menuContext: MenuContextData = useMenuContext();
 
     const [position, setPosition] = useState<{ left: string; top: string; }>({ left: '-1px', top: '-1px' });
 
     const contextMenuContainerRef = useRef<HTMLDivElement>(null);
     const contextMenuRef = useRef<HTMLDivElement>(null);
 
-    const handleClick = ({ target }: MouseEvent) => {
-        if (contextMenuContainerRef.current && contextMenuContainerRef.current.parentElement && !contextMenuContainerRef.current.parentElement.contains(target as Node)) {
-            props.setShowContextMenu(false);
-        }
-    };
+    
 
-    const stopRightClick = (e: MouseEvent) => {
-        e.stopPropagation();
-        e.preventDefault();
-    };
+    
 
     useEffect(() => {
+        const handleClick = ({ target }: MouseEvent) => {
+            if (contextMenuContainerRef.current && contextMenuContainerRef.current.parentElement && !contextMenuContainerRef.current.parentElement.contains(target as Node)) {
+                props.setShowContextMenu(false);
+            }
+        };
+
+        const stopRightClick = (e: MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
+        };
+
         document.addEventListener('click', handleClick);
         document.addEventListener('contextmenu', stopRightClick);
 
@@ -41,7 +45,7 @@ export default function Menu(props: ContextMenuProps) {
     useLayoutEffect(() => {
         if (!contextMenuRef.current) return;
 
-        const { width, height } = contextMenuRef.current?.getBoundingClientRect();
+        const { width, height } = contextMenuRef.current.getBoundingClientRect();
 
         const newPosition = { x: props.parentRect.x + props.parentRect.width, y: props.parentRect.y };
 

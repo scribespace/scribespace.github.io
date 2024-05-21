@@ -1,4 +1,4 @@
-export function variableExists( variable: any ) {
+export function variableExists<T>( variable: T ) {
     return typeof variable !== 'undefined';
 }
 
@@ -20,7 +20,7 @@ export function separateValueAndUnit(valueUnit: string): ValueUnit {
     }
 }
 
-export function isObject(item: any ){
+export function isObject<T>(item: T ){
     return item !== null && typeof item === 'object' && !Array.isArray(item);
 }
 

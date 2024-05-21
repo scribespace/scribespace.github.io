@@ -4,13 +4,13 @@ import {
     $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $getTableRowIndexFromTableCellNode, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
-import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
+import { useContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
 import { TableContextOptionProps } from "./tableContextCommon";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "../../../nodes/table";
 
 
 export default function TableContextRowRemove({ editor }: TableContextOptionProps) {
-    const menuContext = getContextMenuContext();
+    const menuContext = useContextMenuContext();
 
     function RemoveRowIcon() {
         if (!menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.RemoveRowIcon)

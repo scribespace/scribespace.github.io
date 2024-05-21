@@ -1,6 +1,6 @@
 import { $getSelection, $isRangeSelection, SELECTION_CHANGE_COMMAND, COMMAND_PRIORITY_LOW } from "lexical";
 import {$getSelectionStyleValueForProperty} from '@lexical/selection'
-import { useRef, useCallback, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { ImMinus, ImPlus } from "react-icons/im";
 import { FONT_SIZE_CHANGED_COMMAND, INCREASE_FONT_SIZE_COMMAND, DECREASE_FONT_SIZE_COMMAND, SET_FONT_SIZE_COMMAND } from "../../../commands";
 import { ToolbarToolProps } from "./toolsProps";
@@ -9,15 +9,17 @@ export default function FontSizeTool({editor}: ToolbarToolProps) {
         const fontInputRef = useRef<HTMLInputElement>(null)
         const defaultFontSize = useRef<string>('')
 
-        const updateStates = useCallback(() => {
-            const selection = $getSelection();
-            if ( $isRangeSelection(selection) ) {
-                if ( fontInputRef.current )
-                    fontInputRef.current.value = ($getSelectionStyleValueForProperty(selection, 'font-size', defaultFontSize.current))
-            }
-        }, [])
+        
 
         useEffect(() => {
+            function updateStates() {
+                const selection = $getSelection();
+                if ( $isRangeSelection(selection) ) {
+                    if ( fontInputRef.current )
+                        fontInputRef.current.value = ($getSelectionStyleValueForProperty(selection, 'font-size', defaultFontSize.current))
+                }
+            }
+
             defaultFontSize.current = getComputedStyle(document.documentElement).getPropertyValue("--default-font-size");
 
             const removeSelectionChanage = editor.registerCommand(
@@ -37,7 +39,7 @@ export default function FontSizeTool({editor}: ToolbarToolProps) {
                 COMMAND_PRIORITY_LOW
               )
               return () => {removeSelectionChanage(); removeFontSizeChanage()}
-        }, [])
+        }, [editor])
 
         const onClickFontSizeIncrease = () => {
             editor.dispatchCommand(INCREASE_FONT_SIZE_COMMAND, undefined);

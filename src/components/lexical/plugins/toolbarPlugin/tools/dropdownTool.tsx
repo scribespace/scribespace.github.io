@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, forwardRef } from "react";
+import { useRef, useEffect, useState, forwardRef, useCallback } from "react";
 
     type DropdownListProps = {
         children: React.ReactNode;
@@ -25,22 +25,22 @@ import { useRef, useEffect, useState, forwardRef } from "react";
 
             const [showDropdown, setShowDropdown] = useState<boolean>(false)
 
-            function ChangeShowDropdown( visible: boolean ) {
+            const ChangeShowDropdown = useCallback(( visible: boolean ) => {
                 setShowDropdown(visible)
                 if ( onStateChange )
                     onStateChange(visible)
-            }
-
-            const HandleClick = ({target}: MouseEvent) => {
-                if ( dropdownToolRef.current && !dropdownToolRef.current.contains(target as Node)){
-                    ChangeShowDropdown(false);
-                }
-            }
+            },[onStateChange])
 
             useEffect(()=> {
+                const HandleClick = ({target}: MouseEvent) => {
+                    if ( dropdownToolRef.current && !dropdownToolRef.current.contains(target as Node)){
+                        ChangeShowDropdown(false);
+                    }
+                }
+
                 document.addEventListener('click', HandleClick)
                 return () => {document.removeEventListener('click', HandleClick)}
-            },[])
+            },[ChangeShowDropdown])
 
             useEffect(()=>{
                 const parentObject = dropdownToolRef.current;

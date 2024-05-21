@@ -28,7 +28,7 @@ export default function UndoRedoTool({editor} : ToolbarToolProps) {
                 COMMAND_PRIORITY_LOW
             )
             return () => {removeUndoCommand(); removeRedoCommand();}
-        }, [])
+        }, [editor])
 
         const onClickUndo = () => {
             editor.dispatchCommand(UNDO_COMMAND, undefined)

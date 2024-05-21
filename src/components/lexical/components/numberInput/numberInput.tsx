@@ -4,7 +4,7 @@ import { IconBaseProps } from "react-icons";
 import { SeparatorVertical } from '../separators'
 
 import './css/numberInput.css';
-import { getEditorThemeContext, EditorTheme } from "../../editorThemeContext";
+import { useEditorThemeContext, EditorTheme } from "../../editorThemeContext";
 
 interface NumberInputProps {
     type: 'text' | 'number';
@@ -17,7 +17,7 @@ interface NumberInputProps {
 }
 
 export default function NumberInput(props: NumberInputProps) {
-    const editorTheme: EditorTheme = getEditorThemeContext()
+    const editorTheme: EditorTheme = useEditorThemeContext()
     
     const inputRef = useRef<HTMLInputElement>(null)
 

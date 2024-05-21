@@ -4,13 +4,13 @@ import {
     $findTableNode, $isTableCellNode, $isTableNode, $isTableRowNode, $isTableSelection,
     TableCellNode, TableRowNode
 } from "@lexical/table";
-import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
+import { useContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
 import { TableContextOptionProps } from "./tableContextCommon";
 import { ExtendedTableNode, TableBodyNode } from "../../../nodes/table";
 
 
 export default function TableContextMergeCells({ editor }: TableContextOptionProps) {
-    const menuContext = getContextMenuContext()
+    const menuContext = useContextMenuContext()
 
     function MergeCellIcon() {
         if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.MergeCellIcon ) 

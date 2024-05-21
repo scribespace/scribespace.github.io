@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { validateUrl } from "../../../../common";
-import { EditorTheme, getEditorThemeContext } from "../../editorThemeContext";
+import { EditorTheme, useEditorThemeContext } from "../../editorThemeContext";
 import { IconBaseProps } from "react-icons";
 import { OpenURL } from "../../../../common";
 interface LinkEditorProps {
@@ -12,7 +12,7 @@ interface LinkEditorProps {
 }
 
 export default function LinkEditor({text, url, onTextChange, onURLChange}: LinkEditorProps) {
-    const editorTheme: EditorTheme = getEditorThemeContext()
+    const editorTheme: EditorTheme = useEditorThemeContext()
     function getTheme() {
         return editorTheme.linkTheme!;
     }

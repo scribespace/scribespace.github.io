@@ -36,4 +36,4 @@ export const EDITOR_THEME_DEFAULT: EditorTheme = {
 
 export const EditorThemeContext = createContext<EditorTheme>(EDITOR_THEME_DEFAULT)
 
-export function getEditorThemeContext() { return useContext(EditorThemeContext) }
+export function useEditorThemeContext() { return useContext(EditorThemeContext) }

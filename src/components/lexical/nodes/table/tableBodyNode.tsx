@@ -1,5 +1,5 @@
-import { TableNode, TableRowNode, TableCellNode, $createTableNodeWithDimensions, $isTableRowNode, $getTableRowIndexFromTableCellNode, $createTableRowNode, $createTableCellNode, TableCellHeaderStates } from '@lexical/table'
-import { $applyNodeReplacement, $isParagraphNode, DOMConversionMap, DOMConversionOutput, EditorConfig, LexicalEditor, LexicalNode, SerializedElementNode } from 'lexical';
+import { TableNode, TableRowNode, TableCellNode, $createTableNodeWithDimensions, $isTableRowNode, $getTableRowIndexFromTableCellNode, $createTableRowNode, $createTableCellNode, TableCellHeaderStates } from '@lexical/table';
+import { $applyNodeReplacement, $isParagraphNode, DOMConversionMap, DOMConversionOutput, LexicalEditor, LexicalNode, SerializedElementNode } from 'lexical';
 import { $createTableCellNodeWithParagraph, $getTableColumnIndexFromTableCellNode, ResolvedCell, ResolvedRow } from '../../plugins/tablePlugin/utils';
 
 export class TableBodyNode extends TableNode {
@@ -125,7 +125,7 @@ export class TableBodyNode extends TableNode {
       if ( !rowHeight ) {
         const rowElement = editor.getElementByKey(rowNode.getKey());
         if ( rowElement ) {
-          const { height } = rowElement?.getBoundingClientRect();
+          const { height } = rowElement.getBoundingClientRect();
           defaultRowHeight = height;
           break;
         }
@@ -142,12 +142,10 @@ export class TableBodyNode extends TableNode {
 
     const cellsToRemove = new Set<TableCellNode>()
     for ( let r = 0; r < rowsCount; ++r ) {
-      let cellsToRemoveCount = 0;
       for ( let c = 0; c < columnsCount; ++c ) {
         const cell = resolvedTable[resolvedCell.rowID + r].cells[resolvedCell.columnID + c].cellNode;
         if ( cell != startCell && !cellsToRemove.has(cell) ) {
           cellsToRemove.add(cell)
-          ++cellsToRemoveCount;
         }
       }
     }
@@ -489,7 +487,7 @@ export class TableBodyNode extends TableNode {
     TableBodyNode.removeColumnsGroup(columnsWidths, columnID, columnsToRemove);
   }
 
-  createDOM(_config: EditorConfig): HTMLElement {
+  createDOM(): HTMLElement {
     const tableBodyElement = document.createElement('tbody');
     return tableBodyElement;
   }
@@ -504,14 +502,14 @@ export class TableBodyNode extends TableNode {
 
   static importDOM(): DOMConversionMap | null {
     return {
-      table: (_node: Node) => ({
+      table: () => ({
         conversion: $convertTableBodyElement,
         priority: 1,
       }),
     };
   }
 
-  static importJSON(_serializedNode: SerializedElementNode): TableBodyNode {
+  static importJSON(): TableBodyNode {
     const tableNode = $createTableBodyNode()
     return tableNode
   }
@@ -536,7 +534,7 @@ export function $createTableBodyNodeWithDimensions( rows: number, cols: number )
    return tableNode
 }
 
-export function $convertTableBodyElement(_domNode: Node): DOMConversionOutput {
+export function $convertTableBodyElement(): DOMConversionOutput {
   return {node: $createTableBodyNode()} 
 }
 

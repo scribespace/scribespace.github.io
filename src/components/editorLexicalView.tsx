@@ -87,7 +87,7 @@ export function EditorLexicalView({selectedFile, theme} : Props) {
       { replace: TextNode, withKlass: ExtendedTextNode, with: (node: TextNode) => new ExtendedTextNode(node.__text) },
       ExtendedTableNode,
       TableBodyNode,
-      { replace: TableNode, withKlass: TableBodyNode, with: (_node: TableNode) => new TableBodyNode() },
+      { replace: TableNode, withKlass: TableBodyNode, with: () => new TableBodyNode() },
       TableRowNode,
       TableCellNode,      
     ]

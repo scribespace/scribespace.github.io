@@ -8,4 +8,4 @@ export interface MenuContextData {
 }
 
 export const MenuContext = createContext({});
-export function getMenuContext() { return useContext(MenuContext); }
+export function useMenuContext() { return useContext(MenuContext); }

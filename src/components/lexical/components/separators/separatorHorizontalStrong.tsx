@@ -1,9 +1,9 @@
-import { EditorTheme, getEditorThemeContext } from "../../editorThemeContext";
+import { EditorTheme, useEditorThemeContext } from "../../editorThemeContext";
 
 import './css/separator.css';
 
 export default function SeparatorHorizontalStrong() {
-    const editorTheme: EditorTheme = getEditorThemeContext();
+    const editorTheme: EditorTheme = useEditorThemeContext();
     function getTheme() {
         return editorTheme.separatorTheme!;
     }

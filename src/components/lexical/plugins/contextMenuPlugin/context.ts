@@ -9,5 +9,5 @@ export interface ContextMenuContextData extends MenuContextData {
 }
 export const CONTEXT_MENU_CONTEX_DEFAULT = { theme: CONTEXT_MENU_THEME_DEFAULT, mousePosition: { x: -1, y: -1 }, closeMenu: () => { } } as ContextMenuContextData;
 
-export function getContextMenuContext() { return useContext(MenuContext) as ContextMenuContextData }
+export function useContextMenuContext() { return useContext(MenuContext) as ContextMenuContextData }
 

@@ -138,7 +138,6 @@ export class ExtendedTableNode extends ElementNode {
   updateDOM(
     _prevNode?: unknown,
     dom?: HTMLElement,
-    _config?: EditorConfig,
   ) {
     const self = this.getLatest()
     if ( dom ) {
@@ -186,7 +185,7 @@ export class ExtendedTableNode extends ElementNode {
 
   static importDOM(): DOMConversionMap | null {
     return {
-      table: (_node: Node) => ({
+      table: () => ({
         conversion: $convertExtendedTableElement,
         priority: 1,
       }),

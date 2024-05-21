@@ -4,7 +4,7 @@ import {
     TableCellNode
 } from "@lexical/table";
 import TableContextNumberInput from "./tableContextNumberInput";
-import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
+import { useContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
 import { PropsWithChildren } from "react";
 import { TableContextOptionProps } from "./tableContextCommon";
 import { MenuItem, Submenu } from "../../menu";
@@ -13,7 +13,7 @@ import { $getTableColumnIndexFromTableCellNode } from "../../../plugins/tablePlu
 
 
 export default function TableContextAddColumnBefore({ editor }: TableContextOptionProps) {
-    const menuContext = getContextMenuContext();
+    const menuContext = useContextMenuContext();
 
     function AddColumnBeforeIcon() {
         if (!menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.AddColumnBeforeIcon)

@@ -5,13 +5,13 @@ import {
     TableCellNode
 } from "@lexical/table";
 import { $getTableColumnIndexFromTableCellNode } from "../../../plugins/tablePlugin/utils";
-import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
+import { useContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
 import { TableContextOptionProps } from "./tableContextCommon";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "../../../nodes/table";
 
 
 export default function TableContextColumnRemove({ editor }: TableContextOptionProps) {
-    const menuContext = getContextMenuContext();
+    const menuContext = useContextMenuContext();
 
     function RemoveColumnIcon() {
         if (!menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.RemoveColumnIcon)

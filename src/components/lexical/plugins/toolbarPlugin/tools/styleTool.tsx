@@ -37,7 +37,7 @@ export default function StyleTool({editor}: ToolbarToolProps) {
                     });
                   }),
             )
-        }, [])
+        }, [editor, updateStates])
 
         const onClickBold = () => {
             editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")

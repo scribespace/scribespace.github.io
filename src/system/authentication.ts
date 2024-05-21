@@ -56,7 +56,7 @@ class Authentication {
                 window.history.pushState('Remove code from oauth', 'ScribeSpace', '/');
                 if (oauth_code) {
                     switch (state) {
-                        case DROPBOX_APP:
+                        case DROPBOX_APP: {
                             if (appGlobals.system == null) appGlobals.system = new Dropbox();
                             
                             const tokens = await appGlobals.system.getAuth().GetOAuthAccessToken(oauth_code);
@@ -67,6 +67,7 @@ class Authentication {
                                 tokens.refresh_token as string
                             );
                             return true;
+                        }
                         default:
                             throw Error('Uknown login app');
                     }
