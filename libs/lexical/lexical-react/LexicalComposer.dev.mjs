@@ -8,8 +8,8 @@
 
 import { createLexicalComposerContext, LexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { createEditor, $getRoot, $createParagraphNode, $getSelection } from 'lexical';
-import * as React from 'react';
 import { useLayoutEffect, useEffect, useMemo } from 'react';
+import { jsx } from 'react/jsx-runtime';
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -83,9 +83,10 @@ function LexicalComposer({
     // We only do this for init
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  return /*#__PURE__*/React.createElement(LexicalComposerContext.Provider, {
-    value: composerContext
-  }, children);
+  return /*#__PURE__*/jsx(LexicalComposerContext.Provider, {
+    value: composerContext,
+    children: children
+  });
 }
 function initializeEditor(editor, initialEditorState) {
   if (initialEditorState === null) {

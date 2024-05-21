@@ -8,10 +8,10 @@
 
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { useLexicalNodeSelection } from '@lexical/react/useLexicalNodeSelection';
-import { mergeRegister } from '@lexical/utils';
+import { addClassNamesToElement, mergeRegister, removeClassNamesFromElement } from '@lexical/utils';
 import { createCommand, DecoratorNode, $applyNodeReplacement, $isNodeSelection, $getSelection, $getNodeByKey, CLICK_COMMAND, COMMAND_PRIORITY_LOW, KEY_DELETE_COMMAND, KEY_BACKSPACE_COMMAND } from 'lexical';
-import * as React from 'react';
 import { useCallback, useEffect } from 'react';
+import { jsx } from 'react/jsx-runtime';
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -53,8 +53,13 @@ function HorizontalRuleComponent({
   }, [clearSelection, editor, isSelected, nodeKey, $onDelete, setSelected]);
   useEffect(() => {
     const hrElem = editor.getElementByKey(nodeKey);
+    const isSelectedClassName = 'selected';
     if (hrElem !== null) {
-      hrElem.className = isSelected ? 'selected' : '';
+      if (isSelected) {
+        addClassNamesToElement(hrElem, isSelectedClassName);
+      } else {
+        removeClassNamesFromElement(hrElem, isSelectedClassName);
+      }
     }
   }, [editor, isSelected, nodeKey]);
   return null;
@@ -88,8 +93,10 @@ class HorizontalRuleNode extends DecoratorNode {
       element: document.createElement('hr')
     };
   }
-  createDOM() {
-    return document.createElement('hr');
+  createDOM(config) {
+    const element = document.createElement('hr');
+    addClassNamesToElement(element, config.theme.hr);
+    return element;
   }
   getTextContent() {
     return '\n';
@@ -101,7 +108,7 @@ class HorizontalRuleNode extends DecoratorNode {
     return false;
   }
   decorate() {
-    return /*#__PURE__*/React.createElement(HorizontalRuleComponent, {
+    return /*#__PURE__*/jsx(HorizontalRuleComponent, {
       nodeKey: this.__key
     });
   }

@@ -11,6 +11,7 @@
 var devtoolsCore = require('@lexical/devtools-core');
 var utils = require('@lexical/utils');
 var React = require('react');
+var jsxRuntime = require('react/jsx-runtime');
 
 function _interopNamespaceDefault(e) {
   var n = Object.create(null);
@@ -72,7 +73,7 @@ function TreeView({
     }
     rootElement.contentEditable = isReadonly ? 'false' : 'true';
   };
-  return /*#__PURE__*/React__namespace.createElement(devtoolsCore.TreeView, {
+  return /*#__PURE__*/jsxRuntime.jsx(devtoolsCore.TreeView, {
     treeTypeButtonClassName: treeTypeButtonClassName,
     timeTravelButtonClassName: timeTravelButtonClassName,
     timeTravelPanelSliderClassName: timeTravelPanelSliderClassName,

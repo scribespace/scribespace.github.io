@@ -696,4 +696,4 @@ var plugin$1 = /*#__PURE__*/_mergeNamespaces({
  *
  */
 
-module.exports = plugin$1;
+exports.default = plugin$1;

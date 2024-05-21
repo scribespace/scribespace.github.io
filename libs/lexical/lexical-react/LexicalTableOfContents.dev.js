@@ -101,7 +101,7 @@ function $getPreviousHeading(node) {
   }
   return prevHeading;
 }
-function LexicalTableOfContentsPlugin({
+function TableOfContentsPlugin({
   children
 }) {
   const [tableOfContents, setTableOfContents] = react.useState([]);
@@ -195,4 +195,12 @@ function LexicalTableOfContentsPlugin({
   return children(tableOfContents, editor);
 }
 
-module.exports = LexicalTableOfContentsPlugin;
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+exports.default = TableOfContentsPlugin;

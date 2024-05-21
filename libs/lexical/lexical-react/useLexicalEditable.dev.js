@@ -85,4 +85,5 @@ function useLexicalEditable() {
   return useLexicalSubscription(subscription);
 }
 
-module.exports = useLexicalEditable;
+exports.default = useLexicalEditable;
+exports.useLexicalEditable = useLexicalEditable;

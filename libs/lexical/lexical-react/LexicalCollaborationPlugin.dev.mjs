@@ -15,6 +15,7 @@ import { createBinding, initLocalState, syncLexicalUpdateToYjs, TOGGLE_CONNECT_C
 import { COMMAND_PRIORITY_EDITOR, FOCUS_COMMAND, BLUR_COMMAND, UNDO_COMMAND, REDO_COMMAND, CAN_UNDO_COMMAND, CAN_REDO_COMMAND, $getRoot, $createParagraphNode, $getSelection } from 'lexical';
 import { createPortal } from 'react-dom';
 import { UndoManager } from 'yjs';
+import { jsx } from 'react/jsx-runtime';
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -109,7 +110,7 @@ function useYjsCollaboration(editor, id, provider, docMap, name, color, shouldBo
     const ref = element => {
       binding.cursorsContainer = element;
     };
-    return /*#__PURE__*/createPortal( /*#__PURE__*/React.createElement("div", {
+    return /*#__PURE__*/createPortal( /*#__PURE__*/jsx("div", {
       ref: ref
     }), cursorsContainerRef && cursorsContainerRef.current || document.body);
   }, [binding, cursorsContainerRef]);

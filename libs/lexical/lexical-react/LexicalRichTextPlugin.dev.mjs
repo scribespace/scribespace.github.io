@@ -7,12 +7,12 @@
  */
 
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import useLexicalEditable from '@lexical/react/useLexicalEditable';
-import * as React from 'react';
-import { useLayoutEffect, useEffect, useState, useMemo, Suspense } from 'react';
+import { useLexicalEditable } from '@lexical/react/useLexicalEditable';
 import { $canShowPlaceholderCurry } from '@lexical/text';
 import { mergeRegister } from '@lexical/utils';
+import { useLayoutEffect, useEffect, useState, useMemo, Suspense } from 'react';
 import { flushSync, createPortal } from 'react-dom';
+import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import { registerDragonSupport } from '@lexical/dragon';
 import { registerRichText } from '@lexical/rich-text';
 
@@ -97,11 +97,13 @@ function useDecorators(editor, ErrorBoundary) {
     const decoratorKeys = Object.keys(decorators);
     for (let i = 0; i < decoratorKeys.length; i++) {
       const nodeKey = decoratorKeys[i];
-      const reactDecorator = /*#__PURE__*/React.createElement(ErrorBoundary, {
-        onError: e => editor._onError(e)
-      }, /*#__PURE__*/React.createElement(Suspense, {
-        fallback: null
-      }, decorators[nodeKey]));
+      const reactDecorator = /*#__PURE__*/jsx(ErrorBoundary, {
+        onError: e => editor._onError(e),
+        children: /*#__PURE__*/jsx(Suspense, {
+          fallback: null,
+          children: decorators[nodeKey]
+        })
+      });
       const element = editor.getElementByKey(nodeKey);
       if (element !== null) {
         decoratedPortals.push( /*#__PURE__*/createPortal(reactDecorator, element, nodeKey));
@@ -144,9 +146,11 @@ function RichTextPlugin({
   const [editor] = useLexicalComposerContext();
   const decorators = useDecorators(editor, ErrorBoundary);
   useRichTextSetup(editor);
-  return /*#__PURE__*/React.createElement(React.Fragment, null, contentEditable, /*#__PURE__*/React.createElement(Placeholder, {
-    content: placeholder
-  }), decorators);
+  return /*#__PURE__*/jsxs(Fragment, {
+    children: [contentEditable, /*#__PURE__*/jsx(Placeholder, {
+      content: placeholder
+    }), decorators]
+  });
 }
 function Placeholder({
   content

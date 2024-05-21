@@ -826,9 +826,13 @@ class ListItemNode extends lexical.ElementNode {
     }
     return this;
   }
+
+  /** @deprecated @internal */
   canInsertAfter(node) {
     return $isListItemNode(node);
   }
+
+  /** @deprecated @internal */
   canReplaceWith(replacement) {
     return $isListItemNode(replacement);
   }

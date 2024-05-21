@@ -11,6 +11,7 @@ import { createCommand, KEY_ARROW_DOWN_COMMAND, KEY_ARROW_UP_COMMAND, KEY_ESCAPE
 import * as React from 'react';
 import { useLayoutEffect, useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { mergeRegister } from '@lexical/utils';
+import { jsx } from 'react/jsx-runtime';
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -557,7 +558,7 @@ function LexicalTypeaheadMenuPlugin({
       removeUpdateListener();
     };
   }, [editor, triggerFn, onQueryChange, resolution, closeTypeahead, openTypeahead]);
-  return resolution === null || editor === null ? null : /*#__PURE__*/React.createElement(LexicalMenu, {
+  return resolution === null || editor === null ? null : /*#__PURE__*/jsx(LexicalMenu, {
     close: closeTypeahead,
     resolution: resolution,
     editor: editor,

@@ -10,4 +10,6 @@ export type LexicalErrorBoundaryProps = {
     children: JSX.Element;
     onError: (error: Error) => void;
 };
-export default function LexicalErrorBoundary({ children, onError, }: LexicalErrorBoundaryProps): JSX.Element;
+export declare function LexicalErrorBoundary({ children, onError, }: LexicalErrorBoundaryProps): JSX.Element;
+/** @deprecated use the named export {@link LexicalErrorBoundary} */
+export default LexicalErrorBoundary;

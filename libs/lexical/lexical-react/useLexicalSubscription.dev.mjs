@@ -63,4 +63,4 @@ function useLexicalSubscription(subscription) {
   return value;
 }
 
-export { useLexicalSubscription as default };
+export { useLexicalSubscription as default, useLexicalSubscription };

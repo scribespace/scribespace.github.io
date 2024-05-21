@@ -6,7 +6,7 @@
  *
  */
 /// <reference types="react" />
-import type { DOMConversionMap, DOMExportOutput, LexicalCommand, LexicalNode, SerializedLexicalNode } from 'lexical';
+import type { DOMConversionMap, DOMExportOutput, EditorConfig, LexicalCommand, LexicalNode, SerializedLexicalNode } from 'lexical';
 import { DecoratorNode } from 'lexical';
 export type SerializedHorizontalRuleNode = SerializedLexicalNode;
 export declare const INSERT_HORIZONTAL_RULE_COMMAND: LexicalCommand<void>;
@@ -17,7 +17,7 @@ export declare class HorizontalRuleNode extends DecoratorNode<JSX.Element> {
     static importDOM(): DOMConversionMap | null;
     exportJSON(): SerializedLexicalNode;
     exportDOM(): DOMExportOutput;
-    createDOM(): HTMLElement;
+    createDOM(config: EditorConfig): HTMLElement;
     getTextContent(): string;
     isInline(): false;
     updateDOM(): boolean;

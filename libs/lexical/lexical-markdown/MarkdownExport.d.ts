@@ -7,4 +7,4 @@
  */
 import type { Transformer } from '@lexical/markdown';
 import type { ElementNode } from 'lexical';
-export declare function createMarkdownExport(transformers: Array<Transformer>): (node?: ElementNode) => string;
+export declare function createMarkdownExport(transformers: Array<Transformer>, shouldPreserveNewLines?: boolean): (node?: ElementNode) => string;

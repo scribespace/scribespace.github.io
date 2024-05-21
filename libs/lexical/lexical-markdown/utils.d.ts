@@ -6,7 +6,7 @@
  *
  */
 import type { ElementTransformer, TextFormatTransformer, TextMatchTransformer, Transformer } from '@lexical/markdown';
-import type { ElementNode, LexicalNode, TextFormatType } from 'lexical';
+import { type ElementNode, type LexicalNode, type TextFormatType } from 'lexical';
 type MarkdownFormatKind = 'noTransformation' | 'paragraphH1' | 'paragraphH2' | 'paragraphH3' | 'paragraphH4' | 'paragraphH5' | 'paragraphH6' | 'paragraphBlockQuote' | 'paragraphUnorderedList' | 'paragraphOrderedList' | 'paragraphCodeBlock' | 'horizontalRule' | 'bold' | 'code' | 'italic' | 'underline' | 'strikethrough' | 'italic_bold' | 'strikethrough_italic' | 'strikethrough_bold' | 'strikethrough_italic_bold' | 'link';
 type MarkdownCriteria = Readonly<{
     export?: (node: LexicalNode, traverseChildren: (elementNode: ElementNode) => string) => string | null;
@@ -28,4 +28,5 @@ export declare function transformersByType(transformers: Array<Transformer>): Re
     textMatch: Array<TextMatchTransformer>;
 }>;
 export declare const PUNCTUATION_OR_SPACE: RegExp;
+export declare function isEmptyParagraph(node: LexicalNode): boolean;
 export {};

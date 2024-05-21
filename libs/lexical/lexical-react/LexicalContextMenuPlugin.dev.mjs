@@ -11,6 +11,7 @@ import { mergeRegister, calculateZoomLevel } from '@lexical/utils';
 import { createCommand, KEY_ARROW_DOWN_COMMAND, KEY_ARROW_UP_COMMAND, KEY_ESCAPE_COMMAND, KEY_TAB_COMMAND, KEY_ENTER_COMMAND, COMMAND_PRIORITY_LOW, $getSelection, $isRangeSelection } from 'lexical';
 import * as React from 'react';
 import { useLayoutEffect, useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import { jsx } from 'react/jsx-runtime';
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -445,7 +446,7 @@ function LexicalContextMenuPlugin({
     document.addEventListener('click', handleClick);
     return () => document.removeEventListener('click', handleClick);
   }, [editor, handleClick]);
-  return resolution === null || editor === null ? null : /*#__PURE__*/React.createElement(LexicalMenu, {
+  return resolution === null || editor === null ? null : /*#__PURE__*/jsx(LexicalMenu, {
     close: closeNodeMenu,
     resolution: resolution,
     editor: editor,

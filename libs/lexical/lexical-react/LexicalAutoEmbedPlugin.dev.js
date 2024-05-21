@@ -13,20 +13,8 @@ var LexicalComposerContext = require('@lexical/react/LexicalComposerContext');
 var LexicalNodeMenuPlugin = require('@lexical/react/LexicalNodeMenuPlugin');
 var utils = require('@lexical/utils');
 var lexical = require('lexical');
-var React = require('react');
-
-function _interopNamespaceDefault(e) {
-  var n = Object.create(null);
-  if (e) {
-    for (var k in e) {
-      n[k] = e[k];
-    }
-  }
-  n.default = e;
-  return n;
-}
-
-var React__namespace = /*#__PURE__*/_interopNamespaceDefault(React);
+var react = require('react');
+var jsxRuntime = require('react/jsx-runtime');
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -53,13 +41,13 @@ function LexicalAutoEmbedPlugin({
   menuCommandPriority = lexical.COMMAND_PRIORITY_LOW
 }) {
   const [editor] = LexicalComposerContext.useLexicalComposerContext();
-  const [nodeKey, setNodeKey] = React.useState(null);
-  const [activeEmbedConfig, setActiveEmbedConfig] = React.useState(null);
-  const reset = React.useCallback(() => {
+  const [nodeKey, setNodeKey] = react.useState(null);
+  const [activeEmbedConfig, setActiveEmbedConfig] = react.useState(null);
+  const reset = react.useCallback(() => {
     setNodeKey(null);
     setActiveEmbedConfig(null);
   }, []);
-  const checkIfLinkNodeIsEmbeddable = React.useCallback(key => {
+  const checkIfLinkNodeIsEmbeddable = react.useCallback(key => {
     editor.getEditorState().read(async function () {
       const linkNode = lexical.$getNodeByKey(key);
       if (link.$isLinkNode(linkNode)) {
@@ -74,7 +62,7 @@ function LexicalAutoEmbedPlugin({
       }
     });
   }, [editor, embedConfigs]);
-  React.useEffect(() => {
+  react.useEffect(() => {
     const listener = (nodeMutations, {
       updateTags,
       dirtyLeaves
@@ -89,7 +77,7 @@ function LexicalAutoEmbedPlugin({
     };
     return utils.mergeRegister(...[link.LinkNode, link.AutoLinkNode].map(Klass => editor.registerMutationListener(Klass, (...args) => listener(...args))));
   }, [checkIfLinkNodeIsEmbeddable, editor, embedConfigs, nodeKey, reset]);
-  React.useEffect(() => {
+  react.useEffect(() => {
     return editor.registerCommand(INSERT_EMBED_COMMAND, embedConfigType => {
       const embedConfig = embedConfigs.find(({
         type
@@ -101,7 +89,7 @@ function LexicalAutoEmbedPlugin({
       return false;
     }, lexical.COMMAND_PRIORITY_EDITOR);
   }, [editor, embedConfigs, onOpenEmbedModalForConfig]);
-  const embedLinkViaActiveEmbedConfig = React.useCallback(async function () {
+  const embedLinkViaActiveEmbedConfig = react.useCallback(async function () {
     if (activeEmbedConfig != null && nodeKey != null) {
       const linkNode = editor.getEditorState().read(() => {
         const node = lexical.$getNodeByKey(nodeKey);
@@ -126,16 +114,16 @@ function LexicalAutoEmbedPlugin({
       }
     }
   }, [activeEmbedConfig, editor, nodeKey]);
-  const options = React.useMemo(() => {
+  const options = react.useMemo(() => {
     return activeEmbedConfig != null && nodeKey != null ? getMenuOptions(activeEmbedConfig, embedLinkViaActiveEmbedConfig, reset) : [];
   }, [activeEmbedConfig, embedLinkViaActiveEmbedConfig, getMenuOptions, nodeKey, reset]);
-  const onSelectOption = React.useCallback((selectedOption, targetNode, closeMenu) => {
+  const onSelectOption = react.useCallback((selectedOption, targetNode, closeMenu) => {
     editor.update(() => {
       selectedOption.onSelect(targetNode);
       closeMenu();
     });
   }, [editor]);
-  return nodeKey != null ? /*#__PURE__*/React__namespace.createElement(LexicalNodeMenuPlugin.LexicalNodeMenuPlugin, {
+  return nodeKey != null ? /*#__PURE__*/jsxRuntime.jsx(LexicalNodeMenuPlugin.LexicalNodeMenuPlugin, {
     nodeKey: nodeKey,
     onClose: reset,
     onSelectOption: onSelectOption,

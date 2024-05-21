@@ -44,6 +44,14 @@ function transformersByType(transformers) {
   };
 }
 const PUNCTUATION_OR_SPACE = /[!-/:-@[-`{-~\s]/;
+const MARKDOWN_EMPTY_LINE_REG_EXP = /^\s{0,3}$/;
+function isEmptyParagraph(node) {
+  if (!lexical.$isParagraphNode(node)) {
+    return false;
+  }
+  const firstChild = node.getFirstChild();
+  return firstChild == null || node.getChildrenSize() === 1 && lexical.$isTextNode(firstChild) && MARKDOWN_EMPTY_LINE_REG_EXP.test(firstChild.getTextContent());
+}
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -53,8 +61,9 @@ const PUNCTUATION_OR_SPACE = /[!-/:-@[-`{-~\s]/;
  *
  */
 
-function createMarkdownExport(transformers) {
+function createMarkdownExport(transformers, shouldPreserveNewLines = false) {
   const byType = transformersByType(transformers);
+  const isNewlineDelimited = !shouldPreserveNewLines;
 
   // Export only uses text formats that are responsible for single format
   // e.g. it will filter out *** (bold, italic) and instead use separate ** and *
@@ -62,13 +71,18 @@ function createMarkdownExport(transformers) {
   return node => {
     const output = [];
     const children = (node || lexical.$getRoot()).getChildren();
-    for (const child of children) {
+    for (let i = 0; i < children.length; i++) {
+      const child = children[i];
       const result = exportTopLevelElements(child, byType.element, textFormatTransformers, byType.textMatch);
       if (result != null) {
-        output.push(result);
+        output.push(
+        // seperate consecutive group of texts with a line break: eg. ["hello", "world"] -> ["hello", "/nworld"]
+        isNewlineDelimited && i > 0 && !isEmptyParagraph(child) && !isEmptyParagraph(children[i - 1]) ? '\n'.concat(result) : result);
       }
     }
-    return output.join('\n\n');
+    // Ensure consecutive groups of texts are atleast \n\n apart while each empty paragraph render as a newline.
+    // Eg. ["hello", "", "", "hi", "\nworld"] -> "hello\n\n\nhi\n\nworld"
+    return output.join('\n');
   };
 }
 function exportTopLevelElements(node, elementTransformers, textTransformersIndex, textMatchTransformers) {
@@ -102,6 +116,7 @@ function exportChildren(node, textTransformersIndex, textMatchTransformers) {
     } else if (lexical.$isTextNode(child)) {
       output.push(exportTextFormat(child, child.getTextContent(), textTransformersIndex));
     } else if (lexical.$isElementNode(child)) {
+      // empty paragraph returns ""
       output.push(exportChildren(child, textTransformersIndex, textMatchTransformers));
     } else if (lexical.$isDecoratorNode(child)) {
       output.push(child.getTextContent());
@@ -212,9 +227,8 @@ const IS_APPLE_WEBKIT = CAN_USE_DOM && /AppleWebKit\/[\d.]+/.test(navigator.user
  *
  */
 
-const MARKDOWN_EMPTY_LINE_REG_EXP = /^\s{0,3}$/;
 const CODE_BLOCK_REG_EXP = /^[ \t]*```(\w{1,10})?\s?$/;
-function createMarkdownImport(transformers) {
+function createMarkdownImport(transformers, shouldPreserveNewLines = false) {
   const byType = transformersByType(transformers);
   const textFormatTransformersIndex = createTextFormatTransformersIndex(byType.textFormat);
   return (markdownString, node) => {
@@ -236,11 +250,12 @@ function createMarkdownImport(transformers) {
       $importBlocks(lineText, root, byType.element, textFormatTransformersIndex, byType.textMatch);
     }
 
-    // Removing empty paragraphs as md does not really
-    // allow empty lines and uses them as delimiter
+    // By default, removing empty paragraphs as md does not really
+    // allow empty lines and uses them as delimiter.
+    // If you need empty lines set shouldPreserveNewLines = true.
     const children = root.getChildren();
     for (const child of children) {
-      if (isEmptyParagraph(child) && root.getChildrenSize() > 1) {
+      if (!shouldPreserveNewLines && isEmptyParagraph(child) && root.getChildrenSize() > 1) {
         child.remove();
       }
     }
@@ -248,13 +263,6 @@ function createMarkdownImport(transformers) {
       root.selectEnd();
     }
   };
-}
-function isEmptyParagraph(node) {
-  if (!lexical.$isParagraphNode(node)) {
-    return false;
-  }
-  const firstChild = node.getFirstChild();
-  return firstChild == null || node.getChildrenSize() === 1 && lexical.$isTextNode(firstChild) && MARKDOWN_EMPTY_LINE_REG_EXP.test(firstChild.getTextContent());
 }
 function $importBlocks(lineText, rootNode, elementTransformers, textFormatTransformersIndex, textMatchTransformers) {
   const lineTextTrimmed = lineText.trim();
@@ -1008,12 +1016,12 @@ const ELEMENT_TRANSFORMERS = [HEADING, QUOTE, CODE, UNORDERED_LIST, ORDERED_LIST
 const TEXT_FORMAT_TRANSFORMERS = [INLINE_CODE, BOLD_ITALIC_STAR, BOLD_ITALIC_UNDERSCORE, BOLD_STAR, BOLD_UNDERSCORE, HIGHLIGHT, ITALIC_STAR, ITALIC_UNDERSCORE, STRIKETHROUGH];
 const TEXT_MATCH_TRANSFORMERS = [LINK];
 const TRANSFORMERS = [...ELEMENT_TRANSFORMERS, ...TEXT_FORMAT_TRANSFORMERS, ...TEXT_MATCH_TRANSFORMERS];
-function $convertFromMarkdownString(markdown, transformers = TRANSFORMERS, node) {
-  const importMarkdown = createMarkdownImport(transformers);
+function $convertFromMarkdownString(markdown, transformers = TRANSFORMERS, node, shouldPreserveNewLines = false) {
+  const importMarkdown = createMarkdownImport(transformers, shouldPreserveNewLines);
   return importMarkdown(markdown, node);
 }
-function $convertToMarkdownString(transformers = TRANSFORMERS, node) {
-  const exportMarkdown = createMarkdownExport(transformers);
+function $convertToMarkdownString(transformers = TRANSFORMERS, node, shouldPreserveNewLines = false) {
+  const exportMarkdown = createMarkdownExport(transformers, shouldPreserveNewLines);
   return exportMarkdown(node);
 }
 

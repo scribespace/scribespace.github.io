@@ -7,12 +7,12 @@
  */
 
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import * as React from 'react';
 import { useEffect, useState, useMemo } from 'react';
 import { OverflowNode, $isOverflowNode, $createOverflowNode } from '@lexical/overflow';
 import { $rootTextContent } from '@lexical/text';
 import { mergeRegister, $dfs } from '@lexical/utils';
 import { $getSelection, $isRangeSelection, $isTextNode, $isLeafNode, $setSelection } from 'lexical';
+import { jsx } from 'react/jsx-runtime';
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -244,9 +244,10 @@ function utf8Length(text) {
 function DefaultRenderer({
   remainingCharacters
 }) {
-  return /*#__PURE__*/React.createElement("span", {
-    className: `characters-limit ${remainingCharacters < 0 ? 'characters-limit-exceeded' : ''}`
-  }, remainingCharacters);
+  return /*#__PURE__*/jsx("span", {
+    className: `characters-limit ${remainingCharacters < 0 ? 'characters-limit-exceeded' : ''}`,
+    children: remainingCharacters
+  });
 }
 function CharacterLimitPlugin({
   charset = 'UTF-16',

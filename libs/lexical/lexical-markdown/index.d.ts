@@ -13,6 +13,6 @@ declare const ELEMENT_TRANSFORMERS: Array<ElementTransformer>;
 declare const TEXT_FORMAT_TRANSFORMERS: Array<TextFormatTransformer>;
 declare const TEXT_MATCH_TRANSFORMERS: Array<TextMatchTransformer>;
 declare const TRANSFORMERS: Array<Transformer>;
-declare function $convertFromMarkdownString(markdown: string, transformers?: Array<Transformer>, node?: ElementNode): void;
-declare function $convertToMarkdownString(transformers?: Array<Transformer>, node?: ElementNode): string;
+declare function $convertFromMarkdownString(markdown: string, transformers?: Array<Transformer>, node?: ElementNode, shouldPreserveNewLines?: boolean): void;
+declare function $convertToMarkdownString(transformers?: Array<Transformer>, node?: ElementNode, shouldPreserveNewLines?: boolean): string;
 export { $convertFromMarkdownString, $convertToMarkdownString, BOLD_ITALIC_STAR, BOLD_ITALIC_UNDERSCORE, BOLD_STAR, BOLD_UNDERSCORE, CHECK_LIST, CODE, ELEMENT_TRANSFORMERS, ElementTransformer, HEADING, HIGHLIGHT, INLINE_CODE, ITALIC_STAR, ITALIC_UNDERSCORE, LINK, ORDERED_LIST, QUOTE, registerMarkdownShortcuts, STRIKETHROUGH, TEXT_FORMAT_TRANSFORMERS, TEXT_MATCH_TRANSFORMERS, TextFormatTransformer, TextMatchTransformer, Transformer, TRANSFORMERS, UNORDERED_LIST, };

@@ -9,6 +9,7 @@
 'use strict';
 
 var React = require('react');
+var jsxRuntime = require('react/jsx-runtime');
 
 function _interopNamespaceDefault(e) {
   var n = Object.create(null);
@@ -136,16 +137,19 @@ function LexicalErrorBoundary({
   children,
   onError
 }) {
-  return /*#__PURE__*/React__namespace.createElement(ErrorBoundary, {
-    fallback: /*#__PURE__*/React__namespace.createElement("div", {
+  return /*#__PURE__*/jsxRuntime.jsx(ErrorBoundary, {
+    fallback: /*#__PURE__*/jsxRuntime.jsx("div", {
       style: {
         border: '1px solid #f00',
         color: '#f00',
         padding: '8px'
-      }
-    }, "An error was thrown."),
-    onError: onError
-  }, children);
+      },
+      children: "An error was thrown."
+    }),
+    onError: onError,
+    children: children
+  });
 }
 
-module.exports = LexicalErrorBoundary;
+exports.LexicalErrorBoundary = LexicalErrorBoundary;
+exports.default = LexicalErrorBoundary;

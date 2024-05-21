@@ -8,3 +8,4 @@
 
 const mod = await (process.env.NODE_ENV === 'development' ? import('./useLexicalEditable.dev.mjs') : import('./useLexicalEditable.prod.mjs'));
 export default mod.default;
+export const useLexicalEditable = mod.useLexicalEditable;

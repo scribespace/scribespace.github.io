@@ -10,25 +10,13 @@
 
 var LexicalComposerContext = require('@lexical/react/LexicalComposerContext');
 var useLexicalEditable = require('@lexical/react/useLexicalEditable');
-var React = require('react');
 var text = require('@lexical/text');
 var utils = require('@lexical/utils');
+var react = require('react');
 var reactDom = require('react-dom');
+var jsxRuntime = require('react/jsx-runtime');
 var dragon = require('@lexical/dragon');
 var plainText = require('@lexical/plain-text');
-
-function _interopNamespaceDefault(e) {
-  var n = Object.create(null);
-  if (e) {
-    for (var k in e) {
-      n[k] = e[k];
-    }
-  }
-  n.default = e;
-  return n;
-}
-
-var React__namespace = /*#__PURE__*/_interopNamespaceDefault(React);
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -48,7 +36,7 @@ const CAN_USE_DOM = typeof window !== 'undefined' && typeof window.document !== 
  *
  */
 
-const useLayoutEffectImpl = CAN_USE_DOM ? React.useLayoutEffect : React.useEffect;
+const useLayoutEffectImpl = CAN_USE_DOM ? react.useLayoutEffect : react.useEffect;
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -63,7 +51,7 @@ function canShowPlaceholderFromCurrentEditorState(editor) {
   return currentCanShowPlaceholder;
 }
 function useCanShowPlaceholder(editor) {
-  const [canShowPlaceholder, setCanShowPlaceholder] = React.useState(() => canShowPlaceholderFromCurrentEditorState(editor));
+  const [canShowPlaceholder, setCanShowPlaceholder] = react.useState(() => canShowPlaceholderFromCurrentEditorState(editor));
   useLayoutEffectImpl(() => {
     function resetCanShowPlaceholder() {
       const currentCanShowPlaceholder = canShowPlaceholderFromCurrentEditorState(editor);
@@ -88,7 +76,7 @@ function useCanShowPlaceholder(editor) {
  */
 
 function useDecorators(editor, ErrorBoundary) {
-  const [decorators, setDecorators] = React.useState(() => editor.getDecorators());
+  const [decorators, setDecorators] = react.useState(() => editor.getDecorators());
 
   // Subscribe to changes
   useLayoutEffectImpl(() => {
@@ -98,7 +86,7 @@ function useDecorators(editor, ErrorBoundary) {
       });
     });
   }, [editor]);
-  React.useEffect(() => {
+  react.useEffect(() => {
     // If the content editable mounts before the subscription is added, then
     // nothing will be rendered on initial pass. We can get around that by
     // ensuring that we set the value.
@@ -106,16 +94,18 @@ function useDecorators(editor, ErrorBoundary) {
   }, [editor]);
 
   // Return decorators defined as React Portals
-  return React.useMemo(() => {
+  return react.useMemo(() => {
     const decoratedPortals = [];
     const decoratorKeys = Object.keys(decorators);
     for (let i = 0; i < decoratorKeys.length; i++) {
       const nodeKey = decoratorKeys[i];
-      const reactDecorator = /*#__PURE__*/React__namespace.createElement(ErrorBoundary, {
-        onError: e => editor._onError(e)
-      }, /*#__PURE__*/React__namespace.createElement(React.Suspense, {
-        fallback: null
-      }, decorators[nodeKey]));
+      const reactDecorator = /*#__PURE__*/jsxRuntime.jsx(ErrorBoundary, {
+        onError: e => editor._onError(e),
+        children: /*#__PURE__*/jsxRuntime.jsx(react.Suspense, {
+          fallback: null,
+          children: decorators[nodeKey]
+        })
+      });
       const element = editor.getElementByKey(nodeKey);
       if (element !== null) {
         decoratedPortals.push( /*#__PURE__*/reactDom.createPortal(reactDecorator, element, nodeKey));
@@ -158,16 +148,18 @@ function PlainTextPlugin({
   const [editor] = LexicalComposerContext.useLexicalComposerContext();
   const decorators = useDecorators(editor, ErrorBoundary);
   usePlainTextSetup(editor);
-  return /*#__PURE__*/React__namespace.createElement(React__namespace.Fragment, null, contentEditable, /*#__PURE__*/React__namespace.createElement(Placeholder, {
-    content: placeholder
-  }), decorators);
+  return /*#__PURE__*/jsxRuntime.jsxs(jsxRuntime.Fragment, {
+    children: [contentEditable, /*#__PURE__*/jsxRuntime.jsx(Placeholder, {
+      content: placeholder
+    }), decorators]
+  });
 }
 function Placeholder({
   content
 }) {
   const [editor] = LexicalComposerContext.useLexicalComposerContext();
   const showPlaceholder = useCanShowPlaceholder(editor);
-  const editable = useLexicalEditable();
+  const editable = useLexicalEditable.useLexicalEditable();
   if (!showPlaceholder) {
     return null;
   }

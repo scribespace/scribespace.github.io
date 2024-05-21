@@ -9,4 +9,5 @@
 import * as modDev from './LexicalClickableLinkPlugin.dev.mjs';
 import * as modProd from './LexicalClickableLinkPlugin.prod.mjs';
 const mod = process.env.NODE_ENV === 'development' ? modDev : modProd;
+export const ClickableLinkPlugin = mod.ClickableLinkPlugin;
 export default mod.default;

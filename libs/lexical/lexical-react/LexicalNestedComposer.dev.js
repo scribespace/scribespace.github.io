@@ -10,20 +10,8 @@
 
 var LexicalCollaborationContext = require('@lexical/react/LexicalCollaborationContext');
 var LexicalComposerContext = require('@lexical/react/LexicalComposerContext');
-var React = require('react');
-
-function _interopNamespaceDefault(e) {
-  var n = Object.create(null);
-  if (e) {
-    for (var k in e) {
-      n[k] = e[k];
-    }
-  }
-  n.default = e;
-  return n;
-}
-
-var React__namespace = /*#__PURE__*/_interopNamespaceDefault(React);
+var react = require('react');
+var jsxRuntime = require('react/jsx-runtime');
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -44,8 +32,8 @@ function LexicalNestedComposer({
   initialTheme,
   skipCollabChecks
 }) {
-  const wasCollabPreviouslyReadyRef = React.useRef(false);
-  const parentContext = React.useContext(LexicalComposerContext.LexicalComposerContext);
+  const wasCollabPreviouslyReadyRef = react.useRef(false);
+  const parentContext = react.useContext(LexicalComposerContext.LexicalComposerContext);
   if (parentContext == null) {
     {
       throw Error(`Unexpected parent context null on a nested composer`);
@@ -54,7 +42,7 @@ function LexicalNestedComposer({
   const [parentEditor, {
     getTheme: getParentTheme
   }] = parentContext;
-  const composerContext = React.useMemo(() => {
+  const composerContext = react.useMemo(() => {
     const composerTheme = initialTheme || getParentTheme() || undefined;
     const context = LexicalComposerContext.createLexicalComposerContext(parentContext, composerTheme);
     if (composerTheme !== undefined) {
@@ -106,21 +94,22 @@ function LexicalNestedComposer({
     yjsDocMap
   } = LexicalCollaborationContext.useCollaborationContext();
   const isCollabReady = skipCollabChecks || wasCollabPreviouslyReadyRef.current || yjsDocMap.has(initialEditor.getKey());
-  React.useEffect(() => {
+  react.useEffect(() => {
     if (isCollabReady) {
       wasCollabPreviouslyReadyRef.current = true;
     }
   }, [isCollabReady]);
 
   // Update `isEditable` state of nested editor in response to the same change on parent editor.
-  React.useEffect(() => {
+  react.useEffect(() => {
     return parentEditor.registerEditableListener(editable => {
       initialEditor.setEditable(editable);
     });
   }, [initialEditor, parentEditor]);
-  return /*#__PURE__*/React__namespace.createElement(LexicalComposerContext.LexicalComposerContext.Provider, {
-    value: composerContext
-  }, !isCollabActive || isCollabReady ? children : null);
+  return /*#__PURE__*/jsxRuntime.jsx(LexicalComposerContext.LexicalComposerContext.Provider, {
+    value: composerContext,
+    children: !isCollabActive || isCollabReady ? children : null
+  });
 }
 
 exports.LexicalNestedComposer = LexicalNestedComposer;

@@ -9,4 +9,5 @@
 import * as modDev from './LexicalErrorBoundary.dev.mjs';
 import * as modProd from './LexicalErrorBoundary.prod.mjs';
 const mod = process.env.NODE_ENV === 'development' ? modDev : modProd;
+export const LexicalErrorBoundary = mod.LexicalErrorBoundary;
 export default mod.default;

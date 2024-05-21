@@ -69,13 +69,16 @@ export declare class ElementNode extends LexicalNode {
     canIndent(): boolean;
     collapseAtStart(selection: RangeSelection): boolean;
     excludeFromCopy(destination?: 'clone' | 'html'): boolean;
+    /** @deprecated @internal */
     canReplaceWith(replacement: LexicalNode): boolean;
+    /** @deprecated @internal */
     canInsertAfter(node: LexicalNode): boolean;
     canBeEmpty(): boolean;
     canInsertTextBefore(): boolean;
     canInsertTextAfter(): boolean;
     isInline(): boolean;
     isShadowRoot(): boolean;
+    /** @deprecated @internal */
     canMergeWith(node: ElementNode): boolean;
     extractWithChild(child: LexicalNode, selection: BaseSelection | null, destination: 'clone' | 'html'): boolean;
 }

@@ -5,4 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-export default function useLexicalEditable(): boolean;
+export declare function useLexicalEditable(): boolean;
+/** @deprecated use the named export {@link useLexicalEditable} */
+export default useLexicalEditable;

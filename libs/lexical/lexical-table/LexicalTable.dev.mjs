@@ -7,7 +7,7 @@
  */
 
 import { addClassNamesToElement, $findMatchingParent, removeClassNamesFromElement, isHTMLElement } from '@lexical/utils';
-import { ElementNode, $createParagraphNode, $isElementNode, $isLineBreakNode, $isTextNode, $applyNodeReplacement, createCommand, $createTextNode, $getSelection, $isRangeSelection, $createPoint, $normalizeSelection__EXPERIMENTAL, $getNodeByKey, isCurrentlyReadOnlyMode, $setSelection, SELECTION_CHANGE_COMMAND, $getNearestNodeFromDOMNode, $createRangeSelection, $getRoot, KEY_ARROW_DOWN_COMMAND, COMMAND_PRIORITY_HIGH, KEY_ARROW_UP_COMMAND, KEY_ARROW_LEFT_COMMAND, KEY_ARROW_RIGHT_COMMAND, KEY_ESCAPE_COMMAND, DELETE_WORD_COMMAND, DELETE_LINE_COMMAND, DELETE_CHARACTER_COMMAND, COMMAND_PRIORITY_CRITICAL, KEY_BACKSPACE_COMMAND, KEY_DELETE_COMMAND, FORMAT_TEXT_COMMAND, FORMAT_ELEMENT_COMMAND, CONTROLLED_TEXT_INSERTION_COMMAND, KEY_TAB_COMMAND, FOCUS_COMMAND, SELECTION_INSERT_CLIPBOARD_NODES_COMMAND, $getPreviousSelection, $createRangeSelectionFromDom, INSERT_PARAGRAPH_COMMAND } from 'lexical';
+import { ElementNode, $createParagraphNode, $isElementNode, $isLineBreakNode, $isTextNode, $applyNodeReplacement, createCommand, $createTextNode, $getSelection, $isRangeSelection, $createPoint, $normalizeSelection__EXPERIMENTAL, $getNodeByKey, isCurrentlyReadOnlyMode, $setSelection, SELECTION_CHANGE_COMMAND, $getNearestNodeFromDOMNode, $createRangeSelection, $getRoot, KEY_ARROW_DOWN_COMMAND, COMMAND_PRIORITY_HIGH, KEY_ARROW_UP_COMMAND, KEY_ARROW_LEFT_COMMAND, KEY_ARROW_RIGHT_COMMAND, KEY_ESCAPE_COMMAND, DELETE_WORD_COMMAND, DELETE_LINE_COMMAND, DELETE_CHARACTER_COMMAND, COMMAND_PRIORITY_CRITICAL, KEY_BACKSPACE_COMMAND, KEY_DELETE_COMMAND, FORMAT_TEXT_COMMAND, FORMAT_ELEMENT_COMMAND, CONTROLLED_TEXT_INSERTION_COMMAND, KEY_TAB_COMMAND, FOCUS_COMMAND, SELECTION_INSERT_CLIPBOARD_NODES_COMMAND, $getPreviousSelection, $createRangeSelectionFromDom, INSERT_PARAGRAPH_COMMAND, $isDecoratorNode } from 'lexical';
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -1364,7 +1364,7 @@ class TableObserver {
           const record = records[i];
           const target = record.target;
           const nodeName = target.nodeName;
-          if (nodeName === 'TABLE' || nodeName === 'TBODY' || nodeName === 'TR') {
+          if (nodeName === 'TABLE' || nodeName === 'TBODY' || nodeName === 'THEAD' || nodeName === 'TR') {
             gridNeedsRedraw = true;
             break;
           }
@@ -2312,6 +2312,10 @@ function $handleArrowKey(editor, event, direction, tableNode, tableObserver) {
       if (!anchorNode) {
         return false;
       }
+      const selectedNodes = selection.getNodes();
+      if (selectedNodes.length === 1 && $isDecoratorNode(selectedNodes[0])) {
+        return false;
+      }
       if (isExitingTableAnchor(anchorType, anchorOffset, anchorNode, direction)) {
         return $handleTableExit(event, anchorNode, tableNode, direction);
       }
@@ -2460,9 +2464,18 @@ function $insertParagraphAtTableEdge(edgePosition, tableNode, children) {
   paragraphNode.selectEnd();
 }
 function $getTableEdgeCursorPosition(editor, selection, tableNode) {
+  const tableNodeParent = tableNode.getParent();
+  if (!tableNodeParent) {
+    return undefined;
+  }
+  const tableNodeParentDOM = editor.getElementByKey(tableNodeParent.getKey());
+  if (!tableNodeParentDOM) {
+    return undefined;
+  }
+
   // TODO: Add support for nested tables
   const domSelection = window.getSelection();
-  if (!domSelection || domSelection.anchorNode !== editor.getRootElement()) {
+  if (!domSelection || domSelection.anchorNode !== tableNodeParentDOM) {
     return undefined;
   }
   const anchorCellNode = $findMatchingParent(selection.anchor.getNode(), n => $isTableCellNode(n));

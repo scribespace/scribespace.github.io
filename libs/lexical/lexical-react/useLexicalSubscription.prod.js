@@ -6,5 +6,5 @@
  *
  */
 
-'use strict';var a=require("@lexical/react/LexicalComposerContext"),k=require("react");let l="undefined"!==typeof window&&"undefined"!==typeof window.document&&"undefined"!==typeof window.document.createElement?k.useLayoutEffect:k.useEffect;
-module.exports=function(c){let [f]=a.useLexicalComposerContext(),d=k.useMemo(()=>c(f),[f,c]),b=k.useRef(d.initialValueFn()),[m,g]=k.useState(b.current);l(()=>{let {initialValueFn:n,subscribe:p}=d,e=n();b.current!==e&&(b.current=e,g(e));return p(h=>{b.current=h;g(h)})},[d,c]);return m}
+'use strict';var a=require("@lexical/react/LexicalComposerContext"),f=require("react");let l="undefined"!==typeof window&&"undefined"!==typeof window.document&&"undefined"!==typeof window.document.createElement?f.useLayoutEffect:f.useEffect;
+function m(c){let [g]=a.useLexicalComposerContext(),d=f.useMemo(()=>c(g),[g,c]),b=f.useRef(d.initialValueFn()),[n,h]=f.useState(b.current);l(()=>{let {initialValueFn:p,subscribe:q}=d,e=p();b.current!==e&&(b.current=e,h(e));return q(k=>{b.current=k;h(k)})},[d,c]);return n}exports.default=m;exports.useLexicalSubscription=m

@@ -11,8 +11,8 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { MenuOption, LexicalNodeMenuPlugin } from '@lexical/react/LexicalNodeMenuPlugin';
 import { mergeRegister } from '@lexical/utils';
 import { createCommand, $getNodeByKey, COMMAND_PRIORITY_EDITOR, $getSelection, COMMAND_PRIORITY_LOW } from 'lexical';
-import * as React from 'react';
 import { useState, useCallback, useEffect, useMemo } from 'react';
+import { jsx } from 'react/jsx-runtime';
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -121,7 +121,7 @@ function LexicalAutoEmbedPlugin({
       closeMenu();
     });
   }, [editor]);
-  return nodeKey != null ? /*#__PURE__*/React.createElement(LexicalNodeMenuPlugin, {
+  return nodeKey != null ? /*#__PURE__*/jsx(LexicalNodeMenuPlugin, {
     nodeKey: nodeKey,
     onClose: reset,
     onSelectOption: onSelectOption,

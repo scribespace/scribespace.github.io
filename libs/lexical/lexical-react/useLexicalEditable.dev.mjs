@@ -83,4 +83,4 @@ function useLexicalEditable() {
   return useLexicalSubscription(subscription);
 }
 
-export { useLexicalEditable as default };
+export { useLexicalEditable as default, useLexicalEditable };

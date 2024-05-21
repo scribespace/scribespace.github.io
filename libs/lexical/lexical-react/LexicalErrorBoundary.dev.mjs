@@ -7,6 +7,7 @@
  */
 
 import * as React from 'react';
+import { jsx } from 'react/jsx-runtime';
 
 function _setPrototypeOf(o, p) {
   _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
@@ -121,16 +122,18 @@ function LexicalErrorBoundary({
   children,
   onError
 }) {
-  return /*#__PURE__*/React.createElement(ErrorBoundary, {
-    fallback: /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/jsx(ErrorBoundary, {
+    fallback: /*#__PURE__*/jsx("div", {
       style: {
         border: '1px solid #f00',
         color: '#f00',
         padding: '8px'
-      }
-    }, "An error was thrown."),
-    onError: onError
-  }, children);
+      },
+      children: "An error was thrown."
+    }),
+    onError: onError,
+    children: children
+  });
 }
 
-export { LexicalErrorBoundary as default };
+export { LexicalErrorBoundary, LexicalErrorBoundary as default };

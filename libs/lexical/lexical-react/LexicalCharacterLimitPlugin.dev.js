@@ -9,24 +9,12 @@
 'use strict';
 
 var LexicalComposerContext = require('@lexical/react/LexicalComposerContext');
-var React = require('react');
+var react = require('react');
 var overflow = require('@lexical/overflow');
 var text = require('@lexical/text');
 var utils = require('@lexical/utils');
 var lexical = require('lexical');
-
-function _interopNamespaceDefault(e) {
-  var n = Object.create(null);
-  if (e) {
-    for (var k in e) {
-      n[k] = e[k];
-    }
-  }
-  n.default = e;
-  return n;
-}
-
-var React__namespace = /*#__PURE__*/_interopNamespaceDefault(React);
+var jsxRuntime = require('react/jsx-runtime');
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -44,14 +32,14 @@ function useCharacterLimit(editor, maxCharacters, optional = Object.freeze({})) 
       return;
     }
   } = optional;
-  React.useEffect(() => {
+  react.useEffect(() => {
     if (!editor.hasNodes([overflow.OverflowNode])) {
       {
         throw Error(`useCharacterLimit: OverflowNode not registered on editor`);
       }
     }
   }, [editor]);
-  React.useEffect(() => {
+  react.useEffect(() => {
     let text$1 = editor.getEditorState().read(text.$rootTextContent);
     let lastComputedTextLength = 0;
     return utils.mergeRegister(editor.registerTextContentListener(currentText => {
@@ -258,9 +246,10 @@ function utf8Length(text) {
 function DefaultRenderer({
   remainingCharacters
 }) {
-  return /*#__PURE__*/React__namespace.createElement("span", {
-    className: `characters-limit ${remainingCharacters < 0 ? 'characters-limit-exceeded' : ''}`
-  }, remainingCharacters);
+  return /*#__PURE__*/jsxRuntime.jsx("span", {
+    className: `characters-limit ${remainingCharacters < 0 ? 'characters-limit-exceeded' : ''}`,
+    children: remainingCharacters
+  });
 }
 function CharacterLimitPlugin({
   charset = 'UTF-16',
@@ -268,8 +257,8 @@ function CharacterLimitPlugin({
   renderer = DefaultRenderer
 }) {
   const [editor] = LexicalComposerContext.useLexicalComposerContext();
-  const [remainingCharacters, setRemainingCharacters] = React.useState(maxLength);
-  const characterLimitProps = React.useMemo(() => ({
+  const [remainingCharacters, setRemainingCharacters] = react.useState(maxLength);
+  const characterLimitProps = react.useMemo(() => ({
     remainingCharacters: setRemainingCharacters,
     strlen: text => {
       if (charset === 'UTF-8') {

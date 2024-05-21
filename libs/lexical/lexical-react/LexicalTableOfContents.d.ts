@@ -5,16 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-/// <reference types="react" />
-import { HeadingTagType } from '@lexical/rich-text';
-import { LexicalEditor, NodeKey } from 'lexical';
-export type TableOfContentsEntry = [
-    key: NodeKey,
-    text: string,
-    tag: HeadingTagType
-];
-type Props = {
-    children: (values: Array<TableOfContentsEntry>, editor: LexicalEditor) => JSX.Element;
-};
-export default function LexicalTableOfContentsPlugin({ children, }: Props): JSX.Element;
-export {};
+/** @deprecated moved to @lexical/react/LexicalTableOfContentsPlugin */
+import { type TableOfContentsEntry, TableOfContentsPlugin } from './LexicalTableOfContentsPlugin';
+/** @deprecated use the module @lexical/react/LexicalTableOfContentsPlugin */
+export { type TableOfContentsEntry };
+/** @deprecated use module @lexical/react/LexicalTableOfContentsPlugin */
+export default TableOfContentsPlugin;

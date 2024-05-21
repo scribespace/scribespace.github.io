@@ -12,20 +12,8 @@ var LexicalComposerContext = require('@lexical/react/LexicalComposerContext');
 var useLexicalNodeSelection = require('@lexical/react/useLexicalNodeSelection');
 var utils = require('@lexical/utils');
 var lexical = require('lexical');
-var React = require('react');
-
-function _interopNamespaceDefault(e) {
-  var n = Object.create(null);
-  if (e) {
-    for (var k in e) {
-      n[k] = e[k];
-    }
-  }
-  n.default = e;
-  return n;
-}
-
-var React__namespace = /*#__PURE__*/_interopNamespaceDefault(React);
+var react = require('react');
+var jsxRuntime = require('react/jsx-runtime');
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -41,7 +29,7 @@ function HorizontalRuleComponent({
 }) {
   const [editor] = LexicalComposerContext.useLexicalComposerContext();
   const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection.useLexicalNodeSelection(nodeKey);
-  const $onDelete = React.useCallback(event => {
+  const $onDelete = react.useCallback(event => {
     if (isSelected && lexical.$isNodeSelection(lexical.$getSelection())) {
       event.preventDefault();
       const node = lexical.$getNodeByKey(nodeKey);
@@ -52,7 +40,7 @@ function HorizontalRuleComponent({
     }
     return false;
   }, [isSelected, nodeKey]);
-  React.useEffect(() => {
+  react.useEffect(() => {
     return utils.mergeRegister(editor.registerCommand(lexical.CLICK_COMMAND, event => {
       const hrElem = editor.getElementByKey(nodeKey);
       if (event.target === hrElem) {
@@ -65,10 +53,15 @@ function HorizontalRuleComponent({
       return false;
     }, lexical.COMMAND_PRIORITY_LOW), editor.registerCommand(lexical.KEY_DELETE_COMMAND, $onDelete, lexical.COMMAND_PRIORITY_LOW), editor.registerCommand(lexical.KEY_BACKSPACE_COMMAND, $onDelete, lexical.COMMAND_PRIORITY_LOW));
   }, [clearSelection, editor, isSelected, nodeKey, $onDelete, setSelected]);
-  React.useEffect(() => {
+  react.useEffect(() => {
     const hrElem = editor.getElementByKey(nodeKey);
+    const isSelectedClassName = 'selected';
     if (hrElem !== null) {
-      hrElem.className = isSelected ? 'selected' : '';
+      if (isSelected) {
+        utils.addClassNamesToElement(hrElem, isSelectedClassName);
+      } else {
+        utils.removeClassNamesFromElement(hrElem, isSelectedClassName);
+      }
     }
   }, [editor, isSelected, nodeKey]);
   return null;
@@ -102,8 +95,10 @@ class HorizontalRuleNode extends lexical.DecoratorNode {
       element: document.createElement('hr')
     };
   }
-  createDOM() {
-    return document.createElement('hr');
+  createDOM(config) {
+    const element = document.createElement('hr');
+    utils.addClassNamesToElement(element, config.theme.hr);
+    return element;
   }
   getTextContent() {
     return '\n';
@@ -115,7 +110,7 @@ class HorizontalRuleNode extends lexical.DecoratorNode {
     return false;
   }
   decorate() {
-    return /*#__PURE__*/React__namespace.createElement(HorizontalRuleComponent, {
+    return /*#__PURE__*/jsxRuntime.jsx(HorizontalRuleComponent, {
       nodeKey: this.__key
     });
   }

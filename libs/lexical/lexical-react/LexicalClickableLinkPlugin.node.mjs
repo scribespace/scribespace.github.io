@@ -7,4 +7,5 @@
  */
 
 const mod = await (process.env.NODE_ENV === 'development' ? import('./LexicalClickableLinkPlugin.dev.mjs') : import('./LexicalClickableLinkPlugin.prod.mjs'));
+export const ClickableLinkPlugin = mod.ClickableLinkPlugin;
 export default mod.default;

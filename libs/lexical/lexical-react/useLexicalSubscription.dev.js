@@ -65,4 +65,5 @@ function useLexicalSubscription(subscription) {
   return value;
 }
 
-module.exports = useLexicalSubscription;
+exports.default = useLexicalSubscription;
+exports.useLexicalSubscription = useLexicalSubscription;

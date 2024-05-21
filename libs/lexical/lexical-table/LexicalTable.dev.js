@@ -1366,7 +1366,7 @@ class TableObserver {
           const record = records[i];
           const target = record.target;
           const nodeName = target.nodeName;
-          if (nodeName === 'TABLE' || nodeName === 'TBODY' || nodeName === 'TR') {
+          if (nodeName === 'TABLE' || nodeName === 'TBODY' || nodeName === 'THEAD' || nodeName === 'TR') {
             gridNeedsRedraw = true;
             break;
           }
@@ -2314,6 +2314,10 @@ function $handleArrowKey(editor, event, direction, tableNode, tableObserver) {
       if (!anchorNode) {
         return false;
       }
+      const selectedNodes = selection.getNodes();
+      if (selectedNodes.length === 1 && lexical.$isDecoratorNode(selectedNodes[0])) {
+        return false;
+      }
       if (isExitingTableAnchor(anchorType, anchorOffset, anchorNode, direction)) {
         return $handleTableExit(event, anchorNode, tableNode, direction);
       }
@@ -2462,9 +2466,18 @@ function $insertParagraphAtTableEdge(edgePosition, tableNode, children) {
   paragraphNode.selectEnd();
 }
 function $getTableEdgeCursorPosition(editor, selection, tableNode) {
+  const tableNodeParent = tableNode.getParent();
+  if (!tableNodeParent) {
+    return undefined;
+  }
+  const tableNodeParentDOM = editor.getElementByKey(tableNodeParent.getKey());
+  if (!tableNodeParentDOM) {
+    return undefined;
+  }
+
   // TODO: Add support for nested tables
   const domSelection = window.getSelection();
-  if (!domSelection || domSelection.anchorNode !== editor.getRootElement()) {
+  if (!domSelection || domSelection.anchorNode !== tableNodeParentDOM) {
     return undefined;
   }
   const anchorCellNode = utils.$findMatchingParent(selection.anchor.getNode(), n => $isTableCellNode(n));

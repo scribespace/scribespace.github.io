@@ -8,3 +8,4 @@
 
 const mod = await (process.env.NODE_ENV === 'development' ? import('./useLexicalSubscription.dev.mjs') : import('./useLexicalSubscription.prod.mjs'));
 export default mod.default;
+export const useLexicalSubscription = mod.useLexicalSubscription;

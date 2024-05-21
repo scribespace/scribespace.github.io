@@ -32,7 +32,7 @@ function findMatchingDOM(startNode, predicate) {
   }
   return null;
 }
-function LexicalClickableLinkPlugin({
+function ClickableLinkPlugin({
   newTab = true,
   disabled = false
 }) {
@@ -100,4 +100,5 @@ function LexicalClickableLinkPlugin({
   return null;
 }
 
-module.exports = LexicalClickableLinkPlugin;
+exports.ClickableLinkPlugin = ClickableLinkPlugin;
+exports.default = ClickableLinkPlugin;

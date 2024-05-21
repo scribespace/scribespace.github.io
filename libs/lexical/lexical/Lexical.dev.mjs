@@ -1036,129 +1036,129 @@ function $shouldInsertTextAfterOrBeforeTextNode(selection, node) {
     return false;
   }
 }
-function isTab(code, altKey, ctrlKey, metaKey) {
-  return code === 'Tab' && !altKey && !ctrlKey && !metaKey;
+function isTab(key, altKey, ctrlKey, metaKey) {
+  return key === 'Tab' && !altKey && !ctrlKey && !metaKey;
 }
-function isBold(code, altKey, metaKey, ctrlKey) {
-  return code === 'KeyB' && !altKey && controlOrMeta(metaKey, ctrlKey);
+function isBold(key, altKey, metaKey, ctrlKey) {
+  return key.toLowerCase() === 'b' && !altKey && controlOrMeta(metaKey, ctrlKey);
 }
-function isItalic(code, altKey, metaKey, ctrlKey) {
-  return code === 'KeyI' && !altKey && controlOrMeta(metaKey, ctrlKey);
+function isItalic(key, altKey, metaKey, ctrlKey) {
+  return key.toLowerCase() === 'i' && !altKey && controlOrMeta(metaKey, ctrlKey);
 }
-function isUnderline(code, altKey, metaKey, ctrlKey) {
-  return code === 'KeyU' && !altKey && controlOrMeta(metaKey, ctrlKey);
+function isUnderline(key, altKey, metaKey, ctrlKey) {
+  return key.toLowerCase() === 'u' && !altKey && controlOrMeta(metaKey, ctrlKey);
 }
-function isParagraph(code, shiftKey) {
-  return isReturn(code) && !shiftKey;
+function isParagraph(key, shiftKey) {
+  return isReturn(key) && !shiftKey;
 }
-function isLineBreak(keyCode, shiftKey) {
-  return isReturn(keyCode) && shiftKey;
+function isLineBreak(key, shiftKey) {
+  return isReturn(key) && shiftKey;
 }
 
 // Inserts a new line after the selection
 
-function isOpenLineBreak(code, ctrlKey) {
+function isOpenLineBreak(key, ctrlKey) {
   // 79 = KeyO
-  return IS_APPLE && ctrlKey && code === 'KeyO';
+  return IS_APPLE && ctrlKey && key.toLowerCase() === 'o';
 }
-function isDeleteWordBackward(code, altKey, ctrlKey) {
-  return isBackspace(code) && (IS_APPLE ? altKey : ctrlKey);
+function isDeleteWordBackward(key, altKey, ctrlKey) {
+  return isBackspace(key) && (IS_APPLE ? altKey : ctrlKey);
 }
-function isDeleteWordForward(code, altKey, ctrlKey) {
-  return isDelete(code) && (IS_APPLE ? altKey : ctrlKey);
+function isDeleteWordForward(key, altKey, ctrlKey) {
+  return isDelete(key) && (IS_APPLE ? altKey : ctrlKey);
 }
-function isDeleteLineBackward(code, metaKey) {
-  return IS_APPLE && metaKey && isBackspace(code);
+function isDeleteLineBackward(key, metaKey) {
+  return IS_APPLE && metaKey && isBackspace(key);
 }
-function isDeleteLineForward(code, metaKey) {
-  return IS_APPLE && metaKey && isDelete(code);
+function isDeleteLineForward(key, metaKey) {
+  return IS_APPLE && metaKey && isDelete(key);
 }
-function isDeleteBackward(code, altKey, metaKey, ctrlKey) {
+function isDeleteBackward(key, altKey, metaKey, ctrlKey) {
   if (IS_APPLE) {
     if (altKey || metaKey) {
       return false;
     }
-    return isBackspace(code) || code === 'KeyH' && ctrlKey;
+    return isBackspace(key) || key.toLowerCase() === 'h' && ctrlKey;
   }
   if (ctrlKey || altKey || metaKey) {
     return false;
   }
-  return isBackspace(code);
+  return isBackspace(key);
 }
-function isDeleteForward(code, ctrlKey, shiftKey, altKey, metaKey) {
+function isDeleteForward(key, ctrlKey, shiftKey, altKey, metaKey) {
   if (IS_APPLE) {
     if (shiftKey || altKey || metaKey) {
       return false;
     }
-    return isDelete(code) || code === 'KeyD' && ctrlKey;
+    return isDelete(key) || key.toLowerCase() === 'd' && ctrlKey;
   }
   if (ctrlKey || altKey || metaKey) {
     return false;
   }
-  return isDelete(code);
+  return isDelete(key);
 }
-function isUndo(code, shiftKey, metaKey, ctrlKey) {
-  return code === 'KeyZ' && !shiftKey && controlOrMeta(metaKey, ctrlKey);
+function isUndo(key, shiftKey, metaKey, ctrlKey) {
+  return key.toLowerCase() === 'z' && !shiftKey && controlOrMeta(metaKey, ctrlKey);
 }
-function isRedo(code, shiftKey, metaKey, ctrlKey) {
+function isRedo(key, shiftKey, metaKey, ctrlKey) {
   if (IS_APPLE) {
-    return code === 'KeyZ' && metaKey && shiftKey;
+    return key.toLowerCase() === 'z' && metaKey && shiftKey;
   }
-  return code === 'KeyY' && ctrlKey || code === 'KeyZ' && ctrlKey && shiftKey;
+  return key.toLowerCase() === 'y' && ctrlKey || key.toLowerCase() === 'z' && ctrlKey && shiftKey;
 }
-function isCopy(code, shiftKey, metaKey, ctrlKey) {
+function isCopy(key, shiftKey, metaKey, ctrlKey) {
   if (shiftKey) {
     return false;
   }
-  if (code === 'KeyC') {
+  if (key.toLowerCase() === 'c') {
     return IS_APPLE ? metaKey : ctrlKey;
   }
   return false;
 }
-function isCut(code, shiftKey, metaKey, ctrlKey) {
+function isCut(key, shiftKey, metaKey, ctrlKey) {
   if (shiftKey) {
     return false;
   }
-  if (code === 'KeyX') {
+  if (key.toLowerCase() === 'x') {
     return IS_APPLE ? metaKey : ctrlKey;
   }
   return false;
 }
-function isArrowLeft(code) {
-  return code === 'ArrowLeft';
+function isArrowLeft(key) {
+  return key === 'ArrowLeft';
 }
-function isArrowRight(code) {
-  return code === 'ArrowRight';
+function isArrowRight(key) {
+  return key === 'ArrowRight';
 }
-function isArrowUp(code) {
-  return code === 'ArrowUp';
+function isArrowUp(key) {
+  return key === 'ArrowUp';
 }
-function isArrowDown(code) {
-  return code === 'ArrowDown';
+function isArrowDown(key) {
+  return key === 'ArrowDown';
 }
-function isMoveBackward(code, ctrlKey, altKey, metaKey) {
-  return isArrowLeft(code) && !ctrlKey && !metaKey && !altKey;
+function isMoveBackward(key, ctrlKey, altKey, metaKey) {
+  return isArrowLeft(key) && !ctrlKey && !metaKey && !altKey;
 }
-function isMoveToStart(code, ctrlKey, shiftKey, altKey, metaKey) {
-  return isArrowLeft(code) && !altKey && !shiftKey && (ctrlKey || metaKey);
+function isMoveToStart(key, ctrlKey, shiftKey, altKey, metaKey) {
+  return isArrowLeft(key) && !altKey && !shiftKey && (ctrlKey || metaKey);
 }
-function isMoveForward(code, ctrlKey, altKey, metaKey) {
-  return isArrowRight(code) && !ctrlKey && !metaKey && !altKey;
+function isMoveForward(key, ctrlKey, altKey, metaKey) {
+  return isArrowRight(key) && !ctrlKey && !metaKey && !altKey;
 }
-function isMoveToEnd(code, ctrlKey, shiftKey, altKey, metaKey) {
-  return isArrowRight(code) && !altKey && !shiftKey && (ctrlKey || metaKey);
+function isMoveToEnd(key, ctrlKey, shiftKey, altKey, metaKey) {
+  return isArrowRight(key) && !altKey && !shiftKey && (ctrlKey || metaKey);
 }
-function isMoveUp(code, ctrlKey, metaKey) {
-  return isArrowUp(code) && !ctrlKey && !metaKey;
+function isMoveUp(key, ctrlKey, metaKey) {
+  return isArrowUp(key) && !ctrlKey && !metaKey;
 }
-function isMoveDown(code, ctrlKey, metaKey) {
-  return isArrowDown(code) && !ctrlKey && !metaKey;
+function isMoveDown(key, ctrlKey, metaKey) {
+  return isArrowDown(key) && !ctrlKey && !metaKey;
 }
 function isModifier(ctrlKey, shiftKey, altKey, metaKey) {
   return ctrlKey || shiftKey || altKey || metaKey;
 }
-function isSpace(code) {
-  return code === 'Space';
+function isSpace(key) {
+  return key === ' ';
 }
 function controlOrMeta(metaKey, ctrlKey) {
   if (IS_APPLE) {
@@ -1166,20 +1166,20 @@ function controlOrMeta(metaKey, ctrlKey) {
   }
   return ctrlKey;
 }
-function isReturn(code) {
-  return code === 'Enter';
+function isReturn(key) {
+  return key === 'Enter';
 }
-function isBackspace(code) {
-  return code === 'Backspace';
+function isBackspace(key) {
+  return key === 'Backspace';
 }
-function isEscape(code) {
-  return code === 'Escape';
+function isEscape(key) {
+  return key === 'Escape';
 }
-function isDelete(code) {
-  return code === 'Delete';
+function isDelete(key) {
+  return key === 'Delete';
 }
-function isSelectAll(code, metaKey, ctrlKey) {
-  return code === 'KeyA' && controlOrMeta(metaKey, ctrlKey);
+function isSelectAll(key, metaKey, ctrlKey) {
+  return key.toLowerCase() === 'a' && controlOrMeta(metaKey, ctrlKey);
 }
 function $selectAll() {
   const root = $getRoot();
@@ -2583,7 +2583,7 @@ function $canRemoveText(anchorNode, focusNode) {
   return anchorNode !== focusNode || $isElementNode(anchorNode) || $isElementNode(focusNode) || !anchorNode.isToken() || !focusNode.isToken();
 }
 function isPossiblyAndroidKeyPress(timeStamp) {
-  return lastKeyCode === 'Delete' && timeStamp < lastKeyDownTimeStamp + ANDROID_COMPOSITION_LATENCY;
+  return lastKeyCode === 'MediaLast' && timeStamp < lastKeyDownTimeStamp + ANDROID_COMPOSITION_LATENCY;
 }
 function onBeforeInput(event, editor) {
   const inputType = event.inputType;
@@ -2950,12 +2950,12 @@ function onCompositionEnd(event, editor) {
 }
 function onKeyDown(event, editor) {
   lastKeyDownTimeStamp = event.timeStamp;
-  lastKeyCode = event.code;
+  lastKeyCode = event.key;
   if (editor.isComposing()) {
     return;
   }
   const {
-    code,
+    key,
     shiftKey,
     ctrlKey,
     metaKey,
@@ -2964,90 +2964,93 @@ function onKeyDown(event, editor) {
   if (dispatchCommand(editor, KEY_DOWN_COMMAND, event)) {
     return;
   }
-  if (isMoveForward(code, ctrlKey, altKey, metaKey)) {
+  if (key == null) {
+    return;
+  }
+  if (isMoveForward(key, ctrlKey, altKey, metaKey)) {
     dispatchCommand(editor, KEY_ARROW_RIGHT_COMMAND, event);
-  } else if (isMoveToEnd(code, ctrlKey, shiftKey, altKey, metaKey)) {
+  } else if (isMoveToEnd(key, ctrlKey, shiftKey, altKey, metaKey)) {
     dispatchCommand(editor, MOVE_TO_END, event);
-  } else if (isMoveBackward(code, ctrlKey, altKey, metaKey)) {
+  } else if (isMoveBackward(key, ctrlKey, altKey, metaKey)) {
     dispatchCommand(editor, KEY_ARROW_LEFT_COMMAND, event);
-  } else if (isMoveToStart(code, ctrlKey, shiftKey, altKey, metaKey)) {
+  } else if (isMoveToStart(key, ctrlKey, shiftKey, altKey, metaKey)) {
     dispatchCommand(editor, MOVE_TO_START, event);
-  } else if (isMoveUp(code, ctrlKey, metaKey)) {
+  } else if (isMoveUp(key, ctrlKey, metaKey)) {
     dispatchCommand(editor, KEY_ARROW_UP_COMMAND, event);
-  } else if (isMoveDown(code, ctrlKey, metaKey)) {
+  } else if (isMoveDown(key, ctrlKey, metaKey)) {
     dispatchCommand(editor, KEY_ARROW_DOWN_COMMAND, event);
-  } else if (isLineBreak(code, shiftKey)) {
+  } else if (isLineBreak(key, shiftKey)) {
     isInsertLineBreak = true;
     dispatchCommand(editor, KEY_ENTER_COMMAND, event);
-  } else if (isSpace(code)) {
+  } else if (isSpace(key)) {
     dispatchCommand(editor, KEY_SPACE_COMMAND, event);
-  } else if (isOpenLineBreak(code, ctrlKey)) {
+  } else if (isOpenLineBreak(key, ctrlKey)) {
     event.preventDefault();
     isInsertLineBreak = true;
     dispatchCommand(editor, INSERT_LINE_BREAK_COMMAND, true);
-  } else if (isParagraph(code, shiftKey)) {
+  } else if (isParagraph(key, shiftKey)) {
     isInsertLineBreak = false;
     dispatchCommand(editor, KEY_ENTER_COMMAND, event);
-  } else if (isDeleteBackward(code, altKey, metaKey, ctrlKey)) {
-    if (isBackspace(code)) {
+  } else if (isDeleteBackward(key, altKey, metaKey, ctrlKey)) {
+    if (isBackspace(key)) {
       dispatchCommand(editor, KEY_BACKSPACE_COMMAND, event);
     } else {
       event.preventDefault();
       dispatchCommand(editor, DELETE_CHARACTER_COMMAND, true);
     }
-  } else if (isEscape(code)) {
+  } else if (isEscape(key)) {
     dispatchCommand(editor, KEY_ESCAPE_COMMAND, event);
-  } else if (isDeleteForward(code, ctrlKey, shiftKey, altKey, metaKey)) {
-    if (isDelete(code)) {
+  } else if (isDeleteForward(key, ctrlKey, shiftKey, altKey, metaKey)) {
+    if (isDelete(key)) {
       dispatchCommand(editor, KEY_DELETE_COMMAND, event);
     } else {
       event.preventDefault();
       dispatchCommand(editor, DELETE_CHARACTER_COMMAND, false);
     }
-  } else if (isDeleteWordBackward(code, altKey, ctrlKey)) {
+  } else if (isDeleteWordBackward(key, altKey, ctrlKey)) {
     event.preventDefault();
     dispatchCommand(editor, DELETE_WORD_COMMAND, true);
-  } else if (isDeleteWordForward(code, altKey, ctrlKey)) {
+  } else if (isDeleteWordForward(key, altKey, ctrlKey)) {
     event.preventDefault();
     dispatchCommand(editor, DELETE_WORD_COMMAND, false);
-  } else if (isDeleteLineBackward(code, metaKey)) {
+  } else if (isDeleteLineBackward(key, metaKey)) {
     event.preventDefault();
     dispatchCommand(editor, DELETE_LINE_COMMAND, true);
-  } else if (isDeleteLineForward(code, metaKey)) {
+  } else if (isDeleteLineForward(key, metaKey)) {
     event.preventDefault();
     dispatchCommand(editor, DELETE_LINE_COMMAND, false);
-  } else if (isBold(code, altKey, metaKey, ctrlKey)) {
+  } else if (isBold(key, altKey, metaKey, ctrlKey)) {
     event.preventDefault();
     dispatchCommand(editor, FORMAT_TEXT_COMMAND, 'bold');
-  } else if (isUnderline(code, altKey, metaKey, ctrlKey)) {
+  } else if (isUnderline(key, altKey, metaKey, ctrlKey)) {
     event.preventDefault();
     dispatchCommand(editor, FORMAT_TEXT_COMMAND, 'underline');
-  } else if (isItalic(code, altKey, metaKey, ctrlKey)) {
+  } else if (isItalic(key, altKey, metaKey, ctrlKey)) {
     event.preventDefault();
     dispatchCommand(editor, FORMAT_TEXT_COMMAND, 'italic');
-  } else if (isTab(code, altKey, ctrlKey, metaKey)) {
+  } else if (isTab(key, altKey, ctrlKey, metaKey)) {
     dispatchCommand(editor, KEY_TAB_COMMAND, event);
-  } else if (isUndo(code, shiftKey, metaKey, ctrlKey)) {
+  } else if (isUndo(key, shiftKey, metaKey, ctrlKey)) {
     event.preventDefault();
     dispatchCommand(editor, UNDO_COMMAND, undefined);
-  } else if (isRedo(code, shiftKey, metaKey, ctrlKey)) {
+  } else if (isRedo(key, shiftKey, metaKey, ctrlKey)) {
     event.preventDefault();
     dispatchCommand(editor, REDO_COMMAND, undefined);
   } else {
     const prevSelection = editor._editorState._selection;
     if ($isNodeSelection(prevSelection)) {
-      if (isCopy(code, shiftKey, metaKey, ctrlKey)) {
+      if (isCopy(key, shiftKey, metaKey, ctrlKey)) {
         event.preventDefault();
         dispatchCommand(editor, COPY_COMMAND, event);
-      } else if (isCut(code, shiftKey, metaKey, ctrlKey)) {
+      } else if (isCut(key, shiftKey, metaKey, ctrlKey)) {
         event.preventDefault();
         dispatchCommand(editor, CUT_COMMAND, event);
-      } else if (isSelectAll(code, metaKey, ctrlKey)) {
+      } else if (isSelectAll(key, metaKey, ctrlKey)) {
         event.preventDefault();
         dispatchCommand(editor, SELECT_ALL_COMMAND, event);
       }
       // FF does it well (no need to override behavior)
-    } else if (!IS_FIREFOX && isSelectAll(code, metaKey, ctrlKey)) {
+    } else if (!IS_FIREFOX && isSelectAll(key, metaKey, ctrlKey)) {
       event.preventDefault();
       dispatchCommand(editor, SELECT_ALL_COMMAND, event);
     }
@@ -8621,9 +8624,11 @@ class ElementNode extends LexicalNode {
   excludeFromCopy(destination) {
     return false;
   }
+  /** @deprecated @internal */
   canReplaceWith(replacement) {
     return true;
   }
+  /** @deprecated @internal */
   canInsertAfter(node) {
     return true;
   }
@@ -8646,6 +8651,7 @@ class ElementNode extends LexicalNode {
   isShadowRoot() {
     return false;
   }
+  /** @deprecated @internal */
   canMergeWith(node) {
     return false;
   }
@@ -9172,7 +9178,7 @@ function createEditor(editorConfig) {
             throw Error(`${replaceWithKlass.name} doesn't extend the ${name}`);
           }
         }
-        if (name !== 'RootNode') {
+        if (name !== 'RootNode' && name !== 'ArtificialNode__DO_NOT_USE') {
           const proto = klass.prototype;
           ['getType', 'clone'].forEach(method => {
             // eslint-disable-next-line no-prototype-builtins

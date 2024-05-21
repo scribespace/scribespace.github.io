@@ -10,3 +10,4 @@ import * as modDev from './useLexicalSubscription.dev.mjs';
 import * as modProd from './useLexicalSubscription.prod.mjs';
 const mod = process.env.NODE_ENV === 'development' ? modDev : modProd;
 export default mod.default;
+export const useLexicalSubscription = mod.useLexicalSubscription;

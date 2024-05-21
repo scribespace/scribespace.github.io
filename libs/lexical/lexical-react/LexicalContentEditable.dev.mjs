@@ -7,23 +7,8 @@
  */
 
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import * as React from 'react';
 import { useLayoutEffect, useEffect, useState, useCallback } from 'react';
-
-function _extends() {
-  _extends = Object.assign ? Object.assign.bind() : function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
-    }
-    return target;
-  };
-  return _extends.apply(this, arguments);
-}
+import { jsx } from 'react/jsx-runtime';
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -44,6 +29,14 @@ const CAN_USE_DOM = typeof window !== 'undefined' && typeof window.document !== 
  */
 
 const useLayoutEffectImpl = CAN_USE_DOM ? useLayoutEffect : useEffect;
+
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
 
 function ContentEditable({
   ariaActiveDescendant,
@@ -81,7 +74,8 @@ function ContentEditable({
       setEditable(currentIsEditable);
     });
   }, [editor]);
-  return /*#__PURE__*/React.createElement("div", _extends({}, rest, {
+  return /*#__PURE__*/jsx("div", {
+    ...rest,
     "aria-activedescendant": !isEditable ? undefined : ariaActiveDescendant,
     "aria-autocomplete": !isEditable ? 'none' : ariaAutoComplete,
     "aria-controls": !isEditable ? undefined : ariaControls,
@@ -103,7 +97,7 @@ function ContentEditable({
     spellCheck: spellCheck,
     style: style,
     tabIndex: tabIndex
-  }));
+  });
 }
 
 export { ContentEditable };

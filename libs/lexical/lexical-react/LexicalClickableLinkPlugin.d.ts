@@ -5,7 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-export default function LexicalClickableLinkPlugin({ newTab, disabled, }: {
+export declare function ClickableLinkPlugin({ newTab, disabled, }: {
     newTab?: boolean;
     disabled?: boolean;
 }): null;
+/** @deprecated use the named export {@link ClickableLinkPlugin} */
+export default ClickableLinkPlugin;

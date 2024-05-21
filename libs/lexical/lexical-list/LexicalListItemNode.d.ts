@@ -40,7 +40,9 @@ export declare class ListItemNode extends ElementNode {
     toggleChecked(): void;
     getIndent(): number;
     setIndent(indent: number): this;
+    /** @deprecated @internal */
     canInsertAfter(node: LexicalNode): boolean;
+    /** @deprecated @internal */
     canReplaceWith(replacement: LexicalNode): boolean;
     canMergeWith(node: LexicalNode): boolean;
     extractWithChild(child: LexicalNode, selection: BaseSelection): boolean;

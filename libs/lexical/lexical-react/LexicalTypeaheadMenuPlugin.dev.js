@@ -12,6 +12,7 @@ var LexicalComposerContext = require('@lexical/react/LexicalComposerContext');
 var lexical = require('lexical');
 var React = require('react');
 var utils = require('@lexical/utils');
+var jsxRuntime = require('react/jsx-runtime');
 
 function _interopNamespaceDefault(e) {
   var n = Object.create(null);
@@ -571,7 +572,7 @@ function LexicalTypeaheadMenuPlugin({
       removeUpdateListener();
     };
   }, [editor, triggerFn, onQueryChange, resolution, closeTypeahead, openTypeahead]);
-  return resolution === null || editor === null ? null : /*#__PURE__*/React__namespace.createElement(LexicalMenu, {
+  return resolution === null || editor === null ? null : /*#__PURE__*/jsxRuntime.jsx(LexicalMenu, {
     close: closeTypeahead,
     resolution: resolution,
     editor: editor,

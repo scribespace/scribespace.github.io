@@ -8,8 +8,8 @@
 
 import { useCollaborationContext } from '@lexical/react/LexicalCollaborationContext';
 import { LexicalComposerContext, createLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import * as React from 'react';
 import { useRef, useContext, useMemo, useEffect } from 'react';
+import { jsx } from 'react/jsx-runtime';
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -104,9 +104,10 @@ function LexicalNestedComposer({
       initialEditor.setEditable(editable);
     });
   }, [initialEditor, parentEditor]);
-  return /*#__PURE__*/React.createElement(LexicalComposerContext.Provider, {
-    value: composerContext
-  }, !isCollabActive || isCollabReady ? children : null);
+  return /*#__PURE__*/jsx(LexicalComposerContext.Provider, {
+    value: composerContext,
+    children: !isCollabActive || isCollabReady ? children : null
+  });
 }
 
 export { LexicalNestedComposer };

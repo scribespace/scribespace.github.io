@@ -10,6 +10,7 @@ import { useLexicalCommandsLog, TreeView as TreeView$1, generateContent } from '
 import { mergeRegister } from '@lexical/utils';
 import * as React from 'react';
 import { useState, useEffect } from 'react';
+import { jsx } from 'react/jsx-runtime';
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -58,7 +59,7 @@ function TreeView({
     }
     rootElement.contentEditable = isReadonly ? 'false' : 'true';
   };
-  return /*#__PURE__*/React.createElement(TreeView$1, {
+  return /*#__PURE__*/jsx(TreeView$1, {
     treeTypeButtonClassName: treeTypeButtonClassName,
     timeTravelButtonClassName: timeTravelButtonClassName,
     timeTravelPanelSliderClassName: timeTravelPanelSliderClassName,

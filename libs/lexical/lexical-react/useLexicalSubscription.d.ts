@@ -13,4 +13,6 @@ export type LexicalSubscription<T> = {
 /**
  * Shortcut to Lexical subscriptions when values are used for render.
  */
-export default function useLexicalSubscription<T>(subscription: (editor: LexicalEditor) => LexicalSubscription<T>): T;
+export declare function useLexicalSubscription<T>(subscription: (editor: LexicalEditor) => LexicalSubscription<T>): T;
+/** @deprecated use the named export {@link useLexicalSubscription} */
+export default useLexicalSubscription;

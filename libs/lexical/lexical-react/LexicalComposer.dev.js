@@ -10,20 +10,8 @@
 
 var LexicalComposerContext = require('@lexical/react/LexicalComposerContext');
 var lexical = require('lexical');
-var React = require('react');
-
-function _interopNamespaceDefault(e) {
-  var n = Object.create(null);
-  if (e) {
-    for (var k in e) {
-      n[k] = e[k];
-    }
-  }
-  n.default = e;
-  return n;
-}
-
-var React__namespace = /*#__PURE__*/_interopNamespaceDefault(React);
+var react = require('react');
+var jsxRuntime = require('react/jsx-runtime');
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -43,7 +31,7 @@ const CAN_USE_DOM = typeof window !== 'undefined' && typeof window.document !== 
  *
  */
 
-const useLayoutEffectImpl = CAN_USE_DOM ? React.useLayoutEffect : React.useEffect;
+const useLayoutEffectImpl = CAN_USE_DOM ? react.useLayoutEffect : react.useEffect;
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -60,7 +48,7 @@ function LexicalComposer({
   initialConfig,
   children
 }) {
-  const composerContext = React.useMemo(() => {
+  const composerContext = react.useMemo(() => {
     const {
       theme,
       namespace,
@@ -97,9 +85,10 @@ function LexicalComposer({
     // We only do this for init
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  return /*#__PURE__*/React__namespace.createElement(LexicalComposerContext.LexicalComposerContext.Provider, {
-    value: composerContext
-  }, children);
+  return /*#__PURE__*/jsxRuntime.jsx(LexicalComposerContext.LexicalComposerContext.Provider, {
+    value: composerContext,
+    children: children
+  });
 }
 function initializeEditor(editor, initialEditorState) {
   if (initialEditorState === null) {

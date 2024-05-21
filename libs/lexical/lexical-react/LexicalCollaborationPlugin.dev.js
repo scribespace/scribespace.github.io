@@ -16,6 +16,7 @@ var yjs = require('@lexical/yjs');
 var lexical = require('lexical');
 var reactDom = require('react-dom');
 var yjs$1 = require('yjs');
+var jsxRuntime = require('react/jsx-runtime');
 
 function _interopNamespaceDefault(e) {
   var n = Object.create(null);
@@ -123,7 +124,7 @@ function useYjsCollaboration(editor, id, provider, docMap, name, color, shouldBo
     const ref = element => {
       binding.cursorsContainer = element;
     };
-    return /*#__PURE__*/reactDom.createPortal( /*#__PURE__*/React__namespace.createElement("div", {
+    return /*#__PURE__*/reactDom.createPortal( /*#__PURE__*/jsxRuntime.jsx("div", {
       ref: ref
     }), cursorsContainerRef && cursorsContainerRef.current || document.body);
   }, [binding, cursorsContainerRef]);
