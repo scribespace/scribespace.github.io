@@ -15,7 +15,7 @@ export default function TableCreator(props: TableCreatorProps) {
     const editorTheme: EditorTheme = getEditorThemeContext()
 
     function getTheme() {
-        return editorTheme.tableCreatorTheme;
+        return editorTheme.tableCreatorTheme!;
     }
     
     const [cells, setCells] = useState<ReactElement[]>()

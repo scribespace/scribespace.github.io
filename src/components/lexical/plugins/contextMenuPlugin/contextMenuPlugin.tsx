@@ -26,7 +26,7 @@ export default function ContextMenuPlugin() {
     }
 
     useEffect(()=>{
-        setContextMenuContextObject((oldState) => {return {theme: editorTheme.contextMenuTheme, mousePosition: oldState.mousePosition, closeMenu: oldState.closeMenu}})
+        setContextMenuContextObject((oldState) => {return {theme: editorTheme.contextMenuTheme!, mousePosition: oldState.mousePosition, closeMenu: oldState.closeMenu}})
     },[editorTheme])
 
     useEffect(()=>{

@@ -3,7 +3,7 @@ import { $getSelection, $isRangeSelection, LexicalEditor } from "lexical";
 import { 
     $findCellNode, $isTableCellNode, $isTableSelection,  
 } from "@lexical/table";
-import { SeparatorHorizontal, SeparatorHorizontalStrong } from "../separator";
+import { SeparatorHorizontal, SeparatorHorizontalStrong } from "../separators/separator";
 import TableContextSplitCells from "./tableContext/tableContextSplitCells";
 import TableContextMergeCells from "./tableContext/tableContextMergeCells";
 import TableContextCreate from "./tableContext/tableContextCreate";

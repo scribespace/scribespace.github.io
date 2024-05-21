@@ -3,7 +3,7 @@ import { separateValueAndUnit, variableExists } from "../../../../common";
 import { IconBaseProps } from "react-icons";
 
 import './css/numberInput.css';
-import { SeparatorVertical } from "../separator";
+import { SeparatorVertical } from "../separators/separator";
 import { getEditorThemeContext, EditorTheme } from "../../editorThemeContext";
 
 interface NumberInputProps {
@@ -69,7 +69,7 @@ export default function NumberInput(props: NumberInputProps) {
     }
 
     function getTheme() {
-        return editorTheme.numberInputTheme;
+        return editorTheme.numberInputTheme!;
     }
 
     function DecreaseIcon(props: IconBaseProps) {
