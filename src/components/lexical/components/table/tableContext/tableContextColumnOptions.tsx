@@ -6,7 +6,7 @@ import {
     $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
-import TableContextNumberInputEditor from "./tableContextNumberInputEditor";
+import TableContextNumberInput from "./tableContextNumberInput";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../nodes/table/extendedTableNode";
 import { $getTableColumnIndexFromTableCellNode } from "../../../plugins/tablePlugin/tableHelpers";
 import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
@@ -76,7 +76,7 @@ export function TableContextAddColumnAfter({ editor }: TableContextOptionProps) 
 
     return (
         <Submenu Option={OptionElement} disableBackground={true}>
-            <TableContextNumberInputEditor onInputAccepted={onInputAccepted} />
+            <TableContextNumberInput onInputAccepted={onInputAccepted} />
         </Submenu>
     );
 }
@@ -142,7 +142,7 @@ export function TableContextAddColumnBefore({ editor }: TableContextOptionProps)
 
     return (
         <Submenu Option={OptionElement} disableBackground={true}>
-            <TableContextNumberInputEditor onInputAccepted={onInputAccepted} />
+            <TableContextNumberInput onInputAccepted={onInputAccepted} />
         </Submenu>
     );
 }

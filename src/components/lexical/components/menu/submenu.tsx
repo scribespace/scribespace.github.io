@@ -38,8 +38,8 @@ export default function Submenu(props: ContextSubmenuProps) {
     }
 
     function SubmenuIcon(props: IconBaseProps) {
-        if ( menuContext.icons?.SubmenuIcon )
-            return menuContext.icons?.SubmenuIcon(props)
+        if ( menuContext.theme?.SubmenuIcon )
+            return menuContext.theme?.SubmenuIcon(props)
         return null;
     }
     

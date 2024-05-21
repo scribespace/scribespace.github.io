@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 
-import { EditorThemeClassName } from "lexical";
-import { IconType } from "react-icons";
+import { MenuTheme } from "./theme/menuTheme";
 
 interface ContextMenuProps {
     parentRect: {x: number, y: number, width: number, height: number};
@@ -9,16 +8,6 @@ interface ContextMenuProps {
     showContextMenu: boolean
     setShowContextMenu: (show:boolean) => void;
     children: React.ReactNode;
-}
-
-export interface MenuTheme {
-    menuFloat?: EditorThemeClassName;
-    menuContainer?: EditorThemeClassName;
-    menuItem?: EditorThemeClassName;
-    menuItemIcon?: EditorThemeClassName;
-    menuItemSubmenuIcon?: EditorThemeClassName;
-
-    SubmenuIcon?: IconType;
 }
 
 export interface MenuContextData {

@@ -1,4 +1,5 @@
-import { MenuContextData, MenuTheme } from "../../components/menu/menu";
+import { MenuContextData } from "../../components/menu/menu";
+import { MenuTheme } from "../../components/menu/theme/menuTheme";
 import { EditorThemeClassName } from "lexical";
 import { FaAngleRight } from "react-icons/fa";
 import { TABLE_MENU_THEME_DEFAULT, TableMenuTheme } from "../../components/table/themes/tableMenuTheme";

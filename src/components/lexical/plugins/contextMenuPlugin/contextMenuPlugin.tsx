@@ -1,13 +1,13 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Menu, MenuContext } from "../../components/menu/menu";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import TableContextOptions from "../../components/table/tableContextOptions";
 import './css/contextMenuPlugin.css';
 import { ContextMenuContextData, CONTEXT_MENU_CONTEX_DEFAULT } from "./contextMenuContext";
-import { EditorTheme, EditorThemeContext } from "../../editorThemeContext";
+import { EditorTheme, getEditorThemeContext } from "../../editorThemeContext";
 
 export default function ContextMenuPlugin() {
-    const editorTheme: EditorTheme = useContext(EditorThemeContext)
+    const editorTheme: EditorTheme = getEditorThemeContext()
     const [editor] = useLexicalComposerContext();
 
     const [showContextMenu, setShowContextMenu] = useState<boolean>(false)

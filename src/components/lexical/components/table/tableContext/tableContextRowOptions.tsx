@@ -8,7 +8,7 @@ import {
 } from "@lexical/table";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../nodes/table/extendedTableNode";
 import { TableContextOptionProps } from "../tableContextOptions";
-import TableContextNumberInputEditor from "./tableContextNumberInputEditor";
+import TableContextNumberInput from "./tableContextNumberInput";
 import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
 import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuContext";
 import { MenuContext } from "../../menu/menu";
@@ -67,7 +67,7 @@ export function TableContextAddRowBefore({ editor }: TableContextOptionProps) {
 
     return (
         <Submenu Option={OptionElement} disableBackground={true}>
-            <TableContextNumberInputEditor onInputAccepted={onInputAccepted} />
+            <TableContextNumberInput onInputAccepted={onInputAccepted} />
         </Submenu>
     );
 }
@@ -132,7 +132,7 @@ export function TableContextAddRowAfter({ editor }: TableContextOptionProps) {
 
     return (
         <Submenu Option={OptionElement} disableBackground={true}>
-            <TableContextNumberInputEditor onInputAccepted={onInputAccepted} />
+            <TableContextNumberInput onInputAccepted={onInputAccepted} />
         </Submenu>
     );
 }

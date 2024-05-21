@@ -1,8 +1,8 @@
-import { ReactElement, useContext, useEffect, useRef, useState } from "react";
+import { ReactElement, useEffect, useRef, useState } from "react";
 
 
 import './css/tableCreator.css';
-import { EditorTheme, EditorThemeContext } from "../../editorThemeContext";
+import { EditorTheme, getEditorThemeContext } from "../../editorThemeContext";
 
 interface TableCreatorProps {
     gridSize: string;
@@ -12,7 +12,7 @@ interface TableCreatorProps {
 }
 
 export default function TableCreator(props: TableCreatorProps) {
-    const editorTheme: EditorTheme = useContext(EditorThemeContext)
+    const editorTheme: EditorTheme = getEditorThemeContext()
 
     function getTheme() {
         return editorTheme.tableCreatorTheme;
