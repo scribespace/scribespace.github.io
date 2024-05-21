@@ -9,7 +9,7 @@ import { PropsWithChildren } from "react";
 import { TableContextOptionProps } from "./tableContextCommon";
 import { MenuItem, Submenu } from "../../menu";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "../../../nodes/table";
-import { $getTableColumnIndexFromTableCellNode } from "../../../plugins/tablePlugin/tableHelpers";
+import { $getTableColumnIndexFromTableCellNode } from "../../../plugins/tablePlugin/utils";
 
 
 export default function TableContextAddColumnBefore({ editor }: TableContextOptionProps) {

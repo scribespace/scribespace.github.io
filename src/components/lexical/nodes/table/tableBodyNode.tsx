@@ -1,6 +1,6 @@
 import { TableNode, TableRowNode, TableCellNode, $createTableNodeWithDimensions, $isTableRowNode, $getTableRowIndexFromTableCellNode, $createTableRowNode, $createTableCellNode, TableCellHeaderStates } from '@lexical/table'
 import { $applyNodeReplacement, $isParagraphNode, DOMConversionMap, DOMConversionOutput, EditorConfig, LexicalEditor, LexicalNode, SerializedElementNode } from 'lexical';
-import { $createTableCellNodeWithParagraph, $getTableColumnIndexFromTableCellNode, ResolvedCell, ResolvedRow } from '../../plugins/tablePlugin/tableHelpers';
+import { $createTableCellNodeWithParagraph, $getTableColumnIndexFromTableCellNode, ResolvedCell, ResolvedRow } from '../../plugins/tablePlugin/utils';
 
 export class TableBodyNode extends TableNode {
   constructor(node?: TableBodyNode) {

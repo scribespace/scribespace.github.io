@@ -11,7 +11,7 @@ import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 import { $generateNodesFromDOM } from '@lexical/html'
 import {ListNode, ListItemNode } from '@lexical/list'
 import {LinkNode} from '@lexical/link'
-import LinkPlugin from './lexical/plugins/linkPlugin/linkPlugin'
+import LinkPlugin from './lexical/plugins/linkPlugin'
 import { appGlobals } from '../system/appGlobals';
 
 import './lexical/editorInputTheme.css'
@@ -24,7 +24,7 @@ import ExtendedTextNode from './lexical/nodes/text';
 import useResizeObserver from 'use-resize-observer';
 import { TableNode, TableRowNode, TableCellNode } from '@lexical/table'
 import { ExtendedTableNode, TableBodyNode } from './lexical/nodes/table'
-import TablePlugin from './lexical/plugins/tablePlugin/tablePlugin'
+import TablePlugin from './lexical/plugins/tablePlugin'
 import ContextMenuPlugin from './lexical/plugins/contextMenuPlugin';
 import { useEffect, useState } from 'react';
 import { EDITOR_THEME_DEFAULT, EditorThemeContext, EditorTheme } from './lexical/editorThemeContext';
