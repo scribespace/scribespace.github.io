@@ -1,15 +1,13 @@
-import { useContext } from "react";
 import Submenu, { CotextSubmenuOptionProps } from "../../menu/submenu";
 import TableCreator from "../tableCreator";
 import { $insertNodes } from "lexical";
 import { $createExtendedTableNodeWithDimensions } from "../../../nodes/table/extendedTableNode";
 import MenuItem from "../../menu/menuItem";
 import { TableContextOptionProps } from "../tableContextOptions";
-import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuContext";
-import { MenuContext } from "../../menu/menu";
+import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/contextMenuContext";
 
 export default function TableContextCreate({ editor }: TableContextOptionProps) {
-    const menuContext = useContext(MenuContext) as ContextMenuContextData
+    const menuContext = getContextMenuContext()
 
     function AddTableIcon() {
         if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.AddTableIcon ) 

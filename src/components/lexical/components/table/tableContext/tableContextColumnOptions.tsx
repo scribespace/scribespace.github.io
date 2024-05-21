@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import Submenu, { CotextSubmenuOptionProps } from "../../menu/submenu";
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection, $setSelection } from "lexical";
 import MenuItem from "../../menu/menuItem";
@@ -11,12 +10,11 @@ import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "
 import { $getTableColumnIndexFromTableCellNode } from "../../../plugins/tablePlugin/tableHelpers";
 import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
 import { TableContextOptionProps } from "../tableContextOptions";
-import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuContext";
-import { MenuContext } from "../../menu/menu";
+import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/contextMenuContext";
 
 
 export function TableContextAddColumnAfter({ editor }: TableContextOptionProps) {
-    const menuContext = useContext(MenuContext) as ContextMenuContextData
+    const menuContext = getContextMenuContext();
 
     function AddColumnAfterIcon() {
         if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.AddColumnAfterIcon ) 
@@ -82,7 +80,7 @@ export function TableContextAddColumnAfter({ editor }: TableContextOptionProps) 
 }
 
 export function TableContextAddColumnBefore({ editor }: TableContextOptionProps) {
-    const menuContext = useContext(MenuContext) as ContextMenuContextData
+    const menuContext = getContextMenuContext();
 
     function AddColumnBeforeIcon() {
         if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.AddColumnBeforeIcon ) 
@@ -148,7 +146,7 @@ export function TableContextAddColumnBefore({ editor }: TableContextOptionProps)
 }
 
 export function TableContextColumnRemove({ editor }: TableContextOptionProps) {
-    const menuContext = useContext(MenuContext) as ContextMenuContextData
+    const menuContext = getContextMenuContext()
 
     function RemoveColumnIcon() {
         if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.RemoveColumnIcon ) 

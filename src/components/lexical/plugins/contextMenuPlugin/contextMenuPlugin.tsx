@@ -1,5 +1,6 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { Menu, MenuContext } from "../../components/menu/menu";
+import { Menu } from "../../components/menu/menu";
+import { MenuContext } from "../../components/menu/menuContext";
 import { useEffect, useState } from "react";
 import TableContextOptions from "../../components/table/tableContextOptions";
 import './css/contextMenuPlugin.css';

@@ -1,25 +1,26 @@
 import { LinkPlugin as LexicalLinkPlugin } from "@lexical/react/LexicalLinkPlugin";
-import {LinkNode, $isLinkNode, $createLinkNode} from '@lexical/link'
+import { LinkNode, $isLinkNode, $createLinkNode } from '@lexical/link';
 import { NodeEventPlugin } from '@lexical/react/LexicalNodeEventPlugin';
 import { $getNodeByKey, $getPreviousSelection, $getSelection, $isRangeSelection, $isTextNode, COMMAND_PRIORITY_LOW, KEY_ENTER_COMMAND, KEY_SPACE_COMMAND, LexicalEditor, LexicalNode, NodeKey, SELECTION_CHANGE_COMMAND, TextNode } from "lexical";
 
-import '../../components/link/css/link.css'
+import '../../components/link/css/link.css';
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { mergeRegister } from '@lexical/utils'
+import { mergeRegister } from '@lexical/utils';
 
 import { useEffect, useRef, useState } from "react";
-import { LinkEditor, OpenURL } from "../../components/link/linkEditor";
+import { LinkEditor } from "../../components/link/linkEditor";
+import { OpenURL } from "../../../../common";
 import { urlRegExp, validateUrl } from "../../../../common";
+import { EditorTheme, getEditorThemeContext } from "../../editorThemeContext";
 
 export default function LinkPlugin() {
-    const [editor, composerContext] = useLexicalComposerContext();
+    const [editor] = useLexicalComposerContext();
+    const editorTheme: EditorTheme = getEditorThemeContext()
+
     const linkEditorRef = useRef<HTMLDivElement>(null)
     const linkNodeRef = useRef<LinkNode | null>(null)
     const [linkURL, setLinkURL] = useState<string>("")
     const [linkText, setLinkText] = useState<string>("")
-
-    const theme = composerContext.getTheme();
-    const editorEmbeddedClassName     = theme && theme.linkPlugin ? theme.linkPlugin.linkEditorEmbedded   : 'link-editor-embedded-default'
 
     function TryCreateLink(lastNode: LexicalNode, lastNodeOffset: number) {
       let testString = ''
@@ -217,8 +218,8 @@ export default function LinkPlugin() {
                 }}/>
             <LexicalLinkPlugin validateUrl={validateUrl}/>
             {(linkNodeRef.current) && (
-              <div ref={linkEditorRef} className={editorEmbeddedClassName}>
-                <LinkEditor composerContext={composerContext} url={linkURL} text={linkText} onTextChange={onTextChange} onURLChange={onURLChange}/>
+              <div ref={linkEditorRef} className={editorTheme.editorSeeThrough}>
+                <LinkEditor url={linkURL} text={linkText} onTextChange={onTextChange} onURLChange={onURLChange}/>
               </div>
             )}
         </div>

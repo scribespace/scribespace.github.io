@@ -1,5 +1,6 @@
-import { ReactElement, useContext, useEffect, useRef, useState } from "react";
-import { Menu, MenuContext, MenuContextData } from "./menu";
+import { ReactElement, useEffect, useRef, useState } from "react";
+import { Menu } from "./menu";
+import { MenuContextData, getMenuContext } from "./menuContext";
 import { IconBaseProps } from "react-icons";
 
 export interface CotextSubmenuOptionProps {
@@ -13,7 +14,7 @@ interface ContextSubmenuProps {
 }
 
 export default function Submenu(props: ContextSubmenuProps) {
-    const menuContext: MenuContextData = useContext(MenuContext)
+    const menuContext: MenuContextData = getMenuContext()
 
     const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
 

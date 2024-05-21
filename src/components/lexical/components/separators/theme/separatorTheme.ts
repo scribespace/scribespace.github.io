@@ -8,7 +8,7 @@ export interface SeparatorTheme {
     separatorVerticalStrong?: EditorThemeClassName;
 }
 
-export const SEPARATOR_DEFAULT_THEME: SeparatorTheme = {
+export const SEPARATOR_THEME_DEFAULT: SeparatorTheme = {
     separatorHorizontal: 'separator-horizontal-default',
     separatorHorizontalStrong: 'separator-horizontal-strong-default',
     separatorVertical: 'separator-vertical-default',

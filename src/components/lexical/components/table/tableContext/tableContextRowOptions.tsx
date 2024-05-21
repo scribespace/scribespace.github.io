@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import Submenu, { CotextSubmenuOptionProps } from "../../menu/submenu";
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection, $setSelection } from "lexical";
 import MenuItem from "../../menu/menuItem";
@@ -10,12 +9,11 @@ import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "
 import { TableContextOptionProps } from "../tableContextOptions";
 import TableContextNumberInput from "./tableContextNumberInput";
 import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
-import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuContext";
-import { MenuContext } from "../../menu/menu";
+import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/contextMenuContext";
 
 
 export function TableContextAddRowBefore({ editor }: TableContextOptionProps) {
-    const menuContext = useContext(MenuContext) as ContextMenuContextData
+    const menuContext = getContextMenuContext()
 
     function AddRowBeforeIcon() {
         if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.AddRowBeforeIcon ) 
@@ -73,7 +71,7 @@ export function TableContextAddRowBefore({ editor }: TableContextOptionProps) {
 }
 
 export function TableContextAddRowAfter({ editor }: TableContextOptionProps) {
-    const menuContext = useContext(MenuContext) as ContextMenuContextData
+    const menuContext = getContextMenuContext()
 
     function AddRowAfterIcon() {
         if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.AddRowAfterIcon ) 
@@ -138,7 +136,7 @@ export function TableContextAddRowAfter({ editor }: TableContextOptionProps) {
 }
 
 export function TableContextRowRemove({ editor }: TableContextOptionProps) {
-    const menuContext = useContext(MenuContext) as ContextMenuContextData
+    const menuContext = getContextMenuContext()
 
     function RemoveRowIcon() {
         if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.RemoveRowIcon ) 

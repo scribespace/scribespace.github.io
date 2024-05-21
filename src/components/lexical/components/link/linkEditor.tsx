@@ -1,11 +1,9 @@
-import { LexicalComposerContextType } from "@lexical/react/LexicalComposerContext";
 import { forwardRef, useEffect, useRef } from "react";
-import { MdEdit, MdLink } from "react-icons/md";
-import { HiExternalLink } from "react-icons/hi";
 import { validateUrl } from "../../../../common";
+import { EditorTheme, getEditorThemeContext } from "../../editorThemeContext";
+import { IconBaseProps } from "react-icons";
+import { OpenURL } from "../../../../common";
 interface LinkEditorProps {
-    composerContext: LexicalComposerContextType;
-
     text?: string;
     url?: string;
 
@@ -13,25 +11,16 @@ interface LinkEditorProps {
     onURLChange?: (url:string) => void;
 }
 
-export function OpenURL(url: string) {
-    if ( validateUrl(url) ) {
-        const validURL = url;// url.match(/^https?:/) ? url : '//' + url;
-        window.open(validURL, '_blank')?.focus();
+export const LinkEditor = forwardRef<HTMLDivElement, LinkEditorProps>( ({text, url, onTextChange, onURLChange}: LinkEditorProps, ref)  => {
+    const editorTheme: EditorTheme = getEditorThemeContext()
+    function getTheme() {
+        return editorTheme.linkTheme!;
     }
-}
 
-export const LinkEditor = forwardRef<HTMLDivElement, LinkEditorProps>( ({composerContext, text, url, onTextChange, onURLChange}: LinkEditorProps, ref)  => {
     const urlInput = useRef<HTMLInputElement>(null)
     const textInput = useRef<HTMLInputElement>(null)
     const currentURL = useRef<string>('')
     
-    const theme = composerContext.getTheme();
-    const editorClassName           = theme && theme.linkPlugin ? theme.linkPlugin.linkEditor                   : 'link-editor-default'
-    const inputContainerClassName   = theme && theme.linkPlugin ? theme.linkPlugin.linkInputContainer           : 'link-input-container-default'
-    const inputIconClassName        = theme && theme.linkPlugin ? theme.linkPlugin.linkIconContainer            : 'link-input-icon-default'
-    const inputTextClassName        = theme && theme.linkPlugin ? theme.linkPlugin.linkInputText                : 'link-input-text-default'
-    const inputIconButtonClassName  = inputIconClassName + ' ' + (theme && theme.linkPlugin ? theme.linkPlugin.linkIconButtonContainer : 'link-input-icon-default')
-
     function OpenURLFromInput() {
         const url = urlInput.current?.value;
         if ( url )
@@ -70,16 +59,28 @@ export const LinkEditor = forwardRef<HTMLDivElement, LinkEditorProps>( ({compose
         }
     },[url])
 
+    function TextIcon(props: IconBaseProps) {
+        return getTheme().TextIcon!(props)
+    }
+
+    function LinkIcon(props: IconBaseProps) {
+        return getTheme().LinkIcon!(props)
+    }
+
+    function OpenIcon(props: IconBaseProps) {
+        return getTheme().OpenIcon!(props)
+    }
+
     return (
-    <div ref={ref} className={editorClassName}>
-        <div className={inputContainerClassName}>
-            <MdEdit className={inputIconClassName}/>
-            <input ref={textInput} type="text" className={inputTextClassName} defaultValue={text ? text : url} onKeyDown={TextChangeAccepted}/>
+    <div ref={ref} className={getTheme().editor}>
+        <div className={getTheme().container}>
+            <TextIcon className={getTheme().icon}/>
+            <input ref={textInput} type="text" className={getTheme().input} defaultValue={text ? text : url} onKeyDown={TextChangeAccepted}/>
         </div>
-        <div className={inputContainerClassName}>
-            <MdLink className={inputIconClassName}/>
-            <input ref={urlInput} type="text" className={inputTextClassName} defaultValue={url} onKeyDown={URLChangeAccepted}/>
-            <HiExternalLink className={inputIconButtonClassName} onClick={OpenURLFromInput}/>
+        <div className={getTheme().container}>
+            <LinkIcon className={getTheme().icon}/>
+            <input ref={urlInput} type="text" className={getTheme().input} defaultValue={url} onKeyDown={URLChangeAccepted}/>
+            <OpenIcon className={getTheme().button} onClick={OpenURLFromInput}/>
         </div>
     </div>
 )

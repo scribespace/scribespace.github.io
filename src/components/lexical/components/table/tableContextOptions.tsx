@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { $getSelection, $isRangeSelection, LexicalEditor } from "lexical";
-import { 
-    $findCellNode, $isTableCellNode, $isTableSelection,  
+import {
+    $findCellNode, $isTableCellNode, $isTableSelection,
 } from "@lexical/table";
 import { SeparatorHorizontal, SeparatorHorizontalStrong } from "../separators/separator";
 import TableContextSplitCells from "./tableContext/tableContextSplitCells";
@@ -10,8 +10,7 @@ import TableContextCreate from "./tableContext/tableContextCreate";
 import { TableContextDelete } from "./tableContext/tableContextDelete";
 import { TableContextRowRemove, TableContextAddRowBefore, TableContextAddRowAfter } from "./tableContext/tableContextRowOptions";
 import { TableContextColumnRemove, TableContextAddColumnBefore, TableContextAddColumnAfter } from "./tableContext/tableContextColumnOptions";
-import { MenuContext } from "../menu/menu";
-import { ContextMenuContextData } from "../../plugins/contextMenuPlugin/contextMenuContext";
+import { getContextMenuContext } from "../../plugins/contextMenuPlugin/contextMenuContext";
 
 
 export interface TableContextOptionProps {
@@ -23,7 +22,7 @@ interface TableContextOptionsProps {
 }
 
 export default function TableContextOptions({editor}: TableContextOptionsProps) {
-    const menuContext = useContext(MenuContext) as ContextMenuContextData
+    const menuContext = getContextMenuContext();
 
     const [insideTable, setInsideTable] = useState<boolean>(false)
     const [cellsSelected, setCellsSelected] = useState<boolean>(false)

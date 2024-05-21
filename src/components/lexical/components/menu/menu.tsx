@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
-import { MenuTheme } from "./theme/menuTheme";
+import { MenuContextData, getMenuContext } from "./menuContext";
 
 interface ContextMenuProps {
     parentRect: {x: number, y: number, width: number, height: number};
@@ -10,14 +10,8 @@ interface ContextMenuProps {
     children: React.ReactNode;
 }
 
-export interface MenuContextData {
-    theme?: MenuTheme;
-    closeMenu?: () => void;
-}
-
-export const MenuContext = createContext({})
 export const Menu = (props: ContextMenuProps) => {
-    const menuContext: MenuContextData = useContext(MenuContext)
+    const menuContext: MenuContextData = getMenuContext()
 
     const [position, setPosition] = useState<{left: string, top: string}>({left:'-1px', top:'-1px'});
 

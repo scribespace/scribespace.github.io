@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import { $getSelection, $setSelection } from "lexical";
 import { ExtendedTableNode } from "../../../nodes/table/extendedTableNode";
 import MenuItem from "../../menu/menuItem";
@@ -8,12 +7,11 @@ import {
 } from "@lexical/table";
 import { TableContextOptionProps } from "../tableContextOptions";
 import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
-import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuContext";
-import { MenuContext } from "../../menu/menu";
+import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/contextMenuContext";
 
 
 export default function TableContextMergeCells({ editor }: TableContextOptionProps) {
-    const menuContext = useContext(MenuContext) as ContextMenuContextData
+    const menuContext = getContextMenuContext()
 
     function MergeCellIcon() {
         if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.MergeCellIcon ) 

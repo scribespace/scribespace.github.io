@@ -31,15 +31,3 @@
 .link-input-icon-default:hover {
     background-color: rgb(209, 209, 209);
 }
-
-.link-editor-embedded-default {
-    z-index: 5;
-    display: block;
-    position: absolute;
-    
-    opacity: 0.2;
-}
-
-.link-editor-embedded-default:hover {
-    opacity: 1;
-}

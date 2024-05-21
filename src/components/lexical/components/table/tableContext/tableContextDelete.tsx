@@ -1,15 +1,13 @@
-import { useContext } from "react";
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical";
 import MenuItem from "../../menu/menuItem";
 import { $isTableSelection } from "@lexical/table";
 import { TableContextOptionProps } from "../tableContextOptions";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../nodes/table/extendedTableNode";
-import { MenuContext } from "../../menu/menu";
-import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuContext";
+import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/contextMenuContext";
 
 
 export function TableContextDelete({ editor }: TableContextOptionProps) {
-    const menuContext = useContext(MenuContext) as ContextMenuContextData
+    const menuContext = getContextMenuContext()
 
     function DeleteTableIcon() {
         if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.DeleteTableIcon ) 

@@ -1,14 +1,12 @@
-import { useContext } from "react";
 import NumberInput from "../../numberInput/numberInput";
-import { ContextMenuContextData } from "../../../plugins/contextMenuPlugin/contextMenuContext";
-import { MenuContext } from "../../menu/menu";
+import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/contextMenuContext";
 
 interface TableContextNumberInputProps {
     onInputAccepted: (target: HTMLInputElement) => void;
 }
 
 export default function TableContextNumberInput({ onInputAccepted }: TableContextNumberInputProps) {
-    const menuContext = useContext(MenuContext) as ContextMenuContextData
+    const menuContext = getContextMenuContext()
 
     return (
         <div className={menuContext.theme.contextMenuEditorContainer}>

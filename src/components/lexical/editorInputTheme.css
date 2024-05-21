@@ -31,6 +31,18 @@
     overflow: auto;
   }
 
+  .editor-see-through {
+    z-index: 5;
+    display: block;
+    position: absolute;
+    
+    opacity: 0.2;
+  }
+
+  .editor-see-through:hover {
+      opacity: 1;
+  }
+
 .ltr {
     text-align: left;
   }

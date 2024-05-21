@@ -50,4 +50,10 @@ export const urlRegExp = new RegExp(
 // @ts-ignore: Unused function
 export const notImplemented = () => {
     throw Error("Not implemented");
-};
+};export function OpenURL(url: string) {
+    if (validateUrl(url)) {
+        const validURL = url; // url.match(/^https?:/) ? url : '//' + url;
+        window.open(validURL, '_blank')?.focus();
+    }
+}
+

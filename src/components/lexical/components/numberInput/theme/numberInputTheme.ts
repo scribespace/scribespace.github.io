@@ -14,7 +14,7 @@ export interface NumberInputTheme {
     AcceptIcon?: IconType;
 }
 
-export const NUMBER_INPUT_DEFAULT_THEME: NumberInputTheme = {
+export const NUMBER_INPUT_THEME_DEFAULT: NumberInputTheme = {
     container: "number-input-editor-container-default",
     controlButton: "number-input-editor-button-default",
     acceptButton: "number-input-editor-button-default",
