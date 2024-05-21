@@ -4,12 +4,11 @@ import {
     $getTableCellNodeFromLexicalNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
-import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../nodes/table/extendedTableNode";
 import TableContextNumberInput from "./tableContextNumberInput";
-import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
 import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
 import { PropsWithChildren } from "react";
 import { TableContextOptionProps } from "./tableContextCommon";
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "../../../nodes/table";
 
 
 

@@ -4,9 +4,8 @@ import {
     TableCellNode
 } from "@lexical/table";
 import TableContextNumberInput from "./tableContextNumberInput";
-import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../nodes/table/extendedTableNode";
+import { ExtendedTableNode, TableBodyNode, $getExtendedTableNodeFromLexicalNodeOrThrow } from '../../../nodes/table'
 import { $getTableColumnIndexFromTableCellNode } from "../../../plugins/tablePlugin/tableHelpers";
-import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
 import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
 import { PropsWithChildren } from "react";
 import { TableContextOptionProps } from "./tableContextCommon";

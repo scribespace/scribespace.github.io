@@ -1,13 +1,12 @@
 import { $getNodeByKey, $getSelection, $isRangeSelection, $setSelection } from "lexical";
-import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../nodes/table/extendedTableNode";
 import { MenuItem } from "../../menu";
 import {
     $findCellNode, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
-import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
 import { TableContextOptionProps } from "./tableContextCommon";
 import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "../../../nodes/table";
 
 export default function TableContextSplitCells({ editor }: TableContextOptionProps) {
     const menuContext = getContextMenuContext()

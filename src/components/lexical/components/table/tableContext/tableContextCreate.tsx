@@ -1,10 +1,10 @@
 import { MenuItem, Submenu } from "../../menu";
 import TableCreator from "../tableCreator";
 import { $insertNodes } from "lexical";
-import { $createExtendedTableNodeWithDimensions } from "../../../nodes/table/extendedTableNode";
 import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
 import { PropsWithChildren } from "react";
 import { TableContextOptionProps } from "./tableContextCommon";
+import { $createExtendedTableNodeWithDimensions } from "../../../nodes/table";
 
 export default function TableContextCreate({ editor }: TableContextOptionProps) {
     const menuContext = getContextMenuContext()

@@ -23,10 +23,9 @@ import RegisterCustomCommands from './lexical/commands';
 import { ExtendedTextNode } from './lexical/nodes/text/extendedTextNode';
 import useResizeObserver from 'use-resize-observer';
 import { TableNode, TableRowNode, TableCellNode } from '@lexical/table'
-import { ExtendedTableNode } from './lexical/nodes/table/extendedTableNode'
+import { ExtendedTableNode, TableBodyNode } from './lexical/nodes/table'
 import TablePlugin from './lexical/plugins/tablePlugin/tablePlugin'
 import ContextMenuPlugin from './lexical/plugins/contextMenuPlugin';
-import { TableBodyNode } from './lexical/nodes/table/tableBodyNode';
 import { useEffect, useState } from 'react';
 import { EDITOR_THEME_DEFAULT, EditorThemeContext, EditorTheme } from './lexical/editorThemeContext';
 import { copyExistingValues } from '../common';

@@ -4,10 +4,9 @@ import {
     $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $getTableRowIndexFromTableCellNode, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
-import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../nodes/table/extendedTableNode";
-import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
 import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
 import { TableContextOptionProps } from "./tableContextCommon";
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "../../../nodes/table";
 
 
 export default function TableContextRowRemove({ editor }: TableContextOptionProps) {

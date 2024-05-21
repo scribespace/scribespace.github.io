@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "postinstall": "node ./postinstall.js",
     "copylexical": "node ./copylexical.js",
-    "installlexical": "node ./installlexical.js"
+    "installlexical": "node ./installlexical.js",
+    "testcircular": "madge --extensions ts,tsx --circular --exclude \"libs\" ./src"
   },
   "dependencies": {
     "@lexical/clipboard": "file:libs/lexical/lexical-clipboard",
