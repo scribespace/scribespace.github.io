@@ -11,7 +11,8 @@ export interface EditorTheme {
     editorInner?: EditorThemeClassName;
     editorEditable?: EditorThemeClassName;
     editorSeeThrough?: EditorThemeClassName;
-
+    editorPrintDisabled?: EditorThemeClassName;
+    
     contextMenuTheme?: ContextMenuTheme;
     tableCreatorTheme?: TableCreatorTheme;
     numberInputTheme?: NumberInputTheme;
@@ -24,6 +25,7 @@ export const EDITOR_THEME_DEFAULT: EditorTheme = {
     editorInner: 'editor-inner',
     editorEditable: 'editor-input section-to-print',
     editorSeeThrough: 'editor-see-through',
+    editorPrintDisabled: 'print-disabled',
 
     contextMenuTheme: CONTEXT_MENU_THEME_DEFAULT,
     tableCreatorTheme: TABLE_CREATOR_EDITOR_THEME_DEFAULT,

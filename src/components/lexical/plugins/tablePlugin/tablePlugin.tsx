@@ -13,9 +13,10 @@ import {
 import { $findMatchingParent, mergeRegister } from '@lexical/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { Property } from 'csstype'
 
-import './css/tablePlugin.css'
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from '../../nodes/table/extendedTableNode';
+import { getEditorThemeContext } from '../../editorThemeContext';
 
 const DRAG_NONE = 0 as const
 const DRAG_HORIZONTAL = 1 as const
@@ -115,6 +116,8 @@ export function $getTableEdgeCursorPosition(
 
 export default function TablePlugin() {
     const [editor] = useLexicalComposerContext();
+    const editorTheme = getEditorThemeContext();
+
     const [activeCell, setActiveCell] = useState<TableDOMCell | null>(null)
     const [dragDirection, setDragDirection] = useState<MouseDraggingDirection>(DRAG_NONE)
     const [mousePosition, setMousePosition] = useState<MousePosition | null>(null)
@@ -492,7 +495,8 @@ export default function TablePlugin() {
     },[])
 
     class ResizerStyle {
-        backgroundColor?: string;
+        position: Property.Position = "absolute";
+        backgroundColor: string = "none";
         cursor?: string;
         height?: string;
         left?: string;
@@ -500,7 +504,15 @@ export default function TablePlugin() {
         width?: string;
     }
 
-    const getStyles = useCallback(()=>{
+    interface ResizerStyles {
+      bottom: ResizerStyle;
+      right: ResizerStyle;
+      top: ResizerStyle;
+      left: ResizerStyle;
+      marker: ResizerStyle;
+    }
+
+    const getStyles: () => ResizerStyles = useCallback(()=>{
         if ( !activeCell ) {
             return {
                 bottom: new ResizerStyle(),
@@ -517,9 +529,9 @@ export default function TablePlugin() {
         const isFirstCell = activeCell.elem.previousSibling == null;
         const isLastCell = activeCell.elem.nextSibling == null
 
-        const styles = {
+        const styles: ResizerStyles = {
             bottom: {
-                backgroundColor: 'none',
+                ...new ResizerStyle(),
                 cursor: 'row-resize',
                 height: `${size}px`,
                 left: `${window.scrollX + left}px`,
@@ -527,7 +539,7 @@ export default function TablePlugin() {
                 width: `${width}px`,
             },
             right: isLastCell ? new ResizerStyle() : {
-                backgroundColor: 'none',
+              ...new ResizerStyle(),
                 cursor: 'col-resize',
                 height: `${height}px`,
                 left: `${window.scrollX + left + width - size}px`,
@@ -535,7 +547,7 @@ export default function TablePlugin() {
                 width: `${size}px`,
             },
             left: isFirstCell ? new ResizerStyle() : {
-                backgroundColor: 'none',
+              ...new ResizerStyle(),
                 cursor: 'col-resize',
                 height: `${height}px`,
                 left: `${window.scrollX + left}px`,
@@ -543,7 +555,7 @@ export default function TablePlugin() {
                 width: `${size}px`,
             },
             top: {
-                backgroundColor: 'none',
+              ...new ResizerStyle(),
                 cursor: 'row-resize',
                 height: `${size}px`,
                 left: `${window.scrollX + left}px`,
@@ -561,6 +573,7 @@ export default function TablePlugin() {
 
             if ( dragDirection == DRAG_HORIZONTAL ) {
                 styles.marker = {
+                  ...new ResizerStyle(),
                     backgroundColor: dragColor,
 
                     cursor: 'col-resize',
@@ -573,6 +586,7 @@ export default function TablePlugin() {
 
             if ( dragDirection == DRAG_VERTICAL ) {
                 styles.marker = {
+                  ...new ResizerStyle(),
                     backgroundColor: dragColor,
 
                     cursor: 'row-resize',
@@ -602,12 +616,12 @@ export default function TablePlugin() {
             <LexicalTablePlugin/>
             {activeCell && createPortal(
                 <div ref={resizerRef}>
-                    <div className='table-resizer' style={styles.right || undefined} onMouseDown={onMouseDown(DRAG_HORIZONTAL, CELL_RIGHT)}></div>
-                    <div className='table-resizer' style={styles.left || undefined} onMouseDown={onMouseDown(DRAG_HORIZONTAL, CELL_LEFT)}></div>
-                    <div className='table-resizer' style={styles.bottom || undefined} onMouseDown={onMouseDown(DRAG_VERTICAL, CELL_BOTTOM)}></div>
-                    <div className='table-resizer' style={styles.top || undefined} onMouseDown={onMouseDown(DRAG_VERTICAL, CELL_TOP)}></div>
+                    <div className={editorTheme.editorPrintDisabled} style={styles.right || undefined} onMouseDown={onMouseDown(DRAG_HORIZONTAL, CELL_RIGHT)}></div>
+                    <div className={editorTheme.editorPrintDisabled} style={styles.left || undefined} onMouseDown={onMouseDown(DRAG_HORIZONTAL, CELL_LEFT)}></div>
+                    <div className={editorTheme.editorPrintDisabled} style={styles.bottom || undefined} onMouseDown={onMouseDown(DRAG_VERTICAL, CELL_BOTTOM)}></div>
+                    <div className={editorTheme.editorPrintDisabled} style={styles.top || undefined} onMouseDown={onMouseDown(DRAG_VERTICAL, CELL_TOP)}></div>
 
-                    <div className='table-resizer' style={ styles.marker || undefined }></div>
+                    <div className={editorTheme.editorPrintDisabled} style={ styles.marker || undefined }></div>
                 </div>    
             , document.body)}
         </div>

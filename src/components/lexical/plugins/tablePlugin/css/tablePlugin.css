@@ -1,9 +1,0 @@
-.table-resizer {
-    position: absolute;
-}
-
-@media print { 
-    .table-resizer{ 
-        display: none;
-    } 
-} 

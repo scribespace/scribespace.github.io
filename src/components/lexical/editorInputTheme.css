@@ -111,4 +111,8 @@
     .editor-table-cell{
       background-color: transparent !important;
     }
+
+    .print-disabled{ 
+      display: none;
+  } 
 }
