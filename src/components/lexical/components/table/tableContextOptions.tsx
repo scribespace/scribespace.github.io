@@ -3,19 +3,22 @@ import { $getSelection, $isRangeSelection, LexicalEditor } from "lexical";
 import {
     $findCellNode, $isTableCellNode, $isTableSelection,
 } from "@lexical/table";
-import { SeparatorHorizontal, SeparatorHorizontalStrong } from "../separators/separator";
-import TableContextSplitCells from "./tableContext/tableContextSplitCells";
-import TableContextMergeCells from "./tableContext/tableContextMergeCells";
-import TableContextCreate from "./tableContext/tableContextCreate";
-import { TableContextDelete } from "./tableContext/tableContextDelete";
-import { TableContextRowRemove, TableContextAddRowBefore, TableContextAddRowAfter } from "./tableContext/tableContextRowOptions";
-import { TableContextColumnRemove, TableContextAddColumnBefore, TableContextAddColumnAfter } from "./tableContext/tableContextColumnOptions";
+
+
 import { getContextMenuContext } from "../../plugins/contextMenuPlugin/contextMenuContext";
-
-
-export interface TableContextOptionProps {
-    editor: LexicalEditor,
-}
+import { SeparatorHorizontalStrong, SeparatorHorizontal } from "../separators";
+import { 
+    TableContextAddColumnAfter, 
+    TableContextAddColumnBefore, 
+    TableContextAddRowAfter, 
+    TableContextAddRowBefore, 
+    TableContextColumnRemove, 
+    TableContextCreate, 
+    TableContextDelete, 
+    TableContextMergeCells, 
+    TableContextRowRemove, 
+    TableContextSplitCells 
+} from "./tableContext";
 
 interface TableContextOptionsProps {
     editor: LexicalEditor,

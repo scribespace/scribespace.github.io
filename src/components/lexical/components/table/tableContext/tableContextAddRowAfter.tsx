@@ -1,0 +1,79 @@
+import Submenu from "../../menu/submenu";
+import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical";
+import MenuItem from "../../menu/menuItem";
+import {
+    $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $getTableRowIndexFromTableCellNode, $isTableCellNode, $isTableSelection,
+    TableCellNode
+} from "@lexical/table";
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../nodes/table/extendedTableNode";
+import TableContextNumberInput from "./tableContextNumberInput";
+import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
+import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/contextMenuContext";
+import { PropsWithChildren } from "react";
+import { TableContextOptionProps } from "./tableContextCommon";
+
+
+export default function TableContextAddRowAfter({ editor }: TableContextOptionProps) {
+    const menuContext = getContextMenuContext();
+
+    function AddRowAfterIcon() {
+        if (!menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.AddRowAfterIcon)
+            throw Error("No theme for table menu!");
+
+        return menuContext.theme.tableMenuTheme.AddRowAfterIcon;
+    }
+
+    const OptionElement = ({ children }: PropsWithChildren) => {
+        return (
+            <MenuItem Icon={AddRowAfterIcon()} title="Insert Row After">
+                {children}
+            </MenuItem>
+        );
+    };
+
+    const onInputAccepted = (input: HTMLInputElement) => {
+        const value = input.valueAsNumber;
+
+        editor.update(() => {
+            const selection = $getSelection();
+
+            let tableNode: ExtendedTableNode | null = null;
+            let cellNode: TableCellNode | null = null;
+            if ($isRangeSelection(selection)) {
+                cellNode = $getTableCellNodeFromLexicalNode(selection.getNodes()[0]);
+                if (!cellNode) throw Error("AddRowAfter: couldn't find node");
+                tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(cellNode);
+            }
+
+            if ($isTableSelection(selection)) {
+                const tableBodyNode = $getNodeByKeyOrThrow<TableBodyNode>(selection.tableKey);
+                tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>();
+                const rowID = -1;
+                for (const node of selection.getNodes()) {
+                    if ($isTableCellNode(node)) {
+                        const cellsTableNode = $getTableNodeFromLexicalNodeOrThrow(node);
+                        if (cellsTableNode == tableBodyNode) {
+                            const nodesRowID = $getTableRowIndexFromTableCellNode(node);
+                            if (nodesRowID > rowID) {
+                                rowID == nodesRowID;
+                                cellNode = node;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!cellNode) throw Error("AddRowAfter: node not found");
+            tableNode?.addRowsAfter(cellNode, value);
+        },
+            { tag: 'table-add-row-after' });
+
+        menuContext.closeMenu();
+    };
+
+    return (
+        <Submenu Option={OptionElement} disableBackground={true}>
+            <TableContextNumberInput onInputAccepted={onInputAccepted} />
+        </Submenu>
+    );
+}

@@ -1,8 +1,7 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { Menu } from "../../components/menu/menu";
-import { MenuContext } from "../../components/menu/menuContext";
+import { Menu, MenuContext } from "../../components/menu";
 import { useEffect, useState } from "react";
-import TableContextOptions from "../../components/table/tableContextOptions";
+import { TableContextOptions } from "../../components/table";
 import './css/contextMenuPlugin.css';
 import { ContextMenuContextData, CONTEXT_MENU_CONTEX_DEFAULT } from "./contextMenuContext";
 import { EditorTheme, getEditorThemeContext } from "../../editorThemeContext";

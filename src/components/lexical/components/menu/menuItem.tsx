@@ -1,15 +1,15 @@
-import { ReactElement, useCallback } from "react";
+import { ReactNode, useCallback } from "react";
 import { IconType } from "react-icons";
 import { MenuContextData, getMenuContext } from "./menuContext";
 
-export interface ContextMenuItemProps {
+interface MenuItemProps {
     Icon?: IconType;
     title: string
     onClick?: () => void;
-    children?: ReactElement;
+    children?: ReactNode;
 }
 
-export default function MenuItem({Icon, title, onClick, children}: ContextMenuItemProps) {
+export default function MenuItem({Icon, title, onClick, children}: MenuItemProps) {
     const menuContext: MenuContextData = getMenuContext()
 
     const GetIcon = useCallback( () => {

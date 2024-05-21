@@ -1,4 +1,4 @@
-import NumberInput from "../../numberInput/numberInput";
+import {NumberInput} from "../../numberInput";
 import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/contextMenuContext";
 
 interface TableContextNumberInputProps {

@@ -1,19 +1,15 @@
-import { ReactElement, useEffect, useRef, useState } from "react";
-import { Menu } from "./menu";
+import { useEffect, useRef, useState, PropsWithChildren } from "react";
+import Menu from "./menu";
 import { MenuContextData, getMenuContext } from "./menuContext";
 import { IconBaseProps } from "react-icons";
 
-export interface CotextSubmenuOptionProps {
-    children?: ReactElement
-}
-
-interface ContextSubmenuProps {
-    Option: ({children}:CotextSubmenuOptionProps)=>React.ReactNode;
+interface SubmenuProps {
+    Option: ({children}:PropsWithChildren)=>React.ReactNode;
     disableBackground?: boolean;
     children: React.ReactNode;
 }
 
-export default function Submenu(props: ContextSubmenuProps) {
+export default function Submenu(props: SubmenuProps) {
     const menuContext: MenuContextData = getMenuContext()
 
     const [showContextMenu, setShowContextMenu] = useState<boolean>(false);

@@ -1,9 +1,9 @@
 import { createContext, useContext } from "react";
 import { CONTEXT_MENU_THEME_DEFAULT, ContextMenuTheme } from "./plugins/contextMenuPlugin/theme/contextMenuTheme";
 import { EditorThemeClassName } from "lexical";
-import { TABLE_CREATOR_EDITOR_THEME_DEFAULT, TableCreatorTheme as TableCreatorTheme } from "./components/table/themes/tableCreatorEditorTheme";
-import { NUMBER_INPUT_THEME_DEFAULT, NumberInputTheme } from "./components/numberInput/theme/numberInputTheme";
-import { SEPARATOR_THEME_DEFAULT, SeparatorTheme } from "./components/separators/theme/separatorTheme";
+import { TABLE_CREATOR_EDITOR_THEME_DEFAULT, TableCreatorTheme as TableCreatorTheme } from "./components/table";
+import { NUMBER_INPUT_THEME_DEFAULT, NumberInputTheme } from "./components/numberInput";
+import { SEPARATOR_THEME_DEFAULT, SeparatorTheme } from "./components/separators";
 import { LINK_THEME_DEFAULT, LinkTheme } from "./components/link/theme/linkTheme";
 
 export interface EditorTheme {

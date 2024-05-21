@@ -5,9 +5,9 @@ import {
     $findCellNode, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
-import { TableContextOptionProps } from "../tableContextOptions";
 import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
 import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/contextMenuContext";
+import { TableContextOptionProps } from "./tableContextCommon";
 
 export default function TableContextSplitCells({ editor }: TableContextOptionProps) {
     const menuContext = getContextMenuContext()

@@ -1,12 +1,12 @@
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical";
 import MenuItem from "../../menu/menuItem";
 import { $isTableSelection } from "@lexical/table";
-import { TableContextOptionProps } from "../tableContextOptions";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../nodes/table/extendedTableNode";
 import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/contextMenuContext";
+import { TableContextOptionProps } from "./tableContextCommon";
 
 
-export function TableContextDelete({ editor }: TableContextOptionProps) {
+export default function TableContextDelete({ editor }: TableContextOptionProps) {
     const menuContext = getContextMenuContext()
 
     function DeleteTableIcon() {

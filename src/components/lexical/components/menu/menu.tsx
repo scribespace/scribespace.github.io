@@ -10,68 +10,65 @@ interface ContextMenuProps {
     children: React.ReactNode;
 }
 
-export const Menu = (props: ContextMenuProps) => {
-    const menuContext: MenuContextData = getMenuContext()
+export default function Menu(props: ContextMenuProps) {
+    const menuContext: MenuContextData = getMenuContext();
 
-    const [position, setPosition] = useState<{left: string, top: string}>({left:'-1px', top:'-1px'});
+    const [position, setPosition] = useState<{ left: string; top: string; }>({ left: '-1px', top: '-1px' });
 
-    const contextMenuContainerRef = useRef<HTMLDivElement>(null)   
-    const contextMenuRef = useRef<HTMLDivElement>(null)
+    const contextMenuContainerRef = useRef<HTMLDivElement>(null);
+    const contextMenuRef = useRef<HTMLDivElement>(null);
 
-    const handleClick = ({target}: MouseEvent) =>
-    {
+    const handleClick = ({ target }: MouseEvent) => {
         if (contextMenuContainerRef.current && contextMenuContainerRef.current.parentElement && !contextMenuContainerRef.current.parentElement.contains(target as Node)) {
-            props.setShowContextMenu(false)
+            props.setShowContextMenu(false);
         }
-    }
+    };
 
     const stopRightClick = (e: MouseEvent) => {
-        e.stopPropagation()
-        e.preventDefault()
-    }
+        e.stopPropagation();
+        e.preventDefault();
+    };
 
-    useEffect(()=>{
-        document.addEventListener('click', handleClick)
-        document.addEventListener('contextmenu', stopRightClick)
+    useEffect(() => {
+        document.addEventListener('click', handleClick);
+        document.addEventListener('contextmenu', stopRightClick);
 
         return () => {
             document.removeEventListener('click', handleClick);
-            document.removeEventListener('contextmenu', stopRightClick)
-        }
-    },[])
+            document.removeEventListener('contextmenu', stopRightClick);
+        };
+    }, []);
 
-    useLayoutEffect(()=>{
-        if ( !contextMenuRef.current ) return;
+    useLayoutEffect(() => {
+        if (!contextMenuRef.current) return;
 
-        const {width, height} = contextMenuRef.current?.getBoundingClientRect()
+        const { width, height } = contextMenuRef.current?.getBoundingClientRect();
 
-        const newPosition = {x: props.parentRect.x + props.parentRect.width, y: props.parentRect.y };
+        const newPosition = { x: props.parentRect.x + props.parentRect.width, y: props.parentRect.y };
 
         const endPositionX = props.parentRect.x + props.parentRect.width + width;
         const endPositionY = props.parentRect.y + height;
 
-        if ( endPositionX > window.innerWidth ) {
-            newPosition.x = props.parentRect.x - width
+        if (endPositionX > window.innerWidth) {
+            newPosition.x = props.parentRect.x - width;
         }
 
-        if ( endPositionY > window.innerHeight ) {
-            newPosition.y = props.parentRect.y - height
+        if (endPositionY > window.innerHeight) {
+            newPosition.y = props.parentRect.y - height;
         }
 
         newPosition.x += window.scrollX;
         newPosition.y += window.scrollY;
 
-        setPosition({left: `${newPosition.x}px`, top: `${newPosition.y}px`})
-    },[props.showContextMenu, props.parentRect])
+        setPosition({ left: `${newPosition.x}px`, top: `${newPosition.y}px` });
+    }, [props.showContextMenu, props.parentRect]);
 
     return (
         <div ref={contextMenuContainerRef}>
-            {
-            props.showContextMenu && 
-            <div ref={contextMenuRef} className={menuContext.theme?.menuFloat + (props.disableBackground ? '' : (' ' + menuContext.theme?.menuContainer))} style={{left:position.left, top:position.top}}>
-                {props.children}
-            </div>
-            }
+            {props.showContextMenu &&
+                <div ref={contextMenuRef} className={menuContext.theme?.menuFloat + (props.disableBackground ? '' : (' ' + menuContext.theme?.menuContainer))} style={{ left: position.left, top: position.top }}>
+                    {props.children}
+                </div>}
         </div>
-    )
+    );
 }

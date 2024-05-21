@@ -1,10 +1,11 @@
-import Submenu, { CotextSubmenuOptionProps } from "../../menu/submenu";
+import Submenu from "../../menu/submenu";
 import TableCreator from "../tableCreator";
 import { $insertNodes } from "lexical";
 import { $createExtendedTableNodeWithDimensions } from "../../../nodes/table/extendedTableNode";
 import MenuItem from "../../menu/menuItem";
-import { TableContextOptionProps } from "../tableContextOptions";
 import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/contextMenuContext";
+import { PropsWithChildren } from "react";
+import { TableContextOptionProps } from "./tableContextCommon";
 
 export default function TableContextCreate({ editor }: TableContextOptionProps) {
     const menuContext = getContextMenuContext()
@@ -16,7 +17,7 @@ export default function TableContextCreate({ editor }: TableContextOptionProps) 
         return menuContext.theme.tableMenuTheme.AddTableIcon
     }
 
-    const OptionElement = ({ children }: CotextSubmenuOptionProps) => {
+    const OptionElement = ({ children }: PropsWithChildren) => {
         return (
             <MenuItem Icon={AddTableIcon()} title="Create Table">
                 {children}

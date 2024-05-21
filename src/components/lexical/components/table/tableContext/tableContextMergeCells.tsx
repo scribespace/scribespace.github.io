@@ -5,9 +5,9 @@ import {
     $findTableNode, $isTableCellNode, $isTableNode, $isTableRowNode, $isTableSelection,
     TableCellNode, TableRowNode
 } from "@lexical/table";
-import { TableContextOptionProps } from "../tableContextOptions";
 import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
 import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/contextMenuContext";
+import { TableContextOptionProps } from "./tableContextCommon";
 
 
 export default function TableContextMergeCells({ editor }: TableContextOptionProps) {

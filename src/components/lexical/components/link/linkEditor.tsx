@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { validateUrl } from "../../../../common";
 import { EditorTheme, getEditorThemeContext } from "../../editorThemeContext";
 import { IconBaseProps } from "react-icons";
@@ -11,7 +11,7 @@ interface LinkEditorProps {
     onURLChange?: (url:string) => void;
 }
 
-export const LinkEditor = forwardRef<HTMLDivElement, LinkEditorProps>( ({text, url, onTextChange, onURLChange}: LinkEditorProps, ref)  => {
+export default function LinkEditor({text, url, onTextChange, onURLChange}: LinkEditorProps) {
     const editorTheme: EditorTheme = getEditorThemeContext()
     function getTheme() {
         return editorTheme.linkTheme!;
@@ -72,7 +72,7 @@ export const LinkEditor = forwardRef<HTMLDivElement, LinkEditorProps>( ({text, u
     }
 
     return (
-    <div ref={ref} className={getTheme().editor}>
+    <div className={getTheme().editor}>
         <div className={getTheme().container}>
             <TextIcon className={getTheme().icon}/>
             <input ref={textInput} type="text" className={getTheme().input} defaultValue={text ? text : url} onKeyDown={TextChangeAccepted}/>
@@ -84,4 +84,4 @@ export const LinkEditor = forwardRef<HTMLDivElement, LinkEditorProps>( ({text, u
         </div>
     </div>
 )
-})
+}
