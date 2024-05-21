@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { separateValueAndUnit, variableExists } from "../../../../common";
 import { IconBaseProps } from "react-icons";
-import { SeparatorVertical } from '../separators'
+import { SeparatorVertical } from '../separators';
 
 import './css/numberInput.css';
 import { useEditorThemeContext, EditorTheme } from "../../editorThemeContext";
@@ -17,24 +17,24 @@ interface NumberInputProps {
 }
 
 export default function NumberInput(props: NumberInputProps) {
-    const editorTheme: EditorTheme = useEditorThemeContext()
+    const editorTheme: EditorTheme = useEditorThemeContext();
     
-    const inputRef = useRef<HTMLInputElement>(null)
+    const inputRef = useRef<HTMLInputElement>(null);
 
     function correctValue(value: number): number {
-        if (props.min) value = Math.max(props.min, value)
-        if (props.max) value = Math.min(props.max, value)
+        if (props.min) value = Math.max(props.min, value);
+        if (props.max) value = Math.min(props.max, value);
 
         return value;
     }
 
     function changeValue(change: number) {
-        if (!inputRef.current) return
+        if (!inputRef.current) return;
 
         const valueStr = inputRef.current.value;
         const valueUnit = separateValueAndUnit(valueStr);
 
-        if (!variableExists(valueUnit.value)) throw Error("increaseValue: number not found")
+        if (!variableExists(valueUnit.value)) throw Error("increaseValue: number not found");
 
         valueUnit.value = valueUnit.value! + change;
 
@@ -73,22 +73,22 @@ export default function NumberInput(props: NumberInputProps) {
     }
 
     function DecreaseIcon(props: IconBaseProps) {
-        return getTheme().DecreaseIcon!(props)
+        return getTheme().DecreaseIcon!(props);
     }
 
     function IncreaseIcon(props: IconBaseProps) {
-        return getTheme().IncreaseIcon!(props)
+        return getTheme().IncreaseIcon!(props);
     }
 
     function AcceptIcon(props: IconBaseProps) {
-        return getTheme().AcceptIcon!(props)
+        return getTheme().AcceptIcon!(props);
     }
 
     return (
         <div className={getTheme().container}>
-            <DecreaseIcon className={getTheme().controlButton} onClick={() => { changeValue(-1) }} />
+            <DecreaseIcon className={getTheme().controlButton} onClick={() => { changeValue(-1); }} />
             <input ref={inputRef} className={getTheme().input} type={props.type} defaultValue={props.defaultValue} onKeyDown={onAccept} />
-            <IncreaseIcon className={getTheme().controlButton} onClick={() => { changeValue(1) }} />
+            <IncreaseIcon className={getTheme().controlButton} onClick={() => { changeValue(1); }} />
             {props.useAcceptButton && (
                 <>
                     <SeparatorVertical/>
@@ -96,5 +96,5 @@ export default function NumberInput(props: NumberInputProps) {
                 </>
             )}
         </div>
-    )
+    );
 }

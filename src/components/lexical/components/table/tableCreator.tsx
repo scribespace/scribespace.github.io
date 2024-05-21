@@ -12,47 +12,47 @@ interface TableCreatorProps {
 }
 
 export default function TableCreator(props: TableCreatorProps) {
-    const editorTheme: EditorTheme = useEditorThemeContext()
+    const editorTheme: EditorTheme = useEditorThemeContext();
 
     const tableTheme = useMemo(()=>{
         return editorTheme.tableCreatorTheme!;
-    },[editorTheme])
+    },[editorTheme]);
     
-    const [cells, setCells] = useState<ReactElement[]>()
-    const templateColumnsRef = useRef<string>('')
-    const [selectedCell, setSelectedCell] = useState<{row: number, column: number}>({row:-1,column:-1})
+    const [cells, setCells] = useState<ReactElement[]>();
+    const templateColumnsRef = useRef<string>('');
+    const [selectedCell, setSelectedCell] = useState<{row: number, column: number}>({row:-1,column:-1});
 
     function onMouseOver(row: number, column: number) {
-        setSelectedCell({row, column})
+        setSelectedCell({row, column});
     }
 
     function onMouseOut() {
-        setSelectedCell({row:-1,column:-1})
+        setSelectedCell({row:-1,column:-1});
     }
 
     useEffect(()=>{
         const cellsElement: ReactElement[] = [];
-        const templateColumns: string = ''
+        const templateColumns: string = '';
         let key: number = 0;
         for ( let r = 0; r < props.rowsCount; ++r ) {
-            const cellsArray: ReactElement[] = []
+            const cellsArray: ReactElement[] = [];
             for ( let c = 0; c < props.columnsCount; ++c ) {
-                const cellClassName = tableTheme.cell + ((r <= selectedCell.row && c <= selectedCell.column) ? ' selected' : '')
-                cellsArray.push( <td key={key++} className={cellClassName} onMouseOver={() => {onMouseOver(r, c)}} onMouseOut={onMouseOut}/> );
+                const cellClassName = tableTheme.cell + ((r <= selectedCell.row && c <= selectedCell.column) ? ' selected' : '');
+                cellsArray.push( <td key={key++} className={cellClassName} onMouseOver={() => {onMouseOver(r, c);}} onMouseOut={onMouseOut}/> );
             }
             cellsElement.push(
                 <tr key={key++}>
                     {cellsArray}
                 </tr>
-            )
+            );
         }
 
         templateColumnsRef.current = templateColumns;
-        setCells(cellsElement)
-    },[props.rowsCount, props.columnsCount, selectedCell, tableTheme])
+        setCells(cellsElement);
+    },[props.rowsCount, props.columnsCount, selectedCell, tableTheme]);
 
     function onTableClick() {
-        props.onClick(selectedCell.row + 1, selectedCell.column + 1)
+        props.onClick(selectedCell.row + 1, selectedCell.column + 1);
     }
 
     return (
@@ -64,5 +64,5 @@ export default function TableCreator(props: TableCreatorProps) {
             </table>
             <div className={tableTheme.label}>{`${selectedCell.column+1} x ${selectedCell.row+1}`}</div>
         </div>
-    )
+    );
 }

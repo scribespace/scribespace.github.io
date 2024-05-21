@@ -6,7 +6,7 @@ import { SlDoc, SlArrowDown, SlArrowRight } from "react-icons/sl";
 import { AddIcon, DeleteIcon } from "../global";
 import clsx from "clsx";
 
-import './css/treeNode.css'
+import './css/treeNode.css';
 
   
 export function Node({ node, style, dragHandle }: NodeRendererProps<any>) {
@@ -15,15 +15,15 @@ export function Node({ node, style, dragHandle }: NodeRendererProps<any>) {
     const OnEditNode = () => {
         if (!node.tree.props.onRename) return; 
         node.tree.edit(node); 
-    }
+    };
 
     const OnAddInternal = () => {
         if ( node.isInternal ) {
             node.select(); 
             node.open();
-            node.tree.createInternal()
+            node.tree.createInternal();
         } 
-    }
+    };
 
     const OnDeleteNode = () => {
         if (!node.tree.props.onDelete) return; 
@@ -31,7 +31,7 @@ export function Node({ node, style, dragHandle }: NodeRendererProps<any>) {
         const parent = node.parent;
         node.tree.focus(sib || parent, { scroll: false });
         node.tree.delete(node); 
-    }
+    };
 
     return (
         <div
@@ -54,7 +54,7 @@ export function Node({ node, style, dragHandle }: NodeRendererProps<any>) {
 
     function FolderArrow({ node } : {node: NodeApi<any>}) {
     if (node.isLeaf) return <span></span>;
-    const visible = (node.children as NodeApi<any>[]).length > 0
+    const visible = (node.children as NodeApi<any>[]).length > 0;
     return (
         <span style={{visibility: visible ? 'visible' : 'hidden'}}>
         {node.isOpen ? <SlArrowDown onClick={() => node.isInternal && node.toggle()}/> : <SlArrowRight onClick={() => node.isInternal && node.toggle()}/>}

@@ -1,5 +1,5 @@
 import { $getSelection, $isRangeSelection, SELECTION_CHANGE_COMMAND, COMMAND_PRIORITY_LOW, FORMAT_TEXT_COMMAND } from "lexical";
-import { mergeRegister } from '@lexical/utils'
+import { mergeRegister } from '@lexical/utils';
 import { useState, useCallback, useEffect } from "react";
 import { ImBold, ImItalic, ImUnderline, ImStrikethrough, ImClearFormatting } from "react-icons/im";
 import { CLEAR_FORMAT_TEXT_COMMAND } from "../../../commands";
@@ -19,7 +19,7 @@ export default function StyleTool({editor}: ToolbarToolProps) {
                 setIsUnderline(selection.hasFormat("underline"));
                 setIsStrikethrough(selection.hasFormat("strikethrough"));
             }
-        }, [])
+        }, []);
 
         useEffect(() => {
             return mergeRegister(
@@ -36,28 +36,28 @@ export default function StyleTool({editor}: ToolbarToolProps) {
                         updateStates();
                     });
                   }),
-            )
-        }, [editor, updateStates])
+            );
+        }, [editor, updateStates]);
 
         const onClickBold = () => {
-            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")
-        }
+            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
+        };
 
         const onClickItalic = () => {
-            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")
-        }
+            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
+        };
 
         const onClickUnderline = () => {
-            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline")
-        }
+            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
+        };
 
         const onClickStrikethrough = () => {
-            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough")
-        }
+            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough");
+        };
 
         const onClickClearFormatting = () => {
             editor.dispatchCommand(CLEAR_FORMAT_TEXT_COMMAND, undefined);
-        }
+        };
         
         return (
             <div>
@@ -67,5 +67,5 @@ export default function StyleTool({editor}: ToolbarToolProps) {
                 <ImStrikethrough className={'item' + (isStrikethrough ? " selected" : "")} onClick={onClickStrikethrough}/>
                 <ImClearFormatting className='item' onClick={onClickClearFormatting}/>
             </div>
-        )
+        );
     }

@@ -1,5 +1,5 @@
-  import {ExtendedTextNode} from './extendedTextNode'
-  export default ExtendedTextNode
+  import {ExtendedTextNode} from './extendedTextNode';
+  export default ExtendedTextNode;
 
-  export {$createExtendedTextNode, $isExtendedTextNode } from './extendedTextNode'
+  export {$createExtendedTextNode, $isExtendedTextNode } from './extendedTextNode';
   

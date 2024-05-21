@@ -4,7 +4,7 @@ import {
     TableCellNode
 } from "@lexical/table";
 import TableContextNumberInput from "./tableContextNumberInput";
-import { ExtendedTableNode, TableBodyNode, $getExtendedTableNodeFromLexicalNodeOrThrow } from '../../../nodes/table'
+import { ExtendedTableNode, TableBodyNode, $getExtendedTableNodeFromLexicalNodeOrThrow } from '../../../nodes/table';
 import { $getTableColumnIndexFromTableCellNode } from "../../../plugins/tablePlugin/utils";
 import { useContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
 import { PropsWithChildren } from "react";

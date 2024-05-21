@@ -1,6 +1,6 @@
 
 import { $getRoot, $insertNodes, TextNode } from 'lexical';
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext'
+import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 
 import {AutoFocusPlugin} from '@lexical/react/LexicalAutoFocusPlugin';
 import {LexicalComposer} from '@lexical/react/LexicalComposer';
@@ -8,13 +8,13 @@ import {RichTextPlugin} from '@lexical/react/LexicalRichTextPlugin';
 import {ContentEditable} from '@lexical/react/LexicalContentEditable';
 import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
-import { $generateNodesFromDOM } from '@lexical/html'
-import {ListNode, ListItemNode } from '@lexical/list'
-import {LinkNode} from '@lexical/link'
-import LinkPlugin from './lexical/plugins/linkPlugin'
+import { $generateNodesFromDOM } from '@lexical/html';
+import {ListNode, ListItemNode } from '@lexical/list';
+import {LinkNode} from '@lexical/link';
+import LinkPlugin from './lexical/plugins/linkPlugin';
 import { appGlobals } from '../system/appGlobals';
 
-import './lexical/editorInputTheme.css'
+import './lexical/editorInputTheme.css';
 
 import { ToolbarPlugin } from './lexical/plugins/toolbarPlugin/toolbarPlugin';
 
@@ -22,9 +22,9 @@ import EditorInputTheme from './lexical/editorInputTheme';
 import RegisterCustomCommands from './lexical/commands';
 import ExtendedTextNode from './lexical/nodes/text';
 import useResizeObserver from 'use-resize-observer';
-import { TableNode, TableRowNode, TableCellNode } from '@lexical/table'
-import { ExtendedTableNode, TableBodyNode } from './lexical/nodes/table'
-import TablePlugin from './lexical/plugins/tablePlugin'
+import { TableNode, TableRowNode, TableCellNode } from '@lexical/table';
+import { ExtendedTableNode, TableBodyNode } from './lexical/nodes/table';
+import TablePlugin from './lexical/plugins/tablePlugin';
 import ContextMenuPlugin from './lexical/plugins/contextMenuPlugin';
 import { useEffect, useState } from 'react';
 import { EDITOR_THEME_DEFAULT, EditorThemeContext, EditorTheme } from './lexical/editorThemeContext';
@@ -39,7 +39,7 @@ function onError(error: Error) {
 type Props = {
     selectedFile: string;
     theme?: EditorTheme;
-}
+};
 
 function TestPlugin( {selectedFile} : Props ) {
     const [editor] = useLexicalComposerContext();
@@ -62,10 +62,10 @@ function TestPlugin( {selectedFile} : Props ) {
             $getRoot().clear();
             // Insert them at a selection.
             $insertNodes(nodes);
-        })
-        })
+        });
+        });
 
-        })
+        });
     }
     return null;
 }
@@ -95,8 +95,8 @@ export function EditorLexicalView({selectedFile, theme} : Props) {
 
   useEffect(()=>{
     const newTheme = copyExistingValues(theme, EDITOR_THEME_DEFAULT);
-    setEditorTheme(newTheme)
-  },[theme])
+    setEditorTheme(newTheme);
+  },[theme]);
  
   return (
         <EditorThemeContext.Provider value={editorTheme}>

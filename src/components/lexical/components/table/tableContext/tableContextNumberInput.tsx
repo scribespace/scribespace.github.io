@@ -6,7 +6,7 @@ interface TableContextNumberInputProps {
 }
 
 export default function TableContextNumberInput({ onInputAccepted }: TableContextNumberInputProps) {
-    const menuContext = useContextMenuContext()
+    const menuContext = useContextMenuContext();
 
     return (
         <div className={menuContext.theme.contextMenuEditorContainer}>

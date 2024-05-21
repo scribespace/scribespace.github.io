@@ -18,12 +18,12 @@ export function WelcomeView() {
 
   function Content() {
     if ( authButtonState === AUTH_LOGOUT ) {
-      return <MainView changeAuthButtonState={setAuthButtonState}/>
+      return <MainView changeAuthButtonState={setAuthButtonState}/>;
     }
-      return <LogInView isLogInDisabled={authButtonState == AUTH_DISABLED}/>
+      return <LogInView isLogInDisabled={authButtonState == AUTH_DISABLED}/>;
   }
 
   return (
       <Content/>
-  )
+  );
 }

@@ -32,8 +32,8 @@ export const EDITOR_THEME_DEFAULT: EditorTheme = {
     numberInputTheme: NUMBER_INPUT_THEME_DEFAULT,
     separatorTheme: SEPARATOR_THEME_DEFAULT,
     linkTheme: LINK_THEME_DEFAULT,
-}
+};
 
-export const EditorThemeContext = createContext<EditorTheme>(EDITOR_THEME_DEFAULT)
+export const EditorThemeContext = createContext<EditorTheme>(EDITOR_THEME_DEFAULT);
 
-export function useEditorThemeContext() { return useContext(EditorThemeContext) }
+export function useEditorThemeContext() { return useContext(EditorThemeContext); }

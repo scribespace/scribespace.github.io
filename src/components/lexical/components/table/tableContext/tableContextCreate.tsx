@@ -7,13 +7,13 @@ import { TableContextOptionProps } from "./tableContextCommon";
 import { $createExtendedTableNodeWithDimensions } from "../../../nodes/table";
 
 export default function TableContextCreate({ editor }: TableContextOptionProps) {
-    const menuContext = useContextMenuContext()
+    const menuContext = useContextMenuContext();
 
     function AddTableIcon() {
         if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.AddTableIcon ) 
             throw Error("No theme for table menu!");
 
-        return menuContext.theme.tableMenuTheme.AddTableIcon
+        return menuContext.theme.tableMenuTheme.AddTableIcon;
     }
 
     const OptionElement = ({ children }: PropsWithChildren) => {

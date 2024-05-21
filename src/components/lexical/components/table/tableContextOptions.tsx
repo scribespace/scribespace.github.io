@@ -27,9 +27,9 @@ interface TableContextOptionsProps {
 export default function TableContextOptions({editor}: TableContextOptionsProps) {
     const menuContext = useContextMenuContext();
 
-    const [insideTable, setInsideTable] = useState<boolean>(false)
-    const [cellsSelected, setCellsSelected] = useState<boolean>(false)
-    const [mergedCellSelected, setMergedCellSelected] = useState<boolean>(false)
+    const [insideTable, setInsideTable] = useState<boolean>(false);
+    const [cellsSelected, setCellsSelected] = useState<boolean>(false);
+    const [mergedCellSelected, setMergedCellSelected] = useState<boolean>(false);
 
     useEffect(()=>{
         editor.update(()=>{
@@ -37,15 +37,15 @@ export default function TableContextOptions({editor}: TableContextOptionsProps) 
             let cellsSelectedState = false;
             let mergedCellSelectedState = false;
 
-            const selection = $getSelection()
+            const selection = $getSelection();
             if ( selection ) {
                 if ( $isRangeSelection(selection) ) {
                     let allNodesInTable = true;
                     let anyMergedNode = false;
                     for ( const node of selection.getNodes() ) {
-                        const tableNode = $findCellNode(node)
+                        const tableNode = $findCellNode(node);
                         anyMergedNode = anyMergedNode || ((tableNode != null) && (tableNode.getColSpan() > 1 || tableNode.getRowSpan() > 1));
-                        allNodesInTable = allNodesInTable && (tableNode != null)
+                        allNodesInTable = allNodesInTable && (tableNode != null);
                     }
 
                     insideTableState = allNodesInTable;
@@ -54,7 +54,7 @@ export default function TableContextOptions({editor}: TableContextOptionsProps) 
                 
                 if ( $isTableSelection(selection) ) {
                     let anyMergedNode = false;
-                    const selectedNodes = selection.getNodes()
+                    const selectedNodes = selection.getNodes();
                     for ( const node of selectedNodes ) {
                         if ( $isTableCellNode(node) ) {
                             anyMergedNode = anyMergedNode || (node.getColSpan() > 1 || node.getRowSpan() > 1);
@@ -67,11 +67,11 @@ export default function TableContextOptions({editor}: TableContextOptionsProps) 
                 }
             }
 
-            setInsideTable(insideTableState)
-            setCellsSelected(cellsSelectedState)
-            setMergedCellSelected(mergedCellSelectedState)
-        })
-    },[editor, menuContext.mousePosition])
+            setInsideTable(insideTableState);
+            setCellsSelected(cellsSelectedState);
+            setMergedCellSelected(mergedCellSelectedState);
+        });
+    },[editor, menuContext.mousePosition]);
 
     return (
         <>
@@ -100,5 +100,5 @@ export default function TableContextOptions({editor}: TableContextOptionsProps) 
             </>
             )}           
         </>
-    )
+    );
 }

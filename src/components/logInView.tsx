@@ -7,12 +7,12 @@ import { Dropbox } from '../system/dropbox/dropbox';
 
 import { FaDropbox } from "react-icons/fa";
 
-import './css/logInView.css'
+import './css/logInView.css';
 
 
 type Props = {
     isLogInDisabled: boolean;
-}
+};
 
 export const LogInView: FunctionComponent<Props> = ({isLogInDisabled}) => {
 
@@ -29,5 +29,5 @@ export const LogInView: FunctionComponent<Props> = ({isLogInDisabled}) => {
                 <span className='login-text'>Dropbox</span>
             </div>
         </div>
-    )
-}
+    );
+};

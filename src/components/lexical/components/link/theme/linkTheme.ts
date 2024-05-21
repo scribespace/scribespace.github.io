@@ -25,4 +25,4 @@ export const LINK_THEME_DEFAULT: LinkTheme = {
     TextIcon: MdEdit,
     LinkIcon: MdLink,
     OpenIcon: HiExternalLink,
-}
+};

@@ -1,6 +1,6 @@
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext'
+import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 
-import './css/editorToolbar.css'
+import './css/editorToolbar.css';
 import UndoRedoTool from './tools/undoRedoTool';
 import StyleTool from './tools/styleTool';
 import FontSizeTool from './tools/fontSizeTool';
@@ -15,7 +15,7 @@ export const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
     const [editor] = useLexicalComposerContext();
 
     function Separator() {
-        return <div className='separator'/>
+        return <div className='separator'/>;
     }
 
     return (
@@ -36,5 +36,5 @@ export const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
             <TableTool editor={editor}/>
             <Separator/>
         </div>
-    )
-})
+    );
+});

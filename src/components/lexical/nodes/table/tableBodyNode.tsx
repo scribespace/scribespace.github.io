@@ -20,11 +20,11 @@ export class TableBodyNode extends TableNode {
 
     for ( let c = 0; c < columnsWidths.length; ++c ) {
       if ( columnsWidths[c] > -1 ) {
-        columnsWidths[c] *= sizeScale
+        columnsWidths[c] *= sizeScale;
       }
     }
 
-    const newColumns: number[] = []
+    const newColumns: number[] = [];
     for ( let c = 0; c < columnsToAdd; ++c ) 
       newColumns[c] = -1;
 
@@ -36,11 +36,11 @@ export class TableBodyNode extends TableNode {
 
     for ( let c = 0; c < columnsWidths.length; ++c ) {
       if ( columnsWidths[c] > -1 ) {
-        columnsWidths[c] *= sizeScale
+        columnsWidths[c] *= sizeScale;
       }
     }
 
-    const newColumns: number[] = []
+    const newColumns: number[] = [];
     for ( let c = 0; c < columnsToAdd; ++c ) 
       newColumns[c] = -1;
 
@@ -54,18 +54,18 @@ export class TableBodyNode extends TableNode {
 
     for ( let c = 0; c < columnsWidths.length; ++c ) {
       if ( columnsWidths[c] > -1 ) {
-        columnsWidths[c] *= sizeScale
+        columnsWidths[c] *= sizeScale;
       }
     }
   }
 
   getResolvedTable(): ResolvedRow[] {
-    const self = this.getLatest()
+    const self = this.getLatest();
 
     const resolvedTable: ResolvedRow[] = [];
 
-    let row = self.getChildren().find((node) => $isTableRowNode(node)) as TableRowNode | undefined | null
-    if ( !row ) throw Error("getResolvedTable: there is no row")
+    let row = self.getChildren().find((node) => $isTableRowNode(node)) as TableRowNode | undefined | null;
+    if ( !row ) throw Error("getResolvedTable: there is no row");
 
     let rowID = 0;
     do {
@@ -85,7 +85,7 @@ export class TableBodyNode extends TableNode {
 
         let spanRow = row;
         for ( let r = 0; r < rowSpan; ++r ) {
-          if ( resolvedTable[rowID + r] == undefined ) resolvedTable[rowID + r] = new ResolvedRow(spanRow)
+          if ( resolvedTable[rowID + r] == undefined ) resolvedTable[rowID + r] = new ResolvedRow(spanRow);
           for ( let c = 0; c < colSpan; ++c ) {
             resolvedTable[rowID + r].cells[columnID + c] = resolvedCell;
           }
@@ -96,13 +96,13 @@ export class TableBodyNode extends TableNode {
       }
       
       ++rowID;
-    } while ( (row = row.getNextSibling() as TableRowNode | null) && $isTableRowNode(row) )
+    } while ( (row = row.getNextSibling() as TableRowNode | null) && $isTableRowNode(row) );
 
     return resolvedTable;
   }
 
   mergeCells( editor: LexicalEditor, startCell: TableCellNode, rowsCount: number, columnsCount: number ) {
-    const self = this.getWritable()
+    const self = this.getWritable();
 
     const resolvedTable = self.getResolvedTable();
     let resolvedCell = resolvedTable[0].cells[0];
@@ -110,7 +110,7 @@ export class TableBodyNode extends TableNode {
     for ( let r = 0; r < resolvedTable.length; ++r ) {
       for ( let c = 0; c < resolvedTable[0].cells.length; ++c ) {
         if ( resolvedTable[r].cells[c].cellNode == startCell ) {
-          resolvedCell = resolvedTable[r].cells[c]
+          resolvedCell = resolvedTable[r].cells[c];
           break;
         }
       }
@@ -121,7 +121,7 @@ export class TableBodyNode extends TableNode {
     let r = 0;
     for ( ; r < rowsCount; ++r ) {
       const rowNode = resolvedTable[resolvedCell.rowID + r].rowNode;
-      const rowHeight = rowNode.getHeight()
+      const rowHeight = rowNode.getHeight();
       if ( !rowHeight ) {
         const rowElement = editor.getElementByKey(rowNode.getKey());
         if ( rowElement ) {
@@ -134,18 +134,18 @@ export class TableBodyNode extends TableNode {
 
     for ( ; r < rowsCount; ++r ) {
       const rowNode = resolvedTable[resolvedCell.rowID + r].rowNode;
-      const rowHeight = rowNode.getHeight()
+      const rowHeight = rowNode.getHeight();
       if ( !rowHeight ) {
         rowNode.setHeight(defaultRowHeight);
       }
     }
 
-    const cellsToRemove = new Set<TableCellNode>()
+    const cellsToRemove = new Set<TableCellNode>();
     for ( let r = 0; r < rowsCount; ++r ) {
       for ( let c = 0; c < columnsCount; ++c ) {
         const cell = resolvedTable[resolvedCell.rowID + r].cells[resolvedCell.columnID + c].cellNode;
         if ( cell != startCell && !cellsToRemove.has(cell) ) {
-          cellsToRemove.add(cell)
+          cellsToRemove.add(cell);
         }
       }
     }
@@ -153,7 +153,7 @@ export class TableBodyNode extends TableNode {
     for ( const cell of cellsToRemove ) {
       for ( const cellChild of cell.getChildren() ) {
         if ( !$isParagraphNode(cellChild) || cellChild.getTextContentSize() > 0 )
-          startCell.append(cellChild)
+          startCell.append(cellChild);
       }
       cell.remove();
     }
@@ -164,27 +164,27 @@ export class TableBodyNode extends TableNode {
   }
 
   splitCell( _editor: LexicalEditor, cell: TableCellNode ) {
-    const self = this.getWritable()
+    const self = this.getWritable();
 
     const resolvedTable = self.getResolvedTable();
     let resolvedCell = resolvedTable[0].cells[0];
-    const columnsCount = resolvedTable[0].cells.length
+    const columnsCount = resolvedTable[0].cells.length;
 
     for ( let r = 0; r < resolvedTable.length; ++r ) {
       for ( let c = 0; c < columnsCount; ++c ) {
         if ( resolvedTable[r].cells[c].cellNode == cell ) {
-          resolvedCell = resolvedTable[r].cells[c]
+          resolvedCell = resolvedTable[r].cells[c];
           break;
         }
       }
       if ( resolvedCell.cellNode == cell ) break;
     }
 
-    const rowSpan = cell.getRowSpan()
-    const colSpan = cell.getColSpan()
+    const rowSpan = cell.getRowSpan();
+    const colSpan = cell.getColSpan();
 
     for ( let c = 1; c < colSpan; ++c ) {
-      cell.insertAfter($createTableCellNodeWithParagraph())
+      cell.insertAfter($createTableCellNodeWithParagraph());
     }
 
     for ( let r = 1; r < rowSpan; ++r ) {
@@ -200,22 +200,22 @@ export class TableBodyNode extends TableNode {
 
       if ( nextCellColumnID == columnsCount ) {
         for ( let c = 0; c < colSpan; ++c ) {
-          resolvedRow.rowNode.append($createTableCellNodeWithParagraph())
+          resolvedRow.rowNode.append($createTableCellNodeWithParagraph());
         }
       } else {
         const nextCellNode = resolvedRow.cells[nextCellColumnID].cellNode;
         for ( let c = 0; c < colSpan; ++c ) {
-          nextCellNode.insertBefore($createTableCellNodeWithParagraph())
+          nextCellNode.insertBefore($createTableCellNodeWithParagraph());
         }
       }
     } 
 
-    cell.setColSpan(1)
-    cell.setRowSpan(1)
+    cell.setColSpan(1);
+    cell.setRowSpan(1);
   }
   
   removeRows(cellNode: TableCellNode, rowsCount: number ) {
-    const self = this.getWritable()
+    const self = this.getWritable();
     const resolvedTable = self.getResolvedTable();
 
     const rowID = $getTableRowIndexFromTableCellNode(cellNode);
@@ -268,12 +268,12 @@ export class TableBodyNode extends TableNode {
     }
 
     for ( let r = 0; r < rowsCount; ++r ) {
-      resolvedTable[rowID + r].rowNode.remove()
+      resolvedTable[rowID + r].rowNode.remove();
     }
   }
 
   addRowsBefore(cellNode: TableCellNode, rowsToAdd: number ) {
-    const self = this.getWritable()
+    const self = this.getWritable();
     const resolvedTable = self.getResolvedTable();
 
     const rowID = $getTableRowIndexFromTableCellNode(cellNode);
@@ -310,7 +310,7 @@ export class TableBodyNode extends TableNode {
   }
 
   addRowsAfter(cellNode: TableCellNode, rowsToAdd: number ) {
-    const self = this.getWritable()
+    const self = this.getWritable();
     const resolvedTable = self.getResolvedTable();
 
     const rowID = $getTableRowIndexFromTableCellNode(cellNode) + cellNode.getRowSpan() - 1;
@@ -348,7 +348,7 @@ export class TableBodyNode extends TableNode {
   }
 
   addColumnsBefore(cellNode: TableCellNode, columnsToAdd: number, columnsWidths: number[] ) {
-    const self = this.getWritable()
+    const self = this.getWritable();
     const resolvedTable = self.getResolvedTable();
 
     const columnID = $getTableColumnIndexFromTableCellNode(cellNode, resolvedTable);
@@ -375,7 +375,7 @@ export class TableBodyNode extends TableNode {
   }
 
   addColumnsAfter(cellNode: TableCellNode, columnsCount: number, columnsWidths: number[] ) {
-    const self = this.getWritable()
+    const self = this.getWritable();
     const resolvedTable = self.getResolvedTable();
 
     const columnID = $getTableColumnIndexFromTableCellNode(cellNode, resolvedTable) + cellNode.getColSpan() - 1;
@@ -404,7 +404,7 @@ export class TableBodyNode extends TableNode {
 
   removeColumns(cellNode: TableCellNode, columnsToRemove: number, columnsWidths: number[] ) {
 
-    const self = this.getWritable()
+    const self = this.getWritable();
     const resolvedTable = self.getResolvedTable();
     const rowsCount = resolvedTable.length;
     const columnsCount = resolvedTable[0].cells.length;
@@ -450,16 +450,16 @@ export class TableBodyNode extends TableNode {
                 const newCell = $createTableCellNode(TableCellHeaderStates.NO_STATUS);
                 for ( const cellChild of resolvedCell.cellNode.getChildren() ) {
                     if ( !$isParagraphNode(cellChild) || cellChild.getTextContentSize() > 0 )
-                        newCell.append(cellChild)
+                        newCell.append(cellChild);
                 }
 
                 newCell.setRowSpan(rowSpan);
-                newCell.setColSpan((colSpan - (lastColumnID - resolvedCell.columnID + 1)))
+                newCell.setColSpan((colSpan - (lastColumnID - resolvedCell.columnID + 1)));
 
                 if ( nextColumnID == columnsCount ) {
                     resolvedRow.rowNode.append(newCell);
                 } else {
-                    resolvedRow.cells[nextColumnID].cellNode.insertBefore(newCell)
+                    resolvedRow.cells[nextColumnID].cellNode.insertBefore(newCell);
                 }
             }
         }
@@ -497,7 +497,7 @@ export class TableBodyNode extends TableNode {
   }
 
   exportDOM(editor: LexicalEditor) {
-    return {...super.exportDOM(editor), after: undefined}
+    return {...super.exportDOM(editor), after: undefined};
   }
 
   static importDOM(): DOMConversionMap | null {
@@ -510,8 +510,8 @@ export class TableBodyNode extends TableNode {
   }
 
   static importJSON(): TableBodyNode {
-    const tableNode = $createTableBodyNode()
-    return tableNode
+    const tableNode = $createTableBodyNode();
+    return tableNode;
   }
   
 
@@ -531,11 +531,11 @@ export class TableBodyNode extends TableNode {
 
 export function $createTableBodyNodeWithDimensions( rows: number, cols: number ): TableBodyNode {
   const tableNode = $createTableNodeWithDimensions(rows, cols, false) as TableBodyNode;
-   return tableNode
+   return tableNode;
 }
 
 export function $convertTableBodyElement(): DOMConversionOutput {
-  return {node: $createTableBodyNode()} 
+  return {node: $createTableBodyNode()}; 
 }
 
 export function $createTableBodyNode(): TableBodyNode {

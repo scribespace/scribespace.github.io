@@ -10,13 +10,13 @@ import { ExtendedTableNode, TableBodyNode } from "../../../nodes/table";
 
 
 export default function TableContextMergeCells({ editor }: TableContextOptionProps) {
-    const menuContext = useContextMenuContext()
+    const menuContext = useContextMenuContext();
 
     function MergeCellIcon() {
         if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.MergeCellIcon ) 
             throw Error("No theme for table menu!");
 
-        return menuContext.theme.tableMenuTheme.MergeCellIcon
+        return menuContext.theme.tableMenuTheme.MergeCellIcon;
     }
 
     const onClick = () => {

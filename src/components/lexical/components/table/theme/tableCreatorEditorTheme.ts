@@ -12,4 +12,4 @@ export const TABLE_CREATOR_EDITOR_THEME_DEFAULT: TableCreatorTheme = {
     cellContainer: 'table-creator-cells-container-default',
     cell: 'table-creator-cell-default',
     label: 'table-creator-label-default',
-}
+};

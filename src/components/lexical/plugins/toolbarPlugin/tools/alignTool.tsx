@@ -1,28 +1,28 @@
-import { ImParagraphCenter, ImParagraphJustify, ImParagraphLeft, ImParagraphRight } from "react-icons/im"
-import DropdownTool, { DropdownList } from "./dropdownTool"
+import { ImParagraphCenter, ImParagraphJustify, ImParagraphLeft, ImParagraphRight } from "react-icons/im";
+import DropdownTool, { DropdownList } from "./dropdownTool";
 import { ToolbarToolProps } from "./toolsProps";
 import { FORMAT_ELEMENT_COMMAND } from "lexical";
 
 export default function AlignTool({editor}: ToolbarToolProps) {
     const onClickLeft = () => {
-        editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'left')
-    }
+        editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'left');
+    };
 
     const onClickCenter = () => {
-        editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'center')
-    }
+        editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'center');
+    };
 
     const onClickRight = () => {
-        editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'right')
-    }
+        editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'right');
+    };
 
     const onClickJustify = () => {
-        editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'justify')
-    }
+        editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'justify');
+    };
 
     const Tool = () => {
-        return <ImParagraphLeft className="item"/>
-    }
+        return <ImParagraphLeft className="item"/>;
+    };
 
     return (
         <DropdownTool Tool={Tool}>
@@ -33,5 +33,5 @@ export default function AlignTool({editor}: ToolbarToolProps) {
                 <ImParagraphJustify className="item-buttons" onClick={onClickJustify}/>
             </DropdownList>
         </DropdownTool>
-    )
+    );
 }

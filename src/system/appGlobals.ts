@@ -1,4 +1,4 @@
-import { System } from "../interfaces/system/system_interface"
+import { System } from "../interfaces/system/system_interface";
 
 class AppGlobals {
     system: null | System = null; 

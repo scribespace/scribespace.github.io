@@ -52,7 +52,7 @@ export class ExtendedTextNode extends TextNode {
       ...super.exportJSON(),
       type: 'extended-text',
       version: 1,
-    }
+    };
   }
 }
 

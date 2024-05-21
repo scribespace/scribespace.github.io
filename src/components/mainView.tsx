@@ -1,7 +1,7 @@
 import { TreeView } from './treeView';
 
 
-import './css/mainView.css'
+import './css/mainView.css';
 
 import { authGlobal, AUTH_DISABLED } from '../system/authentication';
 import { FunctionComponent, useState } from 'react';
@@ -10,7 +10,7 @@ import { EditorLexicalView } from './editorLexicalView';
 
 type Props = {
   changeAuthButtonState: (state: number) => void;
-}
+};
 
 export const MainView: FunctionComponent<Props> = ({changeAuthButtonState}) => {
 
@@ -19,7 +19,7 @@ export const MainView: FunctionComponent<Props> = ({changeAuthButtonState}) => {
 
 
   const handleLogOutClick = () => {
-    authGlobal.logout().then( () => { changeAuthButtonState(AUTH_DISABLED) } );
+    authGlobal.logout().then( () => { changeAuthButtonState(AUTH_DISABLED); } );
 };
   return  (
     <div style={{height: '100%'}}>
@@ -35,5 +35,5 @@ export const MainView: FunctionComponent<Props> = ({changeAuthButtonState}) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

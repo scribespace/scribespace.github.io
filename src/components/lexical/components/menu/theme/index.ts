@@ -1,1 +1,1 @@
-export type {MenuTheme} from './menuTheme'
+export type {MenuTheme} from './menuTheme';

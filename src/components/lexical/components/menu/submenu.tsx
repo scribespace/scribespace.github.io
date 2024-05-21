@@ -10,33 +10,33 @@ interface SubmenuProps {
 }
 
 export default function Submenu(props: SubmenuProps) {
-    const menuContext: MenuContextData = useMenuContext()
+    const menuContext: MenuContextData = useMenuContext();
 
     const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
 
-    const menuOptionRef = useRef<HTMLDivElement>(null)
+    const menuOptionRef = useRef<HTMLDivElement>(null);
     const [rect, setRect] = useState<{x: number, y: number, width: number, height: number}>({x: -1, y: -1, width: 0, height: 0});
 
     useEffect(()=>{
-        setShowContextMenu(false)
-    },[props.Option])
+        setShowContextMenu(false);
+    },[props.Option]);
 
     useEffect(()=>{
         const menuOption = menuOptionRef.current;
         if ( menuOption != null ){
             const { left, top, width, height } = menuOption.getBoundingClientRect();
-            const rect = {x: left, y: top, width, height}
-            setRect(rect)
+            const rect = {x: left, y: top, width, height};
+            setRect(rect);
         } 
-    },[showContextMenu])
+    },[showContextMenu]);
 
     function onClick() {
-        setShowContextMenu(true)
+        setShowContextMenu(true);
     }
 
     function SubmenuIcon(props: IconBaseProps) {
         if ( menuContext.theme?.SubmenuIcon )
-            return menuContext.theme?.SubmenuIcon(props)
+            return menuContext.theme?.SubmenuIcon(props);
         return null;
     }
     
@@ -49,5 +49,5 @@ export default function Submenu(props: SubmenuProps) {
                 {props.children}
             </Menu>
         </div>
-    )
+    );
 }

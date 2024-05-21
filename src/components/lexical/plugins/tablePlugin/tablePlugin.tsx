@@ -23,25 +23,25 @@ import { Property } from 'csstype';
 import { useEditorThemeContext } from '../../editorThemeContext';
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from '../../nodes/table';
 
-const DRAG_NONE = 0 as const
-const DRAG_HORIZONTAL = 1 as const
-const DRAG_VERTICAL = 2 as const
+const DRAG_NONE = 0 as const;
+const DRAG_HORIZONTAL = 1 as const;
+const DRAG_VERTICAL = 2 as const;
 type MouseDraggingDirection = typeof DRAG_NONE | typeof DRAG_HORIZONTAL | typeof DRAG_VERTICAL;
 
-const CELL_TOP = 0 as const
-const CELL_BOTTOM = 1 as const
-const CELL_LEFT = 2 as const
-const CELL_RIGHT = 3 as const
+const CELL_TOP = 0 as const;
+const CELL_BOTTOM = 1 as const;
+const CELL_LEFT = 2 as const;
+const CELL_RIGHT = 3 as const;
 type CellClickPart = typeof CELL_TOP | typeof CELL_BOTTOM | typeof CELL_LEFT | typeof CELL_RIGHT;
 
-const INVALID_CELL_NODE = 1 as const
+const INVALID_CELL_NODE = 1 as const;
 
-const COLUMN_MARGIN = 10
+const COLUMN_MARGIN = 10;
 
 type MousePosition = {
     x: number;
     y: number;
-}
+};
 
 function getTableEdgeCursorPosition(
   editor: LexicalEditor,
@@ -137,22 +137,22 @@ export default function TablePlugin() {
     const [editor] = useLexicalComposerContext();
     const editorTheme = useEditorThemeContext();
 
-    const [activeCell, setActiveCell] = useState<TableDOMCell | null>(null)
-    const [dragDirection, setDragDirection] = useState<MouseDraggingDirection>(DRAG_NONE)
-    const [mousePosition, setMousePosition] = useState<MousePosition | null>(null)
+    const [activeCell, setActiveCell] = useState<TableDOMCell | null>(null);
+    const [dragDirection, setDragDirection] = useState<MouseDraggingDirection>(DRAG_NONE);
+    const [mousePosition, setMousePosition] = useState<MousePosition | null>(null);
 
-    const resizerRef = useRef<HTMLDivElement | null>(null)
+    const resizerRef = useRef<HTMLDivElement | null>(null);
     const tableRectRef = useRef<DOMRect | null>(null);
-    const mouseStartPosition = useRef<MousePosition | null>(null)
-    const cellClickPart = useRef<CellClickPart>(CELL_TOP)
-    const columnWidthsRef = useRef<{low:number, hight:number}>({low:-1,hight:-1})
-    const columnPositionRef = useRef<number>(-1)
-    const columnIDRef = useRef<number>(-1)
+    const mouseStartPosition = useRef<MousePosition | null>(null);
+    const cellClickPart = useRef<CellClickPart>(CELL_TOP);
+    const columnWidthsRef = useRef<{low:number, hight:number}>({low:-1,hight:-1});
+    const columnPositionRef = useRef<number>(-1);
+    const columnIDRef = useRef<number>(-1);
 
     function ClearState() {
         setActiveCell(null);
-        setDragDirection(DRAG_NONE)
-        setMousePosition(null)
+        setDragDirection(DRAG_NONE);
+        setMousePosition(null);
 
         resizerRef.current = null;
         tableRectRef.current = null;
@@ -178,7 +178,7 @@ export default function TablePlugin() {
               let tableRowIndex = $getTableRowIndexFromTableCellNode(tableCellNode);
 
               if ( cellPart == CELL_BOTTOM )
-                tableRowIndex += tableCellNode.getRowSpan() - 1
+                tableRowIndex += tableCellNode.getRowSpan() - 1;
     
               const tableRows = tableNode.getChildren();
     
@@ -188,7 +188,7 @@ export default function TablePlugin() {
 
               if ( cellPart == CELL_TOP ) {
                 if ( tableRowIndex == 0 ) {
-                    heightOffset = -heightOffset
+                    heightOffset = -heightOffset;
                 } else {
                     tableRowIndex = Math.max(0, tableRowIndex - 1);
                 }
@@ -218,26 +218,26 @@ export default function TablePlugin() {
         let columnWidth = tableNode.getColumnWidth(columnID);
 
         // Find node if first is a miss
-        let cellNode: TableCellNode | null = cellLUT[0][columnID]
+        let cellNode: TableCellNode | null = cellLUT[0][columnID];
         if ( cellNode == null ) {
           for ( ; columnID < columnsCount; ++columnID ) {
             if ( cellLUT[0][columnID] != null ) {
-              cellNode = cellLUT[0][columnID] as TableCellNode
+              cellNode = cellLUT[0][columnID] as TableCellNode;
               break;
             }
           }
         }
 
         if ( cellNode == null ) {
-          throw Error("updateColumnWidth couldn't find cellNode in cellLUT")
+          throw Error("updateColumnWidth couldn't find cellNode in cellLUT");
         }
 
-        const cellElement = editor.getElementByKey(cellNode.getKey())
+        const cellElement = editor.getElementByKey(cellNode.getKey());
         if (!cellElement) {
           throw new Error('updateColumnWidth: Cell element not found.');
         }
 
-        const {width: rectWidth, right: rectRight} = cellElement.getBoundingClientRect()
+        const {width: rectWidth, right: rectRight} = cellElement.getBoundingClientRect();
         const columnPosition = rectRight;
         if ( columnWidth == -1 ) {          
           const cellWidth = rectWidth;
@@ -278,11 +278,11 @@ export default function TablePlugin() {
               }
     
               const tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(tableCellNode);
-              const tableBodyNode = tableNode.getTableBodyNodeWritable()
+              const tableBodyNode = tableNode.getTableBodyNodeWritable();
                 
               // Create look up table for cells
               const columnsCount = tableNode.getColumnsWidths().length;
-              const rowsNodes = tableBodyNode.getChildren() as TableRowNode[]
+              const rowsNodes = tableBodyNode.getChildren() as TableRowNode[];
               const rowsCount = rowsNodes.length;
 
               // Clean table, we need 3 values. INVALID_CELL_NODE marks untouched cell.
@@ -290,7 +290,7 @@ export default function TablePlugin() {
               for ( let r = 0; r < rowsCount; ++r ) {
                 cellLUT[r] = [];
                 for ( let c = 0; c < columnsCount; ++c ) {
-                  cellLUT[r][c] = INVALID_CELL_NODE
+                  cellLUT[r][c] = INVALID_CELL_NODE;
                 }
               }
 
@@ -309,26 +309,26 @@ export default function TablePlugin() {
                     ++cellIndexInLUT;
                   }
 
-                  const colSpan = cellNode.getColSpan()
-                  const rowSpan = cellNode.getRowSpan()
+                  const colSpan = cellNode.getColSpan();
+                  const rowSpan = cellNode.getRowSpan();
                   for ( let rs = 0; rs < rowSpan; ++rs ) {
                     for ( let cs = 0; cs < colSpan; ++cs ) {
                       cellLUT[r + rs][cellIndexInLUT + cs] = null;
                     }
                   }
 
-                  cellLUT[r][cellIndexInLUT + colSpan - 1] = cellNode
+                  cellLUT[r][cellIndexInLUT + colSpan - 1] = cellNode;
                 }
               }
               const tableRowIndex = $getTableRowIndexFromTableCellNode(tableCellNode);
               let columnID = cellLUT[tableRowIndex].findIndex((node)=>node==tableCellNode);
 
               if ( cellPart == CELL_LEFT ) {
-                columnID -=  tableCellNode.getColSpan() - 1
+                columnID -=  tableCellNode.getColSpan() - 1;
               }
 
               if ( columnID == -1 ) {
-                throw new Error('updateColumnWidth: Didnt find cellNode in cellLUT')
+                throw new Error('updateColumnWidth: Didnt find cellNode in cellLUT');
               }
 
               if ( cellPart == CELL_LEFT ) {
@@ -336,18 +336,18 @@ export default function TablePlugin() {
               }
 
               if ( columnID == -1 || (columnID == columnsCount - 1 && cellPart == CELL_RIGHT)) {
-                throw new Error('updateColumnWidth: cellColumnID outside of table. Probably wanted to resize border of table. Not supported')
+                throw new Error('updateColumnWidth: cellColumnID outside of table. Probably wanted to resize border of table. Not supported');
               }
 
-              const {width: columnWidth, position: columnPosition } = GetColumnWidthWithPosition(tableNode, columnID, cellLUT as (TableCellNode | null)[][])
-              const nextColumnWidth = GetColumnWidthWithPosition(tableNode, columnID + 1, cellLUT as (TableCellNode | null)[][]).width
+              const {width: columnWidth, position: columnPosition } = GetColumnWidthWithPosition(tableNode, columnID, cellLUT as (TableCellNode | null)[][]);
+              const nextColumnWidth = GetColumnWidthWithPosition(tableNode, columnID + 1, cellLUT as (TableCellNode | null)[][]).width;
 
               columnIDRef.current = columnID;
               columnPositionRef.current = columnPosition;
-              columnWidthsRef.current = {low:columnWidth, hight:nextColumnWidth}
+              columnWidthsRef.current = {low:columnWidth, hight:nextColumnWidth};
             }
           );
-        }
+        };
 
       const updateColumnWidth = useCallback(
         (widthOffset: number) => {
@@ -371,8 +371,8 @@ export default function TablePlugin() {
               widthOffset = Math.min(columnWidthsRef.current.hight - COLUMN_MARGIN, Math.max(-columnWidthsRef.current.low + COLUMN_MARGIN, widthOffset) );
               
 
-              tableNode.setColumnWidth(columnIDRef.current, columnWidth + widthOffset)
-              tableNode.setColumnWidth(columnIDRef.current + 1, nextColumnWidth - widthOffset)
+              tableNode.setColumnWidth(columnIDRef.current, columnWidth + widthOffset);
+              tableNode.setColumnWidth(columnIDRef.current + 1, nextColumnWidth - widthOffset);
             },
             {tag: 'table-update-column-width'},
           );
@@ -388,7 +388,7 @@ export default function TablePlugin() {
         const targetElement = target as HTMLElement;
 
         if ( dragDirection != DRAG_NONE ) {
-          setMousePosition({x: event.clientX, y: event.clientY})
+          setMousePosition({x: event.clientX, y: event.clientY});
           return;
         }
         
@@ -397,12 +397,12 @@ export default function TablePlugin() {
           return;
         }
         
-        const cell = getDOMCellFromTarget(targetElement)
-        setActiveCell(cell)
+        const cell = getDOMCellFromTarget(targetElement);
+        setActiveCell(cell);
         
         if ( cell ) {
             editor.update(()=>{
-                const tableCellNode = $getNearestNodeFromDOMNode(cell.elem)
+                const tableCellNode = $getNearestNodeFromDOMNode(cell.elem);
             if (!tableCellNode) {
                 throw new Error('TableCellResizer: Table cell node not found.');
               }
@@ -416,44 +416,44 @@ export default function TablePlugin() {
               }
 
               tableRectRef.current = tableElement.getBoundingClientRect();
-            })
+            });
         }
-    }
+    };
 
       const onMouseUp = (event: MouseEvent) => {
         if ( !activeCell || dragDirection == DRAG_NONE) return;
 
         if ( dragDirection == DRAG_VERTICAL ) {
-            const heightOffset = event.clientY - mouseStartPosition.current!.y
-            updateRowHeight(heightOffset, cellClickPart.current)
+            const heightOffset = event.clientY - mouseStartPosition.current!.y;
+            updateRowHeight(heightOffset, cellClickPart.current);
         }
 
         if ( dragDirection == DRAG_HORIZONTAL ) {
-            const widthOffset = event.clientX - mouseStartPosition.current!.x
-            updateColumnWidth(widthOffset)
+            const widthOffset = event.clientX - mouseStartPosition.current!.x;
+            updateColumnWidth(widthOffset);
         }
 
         ClearState();
 
         event.preventDefault();
         event.stopPropagation();
-    }   
+    };   
 
         document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp)
+        document.addEventListener('mouseup', onMouseUp);
 
         return () => {
             document.removeEventListener('mousemove', onMouseMove);
             document.removeEventListener('mouseup', onMouseUp);
-        }
-    },[dragDirection, activeCell, editor, updateColumnWidth, updateRowHeight])
+        };
+    },[dragDirection, activeCell, editor, updateColumnWidth, updateRowHeight]);
     
     useEffect(()=>{
       return mergeRegister(
         editor.registerMutationListener( TableRowNode, (keys) => {
           editor.update(()=>{
             for ( const key of keys ) {
-              const node = $getNodeByKey(key[0]) as TableRowNode
+              const node = $getNodeByKey(key[0]) as TableRowNode;
               if ( node && node.getChildrenSize() == 0 ) {
                 const nodeElement = editor.getElementByKey(key[0]);
                 if ( nodeElement ) {
@@ -466,15 +466,15 @@ export default function TablePlugin() {
                 // @ts-expect-error: internal field
                 nodeElement.__lexicalLineBreak = null;
 
-                nodeElement.innerHTML = ''
+                nodeElement.innerHTML = '';
                 }
               }
             }
-          })
+          });
         }),
         editor.registerCommand(SELECTION_CHANGE_COMMAND, ()=>{
             const selection = $getSelection();
-            const nodes = selection?.getNodes()
+            const nodes = selection?.getNodes();
             let tableNode: TableNode | null = null;
             if ( nodes && nodes.length == 1) {
                 const parents = nodes[0].getParents();
@@ -514,8 +514,8 @@ export default function TablePlugin() {
             
             return false;
         }, COMMAND_PRIORITY_LOW)
-      )
-    },[editor])
+      );
+    },[editor]);
 
     const getStyles: () => ResizerStyles = useCallback(()=>{
         if ( !activeCell ) {
@@ -532,7 +532,7 @@ export default function TablePlugin() {
         const size = 3;
 
         const isFirstCell = activeCell.elem.previousSibling == null;
-        const isLastCell = activeCell.elem.nextSibling == null
+        const isLastCell = activeCell.elem.nextSibling == null;
 
         const styles: ResizerStyles = {
             bottom: {
@@ -571,7 +571,7 @@ export default function TablePlugin() {
         };
 
         if ( dragDirection != DRAG_NONE && mousePosition ) {
-            const dragColor = '#0000FF5F'
+            const dragColor = '#0000FF5F';
             const dragSize = 2;
 
             const columnRange = [ columnPositionRef.current - columnWidthsRef.current.low + COLUMN_MARGIN, columnPositionRef.current + columnWidthsRef.current.hight - COLUMN_MARGIN ];
@@ -586,7 +586,7 @@ export default function TablePlugin() {
                     top: `${window.scrollY + tableRectRef.current!.top}px`,
                     height: `${tableRectRef.current!.height}px`,
                     left: `${window.scrollX + Math.min( columnRange[1], Math.max(columnRange[0], mousePosition.x)) - (0.5 * dragSize)}px`
-                }
+                };
             }
 
             if ( dragDirection == DRAG_VERTICAL ) {
@@ -599,22 +599,22 @@ export default function TablePlugin() {
                     top: `${window.scrollY + mousePosition.y - (0.5 * dragSize)}px`,
                     width: `${tableRectRef.current!.width}px`,
                     left: `${window.scrollX + tableRectRef.current!.left }px`
-                }
+                };
             }
         }
 
       return styles;
-    },[activeCell, dragDirection, mousePosition])
+    },[activeCell, dragDirection, mousePosition]);
 
-    const styles = getStyles()
+    const styles = getStyles();
 
     const onMouseDown = (direction: MouseDraggingDirection, cellPart: CellClickPart): React.MouseEventHandler<HTMLDivElement> => (event: React.MouseEvent<HTMLDivElement>) => {
-        mouseStartPosition.current = { x: event.clientX, y: event.clientY }
+        mouseStartPosition.current = { x: event.clientX, y: event.clientY };
         cellClickPart.current = cellPart;
         if ( direction == DRAG_HORIZONTAL)
           updateColumnsWidths();
-        setDragDirection(direction)
-    }
+        setDragDirection(direction);
+    };
 
     return (
         <div>
@@ -630,5 +630,5 @@ export default function TablePlugin() {
                 </div>    
             , document.body)}
         </div>
-    )
+    );
 }

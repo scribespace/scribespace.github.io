@@ -7,13 +7,13 @@ import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "
 
 
 export default function TableContextDelete({ editor }: TableContextOptionProps) {
-    const menuContext = useContextMenuContext()
+    const menuContext = useContextMenuContext();
 
     function DeleteTableIcon() {
         if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.DeleteTableIcon ) 
             throw Error("No theme for table menu!");
 
-        return menuContext.theme.tableMenuTheme.DeleteTableIcon
+        return menuContext.theme.tableMenuTheme.DeleteTableIcon;
     }
 
     const onClick = () => {
@@ -26,7 +26,7 @@ export default function TableContextDelete({ editor }: TableContextOptionProps) 
             }
             if ($isTableSelection(selection)) {
                 const tableBodyNode = $getNodeByKeyOrThrow(selection.tableKey);
-                tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>()
+                tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>();
             }
 
             if (!tableNode) throw Error("TableContextDelete: expected table");

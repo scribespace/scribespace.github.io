@@ -11,6 +11,6 @@ export {
     TableContextRowRemove, 
     TableContextSplitCells 
 } from "./tableContext";
-export { default as TableContextOptions } from './tableContextOptions'
-export { default as TableCreator } from './tableCreator'
+export { default as TableContextOptions } from './tableContextOptions';
+export { default as TableCreator } from './tableCreator';
 

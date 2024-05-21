@@ -1,5 +1,5 @@
-import { LexicalEditor } from "lexical"
+import { LexicalEditor } from "lexical";
 
 export type ToolbarToolProps = {
     editor: LexicalEditor
-}
+};

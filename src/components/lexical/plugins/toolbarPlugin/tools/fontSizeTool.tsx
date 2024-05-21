@@ -1,13 +1,13 @@
 import { $getSelection, $isRangeSelection, SELECTION_CHANGE_COMMAND, COMMAND_PRIORITY_LOW } from "lexical";
-import {$getSelectionStyleValueForProperty} from '@lexical/selection'
+import {$getSelectionStyleValueForProperty} from '@lexical/selection';
 import { useRef, useEffect } from "react";
 import { ImMinus, ImPlus } from "react-icons/im";
 import { FONT_SIZE_CHANGED_COMMAND, INCREASE_FONT_SIZE_COMMAND, DECREASE_FONT_SIZE_COMMAND, SET_FONT_SIZE_COMMAND } from "../../../commands";
 import { ToolbarToolProps } from "./toolsProps";
 
 export default function FontSizeTool({editor}: ToolbarToolProps) {
-        const fontInputRef = useRef<HTMLInputElement>(null)
-        const defaultFontSize = useRef<string>('')
+        const fontInputRef = useRef<HTMLInputElement>(null);
+        const defaultFontSize = useRef<string>('');
 
         
 
@@ -16,7 +16,7 @@ export default function FontSizeTool({editor}: ToolbarToolProps) {
                 const selection = $getSelection();
                 if ( $isRangeSelection(selection) ) {
                     if ( fontInputRef.current )
-                        fontInputRef.current.value = ($getSelectionStyleValueForProperty(selection, 'font-size', defaultFontSize.current))
+                        fontInputRef.current.value = ($getSelectionStyleValueForProperty(selection, 'font-size', defaultFontSize.current));
                 }
             }
 
@@ -29,7 +29,7 @@ export default function FontSizeTool({editor}: ToolbarToolProps) {
                   return false;
                 },
                 COMMAND_PRIORITY_LOW
-              )
+              );
               const removeFontSizeChanage = editor.registerCommand(
                 FONT_SIZE_CHANGED_COMMAND,
                 () => {
@@ -37,17 +37,17 @@ export default function FontSizeTool({editor}: ToolbarToolProps) {
                   return false;
                 },
                 COMMAND_PRIORITY_LOW
-              )
-              return () => {removeSelectionChanage(); removeFontSizeChanage()}
-        }, [editor])
+              );
+              return () => {removeSelectionChanage(); removeFontSizeChanage();};
+        }, [editor]);
 
         const onClickFontSizeIncrease = () => {
             editor.dispatchCommand(INCREASE_FONT_SIZE_COMMAND, undefined);
-        }
+        };
 
         const onClickFontSizeDecrease = () => {
             editor.dispatchCommand(DECREASE_FONT_SIZE_COMMAND, undefined);
-        }
+        };
 
         const onKeyDownFontSize = (e: React.KeyboardEvent<HTMLInputElement>) => {
             if ( e.key == "Enter") {
@@ -59,16 +59,16 @@ export default function FontSizeTool({editor}: ToolbarToolProps) {
                         'pt',
                         'px',
                         'mm'
-                    ]
+                    ];
                     const validFont = size && unit && supportedUnits.includes(unit[0]);
                     
                     if ( validFont )
-                        editor.dispatchCommand(SET_FONT_SIZE_COMMAND, fontInputRef.current.value)
+                        editor.dispatchCommand(SET_FONT_SIZE_COMMAND, fontInputRef.current.value);
                     
                     e.preventDefault();
                 }
             }
-        }
+        };
         
         return (
             <div style={{alignContent: 'center'}}>
@@ -76,5 +76,5 @@ export default function FontSizeTool({editor}: ToolbarToolProps) {
                 <input ref={fontInputRef} className='item-font-size' type='text' defaultValue={''} onKeyDown={onKeyDownFontSize}/>
                 <ImPlus className='item item-font-size-button' onClick={onClickFontSizeIncrease}/>
             </div>
-        )
+        );
     }

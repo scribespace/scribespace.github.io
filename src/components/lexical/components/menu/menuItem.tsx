@@ -10,14 +10,14 @@ interface MenuItemProps {
 }
 
 export default function MenuItem({Icon, title, onClick, children}: MenuItemProps) {
-    const menuContext: MenuContextData = useMenuContext()
+    const menuContext: MenuContextData = useMenuContext();
 
     const GetIcon = useCallback( () => {
         if ( Icon )
-            return <Icon className={menuContext.theme?.menuItemIcon}/>
+            return <Icon className={menuContext.theme?.menuItemIcon}/>;
         else 
-            return <div className={menuContext.theme?.menuItemIcon}/>
-    }, [menuContext.theme, Icon])
+            return <div className={menuContext.theme?.menuItemIcon}/>;
+    }, [menuContext.theme, Icon]);
 
     return (
         <div className={menuContext.theme?.menuItem} onClick={onClick}>
@@ -25,5 +25,5 @@ export default function MenuItem({Icon, title, onClick, children}: MenuItemProps
            <div>{title}</div>
            {children}
         </div>
-      )
+      );
 }

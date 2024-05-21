@@ -12,24 +12,24 @@ interface LinkEditorProps {
 }
 
 export default function LinkEditor({text, url, onTextChange, onURLChange}: LinkEditorProps) {
-    const editorTheme: EditorTheme = useEditorThemeContext()
+    const editorTheme: EditorTheme = useEditorThemeContext();
     function getTheme() {
         return editorTheme.linkTheme!;
     }
 
-    const urlInput = useRef<HTMLInputElement>(null)
-    const textInput = useRef<HTMLInputElement>(null)
-    const currentURL = useRef<string>('')
+    const urlInput = useRef<HTMLInputElement>(null);
+    const textInput = useRef<HTMLInputElement>(null);
+    const currentURL = useRef<string>('');
     
     function OpenURLFromInput() {
         const url = urlInput.current?.value;
         if ( url )
-            OpenURL(url)
+            OpenURL(url);
     }
 
     function TextChangeAccepted(e: React.KeyboardEvent<HTMLInputElement>) {
         if ( e.key == "Enter" && onTextChange) {
-            onTextChange((e.target as HTMLInputElement).value)
+            onTextChange((e.target as HTMLInputElement).value);
             e.preventDefault();
         }
     }
@@ -38,10 +38,10 @@ export default function LinkEditor({text, url, onTextChange, onURLChange}: LinkE
         const inputeElement = (e.target as HTMLInputElement);
         if ( e.key == "Enter" && onURLChange) {
             if ( validateUrl(inputeElement.value) ) {
-                onURLChange(inputeElement.value)
-                currentURL.current = inputeElement.value
+                onURLChange(inputeElement.value);
+                currentURL.current = inputeElement.value;
             } else {
-                inputeElement.value = currentURL.current
+                inputeElement.value = currentURL.current;
             }
             e.preventDefault();
         }
@@ -50,25 +50,25 @@ export default function LinkEditor({text, url, onTextChange, onURLChange}: LinkE
     useEffect(() => {
         if ( textInput.current && text )
             textInput.current.value = text;
-    },[text])
+    },[text]);
 
     useEffect(() => {
         if ( urlInput.current && url != undefined ) {
             urlInput.current.value = url;
             currentURL.current = url;
         }
-    },[url])
+    },[url]);
 
     function TextIcon(props: IconBaseProps) {
-        return getTheme().TextIcon!(props)
+        return getTheme().TextIcon!(props);
     }
 
     function LinkIcon(props: IconBaseProps) {
-        return getTheme().LinkIcon!(props)
+        return getTheme().LinkIcon!(props);
     }
 
     function OpenIcon(props: IconBaseProps) {
-        return getTheme().OpenIcon!(props)
+        return getTheme().OpenIcon!(props);
     }
 
     return (
@@ -83,5 +83,5 @@ export default function LinkEditor({text, url, onTextChange, onURLChange}: LinkE
             <OpenIcon className={getTheme().button} onClick={OpenURLFromInput}/>
         </div>
     </div>
-)
+);
 }

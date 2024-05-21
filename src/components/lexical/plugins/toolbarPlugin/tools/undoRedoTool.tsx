@@ -5,8 +5,8 @@ import { ImUndo, ImRedo } from "react-icons/im";
 import { ToolbarToolProps } from "./toolsProps";
 
 export default function UndoRedoTool({editor} : ToolbarToolProps) {
-        const [canUndo, setCanUndo] = useState<boolean>(false)
-        const [canRedo, setCanRedo] = useState<boolean>(false)
+        const [canUndo, setCanUndo] = useState<boolean>(false);
+        const [canRedo, setCanRedo] = useState<boolean>(false);
 
         useEffect(() => {
 
@@ -17,7 +17,7 @@ export default function UndoRedoTool({editor} : ToolbarToolProps) {
                 return false;
                 },
                 COMMAND_PRIORITY_LOW
-            )
+            );
 
             const removeRedoCommand = editor.registerCommand(
                 CAN_REDO_COMMAND,
@@ -26,22 +26,22 @@ export default function UndoRedoTool({editor} : ToolbarToolProps) {
                 return false;
                 },
                 COMMAND_PRIORITY_LOW
-            )
-            return () => {removeUndoCommand(); removeRedoCommand();}
-        }, [editor])
+            );
+            return () => {removeUndoCommand(); removeRedoCommand();};
+        }, [editor]);
 
         const onClickUndo = () => {
-            editor.dispatchCommand(UNDO_COMMAND, undefined)
-        }
+            editor.dispatchCommand(UNDO_COMMAND, undefined);
+        };
 
         const onClickRedo = () => {
-            editor.dispatchCommand(REDO_COMMAND, undefined)
-        }
+            editor.dispatchCommand(REDO_COMMAND, undefined);
+        };
 
         return (
             <div>
                 <ImUndo className={'item' + (canUndo ? '' : ' disabled')} onClick={onClickUndo}/>
                 <ImRedo className={'item' + (canRedo ? '' : ' disabled')} onClick={onClickRedo}/>
             </div>
-        )
+        );
     }

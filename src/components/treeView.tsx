@@ -5,15 +5,15 @@ import useResizeObserver from "use-resize-observer";
 import { Node } from "./treeNode";
 
 import { Tree, TreeApi, SimpleTree, CreateHandler, DeleteHandler, MoveHandler, RenameHandler, NodeApi } from 'react-arborist';
-import './css/treeView.css'
+import './css/treeView.css';
 
 import { AddIcon, DeleteIcon } from "../global";
 import { appGlobals } from "../system/appGlobals";
 import { DeleteResults, FileSystemStatus, FileUploadMode, UploadResult } from "../interfaces/system/fs_interface";
 
-const NOTES_PATH = '/notes/'
-const TREE_FILE = '/tree'
-const TREE_STATUS_FILE = '/tree_status'
+const NOTES_PATH = '/notes/';
+const TREE_FILE = '/tree';
+const TREE_STATUS_FILE = '/tree_status';
 
 class NodeData {
         id: string = "";
@@ -23,16 +23,16 @@ class NodeData {
 
 type Props = {
     setSelectedFile: (file: string) => void;
-}
+};
 
 export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
-    const [, setDataVersion] = useState<number>(0)
+    const [, setDataVersion] = useState<number>(0);
     const [tree, setTree] = useState<SimpleTree<NodeData> | null>(null);
     const { ref: treeParent, height: treeParentHeight = 1 } = useResizeObserver<HTMLDivElement>(); 
     const { ref: controlButtonsRef, height: controlButtonsHeight = 1 } = useResizeObserver<HTMLDivElement>(); 
     const treeElement = useRef<TreeApi<any>>(null);
     const treeOpenNodes = useRef<Set<string>>(new Set<string>());
-    const onToggleEnabled = useRef<boolean>(true)
+    const onToggleEnabled = useRef<boolean>(true);
 
     function UpdateDataVersion() {
         setDataVersion( (prev)=> prev+1);
@@ -40,25 +40,25 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
     }
 
     function UploadTree() {
-        const treeJSON = JSON.stringify(tree?.data)
+        const treeJSON = JSON.stringify(tree?.data);
         appGlobals.system?.getFileSystem().uploadFile(TREE_FILE, {content: new Blob([treeJSON])}, FileUploadMode.Replace).then((result) => {
             if (!result) throw Error('UploadTree: no result');
             if (result.status !== FileSystemStatus.Success) throw Error('Couldnt upload tree, status: ' + result.status);
-        })
+        });
     }
 
     function UploadTreeStatus() {
-        const treeStatusJSON = JSON.stringify([...treeOpenNodes.current])
+        const treeStatusJSON = JSON.stringify([...treeOpenNodes.current]);
         appGlobals.system?.getFileSystem().uploadFile(TREE_STATUS_FILE, {content: new Blob([treeStatusJSON])}, FileUploadMode.Replace).then((result) => {
             if (!result) throw Error('UploadTreeStatus: no result');
             if (result.status !== FileSystemStatus.Success) throw Error('Couldnt upload tree status, status: ' + result.status);
-        })
+        });
     }
 
      const OnAddElement = () => {
         if (treeElement.current == null) return;
         treeElement.current.createInternal();
-    }
+    };
 
     const OnDeleteElement = () => {
         if (treeElement.current == null) return;
@@ -70,7 +70,7 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
           tree.focus(sib || parent, { scroll: false });
           tree.delete(node);
         }
-    }
+    };
 
     const onMove: MoveHandler<NodeData> = (args: {
         dragIds: string[];
@@ -91,7 +91,7 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
     const onCreate: CreateHandler<NodeData> = async ({ parentId, index }) => {
         const fileName = 'scribe-space-id-' + crypto.randomUUID() + (new Date().toJSON());
 
-        const result: UploadResult | undefined = await appGlobals.system?.getFileSystem().uploadFile(NOTES_PATH + fileName, {content: new Blob([""])}, FileUploadMode.Add)
+        const result: UploadResult | undefined = await appGlobals.system?.getFileSystem().uploadFile(NOTES_PATH + fileName, {content: new Blob([""])}, FileUploadMode.Add);
         if (!result) throw Error('onCreate note: no result');
         if (result.status !== FileSystemStatus.Success) throw Error('Couldnt upload note, status: ' + result.status);
         if (!result.fileInfo) throw Error('onCreate note: No fileInfo');
@@ -111,11 +111,11 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
         if (args.ids.length > 1) throw Error('onDelete: Too many files selected!');
         const id = args.ids[0];
 
-        const result: DeleteResults | undefined = await appGlobals.system?.getFileSystem().deleteFile(id)
+        const result: DeleteResults | undefined = await appGlobals.system?.getFileSystem().deleteFile(id);
         if (!result) throw Error('onDelete note: no result');
         if (result.status !== FileSystemStatus.Success && result.status !== FileSystemStatus.NotFound) throw Error('Couldnt delete note, status: ' + result.status);
 
-        tree?.drop({id})
+        tree?.drop({id});
         UpdateDataVersion();
       };
 
@@ -126,33 +126,33 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
         } else {
             setSelectedFile(nodes[0].id);
         }
-      }
+      };
 
       const onToggle = (nodeID: string ) => {
-        if ( !onToggleEnabled.current ) return 
+        if ( !onToggleEnabled.current ) return; 
 
         if ( treeOpenNodes.current.has(nodeID)) {
             treeOpenNodes.current.delete(nodeID);
         } else {
             treeOpenNodes.current.add(nodeID);
         }
-        UploadTreeStatus()
-      }
+        UploadTreeStatus();
+      };
 
       function DownloadAndSetTreeStatus() {
         appGlobals.system?.getFileSystem().downloadFile(TREE_STATUS_FILE).then((result) => {
             if ( result.status === FileSystemStatus.Success ) {
                 result.file?.content?.text().then((treeStatusJSON) => {
-                    const treeStatusArray = JSON.parse(treeStatusJSON)
-                    onToggleEnabled.current = false
+                    const treeStatusArray = JSON.parse(treeStatusJSON);
+                    onToggleEnabled.current = false;
                     for ( const node of treeStatusArray ) {
                         treeOpenNodes.current.add(node);
                         treeElement.current?.close(node);
                     }
-                    onToggleEnabled.current = true
-                })
+                    onToggleEnabled.current = true;
+                });
             } 
-        })
+        });
       }
 
     useEffect(() => {
@@ -161,12 +161,12 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
                 result.file?.content?.text().then((treeJSON) => {
                     setTree( new SimpleTree<NodeData>(JSON.parse(treeJSON)) );
                     DownloadAndSetTreeStatus();
-                })
+                });
             } else {
                 setTree( new SimpleTree<NodeData>([]) );
             }
-        })
-    }, [])
+        });
+    }, []);
 
     return (
         <div style={{height: '100%'}} >
@@ -181,5 +181,5 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
                 </Tree>
             </div>
         </div>
-    )
-}
+    );
+};

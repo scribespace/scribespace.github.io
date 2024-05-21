@@ -8,30 +8,30 @@ import { MenuContext } from "../../components/menu/context";
 import { Menu } from "../../components/menu";
 
 export default function ContextMenuPlugin() {
-    const editorTheme: EditorTheme = useEditorThemeContext()
+    const editorTheme: EditorTheme = useEditorThemeContext();
     const [editor] = useLexicalComposerContext();
 
-    const [showContextMenu, setShowContextMenu] = useState<boolean>(false)
+    const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
     const [contextMenuContextObject, setContextMenuContextObject] = useState<ContextMenuContextData>(CONTEXT_MENU_CONTEX_DEFAULT);
 
     const openContextMenu = (e: MouseEvent) => {
-        setShowContextMenu(true)
-        setContextMenuContextObject((oldState) => {return {theme: oldState.theme, mousePosition: {x: e.clientX, y: e.clientY}, closeMenu: oldState.closeMenu}})
+        setShowContextMenu(true);
+        setContextMenuContextObject((oldState) => {return {theme: oldState.theme, mousePosition: {x: e.clientX, y: e.clientY}, closeMenu: oldState.closeMenu};});
         
-        e.preventDefault()
-        e.stopPropagation()
-    }
+        e.preventDefault();
+        e.stopPropagation();
+    };
 
     const closeContextMenu = () => {
-        setShowContextMenu(false)
-    }
+        setShowContextMenu(false);
+    };
 
     useEffect(()=>{
-        setContextMenuContextObject((oldState) => {return {theme: editorTheme.contextMenuTheme!, mousePosition: oldState.mousePosition, closeMenu: oldState.closeMenu}})
-    },[editorTheme])
+        setContextMenuContextObject((oldState) => {return {theme: editorTheme.contextMenuTheme!, mousePosition: oldState.mousePosition, closeMenu: oldState.closeMenu};});
+    },[editorTheme]);
 
     useEffect(()=>{
-        setContextMenuContextObject((oldState) => {return {theme: oldState.theme, mousePosition: oldState.mousePosition, closeMenu: closeContextMenu}})
+        setContextMenuContextObject((oldState) => {return {theme: oldState.theme, mousePosition: oldState.mousePosition, closeMenu: closeContextMenu};});
 
         const removeRootListeners = editor.registerRootListener((rootElement, prevElement) => {
             if (rootElement !== null) {
@@ -40,12 +40,12 @@ export default function ContextMenuPlugin() {
             if (prevElement !== null) {
                 prevElement.removeEventListener('contextmenu', openContextMenu);
             }
-            })
+            });
 
             return () => {
-                removeRootListeners()
-            }
-    },[editor])
+                removeRootListeners();
+            };
+    },[editor]);
 
     return (
         <MenuContext.Provider value={contextMenuContextObject}>
@@ -55,5 +55,5 @@ export default function ContextMenuPlugin() {
                 </Menu>
             </div>
         </MenuContext.Provider>
-    )
+    );
 }

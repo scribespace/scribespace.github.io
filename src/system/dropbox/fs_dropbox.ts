@@ -367,18 +367,18 @@ export class DropboxFS implements FileSystem {
                 settings: {
                     audience: {'.tag': 'public'}
                 }
-            })
+            });
 
-            let url = share.result.url.slice(0, -4) // remove dl=0
-            url = url + 'raw=1' // add raw file
+            let url = share.result.url.slice(0, -4); // remove dl=0
+            url = url + 'raw=1'; // add raw file
 
-            return url
+            return url;
         } catch (error: any) {
             const shareError = error.error;
             if (!shareError.error) {
                 throw DropboxError(shareError);
             }
-            return ""
+            return "";
         }
     }
 }
