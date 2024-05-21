@@ -1,6 +1,24 @@
-import { $createTableCellNode, $getTableRowIndexFromTableCellNode, TableCellHeaderStates, TableCellNode } from "@lexical/table";
+import { $createTableCellNode, $getTableRowIndexFromTableCellNode, TableCellHeaderStates, TableCellNode, TableRowNode } from "@lexical/table";
 import { $createParagraphNode } from "lexical";
-import { ResolvedRow } from "../../nodes/table/extendedTableNode";
+
+export class ResolvedCell {
+  columnID: number;
+  rowID: number;
+  cellNode: TableCellNode;
+  constructor(cell: TableCellNode, rowIndex: number, columnIndex: number) {
+    this.rowID = rowIndex;
+    this.columnID = columnIndex;
+    this.cellNode = cell;
+  }
+}
+
+export class ResolvedRow {
+  rowNode: TableRowNode;
+  cells: ResolvedCell[] = [];
+  constructor(row: TableRowNode) {
+    this.rowNode = row;
+  }
+}
 
 export function $createTableCellNodeWithParagraph(): TableCellNode {
     const tableCellNode = $createTableCellNode(TableCellHeaderStates.NO_STATUS);

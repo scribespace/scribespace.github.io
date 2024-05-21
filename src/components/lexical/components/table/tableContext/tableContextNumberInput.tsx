@@ -1,5 +1,5 @@
-import {NumberInput} from "../../numberInput";
-import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/contextMenuContext";
+import NumberInput from "../../numberInput";
+import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
 
 interface TableContextNumberInputProps {
     onInputAccepted: (target: HTMLInputElement) => void;

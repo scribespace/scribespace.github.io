@@ -1,8 +1,8 @@
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical";
-import MenuItem from "../../menu/menuItem";
+import { MenuItem } from "../../menu";
 import { $isTableSelection } from "@lexical/table";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../nodes/table/extendedTableNode";
-import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/contextMenuContext";
+import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
 import { TableContextOptionProps } from "./tableContextCommon";
 
 

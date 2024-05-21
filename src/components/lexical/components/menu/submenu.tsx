@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, PropsWithChildren } from "react";
 import Menu from "./menu";
-import { MenuContextData, getMenuContext } from "./menuContext";
+import { MenuContextData, getMenuContext } from "./context";
 import { IconBaseProps } from "react-icons";
 
 interface SubmenuProps {

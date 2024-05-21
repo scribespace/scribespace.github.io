@@ -1,26 +1,7 @@
-import { TableRowNode, TableCellNode, $getTableNodeFromLexicalNodeOrThrow } from '@lexical/table'
+import { TableCellNode, $getTableNodeFromLexicalNodeOrThrow } from '@lexical/table'
 import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, EditorConfig, ElementNode, LexicalEditor, LexicalNode, SerializedElementNode, Spread } from 'lexical';
 import {addClassNamesToElement} from '@lexical/utils';
 import { $createTableBodyNodeWithDimensions, $isTableBodyNode, TableBodyNode } from './tableBodyNode';
-
-export class ResolvedCell {
-  columnID: number;
-  rowID: number;
-  cellNode: TableCellNode;
-  constructor(cell: TableCellNode, rowIndex: number, columnIndex: number) {
-    this.rowID = rowIndex;
-    this.columnID = columnIndex;
-    this.cellNode = cell;
-  }
-}
-
-export class ResolvedRow {
-  rowNode: TableRowNode;
-  cells: ResolvedCell[] = [];
-  constructor(row: TableRowNode) {
-    this.rowNode = row;
-  }
-}
 
 export type SerializedExtendedTableNode = Spread<
   {

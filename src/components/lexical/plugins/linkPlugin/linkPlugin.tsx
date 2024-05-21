@@ -8,7 +8,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { mergeRegister } from '@lexical/utils';
 
 import { useEffect, useRef, useState } from "react";
-import LinkEditor from "../../components/link/linkEditor";
+import LinkEditor from "../../components/link";
 import { OpenURL } from "../../../../common";
 import { urlRegExp, validateUrl } from "../../../../common";
 import { EditorTheme, getEditorThemeContext } from "../../editorThemeContext";

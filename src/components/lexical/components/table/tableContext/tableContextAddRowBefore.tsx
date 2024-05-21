@@ -1,6 +1,5 @@
-import Submenu from "../../menu/submenu";
+import { MenuItem, Submenu } from "../../menu";
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection, $setSelection } from "lexical";
-import MenuItem from "../../menu/menuItem";
 import {
     $getTableCellNodeFromLexicalNode, $isTableSelection,
     TableCellNode
@@ -8,7 +7,7 @@ import {
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../nodes/table/extendedTableNode";
 import TableContextNumberInput from "./tableContextNumberInput";
 import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
-import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/contextMenuContext";
+import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
 import { PropsWithChildren } from "react";
 import { TableContextOptionProps } from "./tableContextCommon";
 

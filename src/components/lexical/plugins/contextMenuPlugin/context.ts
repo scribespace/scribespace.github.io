@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import { MenuContext, MenuContextData } from "../../components/menu/menuContext";
-import { ContextMenuTheme, CONTEXT_MENU_THEME_DEFAULT } from "./theme/contextMenuTheme";
+import { ContextMenuTheme, CONTEXT_MENU_THEME_DEFAULT } from "./theme";
+import { MenuContext, MenuContextData } from "../../components/menu/context";
 
 export interface ContextMenuContextData extends MenuContextData {
     theme: ContextMenuTheme;

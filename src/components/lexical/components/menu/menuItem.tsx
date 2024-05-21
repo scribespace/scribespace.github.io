@@ -1,6 +1,6 @@
 import { ReactNode, useCallback } from "react";
 import { IconType } from "react-icons";
-import { MenuContextData, getMenuContext } from "./menuContext";
+import { MenuContextData, getMenuContext } from "./context";
 
 interface MenuItemProps {
     Icon?: IconType;

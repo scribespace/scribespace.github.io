@@ -5,7 +5,6 @@ import {
 } from "@lexical/table";
 
 
-import { getContextMenuContext } from "../../plugins/contextMenuPlugin/contextMenuContext";
 import { SeparatorHorizontalStrong, SeparatorHorizontal } from "../separators";
 import { 
     TableContextAddColumnAfter, 
@@ -19,6 +18,7 @@ import {
     TableContextRowRemove, 
     TableContextSplitCells 
 } from "./tableContext";
+import { getContextMenuContext } from "../../plugins/contextMenuPlugin/context";
 
 interface TableContextOptionsProps {
     editor: LexicalEditor,

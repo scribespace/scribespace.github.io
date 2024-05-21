@@ -1,12 +1,12 @@
 import { $getSelection, $isRangeSelection, $setSelection } from "lexical";
-import MenuItem from "../../menu/menuItem";
+import { MenuItem } from "../../menu";
 import {
     $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $getTableRowIndexFromTableCellNode, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../nodes/table/extendedTableNode";
 import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
-import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/contextMenuContext";
+import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
 import { TableContextOptionProps } from "./tableContextCommon";
 
 

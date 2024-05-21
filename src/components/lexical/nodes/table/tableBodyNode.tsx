@@ -1,25 +1,6 @@
 import { TableNode, TableRowNode, TableCellNode, $createTableNodeWithDimensions, $isTableRowNode, $getTableRowIndexFromTableCellNode, $createTableRowNode, $createTableCellNode, TableCellHeaderStates } from '@lexical/table'
 import { $applyNodeReplacement, $isParagraphNode, DOMConversionMap, DOMConversionOutput, EditorConfig, LexicalEditor, LexicalNode, SerializedElementNode } from 'lexical';
-import { $createTableCellNodeWithParagraph, $getTableColumnIndexFromTableCellNode } from '../../plugins/tablePlugin/tableHelpers';
-
-export class ResolvedCell {
-  columnID: number;
-  rowID: number;
-  cellNode: TableCellNode;
-  constructor(cell: TableCellNode, rowIndex: number, columnIndex: number) {
-    this.rowID = rowIndex;
-    this.columnID = columnIndex;
-    this.cellNode = cell;
-  }
-}
-
-export class ResolvedRow {
-  rowNode: TableRowNode;
-  cells: ResolvedCell[] = [];
-  constructor(row: TableRowNode) {
-    this.rowNode = row;
-  }
-}
+import { $createTableCellNodeWithParagraph, $getTableColumnIndexFromTableCellNode, ResolvedCell, ResolvedRow } from '../../plugins/tablePlugin/tableHelpers';
 
 export class TableBodyNode extends TableNode {
   constructor(node?: TableBodyNode) {

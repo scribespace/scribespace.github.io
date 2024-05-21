@@ -1,6 +1,4 @@
-import Submenu from "../../menu/submenu";
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical";
-import MenuItem from "../../menu/menuItem";
 import {
     $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $isTableCellNode, $isTableSelection,
     TableCellNode
@@ -9,9 +7,10 @@ import TableContextNumberInput from "./tableContextNumberInput";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "../../../nodes/table/extendedTableNode";
 import { $getTableColumnIndexFromTableCellNode } from "../../../plugins/tablePlugin/tableHelpers";
 import { TableBodyNode } from "../../../nodes/table/tableBodyNode";
-import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/contextMenuContext";
+import { getContextMenuContext } from "../../../plugins/contextMenuPlugin/context";
 import { PropsWithChildren } from "react";
 import { TableContextOptionProps } from "./tableContextCommon";
+import { MenuItem, Submenu } from "../../menu";
 
 export default function TableContextAddColumnAfter({ editor }: TableContextOptionProps) {
     const menuContext = getContextMenuContext();

@@ -1,7 +1,7 @@
-import { MenuTheme } from "../../../components/menu";
 import { EditorThemeClassName } from "lexical";
 import { FaAngleRight } from "react-icons/fa";
-import { TABLE_MENU_THEME_DEFAULT, TableMenuTheme } from "../../../components/table";
+import { MenuTheme } from "../../../components/menu/theme";
+import { TABLE_MENU_THEME_DEFAULT, TableMenuTheme } from "../../../components/table/theme";
 
 
 export interface ContextMenuTheme extends MenuTheme {

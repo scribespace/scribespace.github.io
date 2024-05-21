@@ -1,10 +1,10 @@
 import { createContext, useContext } from "react";
-import { CONTEXT_MENU_THEME_DEFAULT, ContextMenuTheme } from "./plugins/contextMenuPlugin/theme/contextMenuTheme";
+import { CONTEXT_MENU_THEME_DEFAULT, ContextMenuTheme } from "./plugins/contextMenuPlugin/theme";
 import { EditorThemeClassName } from "lexical";
-import { TABLE_CREATOR_EDITOR_THEME_DEFAULT, TableCreatorTheme as TableCreatorTheme } from "./components/table";
-import { NUMBER_INPUT_THEME_DEFAULT, NumberInputTheme } from "./components/numberInput";
-import { SEPARATOR_THEME_DEFAULT, SeparatorTheme } from "./components/separators";
-import { LINK_THEME_DEFAULT, LinkTheme } from "./components/link/theme/linkTheme";
+import { LINK_THEME_DEFAULT, LinkTheme } from "./components/link/theme";
+import { NumberInputTheme, NUMBER_INPUT_THEME_DEFAULT } from "./components/numberInput/theme";
+import { SeparatorTheme, SEPARATOR_THEME_DEFAULT } from "./components/separators/theme";
+import { TableCreatorTheme, TABLE_CREATOR_EDITOR_THEME_DEFAULT } from "./components/table/theme";
 
 export interface EditorTheme {
     editorContainer?: EditorThemeClassName;
