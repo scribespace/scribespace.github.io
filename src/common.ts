@@ -20,20 +20,20 @@ export function separateValueAndUnit(valueUnit: string): ValueUnit {
     }
 }
 
-export function isObject<T>(item: T ){
+export function isObject(item: unknown): item is Record<string, unknown> {
     return item !== null && typeof item === 'object' && !Array.isArray(item);
 }
 
 export function copyExistingValues<T>(values: T | Partial<T> | null | undefined, defaultValues: T): T {
     if ( !values ) return defaultValues;
 
-    const newValues = defaultValues;
+    const newValues: T = { ...defaultValues};
     for ( const field in values ) {
-        const fieldValue = (values as any)[field];
+        const fieldValue = values[field as keyof T];
         if ( isObject(fieldValue) ) {
-            (newValues as any)[field] = copyExistingValues<T>(fieldValue, (newValues as any)[field] );
+            newValues[field as keyof T] = copyExistingValues<T[keyof T]>(fieldValue as Partial<T[keyof T]>, newValues[field as keyof T] );
         } else {
-            (newValues as any)[field] = fieldValue;
+            newValues[field as keyof T] = fieldValue as T[keyof T];
         }
     }
 
@@ -47,7 +47,7 @@ export const urlRegExp = new RegExp(
     return url === 'https://' || urlRegExp.test(url);
   }
 
-// @ts-ignore: Unused function
+// tslint:disable-next-line
 export const notImplemented = () => {
     throw Error("Not implemented");
 };export function OpenURL(url: string) {

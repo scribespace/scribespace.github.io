@@ -9,7 +9,7 @@ interface ContextMenuProps {
     children: React.ReactNode;
 }
 
-export default function Menu(props: ContextMenuProps) {
+export default function Menu({parentRect, disableBackground, showContextMenu, setShowContextMenu, children}: ContextMenuProps) {
     const menuContext: MenuContextData = useMenuContext();
 
     const [position, setPosition] = useState<{ left: string; top: string; }>({ left: '-1px', top: '-1px' });
@@ -24,7 +24,7 @@ export default function Menu(props: ContextMenuProps) {
     useEffect(() => {
         const handleClick = ({ target }: MouseEvent) => {
             if (contextMenuContainerRef.current && contextMenuContainerRef.current.parentElement && !contextMenuContainerRef.current.parentElement.contains(target as Node)) {
-                props.setShowContextMenu(false);
+                setShowContextMenu(false);
             }
         };
 
@@ -40,37 +40,37 @@ export default function Menu(props: ContextMenuProps) {
             document.removeEventListener('click', handleClick);
             document.removeEventListener('contextmenu', stopRightClick);
         };
-    }, []);
+    }, [setShowContextMenu]);
 
     useLayoutEffect(() => {
         if (!contextMenuRef.current) return;
 
         const { width, height } = contextMenuRef.current.getBoundingClientRect();
 
-        const newPosition = { x: props.parentRect.x + props.parentRect.width, y: props.parentRect.y };
+        const newPosition = { x: parentRect.x + parentRect.width, y: parentRect.y };
 
-        const endPositionX = props.parentRect.x + props.parentRect.width + width;
-        const endPositionY = props.parentRect.y + height;
+        const endPositionX = parentRect.x + parentRect.width + width;
+        const endPositionY = parentRect.y + height;
 
         if (endPositionX > window.innerWidth) {
-            newPosition.x = props.parentRect.x - width;
+            newPosition.x = parentRect.x - width;
         }
 
         if (endPositionY > window.innerHeight) {
-            newPosition.y = props.parentRect.y - height;
+            newPosition.y = parentRect.y - height;
         }
 
         newPosition.x += window.scrollX;
         newPosition.y += window.scrollY;
 
         setPosition({ left: `${newPosition.x}px`, top: `${newPosition.y}px` });
-    }, [props.showContextMenu, props.parentRect]);
+    }, [showContextMenu, parentRect]);
 
     return (
         <div ref={contextMenuContainerRef}>
-            {props.showContextMenu &&
-                <div ref={contextMenuRef} className={menuContext.theme?.menuFloat + (props.disableBackground ? '' : (' ' + menuContext.theme?.menuContainer))} style={{ left: position.left, top: position.top }}>
-                    {props.children}
+            {showContextMenu &&
+                <div ref={contextMenuRef} className={menuContext.theme?.menuFloat + (disableBackground ? '' : (' ' + menuContext.theme?.menuContainer))} style={{ left: position.left, top: position.top }}>
+                    {children}
                 </div>}
         </div>
     );

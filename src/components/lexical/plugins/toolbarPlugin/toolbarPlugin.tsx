@@ -11,7 +11,7 @@ import LinkTool from './tools/linkTool';
 import TableTool from './tools/tableTool';
 import { forwardRef } from 'react';
 
-export const ToolbarPlugin = forwardRef<HTMLDivElement>(({}, ref) => {
+export const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
     const [editor] = useLexicalComposerContext();
 
     function Separator() {
