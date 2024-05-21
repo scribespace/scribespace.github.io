@@ -32,7 +32,7 @@ export default function TableCreator(props: TableCreatorProps) {
 
     useEffect(()=>{
         const cellsElement: ReactElement[] = [];
-        let templateColumns: string = ''
+        const templateColumns: string = ''
         let key: number = 0;
         for ( let r = 0; r < props.rowsCount; ++r ) {
             const cellsArray: ReactElement[] = []

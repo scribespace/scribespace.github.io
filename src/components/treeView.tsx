@@ -31,7 +31,7 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
     const { ref: treeParent, height: treeParentHeight = 1 } = useResizeObserver<HTMLDivElement>(); 
     const { ref: controlButtonsRef, height: controlButtonsHeight = 1 } = useResizeObserver<HTMLDivElement>(); 
     const treeElement = useRef<TreeApi<any>>(null);
-    const treeOpenNodes = useRef<Set<String>>(new Set<String>());
+    const treeOpenNodes = useRef<Set<string>>(new Set<string>());
     const onToggleEnabled = useRef<boolean>(true)
 
     function UpdateDataVersion() {
@@ -42,7 +42,7 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
     function UploadTree() {
         const treeJSON = JSON.stringify(tree?.data)
         appGlobals.system?.getFileSystem().uploadFile(TREE_FILE, {content: new Blob([treeJSON])}, FileUploadMode.Replace).then((result) => {
-            if (!!!result) throw Error('UploadTree: no result');
+            if (!result) throw Error('UploadTree: no result');
             if (result.status !== FileSystemStatus.Success) throw Error('Couldnt upload tree, status: ' + result.status);
         })
     }
@@ -50,7 +50,7 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
     function UploadTreeStatus() {
         const treeStatusJSON = JSON.stringify([...treeOpenNodes.current])
         appGlobals.system?.getFileSystem().uploadFile(TREE_STATUS_FILE, {content: new Blob([treeStatusJSON])}, FileUploadMode.Replace).then((result) => {
-            if (!!!result) throw Error('UploadTreeStatus: no result');
+            if (!result) throw Error('UploadTreeStatus: no result');
             if (result.status !== FileSystemStatus.Success) throw Error('Couldnt upload tree status, status: ' + result.status);
         })
     }
@@ -62,7 +62,7 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
 
     const OnDeleteElement = () => {
         if (treeElement.current == null) return;
-        let tree = treeElement.current;
+        const tree = treeElement.current;
         const node = tree.focusedNode;
         if (node) {
           const sib = node.nextSibling;
@@ -89,13 +89,13 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
       };
 
     const onCreate: CreateHandler<NodeData> = async ({ parentId, index }) => {
-        let fileName = 'scribe-space-id-' + crypto.randomUUID() + (new Date().toJSON());
+        const fileName = 'scribe-space-id-' + crypto.randomUUID() + (new Date().toJSON());
 
         const result: UploadResult | undefined = await appGlobals.system?.getFileSystem().uploadFile(NOTES_PATH + fileName, {content: new Blob([""])}, FileUploadMode.Add)
-        if (!!!result) throw Error('onCreate note: no result');
+        if (!result) throw Error('onCreate note: no result');
         if (result.status !== FileSystemStatus.Success) throw Error('Couldnt upload note, status: ' + result.status);
-        if (!!!result.fileInfo) throw Error('onCreate note: No fileInfo');
-        if (!!!result.fileInfo.hash) throw Error('onCreate note: No hash');
+        if (!result.fileInfo) throw Error('onCreate note: No fileInfo');
+        if (!result.fileInfo.hash) throw Error('onCreate note: No hash');
         
         if ( result.fileInfo.name ) {
             const id = result.fileInfo.name;
@@ -112,7 +112,7 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
         const id = args.ids[0];
 
         const result: DeleteResults | undefined = await appGlobals.system?.getFileSystem().deleteFile(id)
-        if (!!!result) throw Error('onDelete note: no result');
+        if (!result) throw Error('onDelete note: no result');
         if (result.status !== FileSystemStatus.Success && result.status !== FileSystemStatus.NotFound) throw Error('Couldnt delete note, status: ' + result.status);
 
         tree?.drop({id})

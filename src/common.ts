@@ -23,7 +23,7 @@ export function separateValueAndUnit(valueUnit: string): ValueUnit {
 export function copyExistingValues<T>(values: T | Partial<T> | null | undefined, defaultValues: T): T {
     if ( !values ) return defaultValues;
 
-    let newValues = defaultValues;
+    const newValues = defaultValues;
     for ( const field in values ) {
         (newValues as any)[field] = (values as any)[field]
     }

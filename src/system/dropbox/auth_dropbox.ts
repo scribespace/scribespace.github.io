@@ -21,7 +21,7 @@ export class DropboxAuth implements Authenticate {
     }
 
     async RequestLogin() {
-        var authUrl = await this.dbxAuth.getAuthenticationUrl(
+        const authUrl = await this.dbxAuth.getAuthenticationUrl(
             REDIRECT_URI, // redirectUri - A URL to redirect the user to after authenticating. This must be added to your app through the admin interface.
             DROPBOX_APP, // state - State that will be returned in the redirect URL to help prevent cross site scripting attacks.
             'code', // authType - auth type, defaults to 'token', other option is 'code'
@@ -53,13 +53,13 @@ export class DropboxAuth implements Authenticate {
     }
 
     async GetOAuthAccessToken(oauth_code: string): Promise<AuthData> {
-        var sessionCode = window.sessionStorage.getItem('codeVerifier');
-        if (!!!sessionCode) {
+        const sessionCode = window.sessionStorage.getItem('codeVerifier');
+        if (!sessionCode) {
             throw DropboxError('There is no codeVerifier. Call RequestLogin() first');
         }
 
         this.dbxAuth.setCodeVerifier(sessionCode);
-        var login = (await this.dbxAuth.getAccessTokenFromCode(REDIRECT_URI, oauth_code)).result as any;
+        const login = (await this.dbxAuth.getAccessTokenFromCode(REDIRECT_URI, oauth_code)).result as any;
         return { access_token: login.access_token, refresh_token: login.refresh_token };
     }
 
@@ -72,19 +72,19 @@ export class DropboxAuth implements Authenticate {
             auth: this.dbxAuth,
         });
 
-        var response = await this.dbx.usersGetCurrentAccount();
-        if (!!!response?.result.account_id) {
+        const response = await this.dbx.usersGetCurrentAccount();
+        if (!response?.result.account_id) {
             throw DropboxError('Login() failed');
         }
     }
 
     async Logout(): Promise<void> {
-        if (!!!this.dbx) {
+        if (!this.dbx) {
             throw DropboxError('Logout: no Dropbox object!');
         }
 
-        let response = await this.dbx.authTokenRevoke();
-        if (!!!response) {
+        const response = await this.dbx.authTokenRevoke();
+        if (!response) {
             throw DropboxError('Logout failed');
         }
     }

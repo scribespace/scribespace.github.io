@@ -468,7 +468,7 @@ export class TableBodyNode extends TableNode {
                     nextColumnID += nextResolvedCell.cellNode.getColSpan();
                 }
 
-                let newCell = $createTableCellNode(TableCellHeaderStates.NO_STATUS);
+                const newCell = $createTableCellNode(TableCellHeaderStates.NO_STATUS);
                 for ( const cellChild of resolvedCell.cellNode.getChildren() ) {
                     if ( !$isParagraphNode(cellChild) || cellChild.getTextContentSize() > 0 )
                         newCell.append(cellChild)

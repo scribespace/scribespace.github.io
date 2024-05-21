@@ -51,7 +51,7 @@ export function TableContextAddColumnAfter({ editor }: TableContextOptionProps) 
                 const tableBodyNode = $getNodeByKeyOrThrow<TableBodyNode>(selection.tableKey);
                 tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>();
                 const resolvedTable = tableBodyNode.getResolvedTable();
-                let columnID = -1;
+                const columnID = -1;
                 for (const node of selection.getNodes()) {
                     if ($isTableCellNode(node)) {
                         const cellsTableNode = $getTableNodeFromLexicalNodeOrThrow(node);
@@ -117,7 +117,7 @@ export function TableContextAddColumnBefore({ editor }: TableContextOptionProps)
                 const tableBodyNode = $getNodeByKeyOrThrow<TableBodyNode>(selection.tableKey);
                 tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>();
                 const resolvedTable = tableBodyNode.getResolvedTable();
-                let columnID = resolvedTable[0].cells.length;
+                const columnID = resolvedTable[0].cells.length;
                 for (const node of selection.getNodes()) {
                     if ($isTableCellNode(node)) {
                         const cellsTableNode = $getTableNodeFromLexicalNodeOrThrow(node);

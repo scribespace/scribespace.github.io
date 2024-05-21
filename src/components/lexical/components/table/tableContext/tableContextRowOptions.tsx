@@ -107,7 +107,7 @@ export function TableContextAddRowAfter({ editor }: TableContextOptionProps) {
             if ($isTableSelection(selection)) {
                 const tableBodyNode = $getNodeByKeyOrThrow<TableBodyNode>(selection.tableKey);
                 tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>()
-                let rowID = -1;
+                const rowID = -1;
                 for (const node of selection.getNodes()) {
                     if ($isTableCellNode(node)) {
                         const cellsTableNode = $getTableNodeFromLexicalNodeOrThrow(node);

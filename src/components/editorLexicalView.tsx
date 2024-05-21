@@ -47,7 +47,7 @@ function TestPlugin( {selectedFile} : Props ) {
 
     if ( selectedFile != '' ) {
         appGlobals.system?.getFileSystem().downloadFile(selectedFile).then((result) => {
-           if ( !!!result.file || !!!result.file.content) {
+           if ( !result.file || !result.file.content) {
             throw Error('EditorView couldnt load note!');
         }
 
@@ -69,7 +69,7 @@ function TestPlugin( {selectedFile} : Props ) {
         })
     }
     return null;
-};
+}
 
 export function EditorLexicalView({selectedFile, theme} : Props) {
   const [editorTheme, setEditorTheme] = useState<EditorTheme>(EDITOR_THEME_DEFAULT);

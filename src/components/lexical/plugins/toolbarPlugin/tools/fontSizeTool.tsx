@@ -50,7 +50,7 @@ export default function FontSizeTool({editor}: ToolbarToolProps) {
         const onKeyDownFontSize = (e: React.KeyboardEvent<HTMLInputElement>) => {
             if ( e.key == "Enter") {
                 if ( fontInputRef.current ) {
-                    let size = fontInputRef.current.value.match(/\d+/g);
+                    const size = fontInputRef.current.value.match(/\d+/g);
                     const unit = fontInputRef.current.value.match(/[a-zA-Z]+/g);
 
                     const supportedUnits = [

@@ -25,7 +25,7 @@ export function EditorView({selectedFile} : Props) {
 
     async function Save( file: string, content: string ) {
         const result = await appGlobals.system?.getFileSystem().uploadFile(file, {content: new Blob([content])}, FileUploadMode.Replace)
-        if (!!!result) throw Error('UploadTree: no result');
+        if (!result) throw Error('UploadTree: no result');
         if (result.status !== FileSystemStatus.Success) throw Error('Couldnt upload tree, status: ' + result.status);    
         console.log(file+' saved!')    
     }
@@ -50,13 +50,13 @@ export function EditorView({selectedFile} : Props) {
       }
 
       async function UploadImage(blobInfo: any): Promise<string> {
-            let fileName = 'scribe-space-id-image-' + crypto.randomUUID() + (new Date().toJSON());
+            const fileName = 'scribe-space-id-image-' + crypto.randomUUID() + (new Date().toJSON());
             
             const result: UploadResult | undefined = await appGlobals.system?.getFileSystem().uploadFile(IMAGES_PATH + fileName, {content: blobInfo.blob()}, FileUploadMode.Add)
-            if (!!!result) throw Error('onCreate note: no result');
+            if (!result) throw Error('onCreate note: no result');
             if (result.status !== FileSystemStatus.Success) throw Error('Couldnt upload note, status: ' + result.status);
-            if (!!!result.fileInfo) throw Error('onCreate note: No fileInfo');
-            if (!!!result.fileInfo.hash) throw Error('onCreate note: No hash');
+            if (!result.fileInfo) throw Error('onCreate note: No fileInfo');
+            if (!result.fileInfo.hash) throw Error('onCreate note: No hash');
 
             let imageURL = ""
             if ( result.fileInfo.name) {
@@ -75,7 +75,7 @@ export function EditorView({selectedFile} : Props) {
                 const array = Array.from(imagesMap.current.entries());
                 const imagesJSON = JSON.stringify(array)
                 appGlobals.system?.getFileSystem().uploadFile(IMAGES_LIST_FILE, {content: new Blob([imagesJSON])}, FileUploadMode.Replace).then((result) => {
-                    if (!!!result) throw Error('UploadImage -> upload images list: no result');
+                    if (!result) throw Error('UploadImage -> upload images list: no result');
                     if (result.status !== FileSystemStatus.Success) throw Error('Couldnt upload images list, status: ' + result.status);
                 })
             }
@@ -108,7 +108,7 @@ export function EditorView({selectedFile} : Props) {
         setFileLoaded(false);
         if ( selectedFile != '' ) {
             appGlobals.system?.getFileSystem().downloadFile(selectedFile).then((result) => {
-               if ( !!!result.file || !!!result.file.content) {
+               if ( !result.file || !result.file.content) {
                 throw Error('EditorView couldnt load note!');
             }
 
@@ -233,7 +233,7 @@ export function EditorView({selectedFile} : Props) {
                 // Check if the removed element is an image
                 if (e.target.nodeName.toLowerCase() === 'img') {
                   // React to the image being deleted
-                  var deletedImage = e.target;
+                  const deletedImage = e.target;
                   console.log('Image deleted:', deletedImage);
                   // Perform any other actions you need here
                 }
@@ -259,13 +259,13 @@ export function EditorView({selectedFile} : Props) {
                 editor.execCommand('mcePageBreak');
             });
             editor.addShortcut('meta+shift+s', 'Increase Font Size', () => {
-                var currentSize = editor.queryCommandValue('FontSize') || '12pt';
-                var newSize = parseInt(currentSize) + 1 + 'pt';
+                const currentSize = editor.queryCommandValue('FontSize') || '12pt';
+                const newSize = parseInt(currentSize) + 1 + 'pt';
                 editor.execCommand('FontSize', false, newSize);
             });
             editor.addShortcut('meta+shift+a', 'Decrease Font Size', () => {
-                var currentSize = editor.queryCommandValue('FontSize') || '12pt';
-                var newSize = parseInt(currentSize) - 1 + 'pt';
+                const currentSize = editor.queryCommandValue('FontSize') || '12pt';
+                const newSize = parseInt(currentSize) - 1 + 'pt';
                 editor.execCommand('FontSize', false, newSize);
             });
             editor.addShortcut('meta+shift+r', 'Add Horizonal Ruler', () => {
@@ -296,16 +296,16 @@ export function EditorView({selectedFile} : Props) {
                 editor.execCommand('JustifyRight');
             });
             editor.addShortcut('alt+c', 'Clear Table Border', () => {
-                var node = editor.selection.getNode(); // Get the current node
-                let table = editor.dom.getParent(node, 'table');
+                const node = editor.selection.getNode(); // Get the current node
+                const table = editor.dom.getParent(node, 'table');
                 if (table) { // Check if it is a table or inside a table
                     editor.dom.setStyle(table, 'borderColor', '#00000000'); // Set the border color
                     editor.undoManager.add(); // Add undo option for this change
                 }
             });
             editor.addShortcut('alt+x', 'Reset Table Border', () => {
-                var node = editor.selection.getNode(); // Get the current node
-                let table = editor.dom.getParent(node, 'table');
+                const node = editor.selection.getNode(); // Get the current node
+                const table = editor.dom.getParent(node, 'table');
                 if (table) { // Check if it is a table or inside a table
                     editor.dom.setStyle(table, 'borderColor', 'black'); // Set the border color
                     editor.undoManager.add(); // Add undo option for this change

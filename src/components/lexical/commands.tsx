@@ -25,7 +25,7 @@ export default function RegisterCustomCommands() {
     useEffect(()=>{
             defaultFontSize.current = getComputedStyle(document.documentElement).getPropertyValue("--default-font-size");
 
-            let removeFunctionsArray: {(): void}[] = [];
+            const removeFunctionsArray: {(): void}[] = [];
 
             const removeClearCommand = editor.registerCommand(CLEAR_FORMAT_TEXT_COMMAND, () => {
                 const selection = $getSelection();

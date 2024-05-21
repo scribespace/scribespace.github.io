@@ -333,7 +333,7 @@ export default function TablePlugin() {
                   cellLUT[r][cellIndexInLUT + colSpan - 1] = cellNode
                 }
               }
-              let tableRowIndex = $getTableRowIndexFromTableCellNode(tableCellNode);
+              const tableRowIndex = $getTableRowIndexFromTableCellNode(tableCellNode);
               let columnID = cellLUT[tableRowIndex].findIndex((node)=>node==tableCellNode);
 
               if ( cellPart == CELL_LEFT ) {

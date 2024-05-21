@@ -71,7 +71,7 @@ export default function LinkPlugin() {
       {
         const match = urlRegExp.exec( testString );
         if ( match ) {
-          let matchingNodes: TextNode[] = []
+          const matchingNodes: TextNode[] = []
           let textLength = 0;
           const matchStart = Math.max(0, includesSpaceIndex ) + match.index;
           let firstNodeOffset = 0;

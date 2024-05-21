@@ -35,7 +35,7 @@ class Authentication {
 
     async tryAuthentication(): Promise<boolean> {
         const systemName = this.getSystemName();
-        if ( !!systemName ) {
+        if ( systemName ) {
             const accessToken = this.getAccessToken();
             const refreshToken = this.getRefreshToken();
             if (!!accessToken && !!refreshToken) {
@@ -54,12 +54,12 @@ class Authentication {
                 const oauth_code = params.get('code');
                 const state = params.get('state');
                 window.history.pushState('Remove code from oauth', 'ScribeSpace', '/');
-                if (!!oauth_code) {
+                if (oauth_code) {
                     switch (state) {
                         case DROPBOX_APP:
                             if (appGlobals.system == null) appGlobals.system = new Dropbox();
                             
-                            let tokens = await appGlobals.system.getAuth().GetOAuthAccessToken(oauth_code);
+                            const tokens = await appGlobals.system.getAuth().GetOAuthAccessToken(oauth_code);
                             window.localStorage.setItem(ACCESS_TOKEN, tokens.access_token as string);
                             window.localStorage.setItem(REFRESH_TOKEN, tokens.refresh_token as string);
                             await appGlobals.system.getAuth().Login(
