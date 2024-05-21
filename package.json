@@ -40,7 +40,6 @@
     "@lexical/yjs": "file:libs/lexical/lexical-yjs",
     "clsx": "^2.1.1",
     "dropbox": "^10.34.0",
-    "fs-extra": "^11.2.0",
     "lexical": "file:libs/lexical/lexical",
     "react": "^18.2.0",
     "react-arborist": "^3.4.0",
@@ -59,6 +58,7 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
+    "fs-extra": "^11.2.0",
     "madge": "^7.0.0",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"

@@ -1,23 +1,27 @@
-import { TablePlugin as LexicalTablePlugin } from '@lexical/react/LexicalTablePlugin'
-import { 
-  SELECTION_CHANGE_COMMAND, COMMAND_PRIORITY_LOW, 
-  $getSelection, $isRangeSelection, $createTextNode, $getNearestNodeFromDOMNode, 
-  
-  $getNodeByKey
- } from 'lexical';
+import { TablePlugin as LexicalTablePlugin } from '@lexical/react/LexicalTablePlugin';
+import {
+  SELECTION_CHANGE_COMMAND, COMMAND_PRIORITY_LOW,
+  $getSelection, $isRangeSelection, $createTextNode, $getNearestNodeFromDOMNode,
+
+  $getNodeByKey,
+  $createParagraphNode,
+  $isParagraphNode, LexicalEditor,
+  LexicalNode,
+  RangeSelection
+} from 'lexical';
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { 
+import {
   $isTableSelection, $getTableNodeFromLexicalNodeOrThrow, $isTableCellNode, $isTableNode, $getTableRowIndexFromTableCellNode, $isTableRowNode,
-  TableDOMCell, TableNode, TableRowNode, TableCellNode, getDOMCellFromTarget
+  TableDOMCell, TableNode, TableRowNode, TableCellNode, getDOMCellFromTarget,
+  $computeTableMap
 } from '@lexical/table';
 import { $findMatchingParent, mergeRegister } from '@lexical/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Property } from 'csstype'
+import { Property } from 'csstype';
 
 import { getEditorThemeContext } from '../../editorThemeContext';
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from '../../nodes/table';
-import { $getTableEdgeCursorPosition, $insertParagraphAtTableEdge } from './utils';
 
 const DRAG_NONE = 0 as const
 const DRAG_HORIZONTAL = 1 as const
@@ -37,6 +41,78 @@ const COLUMN_MARGIN = 10
 type MousePosition = {
     x: number;
     y: number;
+}
+
+function getTableEdgeCursorPosition(
+  editor: LexicalEditor,
+  selection: RangeSelection,
+  tableNode: TableNode
+) {
+  const domSelection = window.getSelection();
+  if (!domSelection || (domSelection.anchorNode !== editor.getRootElement() && domSelection.anchorNode?.nodeName !== "TD")) {
+    return undefined;
+  }
+
+  const anchorCellNode = $findMatchingParent(selection.anchor.getNode(), (n) => $isTableCellNode(n)
+  ) as TableCellNode | null;
+  if (!anchorCellNode) {
+    return undefined;
+  }
+
+  const parentTable = $findMatchingParent(anchorCellNode, (n) => $isTableNode(n)
+  );
+  if (!$isTableNode(parentTable) || !parentTable.is(tableNode)) {
+    return undefined;
+  }
+
+  const [tableMap, cellValue] = $computeTableMap(
+    tableNode,
+    anchorCellNode,
+    anchorCellNode
+  );
+  const firstCell = tableMap[0][0];
+  const lastCell = tableMap[tableMap.length - 1][tableMap[0].length - 1];
+  const { startRow, startColumn } = cellValue;
+
+  const isAtFirstCell = startRow === firstCell.startRow && startColumn === firstCell.startColumn;
+  const isAtLastCell = startRow === lastCell.startRow && startColumn === lastCell.startColumn;
+
+  if (isAtFirstCell) {
+    return 'first';
+  } else if (isAtLastCell) {
+    return 'last';
+  } else {
+    return undefined;
+  }
+}
+
+function insertParagraphAtTableEdge(
+  edgePosition: 'first' | 'last',
+  tableBodyNode: TableNode,
+  children?: LexicalNode[]
+) {
+  const tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>();
+  if (edgePosition === 'first') {
+    const prevSibiling = tableNode.getPreviousSibling();
+    if (prevSibiling && $isParagraphNode(prevSibiling)) {
+      prevSibiling.selectStart();
+    } else {
+      const paragraphNode = $createParagraphNode();
+      tableNode.insertBefore(paragraphNode);
+      paragraphNode.append(...(children || []));
+      paragraphNode.selectEnd();
+    }
+  } else {
+    const nextSibling = tableNode.getNextSibling();
+    if (nextSibling && $isParagraphNode(nextSibling)) {
+      nextSibling.selectStart();
+    } else {
+      const paragraphNode = $createParagraphNode();
+      tableNode.insertAfter(paragraphNode);
+      paragraphNode.append(...(children || []));
+      paragraphNode.selectEnd();
+    }
+  }
 }
 
 export default function TablePlugin() {
@@ -402,13 +478,13 @@ export default function TablePlugin() {
                 return false;
               }
               
-                const edgePosition = $getTableEdgeCursorPosition(
+                const edgePosition = getTableEdgeCursorPosition(
                   editor,
                   selection,
                   tableNode,
                 );
                 if (edgePosition) {
-                    $insertParagraphAtTableEdge('last', tableNode, [
+                    insertParagraphAtTableEdge('last', tableNode, [
                         $createTextNode(),
                     ]);
                 }

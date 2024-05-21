@@ -13,7 +13,7 @@ export default defineConfig({
             id.includes('libs/lexical')
           ) {
             return '@lexical';
-          }
+          } 
         },
       },
     },

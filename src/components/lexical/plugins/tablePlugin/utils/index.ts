@@ -1,1 +1,1 @@
-export { ResolvedCell, ResolvedRow, $createTableCellNodeWithParagraph, $getTableColumnIndexFromTableCellNode, $getTableEdgeCursorPosition, $insertParagraphAtTableEdge } from './tableHelpers'
+export { ResolvedCell, ResolvedRow, $createTableCellNodeWithParagraph, $getTableColumnIndexFromTableCellNode } from './tableHelpers'
