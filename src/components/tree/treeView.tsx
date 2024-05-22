@@ -2,24 +2,15 @@ import { FunctionComponent, useEffect, useRef, useState } from "react";
 
 import useResizeObserver from "use-resize-observer";
 
-import { Node } from "./treeNode";
+import { Node } from "./components/treeNode";
 
-import { Tree, TreeApi, SimpleTree, CreateHandler, DeleteHandler, MoveHandler, RenameHandler, NodeApi } from 'react-arborist';
+import { Tree, TreeApi, SimpleTree, CreateHandler, DeleteHandler, MoveHandler, RenameHandler } from 'react-arborist';
 import './css/treeView.css';
 
-import { AddIcon, DeleteIcon } from "../global";
-import { appGlobals } from "../system/appGlobals";
-import { DeleteResults, FileSystemStatus, FileUploadMode, UploadResult } from "../interfaces/system/fs_interface";
-
-const NOTES_PATH = '/notes/';
-const TREE_FILE = '/tree';
-const TREE_STATUS_FILE = '/tree_status';
-
-class NodeData {
-        id: string = "";
-        name: string = "";
-        children: NodeData[] = [];
-}
+import { AddIcon, DeleteIcon } from "../../global";
+import { appGlobals } from "../../system/appGlobals";
+import { DeleteResults, FileSystemStatus, FileUploadMode, UploadResult } from "../../interfaces/system/fs_interface";
+import { NodeData, TREE_FILE, TREE_STATUS_FILE, NOTES_PATH, TreeNode } from "./common";
 
 type Props = {
     setSelectedFile: (file: string) => void;
@@ -30,7 +21,7 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
     const [tree, setTree] = useState<SimpleTree<NodeData> | null>(null);
     const { ref: treeParent, height: treeParentHeight = 1 } = useResizeObserver<HTMLDivElement>(); 
     const { ref: controlButtonsRef, height: controlButtonsHeight = 1 } = useResizeObserver<HTMLDivElement>(); 
-    const treeElement = useRef<TreeApi<any>>(null);
+    const treeElement = useRef<TreeApi<NodeData>>(null);
     const treeOpenNodes = useRef<Set<string>>(new Set<string>());
     const onToggleEnabled = useRef<boolean>(true);
 
@@ -84,7 +75,7 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
       };
     
       const onRename: RenameHandler<NodeData> = ({ name, id }) => {
-        tree?.update({ id, changes: { name } as any });
+        tree?.update({ id, changes: { name } as NodeData });
         UpdateDataVersion();
       };
 
@@ -99,7 +90,7 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
         
         if ( result.fileInfo.name ) {
             const id = result.fileInfo.name;
-            const node = { id, name: "New File", children: [] } as any;
+            const node = { id, name: "New File", children: [] } as NodeData;
             tree?.create({ parentId, index, data:node });
             UpdateDataVersion();
             return node;
@@ -119,7 +110,7 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
         UpdateDataVersion();
       };
 
-      const onSelect = (nodes: NodeApi<any>[]) => {
+      const onSelect = (nodes: TreeNode[]) => {
         if (nodes.length > 1) throw Error('onSelect: Too many files selected!');
         if ( nodes.length == 0 ) {
             setSelectedFile('');

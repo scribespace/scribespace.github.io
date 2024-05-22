@@ -169,7 +169,7 @@ export default function RegisterCustomCommands() {
         return () => { 
             removeFunctionsArray.forEach(f => f());
          };
-    }, []);
+    }, [editor]);
 
     return null;
 }

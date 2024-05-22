@@ -11,24 +11,24 @@ import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 import { $generateNodesFromDOM } from '@lexical/html';
 import {ListNode, ListItemNode } from '@lexical/list';
 import {LinkNode} from '@lexical/link';
-import LinkPlugin from './lexical/plugins/linkPlugin';
-import { appGlobals } from '../system/appGlobals';
+import LinkPlugin from './plugins/linkPlugin';
+import { appGlobals } from '../../system/appGlobals';
 
-import './lexical/editorInputTheme.css';
+import './css/editorInputTheme.css';
 
-import { ToolbarPlugin } from './lexical/plugins/toolbarPlugin/toolbarPlugin';
+import { ToolbarPlugin } from './plugins/toolbarPlugin/toolbarPlugin';
 
-import EditorInputTheme from './lexical/editorInputTheme';
-import RegisterCustomCommands from './lexical/commands';
-import ExtendedTextNode from './lexical/nodes/text';
+import EditorInputTheme from './theme/editorInputTheme';
+import RegisterCustomCommands from './commands';
+import ExtendedTextNode from './nodes/text';
 import useResizeObserver from 'use-resize-observer';
 import { TableNode, TableRowNode, TableCellNode } from '@lexical/table';
-import { ExtendedTableNode, TableBodyNode } from './lexical/nodes/table';
-import TablePlugin from './lexical/plugins/tablePlugin';
-import ContextMenuPlugin from './lexical/plugins/contextMenuPlugin';
+import { ExtendedTableNode, TableBodyNode } from './nodes/table';
+import TablePlugin from './plugins/tablePlugin';
+import ContextMenuPlugin from './plugins/contextMenuPlugin';
 import { useEffect, useState } from 'react';
-import { EDITOR_THEME_DEFAULT, EditorThemeContext, EditorTheme } from './lexical/editorThemeContext';
-import { copyExistingValues } from '../common';
+import { EDITOR_THEME_DEFAULT, EditorThemeContext, EditorTheme } from './editorThemeContext';
+import { copyExistingValues } from '../../common';
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
 // try to recover gracefully without losing user data.

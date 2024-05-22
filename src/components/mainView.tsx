@@ -1,4 +1,4 @@
-import { TreeView } from './treeView';
+import { TreeView } from './tree/treeView';
 
 
 import './css/mainView.css';
@@ -6,7 +6,7 @@ import './css/mainView.css';
 import { authGlobal, AUTH_DISABLED } from '../system/authentication';
 import { FunctionComponent, useState } from 'react';
 import useResizeObserver from 'use-resize-observer';
-import { EditorLexicalView } from './editorLexicalView';
+import { EditorLexicalView } from './lexical/editorLexicalView';
 
 type Props = {
   changeAuthButtonState: (state: number) => void;
