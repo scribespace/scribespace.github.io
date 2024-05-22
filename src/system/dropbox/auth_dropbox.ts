@@ -1,4 +1,4 @@
-import { DropboxError, DROPBOX_APP } from './dropbox_common';
+import { ThrowDropboxError, DROPBOX_APP } from './dropbox_common';
 import * as DropboxAPI from 'dropbox';
 import { Authenticate, AuthData } from '../../interfaces/system/auth_interface';
 import { REDIRECT_URI, CLIENT_ID } from './app_dropbox';
@@ -55,12 +55,12 @@ export class DropboxAuth implements Authenticate {
     async GetOAuthAccessToken(oauth_code: string): Promise<AuthData> {
         const sessionCode = window.sessionStorage.getItem('codeVerifier');
         if (!sessionCode) {
-            throw DropboxError('There is no codeVerifier. Call RequestLogin() first');
+            ThrowDropboxError('There is no codeVerifier. Call RequestLogin() first');
         }
 
         this.dbxAuth.setCodeVerifier(sessionCode);
-        const login = (await this.dbxAuth.getAccessTokenFromCode(REDIRECT_URI, oauth_code)).result as any;
-        return { access_token: login.access_token, refresh_token: login.refresh_token };
+        const login = (await this.dbxAuth.getAccessTokenFromCode(REDIRECT_URI, oauth_code)).result as AuthData;
+        return login;
     }
 
     async Login(access_token: string, refresh_token: string): Promise<void> {
@@ -74,18 +74,18 @@ export class DropboxAuth implements Authenticate {
 
         const response = await this.dbx.usersGetCurrentAccount();
         if (!response?.result.account_id) {
-            throw DropboxError('Login() failed');
+            ThrowDropboxError('Login() failed');
         }
     }
 
     async Logout(): Promise<void> {
         if (!this.dbx) {
-            throw DropboxError('Logout: no Dropbox object!');
+            ThrowDropboxError('Logout: no Dropbox object!');
         }
 
         const response = await this.dbx.authTokenRevoke();
         if (!response) {
-            throw DropboxError('Logout failed');
+            ThrowDropboxError('Logout failed');
         }
     }
 }

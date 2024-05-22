@@ -1,5 +1,9 @@
-export function variableExists<T>( variable: T ) {
+export function variableExists<T>( variable: T | undefined ): variable is T {
     return typeof variable !== 'undefined';
+}
+
+export function variableExistsOrThrow<T>( variable: T | undefined ): asserts variable is T {
+    if ( !variableExists(variable) ) throw Error(`${variable} doesn't exist`);
 }
 
 export interface ValueUnit {
@@ -56,4 +60,5 @@ export const notImplemented = () => {
         window.open(validURL, '_blank')?.focus();
     }
 }
+
 

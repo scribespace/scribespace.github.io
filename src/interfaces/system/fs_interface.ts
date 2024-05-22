@@ -10,25 +10,31 @@ export enum FileUploadMode {
     Replace,
 }
 
-export class File {
-    content: Blob | null = null;
+export interface File {
+    content: Blob | null;
 }
 
-export class FileInfo {
+export interface FileInfo {
     hash: string | undefined;
     name: string | undefined;
 }
-export class UploadResult {
-    status: FileSystemStatus = FileSystemStatus.Unknown;
+
+export interface FileResult {
+    status: FileSystemStatus;
+} 
+
+export interface UploadResult extends FileResult {
     fileInfo?: FileInfo;
 }
-export class DownloadResult {
-    status: FileSystemStatus = FileSystemStatus.Unknown;
+export interface DownloadResult extends FileResult {
     file?: File;
     fileInfo?: FileInfo;
 }
-export class DeleteResults {
-    status: FileSystemStatus = FileSystemStatus.Unknown;
+export interface DeleteResults extends FileResult {
+}
+
+export interface GetMetadataResults extends FileResult {
+    fileInfo?: FileInfo;
 }
 
 export interface FileSystem {

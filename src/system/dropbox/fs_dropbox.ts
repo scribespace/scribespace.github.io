@@ -1,5 +1,5 @@
 import * as DropboxAPI from 'dropbox';
-import { DropboxError } from './dropbox_common';
+import { ThrowDropboxError, DropboxUploadSmallFileError, isDropboxResponseErrorOrThrow as isDropboxErrorResponseOrThrow, DropboxUploadSessionStartError, DropboxUploadSessionAppendError, DropboxUploadError, DropboxUploadSessionFinishError, DropboxDownloadError, DropboxFileBlobResponse, DropboxFileMetadata, DropboxGetMetadataError, DropboxDeleteError, DropboxCreateSharedLinkWithSettingsError, DropboxLookupError, DropboxCommitInfo, DropboxWriteModeAdd, DropboxWriteModeOverwrite, DropboxLinkAudiencePublic, DropboxUploadSessionTypeConcurrent } from './dropbox_common';
 import {
     FileSystem,
     File,
@@ -9,76 +9,53 @@ import {
     FileInfo,
     FileUploadMode,
     DeleteResults as DeleteResult,
+    GetMetadataResults,
+    FileResult,
 } from '../../interfaces/system/fs_interface';
+import { variableExistsOrThrow } from '../../common';
 
-function HandleLookupError(path: string, lookupError: DropboxAPI.files.LookupError) {
+function HandleLookupError(path: string, lookupError: DropboxLookupError): FileResult {
     switch (lookupError['.tag']) {
         case 'not_found': //LookupErrorNotFound
-            throw DropboxError({
-                status: FileSystemStatus.NotFound,
-                message: 'HandleLookupError file not found: ' + path,
-            });
+            return {status: FileSystemStatus.NotFound };
         default:
-            throw DropboxError('Unsupported LookupError type. File: ' + path + ' Tag: ' + lookupError['.tag']);
+            ThrowDropboxError('Unsupported LookupError type. File: ' + path + ' Tag: ' + lookupError['.tag']);
     }
 }
 
-function HandleDownloadError(path: string, downloadError: DropboxAPI.files.DownloadError): FileSystemStatus {
+function HandleDownloadError(path: string, downloadError: DropboxDownloadError): FileResult {
     switch (downloadError['.tag']) {
         case 'path': //DownloadErrorPath
-            try {
-                HandleLookupError(path, downloadError.path);
-            } catch (error: any) {
-                if (error.error.status) {
-                    switch (error.error.status) {
-                        case FileSystemStatus.NotFound:
-                            return FileSystemStatus.NotFound;
-                    }
-                }
-                throw error;
-            }
-            return FileSystemStatus.Unknown;
+            return HandleLookupError(path, downloadError.path);
         default:
-            throw DropboxError('Unsupported DownloadError type. File: ' + path);
+            ThrowDropboxError('Unsupported DownloadError type. File: ' + path);
     }
 }
 
-function HandleDeleteError(path: string, deleteError: DropboxAPI.files.DeleteError): FileSystemStatus {
+function HandleDeleteError(path: string, deleteError: DropboxDeleteError): FileResult {
     switch (deleteError['.tag']) {
         case 'path_lookup': //DeleteErrorPathLookup
-            try {
-                HandleLookupError(path, deleteError.path_lookup);
-            } catch (error: any) {
-                if (error.error.status) {
-                    switch (error.error.status) {
-                        case FileSystemStatus.NotFound:
-                            return FileSystemStatus.NotFound;
-                    }
-                }
-                throw error;
-            }
-            return FileSystemStatus.Unknown;
+            return HandleLookupError(path, deleteError.path_lookup);
         default:
-            throw DropboxError('Unsupported DownloadError type. File: ' + path);
+            ThrowDropboxError('Unsupported DownloadError type. File: ' + path);
     }
 }
 
-function HandleUploadError(path: string, uploadError: DropboxAPI.files.UploadError): FileSystemStatus {
+function HandleUploadError(path: string, uploadError: DropboxUploadError): FileResult {
     switch (uploadError['.tag']) {
         case 'content_hash_mismatch':
-            return FileSystemStatus.MismatchHash;
+            return {status: FileSystemStatus.MismatchHash };
         default:
-            throw DropboxError('Unsupported UploadError type. File: ' + path + ' Tag: ' + uploadError['.tag']);
+            ThrowDropboxError('Unsupported UploadError type. File: ' + path + ' Tag: ' + uploadError['.tag']);
     }
 }
 
-function HandleGetMetadataError(path: string, getMetadataError: DropboxAPI.files.GetMetadataError) {
+function HandleGetMetadataError(path: string, getMetadataError: DropboxGetMetadataError) {
     switch (getMetadataError['.tag']) {
         case 'path': //DownloadErrorPath
-            HandleLookupError(path, getMetadataError.path);
-            break;
+            return HandleLookupError(path, getMetadataError.path);
         default:
-            throw DropboxError('Unsupported GetMetadataError type. File: ' + path);
+            ThrowDropboxError('Unsupported GetMetadataError type. File: ' + path);
     }
 }
 
@@ -89,7 +66,7 @@ export class DropboxFS implements FileSystem {
     }
 
     async calculateFileHash(file: File): Promise<string> {
-        if (file.content === null) throw DropboxError('calculateFileHash: File has no content');
+        if (file.content === null) ThrowDropboxError('calculateFileHash: File has no content');
         /*
             -Split the file into blocks of 4 MB (4,194,304 or 4 * 1024 * 1024 bytes). The last block (if any) may be smaller than 4 MB.
             -Compute the hash of each block using SHA-256.
@@ -100,7 +77,7 @@ export class DropboxFS implements FileSystem {
         const BLOCK_SIZE = 4 * 1024 * 1024;
         const blocksHashesPromises: Promise<ArrayBuffer>[] = [];
         const fileSize = file.content.size;
-        for (var offset = 0; offset < fileSize; offset += BLOCK_SIZE) {
+        for (let offset = 0; offset < fileSize; offset += BLOCK_SIZE) {
             const blockSize = Math.min(BLOCK_SIZE, fileSize - offset);
             const blockBlob = file.content.slice(offset, offset + blockSize);
             const blockHashPromise = blockBlob.arrayBuffer();
@@ -121,7 +98,7 @@ export class DropboxFS implements FileSystem {
         }
 
         const mergedHash = new Uint8Array(mergedBufferSize);
-        var offset = 0;
+        let offset = 0;
         for (const blockHash of blockHashes) {
             mergedHash.set(new Uint8Array(blockHash), offset);
             offset += blockHash.byteLength;
@@ -142,43 +119,46 @@ export class DropboxFS implements FileSystem {
     private async uploadSmallFile(
         path: string,
         file: File,
-        commit: DropboxAPI.files.CommitInfo,
+        commit: DropboxCommitInfo,
         fileHash: Promise<string>
     ): Promise<UploadResult> {
-        if (file.content === null) throw DropboxError('uploadSmallFile: File has no content');
+        if (file.content === null) ThrowDropboxError('uploadSmallFile: File has no content');
 
+        let fileMeta: DropboxFileMetadata;
         try {
-            var fileMeta = (
+            fileMeta = (
                 await this.dbx.filesUpload({
                     path,
-                    contents: file.content as Object,
+                    contents: file.content,
                     autorename: commit.autorename,
                     mute: commit.mute,
                     mode: commit.mode,
                     content_hash: await fileHash,
                 })
             ).result;
-        } catch (error: any) {
+        } catch (error) {
+            isDropboxErrorResponseOrThrow<DropboxUploadSmallFileError>(error);
             const uploadError = error.error;
             if (!uploadError.error) {
-                throw DropboxError(uploadError);
+                ThrowDropboxError(uploadError);
             }
-            return { status: HandleUploadError(path, uploadError.error) };
+            return HandleUploadError(path, uploadError.error);
         }
 
-        const fileInfo: FileInfo = new FileInfo();
-        fileInfo.hash = fileMeta.content_hash;
-        fileInfo.name = fileMeta.id;
+        const fileInfo: FileInfo = {
+            hash: fileMeta.content_hash,
+            name: fileMeta.id,
+        };
         return { status: FileSystemStatus.Success, fileInfo };
     }
 
     private async uploadBigFile(
         path: string,
         file: File,
-        commit: DropboxAPI.files.CommitInfo,
+        commit: DropboxCommitInfo,
         fileHash: Promise<string>
     ): Promise<UploadResult> {
-        if (file.content === null) throw DropboxError('uploadBigFile: File has no content');
+        if (file.content === null) ThrowDropboxError('uploadBigFile: File has no content');
 
         const concurrentSize = 4194304; // call must be multiple of 4194304 bytes (except for last upload_session/append:2 with UploadSessionStartArg.close to true, that may contain any remaining data).
         const maxBlob = concurrentSize * Math.floor((8 * 1024 * 1024) / concurrentSize); // 8MB - Dropbox JavaScript API suggested max file / chunk size
@@ -192,71 +172,72 @@ export class DropboxFS implements FileSystem {
         }
         const blobsCount = blobs.length;
 
+        let sessionId: string = "";
         try {
-            var sessionId = (await this.dbx.filesUploadSessionStart({ session_type: { '.tag': 'concurrent' } })).result
-                .session_id;
-        } catch (error: any) {
-            var uploadError = error.error;
+            sessionId = (await this.dbx.filesUploadSessionStart({ session_type: DropboxUploadSessionTypeConcurrent })).result.session_id;
+        } catch (error) {
+            isDropboxErrorResponseOrThrow<DropboxUploadSessionStartError>(error);
+            const uploadError = error.error;
             if (!uploadError.error) {
-                throw DropboxError(uploadError);
+                ThrowDropboxError(uploadError);
             }
-            return { status: HandleUploadError(path, uploadError.error) };
+            return HandleUploadError(path, uploadError.error);
         }
 
         try {
             const uploadPromises: Promise<DropboxAPI.DropboxResponse<void>>[] = [];
             for (let id = 0; id < blobsCount - 1; ++id) {
-                var cursor = { session_id: sessionId, offset: id * maxBlob };
+                const cursor = { session_id: sessionId, offset: id * maxBlob };
                 uploadPromises.push(this.dbx.filesUploadSessionAppendV2({ cursor: cursor, contents: blobs[id] }));
             }
 
             const lastBlob = blobs[blobsCount - 1];
-            var cursor = { session_id: sessionId, offset: (blobsCount - 1) * maxBlob };
+            const cursor = { session_id: sessionId, offset: (blobsCount - 1) * maxBlob };
             uploadPromises.push(
                 this.dbx.filesUploadSessionAppendV2({ cursor: cursor, contents: lastBlob, close: true })
             );
             await Promise.all(uploadPromises);
-        } catch (error: any) {
-            var uploadError = error.error;
+        } catch (error) {
+            isDropboxErrorResponseOrThrow<DropboxUploadSessionAppendError>(error);
+            const uploadError = error.error;
             if (!uploadError.error) {
-                throw DropboxError(uploadError);
+                ThrowDropboxError(uploadError);
             }
-            return { status: HandleUploadError(path, uploadError.error) };
+            return HandleUploadError(path, uploadError.error);
         }
 
+        let fileMeta: DropboxFileMetadata;
         try {
-            var cursor = { session_id: sessionId, offset: 0 /*concurrent*/ };
-            var commit = commit;
-            var fileMeta = (
+            const cursor = { session_id: sessionId, offset: 0 /*concurrent*/ };
+            fileMeta = (
                 await this.dbx.filesUploadSessionFinish({
                     cursor: cursor,
                     commit: commit,
                     content_hash: await fileHash,
                 })
             ).result;
-        } catch (error: any) {
-            var uploadError = error;
+        } catch (error) {
+            isDropboxErrorResponseOrThrow<DropboxUploadSessionFinishError>(error);
+            const uploadError = error.error;
             if (!uploadError.error) {
-                throw DropboxError(uploadError);
+                ThrowDropboxError(uploadError);
             }
-            return { status: HandleUploadError(path, uploadError.error) };
+            return HandleUploadError(path, uploadError.error);
         }
 
-        const fileInfo: FileInfo = new FileInfo();
-        fileInfo.hash = fileMeta.content_hash;
-        fileInfo.name = fileMeta.id;
+        const fileInfo: FileInfo = {hash: fileMeta.content_hash, name: fileMeta.id };
         return { status: FileSystemStatus.Success, fileInfo };
     }
 
     async uploadFile(path: string, file: File, mode: FileUploadMode): Promise<UploadResult> {
-        if (file.content === null) throw DropboxError('uploadFile: File has no content');
+        if (file.content === null) ThrowDropboxError('uploadFile: File has no content');
 
         const smallFileMaxSize = 150 * 1024 * 1024; // 150 MB - from dropbox doc
-        const settings: DropboxAPI.files.CommitInfo = {
+        const settings: DropboxCommitInfo = {
             path: path,
             mute: true,
             autorename: true,
-            mode: { '.tag': 'add' },
+            mode: DropboxWriteModeAdd,
         };
         switch (mode) {
             case FileUploadMode.Add:
@@ -264,10 +245,10 @@ export class DropboxFS implements FileSystem {
                 break;
             case FileUploadMode.Replace:
                 settings.autorename = false;
-                settings.mode = { '.tag': 'overwrite' };
+                settings.mode = DropboxWriteModeOverwrite;
                 break;
             default:
-                throw DropboxError('Unknown upload mode');
+                ThrowDropboxError('Unknown upload mode');
         }
 
         const fileHash: Promise<string> = this.calculateFileHash(file);
@@ -279,17 +260,21 @@ export class DropboxFS implements FileSystem {
     }
 
     async downloadFile(path: string): Promise<DownloadResult> {
+        let respond: DropboxFileBlobResponse;
         try {
-            var respond = await this.dbx.filesDownload({ path: path });
-        } catch (error: any) {
+            respond = await this.dbx.filesDownload({ path: path });
+        } catch (error) {
+            isDropboxErrorResponseOrThrow<DropboxDownloadError>(error);
             const downloadError = error.error;
             if (!downloadError.error) {
-                throw DropboxError(downloadError);
+                ThrowDropboxError(downloadError);
             }
-            return { status: HandleDownloadError(path, downloadError.error) }; // promise returns DropboxResponseError<Error<files.DownloadError>> (there is a mistake in index.d.ts)
+            return HandleDownloadError(path, downloadError.error); // promise returns DropboxResponseError<Error<files.DownloadError>> (there is a mistake in index.d.ts)
         }
 
-        const fileMeta = respond.result as any;
+        const fileMeta = respond.result;
+        variableExistsOrThrow(fileMeta.path_lower);
+        variableExistsOrThrow(fileMeta.fileBlob);
         const fileExtension = fileMeta.path_lower.split('.').pop();
         let fileType = '';
         switch (fileExtension) {
@@ -315,57 +300,67 @@ export class DropboxFS implements FileSystem {
             return { status: FileSystemStatus.MismatchHash };
         }
 
-        const result: DownloadResult = new DownloadResult();
-        result.status = FileSystemStatus.Success;
-        result.file = file;
-        result.fileInfo = { hash: fileMeta.content_hash, name: fileMeta.id };
+        const result: DownloadResult = {
+            status: FileSystemStatus.Success,
+            file: file,
+            fileInfo: { hash: fileMeta.content_hash, name: fileMeta.id },
+        };
 
         return result;
     }
 
-    async getFileHash(path: string): Promise<string> {
-        let fileMeta: DropboxAPI.files.FileMetadata | null = null;
+    async getMetadata(path: string): Promise<GetMetadataResults> {
+        let fileMeta: DropboxFileMetadata;
         try {
-            fileMeta = (await this.dbx.filesGetMetadata({ path: path })).result as DropboxAPI.files.FileMetadata;
-        } catch (error: any) {
+            fileMeta = (await this.dbx.filesGetMetadata({ path: path })).result as DropboxFileMetadata;
+        } catch (error) {
+            isDropboxErrorResponseOrThrow<DropboxGetMetadataError>(error);
             const getMetadataError = error.error;
             if (!getMetadataError.error) {
-                throw DropboxError(getMetadataError);
+                ThrowDropboxError(getMetadataError);
             }
-            HandleGetMetadataError(path, getMetadataError.error);
+            return HandleGetMetadataError(path, getMetadataError.error);
         }
 
-        if (!fileMeta?.content_hash) {
-            throw DropboxError({
+        return {status: FileSystemStatus.Success, fileInfo: { hash: fileMeta.content_hash, name: fileMeta.id }};
+    }
+
+    async getFileHash(path: string): Promise<string> {
+        const fileMeta = await this.getMetadata(path);
+
+        if (!fileMeta.fileInfo?.hash) {
+            ThrowDropboxError({
                 status: FileSystemStatus.NotFound,
                 message: 'getFileHash: no hash for file "' + path + '"',
             });
         }
-        return fileMeta.content_hash;
+        return fileMeta.fileInfo.hash;
     }
     
     async deleteFile(path: string): Promise<DeleteResult> {
         try {
             await this.dbx.filesDeleteV2({ path: path });
-        } catch (error: any) {
+        } catch (error) {
+            isDropboxErrorResponseOrThrow<DropboxDeleteError>(error);
             const deleteError = error.error;
             if (!deleteError.error) {
-                throw DropboxError(deleteError);
+                ThrowDropboxError(deleteError);
             }
-            return { status: HandleDeleteError(path, deleteError.error) }; // promise returns DropboxResponseError<Error<files.DownloadError>> (there is a mistake in index.d.ts)
+            return HandleDeleteError(path, deleteError.error); // promise returns DropboxResponseError<Error<files.DownloadError>> (there is a mistake in index.d.ts)
         }
 
-        const result: DeleteResult = new DeleteResult();
-        result.status = FileSystemStatus.Success;
+        const result: DeleteResult = {
+            status: FileSystemStatus.Success,
+        };
         return result;
     }
-
+    
     async getFileURL(path: string): Promise<string> {
         try {
             const share = await this.dbx.sharingCreateSharedLinkWithSettings({
                 path: path,
                 settings: {
-                    audience: {'.tag': 'public'}
+                    audience: DropboxLinkAudiencePublic
                 }
             });
 
@@ -373,10 +368,11 @@ export class DropboxFS implements FileSystem {
             url = url + 'raw=1'; // add raw file
 
             return url;
-        } catch (error: any) {
+        } catch (error) {
+            isDropboxErrorResponseOrThrow<DropboxCreateSharedLinkWithSettingsError>(error);
             const shareError = error.error;
             if (!shareError.error) {
-                throw DropboxError(shareError);
+                ThrowDropboxError(shareError);
             }
             return "";
         }
