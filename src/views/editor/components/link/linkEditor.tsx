@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
-import { validateUrl, OpenURL } from "@utils/common";
-import { EditorTheme, useEditorThemeContext } from "../../editorThemeContext";
+import { useEffect, useMemo, useRef } from "react";
+import { validateUrl, OpenURL, variableExistsOrThrow } from "@utils/common";
 import { IconBaseProps } from "react-icons";
+import { useMainThemeContext } from "@src/mainThemeContext";
+import { MainTheme } from "@src/theme";
 interface LinkEditorProps {
     text?: string;
     url?: string;
@@ -11,11 +12,13 @@ interface LinkEditorProps {
 }
 
 export default function LinkEditor({text, url, onTextChange, onURLChange}: LinkEditorProps) {
-    const editorTheme: EditorTheme = useEditorThemeContext();
-    function getTheme() {
-        return editorTheme.linkTheme!;
-    }
+    const { editorTheme }: MainTheme = useMainThemeContext();
+    const theme = useMemo(()=> {
+        variableExistsOrThrow(editorTheme?.linkTheme);
+        return editorTheme?.linkTheme;
+    },[editorTheme?.linkTheme]);
 
+ 
     const urlInput = useRef<HTMLInputElement>(null);
     const textInput = useRef<HTMLInputElement>(null);
     const currentURL = useRef<string>('');
@@ -59,27 +62,27 @@ export default function LinkEditor({text, url, onTextChange, onURLChange}: LinkE
     },[url]);
 
     function TextIcon(props: IconBaseProps) {
-        return getTheme().TextIcon!(props);
+        return theme.TextIcon!(props);
     }
 
     function LinkIcon(props: IconBaseProps) {
-        return getTheme().LinkIcon!(props);
+        return theme.LinkIcon!(props);
     }
 
     function OpenIcon(props: IconBaseProps) {
-        return getTheme().OpenIcon!(props);
+        return theme.OpenIcon!(props);
     }
 
     return (
-    <div className={getTheme().editor}>
-        <div className={getTheme().container}>
-            <TextIcon className={getTheme().icon}/>
-            <input ref={textInput} type="text" className={getTheme().input} defaultValue={text ? text : url} onKeyDown={TextChangeAccepted}/>
+    <div className={theme.editor}>
+        <div className={theme.container}>
+            <TextIcon className={theme.icon}/>
+            <input ref={textInput} type="text" className={theme.input} defaultValue={text ? text : url} onKeyDown={TextChangeAccepted}/>
         </div>
-        <div className={getTheme().container}>
-            <LinkIcon className={getTheme().icon}/>
-            <input ref={urlInput} type="text" className={getTheme().input} defaultValue={url} onKeyDown={URLChangeAccepted}/>
-            <OpenIcon className={getTheme().button} onClick={OpenURLFromInput}/>
+        <div className={theme.container}>
+            <LinkIcon className={theme.icon}/>
+            <input ref={urlInput} type="text" className={theme.input} defaultValue={url} onKeyDown={URLChangeAccepted}/>
+            <OpenIcon className={theme.button} onClick={OpenURLFromInput}/>
         </div>
     </div>
 );

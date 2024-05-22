@@ -1,22 +1,27 @@
-import { FunctionComponent, useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import useResizeObserver from "use-resize-observer";
 
-import { Node } from "./components/treeNode";
+import TreeNode from "./components/treeNode";
 
 import { Tree, TreeApi, SimpleTree, CreateHandler, DeleteHandler, MoveHandler, RenameHandler } from 'react-arborist';
 import './css/treeView.css';
 
-import { AddIcon, DeleteIcon } from "../../global";
 import { appGlobals } from "../../system/appGlobals";
 import { DeleteResults, FileSystemStatus, FileUploadMode, UploadResult } from "../../interfaces/system/fs_interface";
-import { NodeData, TREE_FILE, TREE_STATUS_FILE, NOTES_PATH, TreeNode } from "./common";
+import { NodeData, TREE_FILE, TREE_STATUS_FILE, NOTES_PATH, TreeNodeApi } from "./common";
+import { useMainThemeContext } from "@src/mainThemeContext";
+import { MainTheme } from "@src/theme";
+import { variableExistsOrThrow } from "@src/utils/common";
+import { IconBaseProps } from "react-icons";
 
-type Props = {
+interface TreeViewProps {
     setSelectedFile: (file: string) => void;
-};
+}
 
-export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
+export default function TreeView({setSelectedFile}: TreeViewProps) {
+    const { treeTheme }: MainTheme = useMainThemeContext();
+
     const [, setDataVersion] = useState<number>(0);
     const [tree, setTree] = useState<SimpleTree<NodeData> | null>(null);
     const { ref: treeParent, height: treeParentHeight = 1 } = useResizeObserver<HTMLDivElement>(); 
@@ -24,6 +29,11 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
     const treeElement = useRef<TreeApi<NodeData>>(null);
     const treeOpenNodes = useRef<Set<string>>(new Set<string>());
     const onToggleEnabled = useRef<boolean>(true);
+
+    const theme = useMemo(()=> {
+        variableExistsOrThrow(treeTheme);
+        return treeTheme;
+    },[treeTheme]);
 
     function UpdateDataVersion() {
         setDataVersion( (prev)=> prev+1);
@@ -110,7 +120,7 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
         UpdateDataVersion();
       };
 
-      const onSelect = (nodes: TreeNode[]) => {
+      const onSelect = (nodes: TreeNodeApi[]) => {
         if (nodes.length > 1) throw Error('onSelect: Too many files selected!');
         if ( nodes.length == 0 ) {
             setSelectedFile('');
@@ -159,6 +169,14 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
         });
     }, []);
 
+    function AddIcon(props: IconBaseProps) {
+        return theme.AddIcon!(props);
+    }
+
+    function DeleteIcon(props: IconBaseProps) {
+        return theme.DeleteIcon!(props);
+    }
+
     return (
         <div style={{height: '100%'}} >
             <div ref={controlButtonsRef}>
@@ -168,9 +186,9 @@ export const TreeView: FunctionComponent<Props> = ({setSelectedFile}) => {
             <div ref={treeParent} className="tree-div" style={{height: `calc(100% - ${controlButtonsHeight}px)`}}>
                 <Tree ref={treeElement} disableEdit={tree == null} data={tree?.data} width={'100%'} height={treeParentHeight} disableMultiSelection={true} 
                 onMove={onMove} onRename={onRename} onCreate={onCreate} onDelete={onDelete} onSelect={onSelect} onToggle={onToggle}>
-                    {Node}
+                    {TreeNode}
                 </Tree>
             </div>
         </div>
     );
-};
+}

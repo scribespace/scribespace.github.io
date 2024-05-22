@@ -1,6 +1,6 @@
-import { TreeNode } from '../common';
+import { TreeNodeApi } from '../common';
 
-export function Input({ node }: { node: TreeNode; }) {
+export function Input({ node }: { node: TreeNodeApi; }) {
     return (
         <input
             autoFocus

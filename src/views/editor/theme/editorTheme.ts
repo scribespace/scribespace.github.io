@@ -1,10 +1,10 @@
-import { createContext, useContext } from "react";
-import { CONTEXT_MENU_THEME_DEFAULT, ContextMenuTheme } from "./plugins/contextMenuPlugin/theme";
+import { CONTEXT_MENU_THEME_DEFAULT, ContextMenuTheme } from "../plugins/contextMenuPlugin/theme";
 import { EditorThemeClassName } from "lexical";
-import { LINK_THEME_DEFAULT, LinkTheme } from "./components/link/theme";
-import { NumberInputTheme, NUMBER_INPUT_THEME_DEFAULT } from "./components/numberInput/theme";
-import { SeparatorTheme, SEPARATOR_THEME_DEFAULT } from "./components/separators/theme";
-import { TableCreatorTheme, TABLE_CREATOR_EDITOR_THEME_DEFAULT } from "./components/table/theme";
+import { LINK_THEME_DEFAULT, LinkTheme } from "../components/link/theme";
+import { NumberInputTheme, NUMBER_INPUT_THEME_DEFAULT } from "../components/numberInput/theme";
+import { SeparatorTheme, SEPARATOR_THEME_DEFAULT } from "../components/separators/theme";
+import { TableCreatorTheme, TABLE_CREATOR_EDITOR_THEME_DEFAULT } from "../components/table/theme";
+
 
 export interface EditorTheme {
     editorContainer?: EditorThemeClassName;
@@ -12,7 +12,7 @@ export interface EditorTheme {
     editorEditable?: EditorThemeClassName;
     editorSeeThrough?: EditorThemeClassName;
     editorPrintDisabled?: EditorThemeClassName;
-    
+
     contextMenuTheme?: ContextMenuTheme;
     tableCreatorTheme?: TableCreatorTheme;
     numberInputTheme?: NumberInputTheme;
@@ -33,7 +33,3 @@ export const EDITOR_THEME_DEFAULT: EditorTheme = {
     separatorTheme: SEPARATOR_THEME_DEFAULT,
     linkTheme: LINK_THEME_DEFAULT,
 };
-
-export const EditorThemeContext = createContext<EditorTheme>(EDITOR_THEME_DEFAULT);
-
-export function useEditorThemeContext() { return useContext(EditorThemeContext); }

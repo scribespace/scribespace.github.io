@@ -1,4 +1,6 @@
-const EditorInputTheme = {
+import { EditorThemeClasses } from "lexical";
+
+export const EDITOR_INPUT_THEME_DEFAULT: EditorThemeClasses = {
   ltr: "ltr",
   rtl: "rtl",
   placeholder: "editor-placeholder",
@@ -16,5 +18,3 @@ const EditorInputTheme = {
   tableCell: 'editor-table-cell',
   tableRow: 'editor-table-row',
 };
-
-export default EditorInputTheme;

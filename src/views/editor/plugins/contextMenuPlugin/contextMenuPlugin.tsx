@@ -3,12 +3,14 @@ import { useEffect, useState } from "react";
 import { TableContextOptions } from "../../components/table";
 import './css/contextMenuPlugin.css';
 import { ContextMenuContextData, CONTEXT_MENU_CONTEX_DEFAULT } from "./context";
-import { EditorTheme, useEditorThemeContext } from "../../editorThemeContext";
 import { MenuContext } from "../../components/menu/context";
 import { Menu } from "../../components/menu";
+import { useMainThemeContext } from "@src/mainThemeContext";
+import { MainTheme } from "@src/theme";
+import { variableExistsOrThrow } from "@src/utils/common";
 
 export default function ContextMenuPlugin() {
-    const editorTheme: EditorTheme = useEditorThemeContext();
+    const { editorTheme }: MainTheme = useMainThemeContext();
     const [editor] = useLexicalComposerContext();
 
     const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
@@ -26,9 +28,12 @@ export default function ContextMenuPlugin() {
         setShowContextMenu(false);
     };
 
-    useEffect(()=>{
-        setContextMenuContextObject((oldState) => {return {theme: editorTheme.contextMenuTheme!, mousePosition: oldState.mousePosition, closeMenu: oldState.closeMenu};});
-    },[editorTheme]);
+    useEffect(()=>{        
+        setContextMenuContextObject((oldState) => {
+            variableExistsOrThrow(editorTheme?.contextMenuTheme);
+            return {theme: editorTheme.contextMenuTheme, mousePosition: oldState.mousePosition, closeMenu: oldState.closeMenu};
+        });
+    },[editorTheme?.contextMenuTheme]);
 
     useEffect(()=>{
         setContextMenuContextObject((oldState) => {return {theme: oldState.theme, mousePosition: oldState.mousePosition, closeMenu: closeContextMenu};});

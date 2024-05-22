@@ -22,8 +22,10 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
+      "@src/*": ["./src/*"],
       "@utils/*": ["./src/utils/*"],
       "@editor/*": ["./src/views/editor/*"],
+      "@tree/*": ["./src/views/tree/*"],
     }
   },
   "include": ["src"],

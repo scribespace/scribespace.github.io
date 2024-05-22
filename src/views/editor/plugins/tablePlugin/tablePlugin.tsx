@@ -16,12 +16,14 @@ import {
   $computeTableMap
 } from '@lexical/table';
 import { $findMatchingParent, mergeRegister } from '@lexical/utils';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Property } from 'csstype';
 
-import { useEditorThemeContext } from '../../editorThemeContext';
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from '../../nodes/table';
+import { useMainThemeContext } from '@src/mainThemeContext';
+import { MainTheme } from '@src/theme';
+import { variableExistsOrThrow } from '@src/utils/common';
 
 const DRAG_NONE = 0 as const;
 const DRAG_HORIZONTAL = 1 as const;
@@ -135,7 +137,7 @@ marker: ResizerStyle;
 
 export default function TablePlugin() {
     const [editor] = useLexicalComposerContext();
-    const editorTheme = useEditorThemeContext();
+    const { editorTheme }: MainTheme = useMainThemeContext();
 
     const [activeCell, setActiveCell] = useState<TableDOMCell | null>(null);
     const [dragDirection, setDragDirection] = useState<MouseDraggingDirection>(DRAG_NONE);
@@ -148,6 +150,11 @@ export default function TablePlugin() {
     const columnWidthsRef = useRef<{low:number, hight:number}>({low:-1,hight:-1});
     const columnPositionRef = useRef<number>(-1);
     const columnIDRef = useRef<number>(-1);
+
+    const theme = useMemo(()=> {
+      variableExistsOrThrow(editorTheme);
+      return editorTheme;
+  },[editorTheme]);
 
     function ClearState() {
         setActiveCell(null);
@@ -621,12 +628,12 @@ export default function TablePlugin() {
             <LexicalTablePlugin/>
             {activeCell && createPortal(
                 <div ref={resizerRef}>
-                    <div className={editorTheme.editorPrintDisabled} style={styles.right || undefined} onMouseDown={onMouseDown(DRAG_HORIZONTAL, CELL_RIGHT)}></div>
-                    <div className={editorTheme.editorPrintDisabled} style={styles.left || undefined} onMouseDown={onMouseDown(DRAG_HORIZONTAL, CELL_LEFT)}></div>
-                    <div className={editorTheme.editorPrintDisabled} style={styles.bottom || undefined} onMouseDown={onMouseDown(DRAG_VERTICAL, CELL_BOTTOM)}></div>
-                    <div className={editorTheme.editorPrintDisabled} style={styles.top || undefined} onMouseDown={onMouseDown(DRAG_VERTICAL, CELL_TOP)}></div>
+                    <div className={theme.editorPrintDisabled} style={styles.right || undefined} onMouseDown={onMouseDown(DRAG_HORIZONTAL, CELL_RIGHT)}></div>
+                    <div className={theme.editorPrintDisabled} style={styles.left || undefined} onMouseDown={onMouseDown(DRAG_HORIZONTAL, CELL_LEFT)}></div>
+                    <div className={theme.editorPrintDisabled} style={styles.bottom || undefined} onMouseDown={onMouseDown(DRAG_VERTICAL, CELL_BOTTOM)}></div>
+                    <div className={theme.editorPrintDisabled} style={styles.top || undefined} onMouseDown={onMouseDown(DRAG_VERTICAL, CELL_TOP)}></div>
 
-                    <div className={editorTheme.editorPrintDisabled} style={ styles.marker || undefined }></div>
+                    <div className={theme.editorPrintDisabled} style={ styles.marker || undefined }></div>
                 </div>    
             , document.body)}
         </div>

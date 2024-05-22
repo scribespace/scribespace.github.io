@@ -1,4 +1,4 @@
-import { TreeView } from './tree/treeView';
+import TreeView from './tree/treeView';
 
 
 import './css/mainView.css';

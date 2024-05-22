@@ -6,8 +6,11 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
+      '@src': '/src/',
+      '@mainThemeContext/theme': '/src/theme',
       '@utils': '/src/utils',
       '@editor': '/src/views/editor',
+      '@tree': '/src/views/tree',
     }
   },
   build: {

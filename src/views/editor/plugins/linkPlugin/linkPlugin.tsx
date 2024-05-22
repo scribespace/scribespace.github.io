@@ -7,19 +7,25 @@ import '../../components/link/css/link.css';
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from '@lexical/utils';
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import LinkEditor from "../../components/link";
-import { urlRegExp, validateUrl, OpenURL } from "@utils/common";
-import { EditorTheme, useEditorThemeContext } from "../../editorThemeContext";
+import { urlRegExp, validateUrl, OpenURL, variableExistsOrThrow } from "@utils/common";
+import { useMainThemeContext } from "@src/mainThemeContext";
+import { MainTheme } from "@src/theme";
 
 export default function LinkPlugin() {
     const [editor] = useLexicalComposerContext();
-    const editorTheme: EditorTheme = useEditorThemeContext();
+    const { editorTheme }: MainTheme = useMainThemeContext();
 
     const linkEditorRef = useRef<HTMLDivElement>(null);
     const linkNodeRef = useRef<LinkNode | null>(null);
     const [linkURL, setLinkURL] = useState<string>("");
     const [linkText, setLinkText] = useState<string>("");
+
+    const theme = useMemo(()=> {
+      variableExistsOrThrow(editorTheme?.editorSeeThrough);
+      return editorTheme?.editorSeeThrough;
+  },[editorTheme?.editorSeeThrough]);
 
     function TryCreateLink(lastNode: LexicalNode, lastNodeOffset: number) {
       let testString = '';
@@ -217,7 +223,7 @@ export default function LinkPlugin() {
                 }}/>
             <LexicalLinkPlugin validateUrl={validateUrl}/>
             {(linkNodeRef.current) && (
-              <div ref={linkEditorRef} className={editorTheme.editorSeeThrough}>
+              <div ref={linkEditorRef} className={theme}>
                 <LinkEditor url={linkURL} text={linkText} onTextChange={onTextChange} onURLChange={onURLChange}/>
               </div>
             )}

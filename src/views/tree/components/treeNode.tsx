@@ -3,17 +3,25 @@ import { NodeRendererProps } from 'react-arborist';
 
 import { AiOutlineEdit } from "react-icons/ai";
 import { SlDoc } from "react-icons/sl";
-import { AddIcon, DeleteIcon } from "../../../global";
 import clsx from "clsx";
 
 import './css/treeNode.css';
 import { NodeData } from '../common';
 import { FolderArrow } from './folderArrow';
 import { Input } from './input';
-
+import { useMainThemeContext } from '@src/mainThemeContext';
+import { MainTheme } from '@src/theme';
+import { variableExistsOrThrow } from '@src/utils/common';
+import { useMemo } from 'react';
+import { IconBaseProps } from 'react-icons';
   
-export function Node({ node, style, dragHandle }: NodeRendererProps<NodeData>) {
-    /* This node instance can do many things. See the API reference. */
+export default function TreeNode({ node, style, dragHandle }: NodeRendererProps<NodeData>) {
+    const { treeTheme }: MainTheme = useMainThemeContext();
+
+    const theme = useMemo(()=> {
+        variableExistsOrThrow(treeTheme);
+        return treeTheme;
+    },[treeTheme]);
 
     const OnEditNode = () => {
         if (!node.tree.props.onRename) return; 
@@ -35,6 +43,14 @@ export function Node({ node, style, dragHandle }: NodeRendererProps<NodeData>) {
         node.tree.focus(sib || parent, { scroll: false });
         node.tree.delete(node); 
     };
+
+    function AddIcon(props: IconBaseProps) {
+        return theme.AddIcon!(props);
+    }
+
+    function DeleteIcon(props: IconBaseProps) {
+        return theme.DeleteIcon!(props);
+    }
 
     return (
         <div
