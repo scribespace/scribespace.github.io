@@ -70,7 +70,7 @@ function TestPlugin( {selectedFile} : Props ) {
 }
 
 export function EditorLexicalView({selectedFile} : Props) {
-  const {editorTheme, editorInputTheme}: MainTheme = useMainThemeContext();
+  const {editorTheme}: MainTheme = useMainThemeContext();
   const { ref: toolbarRef, height: toolbarHeight = 1 } = useResizeObserver<HTMLDivElement>({box:'border-box'}); 
 
   const theme = useMemo(()=>{
@@ -78,14 +78,9 @@ export function EditorLexicalView({selectedFile} : Props) {
     return editorTheme;
   }, [editorTheme]);
 
-  const inputTheme = useMemo(()=>{
-    variableExistsOrThrow(editorInputTheme);
-    return editorInputTheme;
-  }, [editorInputTheme]);
-
   const initialConfig = {
     namespace: 'ScribleSpace',
-    theme: inputTheme,
+    theme: theme.editorInputTheme,
     onError,
     nodes: [
       ListNode,

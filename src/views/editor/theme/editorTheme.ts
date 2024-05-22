@@ -1,15 +1,17 @@
 import { CONTEXT_MENU_THEME_DEFAULT, ContextMenuTheme } from "../plugins/contextMenuPlugin/theme";
-import { EditorThemeClassName } from "lexical";
+import { EditorThemeClassName, EditorThemeClasses } from "lexical";
 import { LINK_THEME_DEFAULT, LinkTheme } from "../components/link/theme";
 import { NumberInputTheme, NUMBER_INPUT_THEME_DEFAULT } from "../components/numberInput/theme";
 import { SeparatorTheme, SEPARATOR_THEME_DEFAULT } from "../components/separators/theme";
 import { TableCreatorTheme, TABLE_CREATOR_EDITOR_THEME_DEFAULT } from "../components/table/theme";
+import { EDITOR_INPUT_THEME_DEFAULT } from "./editorInputTheme";
 
 
 export interface EditorTheme {
     editorContainer?: EditorThemeClassName;
     editorInner?: EditorThemeClassName;
     editorEditable?: EditorThemeClassName;
+    editorInputTheme?: EditorThemeClasses;
     editorSeeThrough?: EditorThemeClassName;
     editorPrintDisabled?: EditorThemeClassName;
 
@@ -24,6 +26,7 @@ export const EDITOR_THEME_DEFAULT: EditorTheme = {
     editorContainer: 'editor-container',
     editorInner: 'editor-inner',
     editorEditable: 'editor-input section-to-print',
+    editorInputTheme: EDITOR_INPUT_THEME_DEFAULT,
     editorSeeThrough: 'editor-see-through',
     editorPrintDisabled: 'print-disabled',
 
