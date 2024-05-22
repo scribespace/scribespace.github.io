@@ -20,7 +20,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Property } from 'csstype';
 
-import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from '../../nodes/table';
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from '@editor/nodes/table';
 import { useMainThemeContext } from '@src/mainThemeContext';
 import { MainTheme } from '@src/theme';
 import { variableExistsOrThrow } from '@src/utils/common';

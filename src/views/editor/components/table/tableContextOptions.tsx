@@ -18,7 +18,7 @@ import {
     TableContextRowRemove, 
     TableContextSplitCells 
 } from "./tableContext";
-import { useContextMenuContext } from "../../plugins/contextMenuPlugin/context";
+import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
 
 interface TableContextOptionsProps {
     editor: LexicalEditor,

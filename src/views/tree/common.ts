@@ -4,10 +4,10 @@ export const NOTES_PATH = '/notes/';
 export const TREE_FILE = '/tree';
 export const TREE_STATUS_FILE = '/tree_status';
 
-export interface NodeData {
+export interface TreeNodeData {
     id: string;
     name: string;
-    children: NodeData[];
+    children: TreeNodeData[];
 }
 
-export type TreeNodeApi = NodeApi<NodeData>;
+export type TreeNodeApi = NodeApi<TreeNodeData>;

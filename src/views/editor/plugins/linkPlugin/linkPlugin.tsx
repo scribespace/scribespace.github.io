@@ -3,12 +3,11 @@ import { LinkNode, $isLinkNode, $createLinkNode } from '@lexical/link';
 import { NodeEventPlugin } from '@lexical/react/LexicalNodeEventPlugin';
 import { $getNodeByKey, $getPreviousSelection, $getSelection, $isRangeSelection, $isTextNode, COMMAND_PRIORITY_LOW, KEY_ENTER_COMMAND, KEY_SPACE_COMMAND, LexicalEditor, LexicalNode, NodeKey, SELECTION_CHANGE_COMMAND, TextNode } from "lexical";
 
-import '../../components/link/css/link.css';
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from '@lexical/utils';
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import LinkEditor from "../../components/link";
+import LinkEditor from "@editor/components/link";
 import { urlRegExp, validateUrl, OpenURL, variableExistsOrThrow } from "@utils/common";
 import { useMainThemeContext } from "@src/mainThemeContext";
 import { MainTheme } from "@src/theme";

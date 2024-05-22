@@ -6,7 +6,7 @@ import { SlDoc } from "react-icons/sl";
 import clsx from "clsx";
 
 import './css/treeNode.css';
-import { NodeData } from '../common';
+import { TreeNodeData } from '../common';
 import { FolderArrow } from './folderArrow';
 import { Input } from './input';
 import { useMainThemeContext } from '@src/mainThemeContext';
@@ -15,7 +15,7 @@ import { variableExistsOrThrow } from '@src/utils/common';
 import { useMemo } from 'react';
 import { IconBaseProps } from 'react-icons';
   
-export default function TreeNode({ node, style, dragHandle }: NodeRendererProps<NodeData>) {
+export default function TreeNode({ node, style, dragHandle }: NodeRendererProps<TreeNodeData>) {
     const { treeTheme }: MainTheme = useMainThemeContext();
 
     const theme = useMemo(()=> {

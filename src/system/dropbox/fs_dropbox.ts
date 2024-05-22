@@ -11,7 +11,7 @@ import {
     DeleteResults as DeleteResult,
     GetMetadataResults,
     FileResult,
-} from '../../interfaces/system/fs_interface';
+} from '@interfaces/system/fs_interface';
 import { variableExistsOrThrow } from '@utils/common';
 
 function HandleLookupError(path: string, lookupError: DropboxLookupError): FileResult {

@@ -1,6 +1,6 @@
 import { ThrowDropboxError, DROPBOX_APP } from './dropbox_common';
 import * as DropboxAPI from 'dropbox';
-import { Authenticate, AuthData } from '../../interfaces/system/auth_interface';
+import { Authenticate, AuthData } from '@interfaces/system/auth_interface';
 import { REDIRECT_URI, CLIENT_ID } from './app_dropbox';
 
 export class DropboxAuth implements Authenticate {

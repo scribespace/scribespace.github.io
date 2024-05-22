@@ -12,7 +12,7 @@ import { $generateNodesFromDOM } from '@lexical/html';
 import { ListNode, ListItemNode } from '@lexical/list';
 import { LinkNode } from '@lexical/link';
 import LinkPlugin from './plugins/linkPlugin';
-import { appGlobals } from '../../system/appGlobals';
+import { appGlobals } from '@system/appGlobals';
 
 import './css/editorInputTheme.css';
 

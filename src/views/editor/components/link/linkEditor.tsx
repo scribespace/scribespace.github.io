@@ -3,6 +3,8 @@ import { validateUrl, OpenURL, variableExistsOrThrow } from "@utils/common";
 import { IconBaseProps } from "react-icons";
 import { useMainThemeContext } from "@src/mainThemeContext";
 import { MainTheme } from "@src/theme";
+import './css/link.css';
+
 interface LinkEditorProps {
     text?: string;
     url?: string;

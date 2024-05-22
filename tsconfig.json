@@ -23,6 +23,8 @@
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "@src/*": ["./src/*"],
+      "@interfaces/*": ["./src/interfaces/*"],
+      "@system/*": ["./src/system/*"],
       "@utils/*": ["./src/utils/*"],
       "@editor/*": ["./src/views/editor/*"],
       "@tree/*": ["./src/views/tree/*"],

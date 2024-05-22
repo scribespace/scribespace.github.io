@@ -7,9 +7,9 @@ import TreeNode from "./components/treeNode";
 import { Tree, TreeApi, SimpleTree, CreateHandler, DeleteHandler, MoveHandler, RenameHandler } from 'react-arborist';
 import './css/treeView.css';
 
-import { appGlobals } from "../../system/appGlobals";
-import { DeleteResults, FileSystemStatus, FileUploadMode, UploadResult } from "../../interfaces/system/fs_interface";
-import { NodeData, TREE_FILE, TREE_STATUS_FILE, NOTES_PATH, TreeNodeApi } from "./common";
+import { appGlobals } from "@system/appGlobals";
+import { DeleteResults, FileSystemStatus, FileUploadMode, UploadResult } from "@interfaces/system/fs_interface";
+import { TreeNodeData, TREE_FILE, TREE_STATUS_FILE, NOTES_PATH, TreeNodeApi } from "./common";
 import { useMainThemeContext } from "@src/mainThemeContext";
 import { MainTheme } from "@src/theme";
 import { variableExistsOrThrow } from "@src/utils/common";
@@ -23,10 +23,10 @@ export default function TreeView({setSelectedFile}: TreeViewProps) {
     const { treeTheme }: MainTheme = useMainThemeContext();
 
     const [, setDataVersion] = useState<number>(0);
-    const [tree, setTree] = useState<SimpleTree<NodeData> | null>(null);
+    const [tree, setTree] = useState<SimpleTree<TreeNodeData> | null>(null);
     const { ref: treeParent, height: treeParentHeight = 1 } = useResizeObserver<HTMLDivElement>(); 
     const { ref: controlButtonsRef, height: controlButtonsHeight = 1 } = useResizeObserver<HTMLDivElement>(); 
-    const treeElement = useRef<TreeApi<NodeData>>(null);
+    const treeElement = useRef<TreeApi<TreeNodeData>>(null);
     const treeOpenNodes = useRef<Set<string>>(new Set<string>());
     const onToggleEnabled = useRef<boolean>(true);
 
@@ -73,7 +73,7 @@ export default function TreeView({setSelectedFile}: TreeViewProps) {
         }
     };
 
-    const onMove: MoveHandler<NodeData> = (args: {
+    const onMove: MoveHandler<TreeNodeData> = (args: {
         dragIds: string[];
         parentId: null | string;
         index: number;
@@ -84,12 +84,12 @@ export default function TreeView({setSelectedFile}: TreeViewProps) {
         UpdateDataVersion();
       };
     
-      const onRename: RenameHandler<NodeData> = ({ name, id }) => {
-        tree?.update({ id, changes: { name } as NodeData });
+      const onRename: RenameHandler<TreeNodeData> = ({ name, id }) => {
+        tree?.update({ id, changes: { name } as TreeNodeData });
         UpdateDataVersion();
       };
 
-    const onCreate: CreateHandler<NodeData> = async ({ parentId, index }) => {
+    const onCreate: CreateHandler<TreeNodeData> = async ({ parentId, index }) => {
         const fileName = 'scribe-space-id-' + crypto.randomUUID() + (new Date().toJSON());
 
         const result: UploadResult | undefined = await appGlobals.system?.getFileSystem().uploadFile(NOTES_PATH + fileName, {content: new Blob([""])}, FileUploadMode.Add);
@@ -100,7 +100,7 @@ export default function TreeView({setSelectedFile}: TreeViewProps) {
         
         if ( result.fileInfo.name ) {
             const id = result.fileInfo.name;
-            const node = { id, name: "New File", children: [] } as NodeData;
+            const node = { id, name: "New File", children: [] } as TreeNodeData;
             tree?.create({ parentId, index, data:node });
             UpdateDataVersion();
             return node;
@@ -108,7 +108,7 @@ export default function TreeView({setSelectedFile}: TreeViewProps) {
         return null;
       };
 
-      const onDelete: DeleteHandler<NodeData> = async (args: { ids: string[] }) => {
+      const onDelete: DeleteHandler<TreeNodeData> = async (args: { ids: string[] }) => {
         if (args.ids.length > 1) throw Error('onDelete: Too many files selected!');
         const id = args.ids[0];
 
@@ -160,11 +160,11 @@ export default function TreeView({setSelectedFile}: TreeViewProps) {
         appGlobals.system?.getFileSystem().downloadFile(TREE_FILE).then((result) => {
             if ( result.status === FileSystemStatus.Success ) {
                 result.file?.content?.text().then((treeJSON) => {
-                    setTree( new SimpleTree<NodeData>(JSON.parse(treeJSON)) );
+                    setTree( new SimpleTree<TreeNodeData>(JSON.parse(treeJSON)) );
                     DownloadAndSetTreeStatus();
                 });
             } else {
-                setTree( new SimpleTree<NodeData>([]) );
+                setTree( new SimpleTree<TreeNodeData>([]) );
             }
         });
     }, []);

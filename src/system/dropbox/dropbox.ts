@@ -1,9 +1,9 @@
 import * as DropboxAPI from 'dropbox';
 import { DropboxAuth } from './auth_dropbox';
 import { DropboxFS } from './fs_dropbox';
-import { System } from '../../interfaces/system/system_interface';
-import { Authenticate } from '../../interfaces/system/auth_interface';
-import { FileSystem } from '../../interfaces/system/fs_interface';
+import { System } from '@interfaces/system/system_interface';
+import { Authenticate } from '@interfaces/system/auth_interface';
+import { FileSystem } from '@interfaces/system/fs_interface';
 import { DROPBOX_APP } from './dropbox_common';
 
 export class Dropbox implements System {

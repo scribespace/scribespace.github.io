@@ -7,7 +7,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@src': '/src/',
-      '@mainThemeContext/theme': '/src/theme',
+      '@interfaces': '/src/interfaces',
+      '@system': '/src/system',
       '@utils': '/src/utils',
       '@editor': '/src/views/editor',
       '@tree': '/src/views/tree',
