@@ -12,7 +12,7 @@ import {
     GetMetadataResults,
     FileResult,
 } from '../../interfaces/system/fs_interface';
-import { variableExistsOrThrow } from '../../common';
+import { variableExistsOrThrow } from '@utils/common';
 
 function HandleLookupError(path: string, lookupError: DropboxLookupError): FileResult {
     switch (lookupError['.tag']) {
