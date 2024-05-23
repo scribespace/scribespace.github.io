@@ -1,25 +1,30 @@
 import { EditorThemeClassName } from "lexical";
 import { FaAngleRight } from "react-icons/fa";
 import { MenuTheme } from "@editor/components/menu/theme";
-import { TABLE_MENU_THEME_DEFAULT, TableMenuTheme } from "@editor/components/table/theme";
+import { Icon } from "@src/components/icon";
 
-
-export interface ContextMenuTheme extends MenuTheme {
-    contextMenuEditorContainer?: EditorThemeClassName;
-
-    tableMenuTheme?: TableMenuTheme;
+export interface ContextMenuMenuTheme extends MenuTheme {
+    editorContainer: EditorThemeClassName;
 }
 
+export interface ContextMenuTheme {
+    menuTheme: ContextMenuMenuTheme;
+}
+
+export const CONTEXT_MENU_MENU_THEME_DEFAULT: ContextMenuMenuTheme = {
+    editorContainer: 'context-menu-editor-container-default',
+
+    float: 'context-menu-float',
+    container: 'context-menu-container-default',
+    item: 'context-menu-item-default',
+    itemIcon: 'context-menu-item-icon-default',
+    submenuIcon: 'context-menu-item-submenu-icon-default',
+
+    itemIconSize: '',
+
+    SubmenuIcon: Icon( FaAngleRight ),
+};
+
 export const CONTEXT_MENU_THEME_DEFAULT: ContextMenuTheme = {
-    menuFloat: 'context-menu-float',
-    menuContainer: 'context-menu-container-default',
-    menuItem: 'context-menu-item-default',
-    menuItemIcon: 'context-menu-item-icon-default',
-    menuItemSubmenuIcon: 'context-menu-item-submenu-icon-default',
-
-    contextMenuEditorContainer: 'context-menu-editor-container-default',
-
-    SubmenuIcon: FaAngleRight,
-
-    tableMenuTheme: TABLE_MENU_THEME_DEFAULT
+    menuTheme: CONTEXT_MENU_MENU_THEME_DEFAULT,
 };

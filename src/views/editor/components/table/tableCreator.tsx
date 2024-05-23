@@ -2,7 +2,6 @@ import { ReactElement, useEffect, useMemo, useRef, useState } from "react";
 
 
 import './css/tableCreator.css';
-import { variableExistsOrThrow } from "@utils/common";
 import { useMainThemeContext } from "@src/mainThemeContext";
 import { MainTheme } from "@src/theme";
 
@@ -17,9 +16,8 @@ export default function TableCreator(props: TableCreatorProps) {
     const { editorTheme }: MainTheme = useMainThemeContext();
 
     const theme = useMemo(()=>{
-        variableExistsOrThrow(editorTheme?.tableCreatorTheme);
-        return editorTheme.tableCreatorTheme;
-    },[editorTheme?.tableCreatorTheme]);
+        return editorTheme.tableTheme.creatorTheme;
+    },[editorTheme.tableTheme.creatorTheme]);
     
     const [cells, setCells] = useState<ReactElement[]>();
     const templateColumnsRef = useRef<string>('');

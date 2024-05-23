@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import useResizeObserver from "use-resize-observer";
 
@@ -12,7 +12,6 @@ import { DeleteResults, FileSystemStatus, FileUploadMode, UploadResult } from "@
 import { TreeNodeData, TREE_FILE, TREE_STATUS_FILE, NOTES_PATH, TreeNodeApi } from "./common";
 import { useMainThemeContext } from "@src/mainThemeContext";
 import { MainTheme } from "@src/theme";
-import { variableExistsOrThrow } from "@src/utils/common";
 import { IconBaseProps } from "react-icons";
 
 interface TreeViewProps {
@@ -29,11 +28,6 @@ export default function TreeView({setSelectedFile}: TreeViewProps) {
     const treeElement = useRef<TreeApi<TreeNodeData>>(null);
     const treeOpenNodes = useRef<Set<string>>(new Set<string>());
     const onToggleEnabled = useRef<boolean>(true);
-
-    const theme = useMemo(()=> {
-        variableExistsOrThrow(treeTheme);
-        return treeTheme;
-    },[treeTheme]);
 
     function UpdateDataVersion() {
         setDataVersion( (prev)=> prev+1);
@@ -170,11 +164,11 @@ export default function TreeView({setSelectedFile}: TreeViewProps) {
     }, []);
 
     function AddIcon(props: IconBaseProps) {
-        return theme.AddIcon!(props);
+        return treeTheme.AddIcon(props);
     }
 
     function DeleteIcon(props: IconBaseProps) {
-        return theme.DeleteIcon!(props);
+        return treeTheme.DeleteIcon(props);
     }
 
     return (

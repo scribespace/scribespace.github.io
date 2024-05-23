@@ -1,13 +1,11 @@
 import { useContext } from "react";
-import { ContextMenuTheme, CONTEXT_MENU_THEME_DEFAULT } from "./theme";
+import { CONTEXT_MENU_MENU_THEME_DEFAULT, ContextMenuMenuTheme } from "./theme";
 import { MenuContext, MenuContextData } from "@editor/components/menu/context";
 
-export interface ContextMenuContextData extends MenuContextData {
-    theme: ContextMenuTheme;
+export interface ContextMenuContextData extends MenuContextData<ContextMenuMenuTheme> {
     mousePosition: { x: number; y: number; };
-    closeMenu: () => void;
 }
-export const CONTEXT_MENU_CONTEX_DEFAULT = { theme: CONTEXT_MENU_THEME_DEFAULT, mousePosition: { x: -1, y: -1 }, closeMenu: () => { } } as ContextMenuContextData;
+export const CONTEXT_MENU_CONTEX_DEFAULT: ContextMenuContextData = { theme: CONTEXT_MENU_MENU_THEME_DEFAULT, layout: 'to-the-side', mousePosition: { x: -1, y: -1 }, closeMenu: () => { } };
 
 export function useContextMenuContext() { return useContext(MenuContext) as ContextMenuContextData; }
 

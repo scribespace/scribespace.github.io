@@ -25,8 +25,6 @@ import { TableNode, TableRowNode, TableCellNode } from '@lexical/table';
 import { ExtendedTableNode, TableBodyNode } from './nodes/table';
 import TablePlugin from './plugins/tablePlugin';
 import ContextMenuPlugin from './plugins/contextMenuPlugin';
-import { useMemo } from 'react';
-import { variableExistsOrThrow } from '@utils/common';
 import { useMainThemeContext } from '@src/mainThemeContext';
 import { MainTheme } from '@src/theme';
 // Catch any errors that occur during Lexical updates and log them
@@ -73,14 +71,9 @@ export function EditorLexicalView({selectedFile} : Props) {
   const {editorTheme}: MainTheme = useMainThemeContext();
   const { ref: toolbarRef, height: toolbarHeight = 1 } = useResizeObserver<HTMLDivElement>({box:'border-box'}); 
 
-  const theme = useMemo(()=>{
-    variableExistsOrThrow(editorTheme);
-    return editorTheme;
-  }, [editorTheme]);
-
   const initialConfig = {
     namespace: 'ScribleSpace',
-    theme: theme.editorInputTheme,
+    theme: editorTheme.editorInputTheme,
     onError,
     nodes: [
       ListNode,
@@ -98,11 +91,11 @@ export function EditorLexicalView({selectedFile} : Props) {
 
   return (
           <LexicalComposer initialConfig={initialConfig}>
-          <div className={theme.editorContainer}>
+          <div className={editorTheme.editorContainer}>
               <ToolbarPlugin ref={toolbarRef}/>
-              <div className={theme.editorInner} style={{height: `calc(100% - ${toolbarHeight}px)`}}>
+              <div className={editorTheme.editorInner} style={{height: `calc(100% - ${toolbarHeight}px)`}}>
                 <RichTextPlugin
-                contentEditable={<ContentEditable className={theme.editorEditable} spellCheck={false}/>}
+                contentEditable={<ContentEditable className={editorTheme.editorEditable} spellCheck={false}/>}
                 placeholder={null}
                 ErrorBoundary={LexicalErrorBoundary}
                 />

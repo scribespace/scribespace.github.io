@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef } from "react";
-import { validateUrl, OpenURL, variableExistsOrThrow } from "@utils/common";
-import { IconBaseProps } from "react-icons";
 import { useMainThemeContext } from "@src/mainThemeContext";
 import { MainTheme } from "@src/theme";
+import { OpenURL, validateUrl } from "@utils/common";
+import { useEffect, useMemo, useRef } from "react";
+import { IconBaseProps } from "react-icons";
 import './css/link.css';
 
 interface LinkEditorProps {
@@ -16,9 +16,8 @@ interface LinkEditorProps {
 export default function LinkEditor({text, url, onTextChange, onURLChange}: LinkEditorProps) {
     const { editorTheme }: MainTheme = useMainThemeContext();
     const theme = useMemo(()=> {
-        variableExistsOrThrow(editorTheme?.linkTheme);
-        return editorTheme?.linkTheme;
-    },[editorTheme?.linkTheme]);
+        return editorTheme.linkTheme;
+    },[editorTheme.linkTheme]);
 
  
     const urlInput = useRef<HTMLInputElement>(null);

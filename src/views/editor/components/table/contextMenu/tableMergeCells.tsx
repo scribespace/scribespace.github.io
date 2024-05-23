@@ -1,23 +1,24 @@
-import { $getSelection, $setSelection } from "lexical";
-import { MenuItem } from "../../menu";
+import { ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
+import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
 import {
     $findTableNode, $isTableCellNode, $isTableNode, $isTableRowNode, $isTableSelection,
     TableCellNode, TableRowNode
 } from "@lexical/table";
-import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
-import { TableContextOptionProps } from "./tableContextCommon";
-import { ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
+import { useMainThemeContext } from "@src/mainThemeContext";
+import { MainTheme } from "@src/theme";
+import { $getSelection, $setSelection } from "lexical";
+import { useMemo } from "react";
+import { MenuItem } from "../../menu";
+import { TableContextMenuOptionProps } from "./tableCommon";
 
 
-export default function TableContextMergeCells({ editor }: TableContextOptionProps) {
+export default function TableMergeCellsContextMenu({ editor }: TableContextMenuOptionProps) {
     const menuContext = useContextMenuContext();
+    const {editorTheme}: MainTheme = useMainThemeContext();
 
-    function MergeCellIcon() {
-        if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.MergeCellIcon ) 
-            throw Error("No theme for table menu!");
-
-        return menuContext.theme.tableMenuTheme.MergeCellIcon;
-    }
+    const MergeCellIcon = useMemo(()=>{
+        return editorTheme.tableTheme.menuTheme.MergeCellIcon;
+    },[editorTheme.tableTheme.menuTheme.MergeCellIcon]);
 
     const onClick = () => {
         editor.update(() => {
@@ -79,5 +80,10 @@ export default function TableContextMergeCells({ editor }: TableContextOptionPro
         });
     };
 
-    return <MenuItem Icon={MergeCellIcon()} title="Merge Cells" onClick={onClick} />;
+    return (
+        <MenuItem onClick={onClick}>
+            <MergeCellIcon/>
+            <div>Merge Cells</div>
+        </MenuItem>
+    );
 }

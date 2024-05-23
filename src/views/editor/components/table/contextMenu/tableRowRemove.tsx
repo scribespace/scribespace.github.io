@@ -5,19 +5,20 @@ import {
     TableCellNode
 } from "@lexical/table";
 import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
-import { TableContextOptionProps } from "./tableContextCommon";
+import { TableContextMenuOptionProps } from "./tableCommon";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
+import { useMainThemeContext } from "@src/mainThemeContext";
+import { MainTheme } from "@src/theme";
+import { useMemo } from "react";
 
 
-export default function TableContextRowRemove({ editor }: TableContextOptionProps) {
+export default function TableRowRemoveContextMenu({ editor }: TableContextMenuOptionProps) {
     const menuContext = useContextMenuContext();
+    const {editorTheme}: MainTheme = useMainThemeContext();
 
-    function RemoveRowIcon() {
-        if (!menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.RemoveRowIcon)
-            throw Error("No theme for table menu!");
-
-        return menuContext.theme.tableMenuTheme.RemoveRowIcon;
-    }
+    const RemoveRowIcon = useMemo(()=>{
+        return editorTheme.tableTheme.menuTheme.RemoveRowIcon;
+    },[editorTheme.tableTheme.menuTheme.RemoveRowIcon]);
 
     const onClick = () => {
         editor.update(() => {
@@ -60,10 +61,16 @@ export default function TableContextRowRemove({ editor }: TableContextOptionProp
 
             tableNode.removeRows(cellNode, rowsCount);
             $setSelection(null);
+
             menuContext.closeMenu();
         },
             { tag: 'table-row-remove' });
     };
 
-    return <MenuItem Icon={RemoveRowIcon()} title="Remove Row" onClick={onClick} />;
+    return (
+        <MenuItem onClick={onClick}>
+            <RemoveRowIcon/>
+            <div>Remove Row</div>
+        </MenuItem>
+    );
 }

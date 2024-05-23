@@ -2,10 +2,10 @@ import { EditorThemeClassName } from "lexical";
 
 
 export interface SeparatorTheme {
-    separatorHorizontal?: EditorThemeClassName;
-    separatorHorizontalStrong?: EditorThemeClassName;
-    separatorVertical?: EditorThemeClassName;
-    separatorVerticalStrong?: EditorThemeClassName;
+    separatorHorizontal: EditorThemeClassName;
+    separatorHorizontalStrong: EditorThemeClassName;
+    separatorVertical: EditorThemeClassName;
+    separatorVerticalStrong: EditorThemeClassName;
 }
 
 export const SEPARATOR_THEME_DEFAULT: SeparatorTheme = {

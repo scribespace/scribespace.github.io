@@ -1,28 +1,34 @@
-import { ReactNode, useCallback } from "react";
-import { IconType } from "react-icons";
+import { isIcon } from "@src/components/icon";
+import { variableExistsOrThrowDev } from "@src/utils/common";
+import { Children, ReactElement, cloneElement, useMemo } from "react";
+import { MenuItemProps } from "./common";
 import { MenuContextData, useMenuContext } from "./context";
 
-interface MenuItemProps {
-    Icon?: IconType;
-    title: string
-    onClick?: () => void;
-    children?: ReactNode;
-}
-
-export default function MenuItem({Icon, title, onClick, children}: MenuItemProps) {
+export default function MenuItem(props: MenuItemProps) {
     const menuContext: MenuContextData = useMenuContext();
 
-    const GetIcon = useCallback( () => {
-        if ( Icon )
-            return <Icon className={menuContext.theme?.menuItemIcon}/>;
-        else 
-            return <div className={menuContext.theme?.menuItemIcon}/>;
-    }, [menuContext.theme, Icon]);
+    const theme = useMemo(() => {
+        variableExistsOrThrowDev(menuContext.theme);
+        return menuContext.theme;
+    },[menuContext.theme]);
+
+    const children = useMemo(() => {
+        const childrenArray = Children.toArray(props.children) as ReactElement[];
+
+        return childrenArray.map((child) => {
+             if (isIcon(child)) {
+              return cloneElement(child, {
+                size: theme.itemIconSize,
+                className: `${theme.itemIcon} ${child.props.className}`,
+              });
+             }
+            return child;
+          });
+
+    },[props.children, theme.itemIcon, theme.itemIconSize]);
 
     return (
-        <div className={menuContext.theme?.menuItem} onClick={onClick}>
-           <GetIcon/>
-           <div>{title}</div>
+        <div className={theme.item} onClick={props.onClick}>
            {children}
         </div>
       );

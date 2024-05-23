@@ -17,10 +17,6 @@ export default function Menu({parentRect, disableBackground, showContextMenu, se
     const contextMenuContainerRef = useRef<HTMLDivElement>(null);
     const contextMenuRef = useRef<HTMLDivElement>(null);
 
-    
-
-    
-
     useEffect(() => {
         const handleClick = ({ target }: MouseEvent) => {
             if (contextMenuContainerRef.current && contextMenuContainerRef.current.parentElement && !contextMenuContainerRef.current.parentElement.contains(target as Node)) {
@@ -47,29 +43,64 @@ export default function Menu({parentRect, disableBackground, showContextMenu, se
 
         const { width, height } = contextMenuRef.current.getBoundingClientRect();
 
-        const newPosition = { x: parentRect.x + parentRect.width, y: parentRect.y };
+        function setToTheSide() {
+            const newPosition = { x: parentRect.x + parentRect.width, y: parentRect.y };
 
-        const endPositionX = parentRect.x + parentRect.width + width;
-        const endPositionY = parentRect.y + height;
+            const endPositionX = parentRect.x + parentRect.width + width;
+            const endPositionY = parentRect.y + height;
 
-        if (endPositionX > window.innerWidth) {
-            newPosition.x = parentRect.x - width;
+            if (endPositionX > window.innerWidth) {
+                newPosition.x = parentRect.x - width;
+            }
+
+            if (endPositionY > window.innerHeight) {
+                newPosition.y = parentRect.y - height;
+            }
+
+            newPosition.x += window.scrollX;
+            newPosition.y += window.scrollY;
+
+            setPosition({ left: `${newPosition.x}px`, top: `${newPosition.y}px` });
         }
 
-        if (endPositionY > window.innerHeight) {
-            newPosition.y = parentRect.y - height;
+        function setBelow() {
+            const newPosition = { x: parentRect.x + parentRect.width * 0.5 - width * 0.5, y: parentRect.y + parentRect.height };
+
+            const startPositionX = parentRect.x + parentRect.width * 0.5 - width * 0.5;
+            const endPositionX = parentRect.x + parentRect.width * 0.5 + width * 0.5;
+            const endPositionY = parentRect.y + parentRect.height + height;
+
+            if (endPositionX > window.innerWidth) {
+                const offset = window.innerWidth - endPositionX;
+                newPosition.x += offset;
+            }
+
+            if (startPositionX < 0) {
+                const offset = 0 - startPositionX;
+                newPosition.x += offset;
+            }
+
+            if (endPositionY > window.innerHeight) {
+                newPosition.y = parentRect.y - height;
+            }
+
+            newPosition.x += window.scrollX;
+            newPosition.y += window.scrollY;
+
+            setPosition({ left: `${newPosition.x}px`, top: `${newPosition.y}px` });
         }
 
-        newPosition.x += window.scrollX;
-        newPosition.y += window.scrollY;
-
-        setPosition({ left: `${newPosition.x}px`, top: `${newPosition.y}px` });
-    }, [showContextMenu, parentRect]);
+        if ( menuContext.layout == 'below') {
+            setBelow();
+        } else {
+            setToTheSide();
+        }
+    }, [showContextMenu, parentRect, menuContext.layout]);
 
     return (
         <div ref={contextMenuContainerRef}>
             {showContextMenu &&
-                <div ref={contextMenuRef} className={menuContext.theme?.menuFloat + (disableBackground ? '' : (' ' + menuContext.theme?.menuContainer))} style={{ left: position.left, top: position.top }}>
+                <div ref={contextMenuRef} className={menuContext.theme?.float + (disableBackground ? '' : (' ' + menuContext.theme?.container))} style={{ left: position.left, top: position.top }}>
                     {children}
                 </div>}
         </div>

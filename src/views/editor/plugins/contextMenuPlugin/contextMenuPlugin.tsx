@@ -7,7 +7,6 @@ import { MenuContext } from "@editor/components/menu/context";
 import { Menu } from "@editor/components/menu";
 import { useMainThemeContext } from "@src/mainThemeContext";
 import { MainTheme } from "@src/theme";
-import { variableExistsOrThrow } from "@src/utils/common";
 
 export default function ContextMenuPlugin() {
     const { editorTheme }: MainTheme = useMainThemeContext();
@@ -18,7 +17,7 @@ export default function ContextMenuPlugin() {
 
     const openContextMenu = (e: MouseEvent) => {
         setShowContextMenu(true);
-        setContextMenuContextObject((oldState) => {return {theme: oldState.theme, mousePosition: {x: e.clientX, y: e.clientY}, closeMenu: oldState.closeMenu};});
+        setContextMenuContextObject((oldState) => ({...oldState, mousePosition: {x: e.clientX, y: e.clientY}}));
         
         e.preventDefault();
         e.stopPropagation();
@@ -29,14 +28,11 @@ export default function ContextMenuPlugin() {
     };
 
     useEffect(()=>{        
-        setContextMenuContextObject((oldState) => {
-            variableExistsOrThrow(editorTheme?.contextMenuTheme);
-            return {theme: editorTheme.contextMenuTheme, mousePosition: oldState.mousePosition, closeMenu: oldState.closeMenu};
-        });
-    },[editorTheme?.contextMenuTheme]);
+        setContextMenuContextObject((oldState) => ({...oldState, theme: editorTheme?.contextMenuTheme?.menuTheme}) );
+    },[editorTheme?.contextMenuTheme?.menuTheme]);
 
     useEffect(()=>{
-        setContextMenuContextObject((oldState) => {return {theme: oldState.theme, mousePosition: oldState.mousePosition, closeMenu: closeContextMenu};});
+        setContextMenuContextObject((oldState) => ( {...oldState, closeMenu: closeContextMenu}));
 
         const removeRootListeners = editor.registerRootListener((rootElement, prevElement) => {
             if (rootElement !== null) {

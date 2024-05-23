@@ -1,33 +1,26 @@
-import { MenuItem, Submenu } from "../../menu";
-import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical";
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
+import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
 import {
     $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $getTableRowIndexFromTableCellNode, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
-import TableContextNumberInput from "./tableContextNumberInput";
-import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
-import { PropsWithChildren } from "react";
-import { TableContextOptionProps } from "./tableContextCommon";
-import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
+import { useMainThemeContext } from "@src/mainThemeContext";
+import { MainTheme } from "@src/theme";
+import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical";
+import { useMemo } from "react";
+import { MenuItem, Submenu } from "../../menu";
+import SubmenuIcon from "../../menu/submenuIcon";
+import { TableContextMenuOptionProps } from "./tableCommon";
+import TableNumberInputContextMenu from "./tableNumberInput";
 
 
-export default function TableContextAddRowAfter({ editor }: TableContextOptionProps) {
+export default function TableAddRowAfterContextMenu({ editor }: TableContextMenuOptionProps) {
     const menuContext = useContextMenuContext();
+    const {editorTheme}: MainTheme = useMainThemeContext();
 
-    function AddRowAfterIcon() {
-        if (!menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.AddRowAfterIcon)
-            throw Error("No theme for table menu!");
-
-        return menuContext.theme.tableMenuTheme.AddRowAfterIcon;
-    }
-
-    const OptionElement = ({ children }: PropsWithChildren) => {
-        return (
-            <MenuItem Icon={AddRowAfterIcon()} title="Insert Row After">
-                {children}
-            </MenuItem>
-        );
-    };
+    const AddRowAfterIcon = useMemo(()=>{
+        return editorTheme.tableTheme.menuTheme.AddRowAfterIcon;
+    },[editorTheme.tableTheme.menuTheme.AddRowAfterIcon]);
 
     const onInputAccepted = (input: HTMLInputElement) => {
         const value = input.valueAsNumber;
@@ -70,8 +63,13 @@ export default function TableContextAddRowAfter({ editor }: TableContextOptionPr
     };
 
     return (
-        <Submenu Option={OptionElement} disableBackground={true}>
-            <TableContextNumberInput onInputAccepted={onInputAccepted} />
+        <Submenu disableBackground={true}>
+            <MenuItem>
+                <AddRowAfterIcon/>
+                <div>Insert Row After</div>
+                <SubmenuIcon/>
+            </MenuItem>
+            <TableNumberInputContextMenu onInputAccepted={onInputAccepted} />
         </Submenu>
     );
 }

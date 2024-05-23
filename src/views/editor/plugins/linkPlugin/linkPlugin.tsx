@@ -8,7 +8,7 @@ import { mergeRegister } from '@lexical/utils';
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import LinkEditor from "@editor/components/link";
-import { urlRegExp, validateUrl, OpenURL, variableExistsOrThrow } from "@utils/common";
+import { urlRegExp, validateUrl, OpenURL } from "@utils/common";
 import { useMainThemeContext } from "@src/mainThemeContext";
 import { MainTheme } from "@src/theme";
 
@@ -22,9 +22,8 @@ export default function LinkPlugin() {
     const [linkText, setLinkText] = useState<string>("");
 
     const theme = useMemo(()=> {
-      variableExistsOrThrow(editorTheme?.editorSeeThrough);
-      return editorTheme?.editorSeeThrough;
-  },[editorTheme?.editorSeeThrough]);
+      return editorTheme.editorSeeThrough;
+  },[editorTheme.editorSeeThrough]);
 
     function TryCreateLink(lastNode: LexicalNode, lastNodeOffset: number) {
       let testString = '';

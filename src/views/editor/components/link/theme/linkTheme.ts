@@ -1,18 +1,19 @@
+import { Icon } from "@src/components/icon";
 import { EditorThemeClassName } from "lexical";
 import { IconType } from "react-icons";
 import { HiExternalLink } from "react-icons/hi";
 import { MdEdit, MdLink } from "react-icons/md";
 
 export interface LinkTheme {
-    editor?: EditorThemeClassName;
-    container?: EditorThemeClassName;
-    icon?: EditorThemeClassName;
-    input?: EditorThemeClassName;
-    button?: EditorThemeClassName;
+    editor: EditorThemeClassName;
+    container: EditorThemeClassName;
+    icon: EditorThemeClassName;
+    input: EditorThemeClassName;
+    button: EditorThemeClassName;
 
-    TextIcon?: IconType;
-    LinkIcon?: IconType;
-    OpenIcon?: IconType;
+    TextIcon: IconType;
+    LinkIcon: IconType;
+    OpenIcon: IconType;
 }
 
 export const LINK_THEME_DEFAULT: LinkTheme = {
@@ -22,7 +23,7 @@ export const LINK_THEME_DEFAULT: LinkTheme = {
     input: 'link-input-text-default',
     button: 'link-input-icon-default',
 
-    TextIcon: MdEdit,
-    LinkIcon: MdLink,
-    OpenIcon: HiExternalLink,
+    TextIcon: Icon( MdEdit ),
+    LinkIcon: Icon( MdLink ),
+    OpenIcon: Icon( HiExternalLink ),
 };

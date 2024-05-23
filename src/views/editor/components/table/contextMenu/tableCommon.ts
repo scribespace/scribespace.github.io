@@ -1,5 +1,5 @@
 import { LexicalEditor } from "lexical";
 
-export interface TableContextOptionProps {
+export interface TableContextMenuOptionProps {
     editor: LexicalEditor
 }

@@ -1,34 +1,27 @@
-import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical";
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
+import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
+import { $getTableColumnIndexFromTableCellNode } from "@editor/plugins/tablePlugin/utils";
 import {
     $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
-import TableContextNumberInput from "./tableContextNumberInput";
-import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
-import { PropsWithChildren } from "react";
-import { TableContextOptionProps } from "./tableContextCommon";
+import { useMainThemeContext } from "@src/mainThemeContext";
+import { MainTheme } from "@src/theme";
+import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical";
+import { useMemo } from "react";
 import { MenuItem, Submenu } from "../../menu";
-import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
-import { $getTableColumnIndexFromTableCellNode } from "@editor/plugins/tablePlugin/utils";
+import SubmenuIcon from "../../menu/submenuIcon";
+import { TableContextMenuOptionProps } from "./tableCommon";
+import TableNumberInputContextMenu from "./tableNumberInput";
 
 
-export default function TableContextAddColumnBefore({ editor }: TableContextOptionProps) {
+export default function TableAddColumnBeforeContextMenu({ editor }: TableContextMenuOptionProps) {
     const menuContext = useContextMenuContext();
+    const {editorTheme}: MainTheme = useMainThemeContext();
 
-    function AddColumnBeforeIcon() {
-        if (!menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.AddColumnBeforeIcon)
-            throw Error("No theme for table menu!");
-
-        return menuContext.theme.tableMenuTheme.AddColumnBeforeIcon;
-    }
-
-    const OptionElement = ({ children }: PropsWithChildren) => {
-        return (
-            <MenuItem Icon={AddColumnBeforeIcon()} title="Insert Column Before">
-                {children}
-            </MenuItem>
-        );
-    };
+    const AddColumnBeforeIcon = useMemo(()=>{
+        return editorTheme.tableTheme.menuTheme.AddColumnBeforeIcon;
+    },[editorTheme.tableTheme.menuTheme.AddColumnBeforeIcon]);
 
     const onInputAccepted = (input: HTMLInputElement) => {
         const value = input.valueAsNumber;
@@ -72,8 +65,13 @@ export default function TableContextAddColumnBefore({ editor }: TableContextOpti
     };
 
     return (
-        <Submenu Option={OptionElement} disableBackground={true}>
-            <TableContextNumberInput onInputAccepted={onInputAccepted} />
+        <Submenu disableBackground={true}>
+            <MenuItem>
+                <AddColumnBeforeIcon/>
+                <div>Insert Column Before</div>
+                <SubmenuIcon/>
+            </MenuItem>
+            <TableNumberInputContextMenu onInputAccepted={onInputAccepted} />
         </Submenu>
     );
 }

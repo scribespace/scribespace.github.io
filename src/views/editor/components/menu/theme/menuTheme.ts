@@ -3,11 +3,12 @@ import { IconType } from "react-icons";
 
 
 export interface MenuTheme {
-    menuFloat?: EditorThemeClassName;
-    menuContainer?: EditorThemeClassName;
-    menuItem?: EditorThemeClassName;
-    menuItemIcon?: EditorThemeClassName;
-    menuItemSubmenuIcon?: EditorThemeClassName;
+    float: EditorThemeClassName;
+    container: EditorThemeClassName;
+    item: EditorThemeClassName;
+    itemIcon: EditorThemeClassName;
+    submenuIcon: EditorThemeClassName;
+    itemIconSize: string;
 
-    SubmenuIcon?: IconType;
+    SubmenuIcon: IconType;
 }

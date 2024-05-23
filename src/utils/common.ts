@@ -1,9 +1,27 @@
+
+export function devOnly(dev: ()=>void) {
+    const func = import.meta.env.DEV ? dev : ()=>{};
+    func();
+}
+
 export function variableExists<T>( variable: T | undefined ): variable is T {
     return typeof variable !== 'undefined';
 }
 
 export function variableExistsOrThrow<T>( variable: T | undefined ): asserts variable is T {
     if ( !variableExists(variable) ) throw Error(`${variable} doesn't exist`);
+}
+
+export function variableExistsOrThrowDev<T>( variable: T | undefined ): asserts variable is T {
+    devOnly(()=>{
+        variableExistsOrThrow(variable);
+    });
+}
+
+export function assert(test: boolean, message: string) {
+    devOnly(()=>{
+    if ( !test ) throw Error('Assert failed: ' + message);
+    });
 }
 
 export interface ValueUnit {

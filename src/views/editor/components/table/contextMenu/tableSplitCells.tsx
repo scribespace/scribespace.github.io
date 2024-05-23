@@ -4,19 +4,20 @@ import {
     $findCellNode, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
-import { TableContextOptionProps } from "./tableContextCommon";
+import { TableContextMenuOptionProps } from "./tableCommon";
 import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
+import { MainTheme } from "@src/theme";
+import { useMainThemeContext } from "@src/mainThemeContext";
+import { useMemo } from "react";
 
-export default function TableContextSplitCells({ editor }: TableContextOptionProps) {
+export default function TableSplitCellsContextMenu({ editor }: TableContextMenuOptionProps) {
     const menuContext = useContextMenuContext();
+    const {editorTheme}: MainTheme = useMainThemeContext();
 
-    function SplitCellIcon() {
-        if ( !menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.SplitCellIcon ) 
-            throw Error("No theme for table menu!");
-
-        return menuContext.theme.tableMenuTheme.SplitCellIcon;
-    }
+    const SplitCellIcon = useMemo(()=>{
+        return editorTheme.tableTheme.menuTheme.SplitCellIcon;
+    },[editorTheme.tableTheme.menuTheme.SplitCellIcon]);
 
     const onClick = () => {
         editor.update(() => {
@@ -48,9 +49,15 @@ export default function TableContextSplitCells({ editor }: TableContextOptionPro
             }
 
             $setSelection(null);
+
             menuContext.closeMenu();
         });
     };
 
-    return <MenuItem Icon={SplitCellIcon()} title="Split Cells" onClick={onClick} />;
+    return (
+        <MenuItem onClick={onClick}>
+            <SplitCellIcon/>
+            <div>Split Cells</div>
+        </MenuItem>
+    );
 }

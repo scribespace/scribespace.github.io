@@ -1,11 +1,11 @@
+import { separateValueAndUnit, variableExists } from "@utils/common";
 import { useMemo, useRef } from "react";
-import { separateValueAndUnit, variableExists, variableExistsOrThrow } from "@utils/common";
 import { IconBaseProps } from "react-icons";
 import { SeparatorVertical } from '../separators';
 
-import './css/numberInput.css';
 import { useMainThemeContext } from "@src/mainThemeContext";
 import { MainTheme } from "@src/theme";
+import './css/numberInput.css';
 
 interface NumberInputProps {
     type: 'text' | 'number';
@@ -70,20 +70,19 @@ export default function NumberInput(props: NumberInputProps) {
     }
 
     const theme = useMemo(()=> {
-        variableExistsOrThrow(editorTheme?.numberInputTheme);
-        return editorTheme?.numberInputTheme;
-    },[editorTheme?.numberInputTheme]);
+        return editorTheme.numberInputTheme;
+    },[editorTheme.numberInputTheme]);
 
     function DecreaseIcon(props: IconBaseProps) {
-        return theme.DecreaseIcon!(props);
+        return theme.DecreaseIcon(props);
     }
 
     function IncreaseIcon(props: IconBaseProps) {
-        return theme.IncreaseIcon!(props);
+        return theme.IncreaseIcon(props);
     }
 
     function AcceptIcon(props: IconBaseProps) {
-        return theme.AcceptIcon!(props);
+        return theme.AcceptIcon(props);
     }
 
     return (

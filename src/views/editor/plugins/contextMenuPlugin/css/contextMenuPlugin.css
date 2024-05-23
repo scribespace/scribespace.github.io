@@ -51,15 +51,3 @@
     padding: 5px;
     border-radius: 5px;
 }
-
-.context-menu-editor-button-default {
-    border-radius: 3px;
-    padding: 5px;
-    cursor: pointer;
-    border: 0 solid;
-    background-color: transparent;
-}
-
-.context-menu-editor-button-default:hover {
-    background-color: rgb(209, 209, 209);
-  }

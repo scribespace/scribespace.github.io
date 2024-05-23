@@ -7,17 +7,17 @@ import {
 
 import { SeparatorHorizontalStrong, SeparatorHorizontal } from "../separators";
 import { 
-    TableContextAddColumnAfter, 
-    TableContextAddColumnBefore, 
-    TableContextAddRowAfter, 
-    TableContextAddRowBefore, 
-    TableContextColumnRemove, 
-    TableContextCreate, 
-    TableContextDelete, 
-    TableContextMergeCells, 
-    TableContextRowRemove, 
-    TableContextSplitCells 
-} from "./tableContext";
+    TableAddColumnAfterContextMenu, 
+    TableAddColumnBeforeContextMenu, 
+    TableAddRowAfterContextMenu, 
+    TableAddRowBeforeContextMenu, 
+    TableColumnRemoveContextMenu, 
+    TableCreateContextMenu, 
+    TableDeleteContextMenu, 
+    TableMergeCellsContextMenu, 
+    TableRowRemoveContextMenu, 
+    TableSplitCellsContextMenu 
+} from "./contextMenu";
 import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
 
 interface TableContextOptionsProps {
@@ -76,27 +76,27 @@ export default function TableContextOptions({editor}: TableContextOptionsProps) 
     return (
         <>
             <SeparatorHorizontalStrong/>
-            <TableContextCreate editor={editor}/>
+            <TableCreateContextMenu editor={editor}/>
             {insideTable && 
-                <TableContextDelete editor={editor}/>
+                <TableDeleteContextMenu editor={editor}/>
             }
             {(cellsSelected || mergedCellSelected) && (
                 <>
                 <SeparatorHorizontal/>
-                {cellsSelected && <TableContextMergeCells editor={editor}/>}
-                {mergedCellSelected && <TableContextSplitCells editor={editor}/>}
+                {cellsSelected && <TableMergeCellsContextMenu editor={editor}/>}
+                {mergedCellSelected && <TableSplitCellsContextMenu editor={editor}/>}
                 </>
             )}
             {insideTable && (
             <>
                 <SeparatorHorizontal/>
-                <TableContextColumnRemove editor={editor}/>
-                <TableContextRowRemove editor={editor}/>
+                <TableColumnRemoveContextMenu editor={editor}/>
+                <TableRowRemoveContextMenu editor={editor}/>
                 <SeparatorHorizontal/>
-                <TableContextAddColumnBefore editor={editor}/>
-                <TableContextAddColumnAfter editor={editor}/>
-                <TableContextAddRowBefore editor={editor}/>
-                <TableContextAddRowAfter editor={editor}/>
+                <TableAddColumnBeforeContextMenu editor={editor}/>
+                <TableAddColumnAfterContextMenu editor={editor}/>
+                <TableAddRowBeforeContextMenu editor={editor}/>
+                <TableAddRowAfterContextMenu editor={editor}/>
             </>
             )}           
         </>

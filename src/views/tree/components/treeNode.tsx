@@ -11,17 +11,10 @@ import { FolderArrow } from './folderArrow';
 import { Input } from './input';
 import { useMainThemeContext } from '@src/mainThemeContext';
 import { MainTheme } from '@src/theme';
-import { variableExistsOrThrow } from '@src/utils/common';
-import { useMemo } from 'react';
 import { IconBaseProps } from 'react-icons';
   
 export default function TreeNode({ node, style, dragHandle }: NodeRendererProps<TreeNodeData>) {
     const { treeTheme }: MainTheme = useMainThemeContext();
-
-    const theme = useMemo(()=> {
-        variableExistsOrThrow(treeTheme);
-        return treeTheme;
-    },[treeTheme]);
 
     const OnEditNode = () => {
         if (!node.tree.props.onRename) return; 
@@ -45,11 +38,11 @@ export default function TreeNode({ node, style, dragHandle }: NodeRendererProps<
     };
 
     function AddIcon(props: IconBaseProps) {
-        return theme.AddIcon!(props);
+        return treeTheme.AddIcon(props);
     }
 
     function DeleteIcon(props: IconBaseProps) {
-        return theme.DeleteIcon!(props);
+        return treeTheme.DeleteIcon(props);
     }
 
     return (

@@ -1,24 +1,25 @@
-import { $getSelection, $isRangeSelection, $setSelection } from "lexical";
-import { MenuItem } from "../../menu";
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
+import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
+import { $getTableColumnIndexFromTableCellNode } from "@editor/plugins/tablePlugin/utils";
 import {
     $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
-import { $getTableColumnIndexFromTableCellNode } from "@editor/plugins/tablePlugin/utils";
-import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
-import { TableContextOptionProps } from "./tableContextCommon";
-import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
+import { useMainThemeContext } from "@src/mainThemeContext";
+import { MainTheme } from "@src/theme";
+import { $getSelection, $isRangeSelection, $setSelection } from "lexical";
+import { useMemo } from "react";
+import { MenuItem } from "../../menu";
+import { TableContextMenuOptionProps } from "./tableCommon";
 
 
-export default function TableContextColumnRemove({ editor }: TableContextOptionProps) {
+export default function TableColumnRemoveContextMenu({ editor }: TableContextMenuOptionProps) {
     const menuContext = useContextMenuContext();
+    const {editorTheme}: MainTheme = useMainThemeContext();
 
-    function RemoveColumnIcon() {
-        if (!menuContext.theme.tableMenuTheme || !menuContext.theme.tableMenuTheme.RemoveColumnIcon)
-            throw Error("No theme for table menu!");
-
-        return menuContext.theme.tableMenuTheme.RemoveColumnIcon;
-    }
+    const RemoveColumnIcon = useMemo(()=>{
+        return editorTheme.tableTheme.menuTheme.RemoveColumnIcon;
+    },[editorTheme.tableTheme.menuTheme.RemoveColumnIcon]);
 
     const onClick = () => {
         editor.update(() => {
@@ -68,5 +69,10 @@ export default function TableContextColumnRemove({ editor }: TableContextOptionP
             { tag: 'table-column-remove' });
     };
 
-    return <MenuItem Icon={RemoveColumnIcon()} title="Remove Column" onClick={onClick} />;
+    return (
+        <MenuItem onClick={onClick} >
+            <RemoveColumnIcon/>
+            <div>Remove Column</div>
+        </MenuItem>
+    );
 }
