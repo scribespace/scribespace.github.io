@@ -11,8 +11,8 @@ import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical"
 import { useMemo } from "react";
 import { MenuItem, Submenu } from "../../menu";
 import SubmenuIcon from '../../menu/submenuIcon';
-import { TableContextMenuOptionProps } from "./tableCommon";
-import TableNumberInputContextMenu from "./tableNumberInput";
+import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
+import TableNumberInputContextMenu from "./tableNumberInputContextMenu";
 
 export default function TableAddColumnAfterContextMenu({ editor }: TableContextMenuOptionProps) {
     const menuContext = useContextMenuContext();

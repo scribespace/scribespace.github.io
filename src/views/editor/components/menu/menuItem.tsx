@@ -1,7 +1,7 @@
 import { isIcon } from "@src/components/icon";
 import { variableExistsOrThrowDev } from "@src/utils/common";
 import { Children, ReactElement, ReactNode, cloneElement, useMemo } from "react";
-import { MenuContextData, useMenuContext } from "./context";
+import { MenuContextData, useMenuContext } from "./menuContext";
 
 interface MenuItemProps {
     disabled?: boolean;

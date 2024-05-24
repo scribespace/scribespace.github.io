@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { MenuContextData, useMenuContext } from "./context";
+import { MenuContextData, useMenuContext } from "./menuContext";
 
 interface ContextMenuProps {
     parentRect: {x: number, y: number, width: number, height: number};

@@ -26,7 +26,7 @@ export function assert(test: boolean, message: string) {
 
 export interface ValueUnit {
     value?: number;
-    unit?: string | null;
+    unit: string;
 }
 
 export function separateValueAndUnit(valueUnit: string): ValueUnit {
@@ -35,7 +35,7 @@ export function separateValueAndUnit(valueUnit: string): ValueUnit {
     if (match) {
         return {
             value: parseFloat(match[1]),
-            unit: match[2] || null
+            unit: match[2] || ''
         };
     } else {
         throw new Error('separateValueAndUnit: Invalid input format');

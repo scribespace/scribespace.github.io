@@ -1,5 +1,5 @@
 import { IconBaseProps } from "react-icons";
-import { MenuContextData, useMenuContext } from "./context";
+import { MenuContextData, useMenuContext } from "./menuContext";
 import { variableExistsOrThrowDev } from "@src/utils/common";
 
 export default function SubmenuIcon() {

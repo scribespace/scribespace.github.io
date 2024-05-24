@@ -10,7 +10,7 @@ export default function TableNumberInputContextMenu({ onInputAccepted }: TableCo
 
     return (
         <div className={menuContext.theme?.editorContainer}>
-            <NumberInput type="number" defaultValue="1" min={1} useAcceptButton={true} onInputAccepted={onInputAccepted} />
+            <NumberInput type="number" value="1" min={1} useAcceptButton={true} onInputAccepted={onInputAccepted} />
         </div>
     );
 }

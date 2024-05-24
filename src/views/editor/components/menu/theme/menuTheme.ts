@@ -1,4 +1,6 @@
+import { EmptyComponent } from "@src/components";
 import { EditorThemeClassName } from "lexical";
+import { CSSProperties } from "react";
 import { IconType } from "react-icons";
 
 
@@ -14,3 +16,18 @@ export interface MenuTheme {
 
     SubmenuIcon: IconType;
 }
+
+export const MENU_THEME_EMPTY: MenuTheme = {
+    float: '',
+    container: '',
+    item: '',
+    itemSelected: '',
+    itemDisabled: '',
+    itemIcon: '',
+    submenuIcon: '',
+    itemIconSize: '',
+
+    SubmenuIcon: EmptyComponent,
+};
+
+export const $menuItemParent: CSSProperties = {alignContent: 'center', display: 'flex', alignItems: "stretch"};

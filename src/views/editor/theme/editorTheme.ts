@@ -1,20 +1,23 @@
-import { CONTEXT_MENU_THEME_DEFAULT, ContextMenuTheme } from "../plugins/contextMenuPlugin/theme";
+import { CONTEXT_MENU_THEME_DEFAULT, ContextMenuTheme } from "@editor/plugins/contextMenuPlugin/theme";
 import { EditorThemeClassName, EditorThemeClasses } from "lexical";
-import { LINK_THEME_DEFAULT, LinkTheme } from "../components/link/theme";
-import { NumberInputTheme, NUMBER_INPUT_THEME_DEFAULT } from "../components/numberInput/theme";
-import { SeparatorTheme, SEPARATOR_THEME_DEFAULT } from "../components/separators/theme";
-import { TableTheme, TABLE_THEME_DEFAULT } from "../components/table/theme";
-import { EDITOR_INPUT_THEME_DEFAULT } from "./editorInputTheme";
-import { TOOLBAR_THEME_DEFAULT, ToolbarTheme } from "../plugins/toolbarPlugin/theme";
-import { UNDO_REDO_THEME_DEFAULT, UndoRedoTheme } from "../components/undoRedo/theme";
-import { TEXT_STYLE_THEME_DEFAULT, TextStyleTheme } from "../components/textStyle/theme";
+import { LINK_THEME_DEFAULT, LinkTheme } from "@editor/components/link/theme";
+import { NumberInputTheme, NUMBER_INPUT_THEME_DEFAULT } from "@editor/components/numberInput/theme";
+import { SeparatorTheme, SEPARATOR_THEME_DEFAULT } from "@editor/components/separators/theme";
+import { TableTheme, TABLE_THEME_DEFAULT } from "@editor/components/table/theme";
+import { TOOLBAR_THEME_DEFAULT, ToolbarTheme } from "@editor/plugins/toolbarPlugin/theme";
+import { UNDO_REDO_THEME_DEFAULT, UndoRedoTheme } from "@editor/components/undoRedo/theme";
+import { FONT_STYLE_THEME_DEFAULT, FontStyleTheme } from "@editor/components/fontStyle/theme";
 
+export interface EditorInputTheme extends EditorThemeClasses {
+    defaultFontSize: EditorThemeClassName;
+    defaultFontFamily: EditorThemeClassName;
+}
 
 export interface EditorTheme {
     editorContainer: EditorThemeClassName;
     editorInner: EditorThemeClassName;
     editorEditable: EditorThemeClassName;
-    editorInputTheme: EditorThemeClasses;
+    editorInputTheme: EditorInputTheme;
     
     editorSeeThrough: EditorThemeClassName;
     editorPrintDisabled: EditorThemeClassName;
@@ -24,11 +27,33 @@ export interface EditorTheme {
     linkTheme: LinkTheme;
     numberInputTheme: NumberInputTheme;
     undoRedoTheme: UndoRedoTheme;
-    textStyleTheme: TextStyleTheme;
+    fontStyleTheme: FontStyleTheme;
 
     toolbarTheme: ToolbarTheme;
     contextMenuTheme: ContextMenuTheme;
 }
+
+export const EDITOR_INPUT_THEME_DEFAULT: EditorInputTheme = {
+    ltr: "ltr",
+    rtl: "rtl",
+    placeholder: "editor-placeholder",
+    paragraph: "editor-paragraph",
+    link: "link",
+    text: {
+        base: "editor-text",
+        bold: "editor-text-bold",
+        italic: "editor-text-italic",
+        underline: "editor-text-underline",
+        strikethrough: "editor-text-strikethrough",
+        underlineStrikethrough: "editor-text-underlineStrikethrough",
+    },
+    table: 'editor-table',
+    tableCell: 'editor-table-cell',
+    tableRow: 'editor-table-row',
+
+    defaultFontSize: '',
+    defaultFontFamily: '',
+};
 
 export const EDITOR_THEME_DEFAULT: EditorTheme = {
     editorContainer: 'editor-container',
@@ -44,7 +69,7 @@ export const EDITOR_THEME_DEFAULT: EditorTheme = {
     separatorTheme: SEPARATOR_THEME_DEFAULT,
     linkTheme: LINK_THEME_DEFAULT,
     undoRedoTheme: UNDO_REDO_THEME_DEFAULT,
-    textStyleTheme: TEXT_STYLE_THEME_DEFAULT,
+    fontStyleTheme: FONT_STYLE_THEME_DEFAULT,
 
     toolbarTheme: TOOLBAR_THEME_DEFAULT,
     contextMenuTheme: CONTEXT_MENU_THEME_DEFAULT,

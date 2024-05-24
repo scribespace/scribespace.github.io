@@ -9,7 +9,7 @@ import { MainTheme } from "@src/theme";
 import { $getSelection, $setSelection } from "lexical";
 import { useMemo } from "react";
 import { MenuItem } from "../../menu";
-import { TableContextMenuOptionProps } from "./tableCommon";
+import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
 
 
 export default function TableMergeCellsContextMenu({ editor }: TableContextMenuOptionProps) {

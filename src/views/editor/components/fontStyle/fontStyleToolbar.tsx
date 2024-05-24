@@ -5,9 +5,10 @@ import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_LOW, FORMAT_TEXT_COM
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
 import { MenuItem } from "../menu";
-import { CLEAR_FORMAT_TEXT_COMMAND } from '@editor/plugins/textStylePlugin';
+import { CLEAR_FONT_STYLE_COMMAND } from '@src/views/editor/plugins/fontCommandsPlugin';
+import { $menuItemParent } from '../menu/theme';
 
-export default function TextStyleToolbar() {
+export default function FontStyleToolbar() {
     const {editor} = useToolbarContext();
     const {editorTheme}: MainTheme = useMainThemeContext();
 
@@ -16,9 +17,9 @@ export default function TextStyleToolbar() {
     const [isUnderline, setIsUnderline] = useState(false);
     const [isStrikethrough, setIsStrikethrough] = useState(false);
 
-    const [textStyleTheme, selectedItemTheme] = useMemo(()=> {
-        return [editorTheme.textStyleTheme, editorTheme.toolbarTheme.menuTheme.itemSelected];
-    },[editorTheme.textStyleTheme, editorTheme.toolbarTheme.menuTheme.itemSelected]);
+    const [fontStyleTheme, selectedItemTheme] = useMemo(()=> {
+        return [editorTheme.fontStyleTheme, editorTheme.toolbarTheme.menuTheme.itemSelected];
+    },[editorTheme.fontStyleTheme, editorTheme.toolbarTheme.menuTheme.itemSelected]);
 
     const updateStates = useCallback(() => {
         const selection = $getSelection();
@@ -67,33 +68,33 @@ export default function TextStyleToolbar() {
     };
 
     const onClickClearFormatting = () => {
-        editor.dispatchCommand(CLEAR_FORMAT_TEXT_COMMAND, undefined);
+        editor.dispatchCommand(CLEAR_FONT_STYLE_COMMAND, undefined);
     };
     
     return (
         <>
-            <div className={isBold ? selectedItemTheme : ''}>
+            <div className={isBold ? selectedItemTheme : ''} style={$menuItemParent}>
                 <MenuItem onClick={onClickBold}>
-                    <textStyleTheme.BoldIcon/>
+                    <fontStyleTheme.BoldIcon/>
                 </MenuItem>
             </div>
-            <div className={isItalic ? selectedItemTheme : ''}>
+            <div className={isItalic ? selectedItemTheme : ''} style={$menuItemParent}>
                 <MenuItem onClick={onClickItalic}>
-                    <textStyleTheme.ItalicIcon/>
+                    <fontStyleTheme.ItalicIcon/>
                 </MenuItem>
             </div>
-            <div className={isUnderline ? selectedItemTheme : ''}>
+            <div className={isUnderline ? selectedItemTheme : ''} style={$menuItemParent}>
                 <MenuItem onClick={onClickUnderline}>
-                    <textStyleTheme.UnderlineIcon/>
+                    <fontStyleTheme.UnderlineIcon/>
                 </MenuItem>
             </div>
-            <div className={isStrikethrough ? selectedItemTheme : ''}>
+            <div className={isStrikethrough ? selectedItemTheme : ''} style={$menuItemParent}>
                 <MenuItem onClick={onClickStrikethrough}>
-                    <textStyleTheme.StrikethroughIcon/>
+                    <fontStyleTheme.StrikethroughIcon/>
                 </MenuItem>
             </div>
             <MenuItem onClick={onClickClearFormatting}>
-                <textStyleTheme.ClearFormattingIcon/>
+                <fontStyleTheme.ClearFormattingIcon/>
             </MenuItem>
         </>
     );

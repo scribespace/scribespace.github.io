@@ -9,6 +9,11 @@ export function MainApp() {
 
   useEffect(() => {
     const newTheme = MAIN_THEME_DEFAULT; // Update this when there is more than one theme
+    
+    // set defaults
+    newTheme.editorTheme.editorInputTheme.defaultFontSize = getComputedStyle(document.documentElement).getPropertyValue("--default-font-size");
+    newTheme.editorTheme.editorInputTheme.defaultFontFamily = getComputedStyle(document.documentElement).getPropertyValue("--default-font-family");
+
     setMainTheme(newTheme);
   }, []);
 

@@ -1,26 +1,27 @@
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
 import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
 import {
-    $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $getTableRowIndexFromTableCellNode, $isTableCellNode, $isTableSelection,
+    $getTableCellNodeFromLexicalNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
 import { useMainThemeContext } from "@src/mainThemeContext";
 import { MainTheme } from "@src/theme";
-import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical";
+import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection, $setSelection } from "lexical";
 import { useMemo } from "react";
 import { MenuItem, Submenu } from "../../menu";
 import SubmenuIcon from "../../menu/submenuIcon";
-import { TableContextMenuOptionProps } from "./tableCommon";
-import TableNumberInputContextMenu from "./tableNumberInput";
+import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
+import TableNumberInputContextMenu from "./tableNumberInputContextMenu";
 
 
-export default function TableAddRowAfterContextMenu({ editor }: TableContextMenuOptionProps) {
+
+export default function TableAddRowBeforeContextMenu({ editor }: TableContextMenuOptionProps) {
     const menuContext = useContextMenuContext();
     const {editorTheme}: MainTheme = useMainThemeContext();
 
-    const AddRowAfterIcon = useMemo(()=>{
-        return editorTheme.tableTheme.menuTheme.AddRowAfterIcon;
-    },[editorTheme.tableTheme.menuTheme.AddRowAfterIcon]);
+    const AddRowBeforeIcon = useMemo(()=>{
+        return editorTheme.tableTheme.menuTheme.AddRowBeforeIcon;
+    },[editorTheme.tableTheme.menuTheme.AddRowBeforeIcon]);
 
     const onInputAccepted = (input: HTMLInputElement) => {
         const value = input.valueAsNumber;
@@ -32,41 +33,34 @@ export default function TableAddRowAfterContextMenu({ editor }: TableContextMenu
             let cellNode: TableCellNode | null = null;
             if ($isRangeSelection(selection)) {
                 cellNode = $getTableCellNodeFromLexicalNode(selection.getNodes()[0]);
-                if (!cellNode) throw Error("AddRowAfter: couldn't find node");
+                if (!cellNode) throw Error("AddRowBefore: couldn't find node");
                 tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(cellNode);
             }
 
             if ($isTableSelection(selection)) {
                 const tableBodyNode = $getNodeByKeyOrThrow<TableBodyNode>(selection.tableKey);
                 tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>();
-                const rowID = -1;
-                for (const node of selection.getNodes()) {
-                    if ($isTableCellNode(node)) {
-                        const cellsTableNode = $getTableNodeFromLexicalNodeOrThrow(node);
-                        if (cellsTableNode == tableBodyNode) {
-                            const nodesRowID = $getTableRowIndexFromTableCellNode(node);
-                            if (nodesRowID > rowID) {
-                                rowID == nodesRowID;
-                                cellNode = node;
-                            }
-                        }
-                    }
+                if (selection.anchor.isBefore(selection.focus)) {
+                    cellNode = selection.anchor.getNode() as TableCellNode;
+                } else {
+                    cellNode = selection.focus.getNode() as TableCellNode;
                 }
             }
 
-            if (!cellNode) throw Error("AddRowAfter: node not found");
-            tableNode?.addRowsAfter(cellNode, value);
-        },
-            { tag: 'table-add-row-after' });
+            if (!cellNode) throw Error("AddRowBefore: node not found");
+            tableNode?.addRowsBefore(cellNode, value);
 
-        menuContext.closeMenu();
+            $setSelection(null);
+            menuContext.closeMenu();
+        },
+            { tag: 'table-add-row-before' });
     };
 
     return (
         <Submenu disableBackground={true}>
             <MenuItem>
-                <AddRowAfterIcon/>
-                <div>Insert Row After</div>
+                <AddRowBeforeIcon/>
+                <div>Insert Row Before</div>
                 <SubmenuIcon/>
             </MenuItem>
             <TableNumberInputContextMenu onInputAccepted={onInputAccepted} />

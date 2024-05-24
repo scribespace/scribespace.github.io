@@ -6,7 +6,7 @@ import { MainTheme } from "@src/theme";
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical";
 import { useMemo } from "react";
 import { MenuItem } from "../../menu";
-import { TableContextMenuOptionProps } from "./tableCommon";
+import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
 
 
 export default function TableDeleteContextMenu({ editor }: TableContextMenuOptionProps) {

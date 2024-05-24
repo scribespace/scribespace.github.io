@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { TableContextOptions } from "@editor/components/table";
 import './css/contextMenuPlugin.css';
 import { ContextMenuContextData, CONTEXT_MENU_CONTEX_DEFAULT } from "./context";
-import { MenuContext } from "@editor/components/menu/context";
+import { MenuContext } from "@src/views/editor/components/menu/menuContext";
 import { Menu } from "@editor/components/menu";
 import { useMainThemeContext } from "@src/mainThemeContext";
 import { MainTheme } from "@src/theme";

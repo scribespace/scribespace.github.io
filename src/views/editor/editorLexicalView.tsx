@@ -1,32 +1,32 @@
 
-import { $getRoot, $insertNodes, TextNode } from 'lexical';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { $getRoot, $insertNodes, TextNode } from 'lexical';
 
+import { $generateNodesFromDOM } from '@lexical/html';
+import { LinkNode } from '@lexical/link';
+import { ListItemNode, ListNode } from '@lexical/list';
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
-import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
-import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
-import { $generateNodesFromDOM } from '@lexical/html';
-import { ListNode, ListItemNode } from '@lexical/list';
-import { LinkNode } from '@lexical/link';
-import LinkPlugin from './plugins/linkPlugin';
+import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
+import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { appGlobals } from '@system/appGlobals';
+import LinkPlugin from './plugins/linkPlugin';
 
 import './css/editorInputTheme.css';
 
 import { ToolbarPlugin } from './plugins/toolbarPlugin/toolbarPlugin';
 
-import RegisterCustomCommands from './commands';
-import ExtendedTextNode from './nodes/text';
-import useResizeObserver from 'use-resize-observer';
-import { TableNode, TableRowNode, TableCellNode } from '@lexical/table';
-import { ExtendedTableNode, TableBodyNode } from './nodes/table';
-import TablePlugin from './plugins/tablePlugin';
-import ContextMenuPlugin from './plugins/contextMenuPlugin';
+import { TableCellNode, TableNode, TableRowNode } from '@lexical/table';
 import { useMainThemeContext } from '@src/mainThemeContext';
 import { MainTheme } from '@src/theme';
+import useResizeObserver from 'use-resize-observer';
+import { ExtendedTableNode, TableBodyNode } from './nodes/table';
+import ExtendedTextNode from './nodes/text';
+import ContextMenuPlugin from './plugins/contextMenuPlugin';
+import { FontCommandsPlugin } from './plugins/fontCommandsPlugin';
+import TablePlugin from './plugins/tablePlugin';
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
 // try to recover gracefully without losing user data.
@@ -90,7 +90,7 @@ export function EditorLexicalView({selectedFile} : Props) {
   };
 
   return (
-          <LexicalComposer initialConfig={initialConfig}>
+      <LexicalComposer initialConfig={initialConfig}>
           <div className={editorTheme.editorContainer}>
               <ToolbarPlugin ref={toolbarRef}/>
               <div className={editorTheme.editorInner} style={{height: `calc(100% - ${toolbarHeight}px)`}}>
@@ -104,7 +104,7 @@ export function EditorLexicalView({selectedFile} : Props) {
           <TestPlugin selectedFile={selectedFile}/>
           <HistoryPlugin />
           <AutoFocusPlugin />
-          <RegisterCustomCommands />
+          <FontCommandsPlugin/>
           <LinkPlugin/>
           <TablePlugin/>
           <ContextMenuPlugin/>

@@ -10,7 +10,7 @@ import { MainTheme } from "@src/theme";
 import { $getSelection, $isRangeSelection, $setSelection } from "lexical";
 import { useMemo } from "react";
 import { MenuItem } from "../../menu";
-import { TableContextMenuOptionProps } from "./tableCommon";
+import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
 
 
 export default function TableColumnRemoveContextMenu({ editor }: TableContextMenuOptionProps) {

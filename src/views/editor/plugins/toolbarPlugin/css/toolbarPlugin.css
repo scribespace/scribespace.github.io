@@ -31,7 +31,7 @@
   align-content: center;
   border: 0 solid;
   background-color: transparent;
-  
+    
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
   user-select: none; /* Standard syntax */
@@ -45,7 +45,7 @@
   background-color: rgb(177, 177, 177)
 }
 
-.toolbar-menu-item-default:hover:not(.toolbar-menu-item-disabled-default):not(.toolbar-menu-item-selected-default .toolbar-menu-item-default) {
+.toolbar-menu-item-default:hover:not(.toolbar-menu-item-disabled-default) {
   background-color: rgb(209, 209, 209);
   cursor: pointer;
 }

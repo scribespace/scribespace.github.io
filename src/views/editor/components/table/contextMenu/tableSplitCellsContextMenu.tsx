@@ -4,7 +4,7 @@ import {
     $findCellNode, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
-import { TableContextMenuOptionProps } from "./tableCommon";
+import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
 import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
 import { MainTheme } from "@src/theme";

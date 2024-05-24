@@ -7,7 +7,7 @@ import { useMemo } from "react";
 import { MenuItem, Submenu } from "../../menu";
 import SubmenuIcon from "../../menu/submenuIcon";
 import TableCreator from "../tableCreator";
-import { TableContextMenuOptionProps } from "./tableCommon";
+import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
 
 export default function TableCreateContextMenu({ editor }: TableContextMenuOptionProps) {
     const menuContext = useContextMenuContext();
