@@ -19,7 +19,7 @@ import { SeparatorVertical } from '@editor/components/separators';
 import FontStyleToolbar from '@src/views/editor/components/fontStyle/fontStyleToolbar';
 import FontSizeToolbar from '../../components/fontSize/fontSizeToolbar';
 
-export const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
+const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
     const [editor] = useLexicalComposerContext();
     const { editorTheme } : MainTheme = useMainThemeContext();
 
@@ -53,7 +53,6 @@ export const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
 
     // return (
     //     <div ref={ref} className='editor-toolbar'>
-    //         <FontSizeTool editor={editor}/>
     //         <FontFamilyTool editor={editor}/>            
     //         <Separator/>
     //         <AlignTool editor={editor}/>
@@ -67,3 +66,5 @@ export const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
     //     </div>
     // );
 });
+
+export default ToolbarPlugin;

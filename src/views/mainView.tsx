@@ -3,10 +3,10 @@ import TreeView from './tree/treeView';
 
 import './css/mainView.css';
 
-import { authGlobal, AUTH_DISABLED } from '../system/authentication';
-import { FunctionComponent, useState } from 'react';
-import useResizeObserver from 'use-resize-observer';
 import { EditorLexicalView } from '@editor/editorLexicalView';
+import useBoundingRect from '@src/hooks/useBoundingRect';
+import { FunctionComponent, useRef, useState } from 'react';
+import { AUTH_DISABLED, authGlobal } from '../system/authentication';
 
 type Props = {
   changeAuthButtonState: (state: number) => void;
@@ -15,8 +15,8 @@ type Props = {
 export const MainView: FunctionComponent<Props> = ({changeAuthButtonState}) => {
 
   const [selectedFile, setSelectedFile] = useState<string>('');
-  const { ref: toolbarRef, height: toolbarHeight = 1 } = useResizeObserver<HTMLDivElement>(); 
-
+  const toolbarRef = useRef<HTMLDivElement>(null);
+  const {height: toolbarHeight } = useBoundingRect(toolbarRef);
 
   const handleLogOutClick = () => {
     authGlobal.logout().then( () => { changeAuthButtonState(AUTH_DISABLED); } );

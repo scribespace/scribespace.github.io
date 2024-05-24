@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 
-import useResizeObserver from "use-resize-observer";
-
 import TreeNode from "./components/treeNode";
 
 import { Tree, TreeApi, SimpleTree, CreateHandler, DeleteHandler, MoveHandler, RenameHandler } from 'react-arborist';
@@ -13,6 +11,7 @@ import { TreeNodeData, TREE_FILE, TREE_STATUS_FILE, NOTES_PATH, TreeNodeApi } fr
 import { useMainThemeContext } from "@src/mainThemeContext";
 import { MainTheme } from "@src/theme";
 import { IconBaseProps } from "react-icons";
+import useBoundingRect from "@src/hooks/useBoundingRect";
 
 interface TreeViewProps {
     setSelectedFile: (file: string) => void;
@@ -23,8 +22,12 @@ export default function TreeView({setSelectedFile}: TreeViewProps) {
 
     const [, setDataVersion] = useState<number>(0);
     const [tree, setTree] = useState<SimpleTree<TreeNodeData> | null>(null);
-    const { ref: treeParent, height: treeParentHeight = 1 } = useResizeObserver<HTMLDivElement>(); 
-    const { ref: controlButtonsRef, height: controlButtonsHeight = 1 } = useResizeObserver<HTMLDivElement>(); 
+
+    const treeParentRef = useRef<HTMLDivElement>(null);
+    const controlButtonsRef = useRef<HTMLDivElement>(null);
+    const {height: treeParentHeight } = useBoundingRect(treeParentRef);
+    const {height: controlButtonsHeight } = useBoundingRect(controlButtonsRef);
+
     const treeElement = useRef<TreeApi<TreeNodeData>>(null);
     const treeOpenNodes = useRef<Set<string>>(new Set<string>());
     const onToggleEnabled = useRef<boolean>(true);
@@ -177,7 +180,7 @@ export default function TreeView({setSelectedFile}: TreeViewProps) {
                 <AddIcon size={"30px"} onClick={tree == null ? ()=>{} : OnAddElement}/> 
                 <DeleteIcon size={"30px"} onClick={tree == null ? ()=>{} : OnDeleteElement}/>
             </div>
-            <div ref={treeParent} className="tree-div" style={{height: `calc(100% - ${controlButtonsHeight}px)`}}>
+            <div ref={treeParentRef} className="tree-div" style={{height: `calc(100% - ${controlButtonsHeight}px)`}}>
                 <Tree ref={treeElement} disableEdit={tree == null} data={tree?.data} width={'100%'} height={treeParentHeight} disableMultiSelection={true} 
                 onMove={onMove} onRename={onRename} onCreate={onCreate} onDelete={onDelete} onSelect={onSelect} onToggle={onToggle}>
                     {TreeNode}

@@ -16,12 +16,13 @@ import LinkPlugin from './plugins/linkPlugin';
 
 import './css/editorInputTheme.css';
 
-import { ToolbarPlugin } from './plugins/toolbarPlugin/toolbarPlugin';
+import ToolbarPlugin from './plugins/toolbarPlugin/toolbarPlugin';
 
 import { TableCellNode, TableNode, TableRowNode } from '@lexical/table';
+import useBoundingRect from '@src/hooks/useBoundingRect';
 import { useMainThemeContext } from '@src/mainThemeContext';
 import { MainTheme } from '@src/theme';
-import useResizeObserver from 'use-resize-observer';
+import { useRef } from 'react';
 import { ExtendedTableNode, TableBodyNode } from './nodes/table';
 import ExtendedTextNode from './nodes/text';
 import ContextMenuPlugin from './plugins/contextMenuPlugin';
@@ -69,7 +70,8 @@ function TestPlugin( {selectedFile} : Props ) {
 
 export function EditorLexicalView({selectedFile} : Props) {
   const {editorTheme}: MainTheme = useMainThemeContext();
-  const { ref: toolbarRef, height: toolbarHeight = 1 } = useResizeObserver<HTMLDivElement>({box:'border-box'}); 
+  const toolbarRef = useRef<HTMLDivElement>(null);
+  const {height: toolbarHeight } = useBoundingRect(toolbarRef);
 
   const initialConfig = {
     namespace: 'ScribleSpace',
