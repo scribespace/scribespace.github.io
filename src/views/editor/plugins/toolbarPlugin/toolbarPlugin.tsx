@@ -16,6 +16,7 @@ import { MenuContext } from '@editor/components/menu/context';
 import { TOOLBAR_CONTEX_DEFAULT, ToolbarContextData } from './context';
 import UndoRedoToolbar from '../../components/undoRedo/undoRedo';
 import { SeparatorVertical } from '../../components/separators';
+import TextStyleToolbar from '../../components/textStyle/textStyle';
 
 export const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
     const [editor] = useLexicalComposerContext();
@@ -39,6 +40,8 @@ export const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
         <MenuContext.Provider value={toolbarContext}>
         <div ref={ref} className={toolbarTheme.container}>
             <UndoRedoToolbar/>
+            <SeparatorVertical/>
+            <TextStyleToolbar/>
             <SeparatorVertical/>
             <TableCreateToolbar/>
         </div>

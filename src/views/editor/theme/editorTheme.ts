@@ -7,6 +7,7 @@ import { TableTheme, TABLE_THEME_DEFAULT } from "../components/table/theme";
 import { EDITOR_INPUT_THEME_DEFAULT } from "./editorInputTheme";
 import { TOOLBAR_THEME_DEFAULT, ToolbarTheme } from "../plugins/toolbarPlugin/theme";
 import { UNDO_REDO_THEME_DEFAULT, UndoRedoTheme } from "../components/undoRedo/theme";
+import { TEXT_STYLE_THEME_DEFAULT, TextStyleTheme } from "../components/textStyle/theme";
 
 
 export interface EditorTheme {
@@ -23,6 +24,7 @@ export interface EditorTheme {
     linkTheme: LinkTheme;
     numberInputTheme: NumberInputTheme;
     undoRedoTheme: UndoRedoTheme;
+    textStyleTheme: TextStyleTheme;
 
     toolbarTheme: ToolbarTheme;
     contextMenuTheme: ContextMenuTheme;
@@ -42,6 +44,7 @@ export const EDITOR_THEME_DEFAULT: EditorTheme = {
     separatorTheme: SEPARATOR_THEME_DEFAULT,
     linkTheme: LINK_THEME_DEFAULT,
     undoRedoTheme: UNDO_REDO_THEME_DEFAULT,
+    textStyleTheme: TEXT_STYLE_THEME_DEFAULT,
 
     toolbarTheme: TOOLBAR_THEME_DEFAULT,
     contextMenuTheme: CONTEXT_MENU_THEME_DEFAULT,
