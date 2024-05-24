@@ -23,7 +23,7 @@ export default function Submenu(props: SubmenuProps) {
     const menuOptionRef = useRef<HTMLDivElement>(null);
     const [rect, setRect] = useState<{x: number, y: number, width: number, height: number}>({x: -1, y: -1, width: 0, height: 0});
 
-    const [submenuItem, children] = useMemo(() => {
+    const [menuItem, children] = useMemo(() => {
         const childrenArray = Children.toArray(props.children) as ReactElement[];
         assert(childrenArray[0]?.type === MenuItem, `Submenu: First child has to be SubmenuItem (${childrenArray[0]?.type})`);
         return [
@@ -34,8 +34,8 @@ export default function Submenu(props: SubmenuProps) {
 
     useEffect(()=>{
         setShowContextMenu(false);
-    },[submenuItem]);
-
+    },[menuItem]);
+    
     useEffect(()=>{
         const menuOption = menuOptionRef.current;
         if ( menuOption != null ){
@@ -52,7 +52,7 @@ export default function Submenu(props: SubmenuProps) {
     return (
         <div>
             <div ref={menuOptionRef} className={showContextMenu ? theme.itemSelected : ''} onClick={onClick}>
-                {submenuItem}
+                {menuItem}
             </div>
             <Menu showContextMenu={showContextMenu} setShowContextMenu={setShowContextMenu} parentRect={rect} disableBackground={props.disableBackground}>
                 {children}

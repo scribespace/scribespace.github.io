@@ -1,8 +1,13 @@
 import { isIcon } from "@src/components/icon";
 import { variableExistsOrThrowDev } from "@src/utils/common";
-import { Children, ReactElement, cloneElement, useMemo } from "react";
-import { MenuItemProps } from "./common";
+import { Children, ReactElement, ReactNode, cloneElement, useMemo } from "react";
 import { MenuContextData, useMenuContext } from "./context";
+
+interface MenuItemProps {
+    disabled?: boolean;
+    onClick?: () => void;
+    children?: ReactNode;
+}
 
 export default function MenuItem(props: MenuItemProps) {
     const menuContext: MenuContextData = useMenuContext();
@@ -27,8 +32,13 @@ export default function MenuItem(props: MenuItemProps) {
 
     },[props.children, theme.itemIcon, theme.itemIconSize]);
 
+    const className = useMemo(() => {
+        return theme.item
+        + (props.disabled ? (' ' + theme.itemDisabled): '');
+    },[theme.item, theme.itemDisabled, props.disabled]);
+
     return (
-        <div className={theme.item + (props.disabled ? (' ' + theme.itemDisabled) : '')} onClick={props.onClick}>
+        <div className={className} onClick={props.onClick}>
            {children}
         </div>
       );
