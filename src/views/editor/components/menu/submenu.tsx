@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, Children, useMemo, ReactElement } from "react";
 import Menu from "./menu";
-import { assert } from "@src/utils/common";
+import { assert, variableExistsOrThrowDev } from "@src/utils/common";
 import MenuItem from "./menuItem";
+import { MenuContextData, useMenuContext } from "./context";
 
 interface SubmenuProps {
     disableBackground?: boolean;
@@ -10,6 +11,13 @@ interface SubmenuProps {
 }
 
 export default function Submenu(props: SubmenuProps) {
+    const menuContext: MenuContextData = useMenuContext();
+
+    const theme = useMemo(() => {
+        variableExistsOrThrowDev(menuContext.theme);
+        return menuContext.theme;
+    },[menuContext.theme]);
+
     const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
 
     const menuOptionRef = useRef<HTMLDivElement>(null);
@@ -43,7 +51,7 @@ export default function Submenu(props: SubmenuProps) {
     
     return (
         <div>
-            <div ref={menuOptionRef} onClick={onClick}>
+            <div ref={menuOptionRef} className={showContextMenu ? theme.itemSelected : ''} onClick={onClick}>
                 {submenuItem}
             </div>
             <Menu showContextMenu={showContextMenu} setShowContextMenu={setShowContextMenu} parentRect={rect} disableBackground={props.disableBackground}>

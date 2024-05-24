@@ -8,7 +8,7 @@ import { MenuItem, Submenu } from "../../menu";
 import TableCreator from "../tableCreator";
 
 
-export default function TableCreateContextMenu() {
+export default function TableCreateToolbar() {
     const {editor, closeMenu} = useToolbarContext();
     const {editorTheme}: MainTheme = useMainThemeContext();
 

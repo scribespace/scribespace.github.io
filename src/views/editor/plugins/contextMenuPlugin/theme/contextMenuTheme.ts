@@ -17,6 +17,8 @@ export const CONTEXT_MENU_MENU_THEME_DEFAULT: ContextMenuMenuTheme = {
     float: 'context-menu-float',
     container: 'context-menu-container-default',
     item: 'context-menu-item-default',
+    itemSelected: 'context-menu-item-selected-default',
+    itemDisabled: 'context-menu-item-disabled-default',
     itemIcon: 'context-menu-item-icon-default',
     submenuIcon: 'context-menu-item-submenu-icon-default',
 

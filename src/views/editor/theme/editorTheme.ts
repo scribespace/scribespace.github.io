@@ -6,6 +6,7 @@ import { SeparatorTheme, SEPARATOR_THEME_DEFAULT } from "../components/separator
 import { TableTheme, TABLE_THEME_DEFAULT } from "../components/table/theme";
 import { EDITOR_INPUT_THEME_DEFAULT } from "./editorInputTheme";
 import { TOOLBAR_THEME_DEFAULT, ToolbarTheme } from "../plugins/toolbarPlugin/theme";
+import { UNDO_REDO_THEME_DEFAULT, UndoRedoTheme } from "../components/undoRedo/theme";
 
 
 export interface EditorTheme {
@@ -18,12 +19,13 @@ export interface EditorTheme {
     editorPrintDisabled: EditorThemeClassName;
 
     tableTheme: TableTheme;
+    separatorTheme: SeparatorTheme;
+    linkTheme: LinkTheme;
+    numberInputTheme: NumberInputTheme;
+    undoRedoTheme: UndoRedoTheme;
 
     toolbarTheme: ToolbarTheme;
     contextMenuTheme: ContextMenuTheme;
-    numberInputTheme: NumberInputTheme;
-    separatorTheme: SeparatorTheme;
-    linkTheme: LinkTheme;
 }
 
 export const EDITOR_THEME_DEFAULT: EditorTheme = {
@@ -36,10 +38,11 @@ export const EDITOR_THEME_DEFAULT: EditorTheme = {
     editorPrintDisabled: 'print-disabled',
 
     tableTheme: TABLE_THEME_DEFAULT,
-
-    toolbarTheme: TOOLBAR_THEME_DEFAULT,
-    contextMenuTheme: CONTEXT_MENU_THEME_DEFAULT,
     numberInputTheme: NUMBER_INPUT_THEME_DEFAULT,
     separatorTheme: SEPARATOR_THEME_DEFAULT,
     linkTheme: LINK_THEME_DEFAULT,
+    undoRedoTheme: UNDO_REDO_THEME_DEFAULT,
+
+    toolbarTheme: TOOLBAR_THEME_DEFAULT,
+    contextMenuTheme: CONTEXT_MENU_THEME_DEFAULT,
 };

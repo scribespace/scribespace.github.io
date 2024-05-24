@@ -28,7 +28,7 @@ export default function MenuItem(props: MenuItemProps) {
     },[props.children, theme.itemIcon, theme.itemIconSize]);
 
     return (
-        <div className={theme.item} onClick={props.onClick}>
+        <div className={theme.item + (props.disabled ? (' ' + theme.itemDisabled) : '')} onClick={props.onClick}>
            {children}
         </div>
       );

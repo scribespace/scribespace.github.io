@@ -16,10 +16,12 @@ export const TOOLBAR_MENU_THEME_DEFAULT: ToolbarMenuTheme = {
     float: 'toolbar-menu-float',
     container: 'toolbar-menu-container-default',
     item: 'toolbar-menu-item-default',
+    itemSelected: 'toolbar-menu-item-selected-default',
+    itemDisabled: 'toolbar-menu-item-disabled-default',
     itemIcon: 'toolbar-menu-item-icon-default',
     submenuIcon: 'toolbar-menu-item-submenu-icon-default',
 
-    itemIconSize: '25px',
+    itemIconSize: '20px',
 
     SubmenuIcon: Icon( FaAngleDown ),
 };

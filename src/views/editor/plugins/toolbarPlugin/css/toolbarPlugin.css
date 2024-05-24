@@ -26,7 +26,6 @@
 
 .toolbar-menu-item-default {
   border-radius: 5px;
-  cursor: pointer;
   padding: 3px;
   vertical-align: middle;
   align-content: center;
@@ -38,6 +37,19 @@
   user-select: none; /* Standard syntax */
 }
 
+.toolbar-menu-item-disabled-default {
+  color: gray;
+}
+
+.toolbar-menu-item-selected-default .toolbar-menu-item-default {
+  background-color: rgb(177, 177, 177)
+}
+
+.toolbar-menu-item-default:hover:not(.toolbar-menu-item-disabled-default):not(.toolbar-menu-item-selected-default .toolbar-menu-item-default) {
+  background-color: rgb(209, 209, 209);
+  cursor: pointer;
+}
+
 .toolbar-menu-item-icon-default {
   vertical-align: middle;
 }
@@ -46,10 +58,3 @@
   margin-left: auto;
 }
 
-.toolbar-menu-item-default:hover {
-  background-color: rgb(209, 209, 209);
-}
-
-.toolbar-menu-item-default.selected {
-  background-color: rgb(177, 177, 177)
-}
