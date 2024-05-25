@@ -21,6 +21,15 @@
   padding-right: 2px;
 }
 
+.toolbar-menu-horizontal-container-default {
+  min-width: 0px;
+  min-height: 0px;
+  display: flex;
+  flex-direction: row;
+  padding-bottom: 2px;
+  padding-top: 2px;
+}
+
 .toolbar-menu-item-default {
   border-radius: 5px;
   padding: 3px;

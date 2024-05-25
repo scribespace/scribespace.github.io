@@ -5,8 +5,8 @@ import { IconType } from "react-icons";
 
 
 export interface MenuTheme {
-    container: EditorThemeClassName;
-    item: EditorThemeClassName;
+    containerDefault: EditorThemeClassName;
+    itemDefault: EditorThemeClassName;
     itemSelected: EditorThemeClassName;
     itemDisabled: EditorThemeClassName;
     itemIcon: EditorThemeClassName;
@@ -17,8 +17,8 @@ export interface MenuTheme {
 }
 
 export const MENU_THEME_EMPTY: MenuTheme = {
-    container: '',
-    item: '',
+    containerDefault: '',
+    itemDefault: '',
     itemSelected: '',
     itemDisabled: '',
     itemIcon: '',

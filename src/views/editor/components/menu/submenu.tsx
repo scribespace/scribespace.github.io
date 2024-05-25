@@ -5,18 +5,17 @@ import Menu from "./menu";
 import { MenuContextData, useMenuContext } from "./menuContext";
 import MenuItem from "./menuItem";
 import { $menuItemParent } from "./theme";
+import { EditorThemeClassName } from "lexical";
 
 interface SubmenuProps {
-    disableBackground?: boolean;
+    className?: EditorThemeClassName;
     showSubmenu?: boolean
     setShowSubmenu?: (show:boolean) => void;
     children: React.ReactNode;
 }
 
-export default function Submenu({ disableBackground, showSubmenu, setShowSubmenu, children }: SubmenuProps) {
-    const menuContext: MenuContextData = useMenuContext();
-    
-    
+export default function Submenu({ className, showSubmenu, setShowSubmenu, children }: SubmenuProps) {
+    const menuContext: MenuContextData = useMenuContext();    
     const showMenuInternal = useState<boolean>(false);
     const [rect, setRect] = useState<{x: number, y: number, width: number, height: number}>({x: -1, y: -1, width: 0, height: 0});
     const menuOptionRef = useRef<HTMLDivElement>(null);
@@ -37,7 +36,7 @@ export default function Submenu({ disableBackground, showSubmenu, setShowSubmenu
     );
 
 
-    const [menuItem, processedDhildren] = useMemo(() => {
+    const [menuItem, processedChildren] = useMemo(() => {
         const childrenArray = Children.toArray(children) as ReactElement[];
         assert(childrenArray[0]?.type === MenuItem, `Submenu: First child has to be SubmenuItem (${childrenArray[0]?.type})`);
         return [
@@ -76,8 +75,8 @@ export default function Submenu({ disableBackground, showSubmenu, setShowSubmenu
             <div ref={menuOptionRef} className={showMenu ? theme.itemSelected : ''} style={$menuItemParent} onClick={onClick}>
                 {menuItem}
             </div>
-            <Menu showMenu={showMenu} setShowMenu={setShowMenu} parentRect={rect} disableBackground={disableBackground}>
-                {processedDhildren}
+            <Menu showMenu={showMenu} setShowMenu={setShowMenu} parentRect={rect} className={className}>
+                {processedChildren}
             </Menu>
         </div>
     );

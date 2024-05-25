@@ -56,7 +56,7 @@ export default function TableAddRowBeforeContextMenu({ editor }: TableContextMen
     };
 
     return (
-        <Submenu disableBackground={true}>
+        <Submenu className="">
             <MenuItem>
                 <AddRowBeforeIcon/>
                 <div>Insert Row Before</div>

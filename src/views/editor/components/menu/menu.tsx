@@ -1,21 +1,31 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { MenuContextData, useMenuContext } from "./menuContext";
+import { EditorThemeClassName } from "lexical";
+import { variableExists } from "@/utils";
 
 interface MenuProps {
     parentRect: {x: number, y: number, width: number, height: number};
-    disableBackground?: boolean
-    showMenu: boolean
+    className?: EditorThemeClassName;
+    showMenu: boolean;
     setShowMenu: (show:boolean) => void;
     children: React.ReactNode;
 }
 
-export default function Menu({parentRect, disableBackground, showMenu, setShowMenu, children}: MenuProps) {
+export default function Menu({parentRect, className, showMenu, setShowMenu, children}: MenuProps) {
     const menuContext: MenuContextData = useMenuContext();
 
     const [position, setPosition] = useState<{ left: number; top: number; }>({ left: parentRect.width, top: 0 });
 
     const menuContainerRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
+
+    const selectedClassName: EditorThemeClassName = useMemo(
+        () => {
+            if ( variableExists(className) ) return className;
+            return menuContext.theme.containerDefault;
+        },
+        [className, menuContext.theme.containerDefault]
+    );
 
     useEffect(() => {
         const handleClick = ({ target }: MouseEvent) => {
@@ -87,7 +97,7 @@ export default function Menu({parentRect, disableBackground, showMenu, setShowMe
     return (
         <div ref={menuContainerRef}>
             {showMenu &&
-                <div ref={menuRef} className={(disableBackground ? '' : (' ' + menuContext.theme?.container))} style={{zIndex: 5, display: 'block', position: 'absolute', left: `${position.left}px`, top: `${position.top}px` }}>
+                <div ref={menuRef} className={selectedClassName} style={{zIndex: 5, position: 'absolute', left: `${position.left}px`, top: `${position.top}px` }}>
                     {children}
                 </div>
             }

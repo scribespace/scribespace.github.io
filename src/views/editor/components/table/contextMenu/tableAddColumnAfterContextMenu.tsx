@@ -63,7 +63,7 @@ export default function TableAddColumnAfterContextMenu({ editor }: TableContextM
     };
 
     return (
-        <Submenu disableBackground={true}>
+        <Submenu className="">
             <MenuItem>
                 <AddColumnAfterIcon/>
                 <div>Insert Column Before</div>

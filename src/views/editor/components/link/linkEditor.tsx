@@ -63,15 +63,15 @@ export default function LinkEditor({text, url, onTextChange, onURLChange}: LinkE
     },[url]);
 
     function TextIcon(props: IconBaseProps) {
-        return theme.TextIcon!(props);
+        return theme.TextIcon(props);
     }
 
     function LinkIcon(props: IconBaseProps) {
-        return theme.LinkIcon!(props);
+        return theme.LinkIcon(props);
     }
 
     function OpenIcon(props: IconBaseProps) {
-        return theme.OpenIcon!(props);
+        return theme.OpenIcon(props);
     }
 
     return (

@@ -3,12 +3,12 @@ import { mergeRegister } from '@lexical/utils';
 import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_LOW, SELECTION_CHANGE_COMMAND } from "lexical";
 import { useEffect, useRef, useState } from "react";
 
-import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { MenuItem, Submenu } from "../menu";
 import { SET_FONT_FAMILY_COMMAND } from '@editor/plugins/fontCommandsPlugin';
+import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
 import { Font, fontFromStyle, fontToStyle } from '@utils';
+import { MenuItem, Submenu } from "../menu";
 
 const fontFamilies: Font[] = [
     {name: "Arial", alt: "sans-serif"},
@@ -37,7 +37,7 @@ export default function FontFamilyToolbar() {
 
     useEffect(
         () => {
-            if ( !toolRef.current ) return;
+            if ( !toolRef.current || selectedFamily == '' ) return;
                 toolRef.current.innerHTML = selectedFamily;
         }, 
         [selectedFamily]

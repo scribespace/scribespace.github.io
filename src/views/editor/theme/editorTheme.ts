@@ -8,6 +8,7 @@ import { TOOLBAR_THEME_DEFAULT, ToolbarTheme } from "@editor/plugins/toolbarPlug
 import { UNDO_REDO_THEME_DEFAULT, UndoRedoTheme } from "@editor/components/undoRedo/theme";
 import { FONT_STYLE_THEME_DEFAULT, FontStyleTheme } from "@editor/components/fontStyle/theme";
 import { Font } from "@utils";
+import { ALIGN_MENU_THEME_DEFAULT, AlignMenuTheme } from "../components/align/theme";
 
 export interface EditorInputTheme extends EditorThemeClasses {
     defaultFontSize: EditorThemeClassName;
@@ -29,6 +30,7 @@ export interface EditorTheme {
     numberInputTheme: NumberInputTheme;
     undoRedoTheme: UndoRedoTheme;
     fontStyleTheme: FontStyleTheme;
+    alignTheme: AlignMenuTheme;
 
     toolbarTheme: ToolbarTheme;
     contextMenuTheme: ContextMenuTheme;
@@ -71,6 +73,7 @@ export const EDITOR_THEME_DEFAULT: EditorTheme = {
     linkTheme: LINK_THEME_DEFAULT,
     undoRedoTheme: UNDO_REDO_THEME_DEFAULT,
     fontStyleTheme: FONT_STYLE_THEME_DEFAULT,
+    alignTheme: ALIGN_MENU_THEME_DEFAULT,
 
     toolbarTheme: TOOLBAR_THEME_DEFAULT,
     contextMenuTheme: CONTEXT_MENU_THEME_DEFAULT,

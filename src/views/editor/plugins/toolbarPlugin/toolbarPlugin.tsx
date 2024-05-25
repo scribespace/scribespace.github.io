@@ -12,6 +12,7 @@ import FontSizeToolbar from '../../components/fontSize/fontSizeToolbar';
 import { MenuRoot } from '../../components/menu';
 import { TOOLBAR_CONTEX_DEFAULT, ToolbarContextData } from './context';
 import './css/toolbarPlugin.css';
+import AlignToolbar from '../../components/align/alignToolbar';
 
 const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
     const [editor] = useLexicalComposerContext();
@@ -41,6 +42,8 @@ const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
                 <FontSizeToolbar/>
                 <FontFamilyToolbar/>
                     <SeparatorVertical/>
+                <AlignToolbar/>
+                    <SeparatorVertical/>
                 <TableCreateToolbar/>
             </div>
         </MenuRoot>
@@ -48,10 +51,6 @@ const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
 
     // return (
     //     <div ref={ref} className='editor-toolbar'>
-    //         <FontFamilyTool editor={editor}/>            
-    //         <Separator/>
-    //         <AlignTool editor={editor}/>
-    //         <Separator/>
     //         <ColorTools editor={editor}/>
     //         <Separator/>
     //         <LinkTool editor={editor}/>

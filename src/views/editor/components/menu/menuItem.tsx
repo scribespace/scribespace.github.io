@@ -1,15 +1,17 @@
 import { isIcon } from "@/components/icon";
 import { Children, ReactElement, ReactNode, cloneElement, useMemo } from "react";
 import { MenuContextData, useMenuContext } from "./menuContext";
-import { variableExistsOrThrowDev } from "@/utils";
+import { variableExists, variableExistsOrThrowDev } from "@/utils";
+import { EditorThemeClassName } from "lexical";
 
 interface MenuItemProps {
     disabled?: boolean;
+    className?: EditorThemeClassName;
     onClick?: () => void;
     children?: ReactNode;
 }
 
-export default function MenuItem({disabled, onClick, children }: MenuItemProps) {
+export default function MenuItem({disabled, className, onClick, children }: MenuItemProps) {
     const menuContext: MenuContextData = useMenuContext();
 
     const theme = useMemo(() => {
@@ -32,13 +34,15 @@ export default function MenuItem({disabled, onClick, children }: MenuItemProps) 
 
     },[children, theme.itemIcon, theme.itemIconSize]);
 
-    const className = useMemo(() => {
-        return theme.item
+    const selectedClassName = useMemo(() => {
+        const mainClassName = variableExists(className) ? className : theme.itemDefault;
+
+        return mainClassName
         + (disabled ? (' ' + theme.itemDisabled): '');
-    },[theme.item, theme.itemDisabled, disabled]);
+    },[className, theme.itemDefault, theme.itemDisabled, disabled]);
 
     return (
-        <div className={className} onClick={onClick}>
+        <div className={selectedClassName} onClick={onClick}>
            {preocessedChildren}
         </div>
       );

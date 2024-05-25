@@ -26,7 +26,7 @@ export default function TableCreateContextMenu({ editor }: TableContextMenuOptio
     }
 
     return (
-        <Submenu disableBackground={true}>
+        <Submenu className="">
             <MenuItem>
                 <AddTableIcon/>
                 <div>Create Table</div>

@@ -1,13 +1,13 @@
-import { $createExtendedTableNodeWithDimensions } from "@editor/nodes/table";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
+import { $createExtendedTableNodeWithDimensions } from "@editor/nodes/table";
+import { $closeToolbarMenu, TOOLBAR_CLOSE_MENU_COMMAND } from "@editor/plugins/toolbarPlugin/common";
 import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
+import { mergeRegister } from "@lexical/utils";
 import { $insertNodes, COMMAND_PRIORITY_LOW } from "lexical";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MenuItem, Submenu } from "../../menu";
 import TableCreator from "../tableCreator";
-import { mergeRegister } from "@lexical/utils";
-import { $closeToolbarMenu, TOOLBAR_CLOSE_MENU_COMMAND } from "@editor/plugins/toolbarPlugin/common";
 
 export default function TableCreateToolbar() {
     const {editor} = useToolbarContext();
@@ -44,7 +44,7 @@ export default function TableCreateToolbar() {
     );
 
     return (
-        <Submenu disableBackground={true} showSubmenu={showSubmenu} setShowSubmenu={setShowSubmenu}>
+        <Submenu className="" showSubmenu={showSubmenu} setShowSubmenu={setShowSubmenu}>
             <MenuItem>
                 <AddTableIcon/>
             </MenuItem>
