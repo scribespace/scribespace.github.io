@@ -53,6 +53,10 @@ export default function Submenu({ disableBackground, showSubmenu, setShowSubmenu
         } 
     },[showMenu]);
 
+    useEffect(()=>{
+        setShowMenu(false);
+    },[menuItem, setShowMenu]);
+
     function onClick() {
         setShowMenu(true);
     }
