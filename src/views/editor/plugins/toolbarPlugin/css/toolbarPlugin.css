@@ -6,7 +6,8 @@
     border-top-right-radius: 10px;
     padding: 4px;
     align-content: center;
-}
+    align-items: center;
+  }
 
 .toolbar-menu-float {
   z-index: 5;

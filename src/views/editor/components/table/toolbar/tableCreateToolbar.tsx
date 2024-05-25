@@ -9,7 +9,6 @@ import TableCreator from "../tableCreator";
 import { mergeRegister } from "@lexical/utils";
 import { $closeToolbarMenu, TOOLBAR_CLOSE_MENU_COMMAND } from "@editor/plugins/toolbarPlugin/common";
 
-
 export default function TableCreateToolbar() {
     const {editor} = useToolbarContext();
     const {editorTheme}: MainTheme = useMainThemeContext();
