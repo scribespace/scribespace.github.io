@@ -35,5 +35,9 @@ body {
     -webkit-print-color-adjust: exact; /* Chrome, Safari */
     color-adjust: exact;              /* Firefox */
     background: inherit;              /* Ensure backgrounds are printed */
-}
+  }
+  
+  .print-disabled{ 
+    display: none;
+  } 
 }

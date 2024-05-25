@@ -91,7 +91,7 @@
     text-decoration: underline line-through;
   }
 
-  .editor-table{
+   .editor-table{
     border-collapse: collapse;
     border-spacing: 0;
     table-layout: fixed;
@@ -105,6 +105,17 @@
   .editor-table-row{
     border: 1px solid black;
     border-collapse: collapse;
+  } 
+
+  .editor-layout {
+    border-collapse: separate;
+    table-layout: fixed;
+    width: 100%;
+    border: none;
+  }
+
+  .editor-layout .editor-table-row .editor-table-cell{
+    border: 1px dotted black;
   }
 
   @media print {
@@ -112,7 +123,7 @@
       background-color: transparent !important;
     }
 
-    .print-disabled{ 
-      display: none;
-  } 
+    .editor-layout .editor-table-row .editor-table-cell{
+      border: none;
+    }
 }

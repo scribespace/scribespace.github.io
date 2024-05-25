@@ -502,7 +502,7 @@ export class TableBodyNode extends TableNode {
 
   static importDOM(): DOMConversionMap | null {
     return {
-      table: () => ({
+      tbody: () => ({
         conversion: $convertTableBodyElement,
         priority: 1,
       }),

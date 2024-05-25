@@ -1,5 +1,5 @@
 import { TableCellNode, $getTableNodeFromLexicalNodeOrThrow } from '@lexical/table';
-import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, EditorConfig, ElementNode, LexicalEditor, LexicalNode, SerializedElementNode, Spread } from 'lexical';
+import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, EditorConfig, EditorThemeClassName, ElementNode, LexicalEditor, LexicalNode, SerializedElementNode, Spread } from 'lexical';
 import {addClassNamesToElement} from '@lexical/utils';
 import { $createTableBodyNodeWithDimensions, $isTableBodyNode, TableBodyNode } from './tableBodyNode';
 
@@ -116,11 +116,11 @@ export class ExtendedTableNode extends ElementNode {
     this.getTableBodyNodeWritable().removeColumns(cellNode, columnsCount, this.getWritable().__columnsWidths);
   }
 
-  createDOM(config: EditorConfig): HTMLElement {
+  createDOMWithCSS(css: EditorThemeClassName|undefined): HTMLElement {
     const self = this.getLatest();
 
     const tableElement = document.createElement('table');
-    addClassNamesToElement(tableElement, config.theme.table);
+    addClassNamesToElement(tableElement, css);
 
     const colgroup = document.createElement('colgroup');
     for ( const columnWidth of self.__columnsWidths ) {
@@ -133,6 +133,10 @@ export class ExtendedTableNode extends ElementNode {
     tableElement.append(colgroup);
 
     return tableElement;
+  }
+
+  createDOM(config: EditorConfig): HTMLElement {
+    return this.createDOMWithCSS(config.theme.table);
   }
 
   updateDOM(
@@ -227,10 +231,7 @@ export function $getExtendedTableNodeFromLexicalNodeOrThrow(node: LexicalNode) {
   return ($getTableNodeFromLexicalNodeOrThrow(node) as TableBodyNode).getParentOrThrow<ExtendedTableNode>();
 }
 
-export function $convertExtendedTableElement(domNode: Node): DOMConversionOutput {
-  const tableNode = $createExtendedTableNode();
-  if ( !(domNode instanceof Element) ) throw Error("Expected Element");
-
+export function $convertColElements(tableNode: ExtendedTableNode, domNode: Element ) {
   const colElements = domNode.getElementsByTagName('col');
 
   tableNode.__columnsWidths = [];
@@ -240,6 +241,13 @@ export function $convertExtendedTableElement(domNode: Node): DOMConversionOutput
     const colElementWidth = colElementWidthMatch ? Number(colElementWidthMatch[0]) : -1;
     tableNode.__columnsWidths.push(colElementWidth);
   }
+}
+
+export function $convertExtendedTableElement(domNode: Node): DOMConversionOutput {
+  const tableNode = $createExtendedTableNode();
+  if ( !(domNode instanceof Element) ) throw Error("Expected Element");
+
+  $convertColElements(tableNode, domNode);
 
   return {node: tableNode}; 
 }

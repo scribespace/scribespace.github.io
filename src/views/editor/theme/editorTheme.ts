@@ -14,6 +14,8 @@ import { COLOR_MENU_THEME_DEFAULT, ColorMenuTheme } from "../components/color/th
 export interface EditorInputTheme extends EditorThemeClasses {
     defaultFontSize: EditorThemeClassName;
     defaultFontFamily: Font;
+
+    layout: EditorThemeClassName;
 }
 
 export interface EditorTheme {
@@ -58,6 +60,8 @@ export const EDITOR_INPUT_THEME_DEFAULT: EditorInputTheme = {
 
     defaultFontSize: '',
     defaultFontFamily: {name:'', alt: ''},
+
+    layout: 'editor-layout',
 };
 
 export const EDITOR_THEME_DEFAULT: EditorTheme = {
