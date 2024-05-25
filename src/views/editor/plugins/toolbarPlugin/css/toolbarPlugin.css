@@ -9,12 +9,6 @@
     align-items: center;
   }
 
-.toolbar-menu-float {
-  z-index: 5;
-  display: block;
-  position: absolute;
-}
-
 .toolbar-menu-container-default {
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.582);
   background-color: #fff;

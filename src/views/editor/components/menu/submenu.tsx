@@ -15,13 +15,17 @@ interface SubmenuProps {
 
 export default function Submenu({ disableBackground, showSubmenu, setShowSubmenu, children }: SubmenuProps) {
     const menuContext: MenuContextData = useMenuContext();
-
+    
+    
+    const showMenuInternal = useState<boolean>(false);
+    const [rect, setRect] = useState<{x: number, y: number, width: number, height: number}>({x: -1, y: -1, width: 0, height: 0});
+    const menuOptionRef = useRef<HTMLDivElement>(null);
+    
     const theme = useMemo(() => {
         variableExistsOrThrowDev(menuContext.theme);
         return menuContext.theme;
     },[menuContext.theme]);
 
-    const showMenuInternal = useState<boolean>(false);
     const [showMenu, setShowMenu] = useMemo(
         () => {
             if ( variableExists( showSubmenu ) && setShowSubmenu ) {
@@ -32,8 +36,6 @@ export default function Submenu({ disableBackground, showSubmenu, setShowSubmenu
         [setShowSubmenu, showSubmenu, showMenuInternal]
     );
 
-    const menuOptionRef = useRef<HTMLDivElement>(null);
-    const [rect, setRect] = useState<{x: number, y: number, width: number, height: number}>({x: -1, y: -1, width: 0, height: 0});
 
     const [menuItem, processedDhildren] = useMemo(() => {
         const childrenArray = Children.toArray(children) as ReactElement[];
@@ -70,8 +72,10 @@ export default function Submenu({ disableBackground, showSubmenu, setShowSubmenu
     }
     
     return (
-        <div ref={menuOptionRef} className={showMenu ? theme.itemSelected : ''} style={$menuItemParent} onClick={onClick}>
-            {menuItem}
+        <div style={{position: 'relative'}}>
+            <div ref={menuOptionRef} className={showMenu ? theme.itemSelected : ''} style={$menuItemParent} onClick={onClick}>
+                {menuItem}
+            </div>
             <Menu showMenu={showMenu} setShowMenu={setShowMenu} parentRect={rect} disableBackground={disableBackground}>
                 {processedDhildren}
             </Menu>

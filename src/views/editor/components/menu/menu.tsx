@@ -87,7 +87,7 @@ export default function Menu({parentRect, disableBackground, showMenu, setShowMe
     return (
         <div ref={menuContainerRef}>
             {showMenu &&
-                <div ref={menuRef} className={menuContext.theme?.float + (disableBackground ? '' : (' ' + menuContext.theme?.container))} style={{ left: `${position.left}px`, top: `${position.top}px` }}>
+                <div ref={menuRef} className={(disableBackground ? '' : (' ' + menuContext.theme?.container))} style={{zIndex: 5, display: 'block', position: 'absolute', left: `${position.left}px`, top: `${position.top}px` }}>
                     {children}
                 </div>
             }

@@ -60,7 +60,7 @@ export default function FontFamilyToolbar() {
                 SELECTION_CHANGE_COMMAND,
                 () => {
                     updateStates();
-                return false;
+                return false;   
                 },
                 COMMAND_PRIORITY_LOW
             ),

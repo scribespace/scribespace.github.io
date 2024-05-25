@@ -3,7 +3,7 @@ import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
 import { $insertNodes, COMMAND_PRIORITY_LOW } from "lexical";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { MenuItem, Submenu } from "../../menu";
 import TableCreator from "../tableCreator";
 import { mergeRegister } from "@lexical/utils";
@@ -23,8 +23,8 @@ export default function TableCreateToolbar() {
         editor.update(() => {
             const tableNode = $createExtendedTableNodeWithDimensions(rowsCount, columnsCount);
             $insertNodes([tableNode]);
+            $closeToolbarMenu(editor);
         });
-        $closeToolbarMenu(editor);
     }
 
     useEffect(
@@ -40,7 +40,7 @@ export default function TableCreateToolbar() {
                  )
              );
         },
-        [editor]
+        [editor, showSubmenu, setShowSubmenu]
     );
 
     return (

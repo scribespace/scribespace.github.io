@@ -5,7 +5,6 @@ import { IconType } from "react-icons";
 
 
 export interface MenuTheme {
-    float: EditorThemeClassName;
     container: EditorThemeClassName;
     item: EditorThemeClassName;
     itemSelected: EditorThemeClassName;
@@ -18,7 +17,6 @@ export interface MenuTheme {
 }
 
 export const MENU_THEME_EMPTY: MenuTheme = {
-    float: '',
     container: '',
     item: '',
     itemSelected: '',

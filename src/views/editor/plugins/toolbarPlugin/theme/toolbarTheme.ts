@@ -13,7 +13,6 @@ export interface ToolbarTheme {
 }
 
 export const TOOLBAR_MENU_THEME_DEFAULT: ToolbarMenuTheme = {
-    float: 'toolbar-menu-float',
     container: 'toolbar-menu-container-default',
     item: 'toolbar-menu-item-default',
     itemSelected: 'toolbar-menu-item-selected-default',

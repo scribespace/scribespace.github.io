@@ -14,7 +14,6 @@ export interface ContextMenuTheme {
 export const CONTEXT_MENU_MENU_THEME_DEFAULT: ContextMenuMenuTheme = {
     editorContainer: 'context-menu-editor-container-default',
 
-    float: 'context-menu-float',
     container: 'context-menu-container-default',
     item: 'context-menu-item-default',
     itemSelected: 'context-menu-item-selected-default',
