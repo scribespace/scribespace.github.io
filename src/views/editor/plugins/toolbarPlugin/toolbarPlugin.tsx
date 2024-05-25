@@ -55,15 +55,6 @@ const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
             </div>
         </MenuRoot>
     );
-
-    // return (
-    //     <div ref={ref} className='editor-toolbar'>
-    //         <LinkTool editor={editor}/>
-    //         <Separator/>
-    //         <TableCreateToolbar editor={editor}/>
-    //         <Separator/>
-    //     </div>
-    // );
 });
 
 export default ToolbarPlugin;
