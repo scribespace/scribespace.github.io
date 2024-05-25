@@ -12,7 +12,7 @@ interface MenuProps {
 export default function Menu({parentRect, disableBackground, showMenu, setShowMenu, children}: MenuProps) {
     const menuContext: MenuContextData = useMenuContext();
 
-    const [position, setPosition] = useState<{ left: string; top: string; }>({ left: '-1px', top: '-1px' });
+    const [position, setPosition] = useState<{ left: number; top: number; }>({ left: parentRect.width, top: 0 });
 
     const menuContainerRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -24,17 +24,10 @@ export default function Menu({parentRect, disableBackground, showMenu, setShowMe
             }
         };
 
-        const stopRightClick = (e: MouseEvent) => {
-            e.stopPropagation();
-            e.preventDefault();
-        };
-
         document.addEventListener('click', handleClick);
-        document.addEventListener('contextmenu', stopRightClick);
 
         return () => {
             document.removeEventListener('click', handleClick);
-            document.removeEventListener('contextmenu', stopRightClick);
         };
     }, [setShowMenu]);
 
@@ -44,27 +37,24 @@ export default function Menu({parentRect, disableBackground, showMenu, setShowMe
         const { width, height } = menuRef.current.getBoundingClientRect();
 
         function setToTheSide() {
-            const newPosition = { x: parentRect.x + parentRect.width, y: parentRect.y };
+            const newPosition = { x: parentRect.width, y: 0 };
 
             const endPositionX = parentRect.x + parentRect.width + width;
-            const endPositionY = parentRect.y + height;
+            const endPositionY = parentRect.y + parentRect.height + height;
 
             if (endPositionX > window.innerWidth) {
-                newPosition.x = parentRect.x - width;
+                newPosition.x = -width;
             }
 
             if (endPositionY > window.innerHeight) {
-                newPosition.y = parentRect.y - height;
+                newPosition.y = -height;
             }
 
-            newPosition.x += window.scrollX;
-            newPosition.y += window.scrollY;
-
-            setPosition({ left: `${newPosition.x}px`, top: `${newPosition.y}px` });
+            setPosition({ left: newPosition.x, top: newPosition.y });
         }
 
         function setBelow() {
-            const newPosition = { x: parentRect.x + parentRect.width * 0.5 - width * 0.5, y: parentRect.y + parentRect.height };
+            const newPosition = { x: parentRect.width * 0.5 - width * 0.5, y: parentRect.height };
 
             const startPositionX = parentRect.x + parentRect.width * 0.5 - width * 0.5;
             const endPositionX = parentRect.x + parentRect.width * 0.5 + width * 0.5;
@@ -81,13 +71,10 @@ export default function Menu({parentRect, disableBackground, showMenu, setShowMe
             }
 
             if (endPositionY > window.innerHeight) {
-                newPosition.y = parentRect.y - height;
+                newPosition.y = -height;
             }
 
-            newPosition.x += window.scrollX;
-            newPosition.y += window.scrollY;
-
-            setPosition({ left: `${newPosition.x}px`, top: `${newPosition.y}px` });
+            setPosition({ left: newPosition.x, top: newPosition.y });
         }
 
         if ( menuContext.layout == 'below') {
@@ -95,14 +82,15 @@ export default function Menu({parentRect, disableBackground, showMenu, setShowMe
         } else {
             setToTheSide();
         }
-    }, [showMenu, parentRect, menuContext.layout]);
+    }, [showMenu, parentRect.x, parentRect.y, parentRect.width, parentRect.height, menuContext.layout]);
 
     return (
         <div ref={menuContainerRef}>
             {showMenu &&
-                <div ref={menuRef} className={menuContext.theme?.float + (disableBackground ? '' : (' ' + menuContext.theme?.container))} style={{ left: position.left, top: position.top }}>
+                <div ref={menuRef} className={menuContext.theme?.float + (disableBackground ? '' : (' ' + menuContext.theme?.container))} style={{ left: `${position.left}px`, top: `${position.top}px` }}>
                     {children}
-                </div>}
+                </div>
+            }
         </div>
     );
 }

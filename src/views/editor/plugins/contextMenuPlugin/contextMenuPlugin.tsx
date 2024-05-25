@@ -1,15 +1,14 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useEffect, useState } from "react";
-import { TableContextOptions } from "@editor/components/table";
-import './css/contextMenuPlugin.css';
-import { ContextMenuContextData, CONTEXT_MENU_CONTEX_DEFAULT } from "./context";
-import { MenuContext } from "@/views/editor/components/menu/menuContext";
-import { Menu } from "@editor/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
+import { Menu, MenuRoot } from "@editor/components/menu";
+import { TableContextOptions } from "@editor/components/table";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
-import { CONTEXT_MENU_CLOSE_MENU_COMMAND } from "./common/contextMenuCommands";
 import { COMMAND_PRIORITY_LOW } from "lexical";
+import { useEffect, useState } from "react";
+import { CONTEXT_MENU_CLOSE_MENU_COMMAND } from "./common/contextMenuCommands";
+import { CONTEXT_MENU_CONTEX_DEFAULT, ContextMenuContextData } from "./context";
+import './css/contextMenuPlugin.css';
 
 export default function ContextMenuPlugin() {
     const { editorTheme }: MainTheme = useMainThemeContext();
@@ -23,7 +22,6 @@ export default function ContextMenuPlugin() {
         setContextMenuContextObject((oldState) => ({...oldState, mousePosition: {x: e.clientX, y: e.clientY}}));
         
         e.preventDefault();
-        e.stopPropagation();
     };
 
     const closeContextMenu = () => {
@@ -59,12 +57,12 @@ export default function ContextMenuPlugin() {
     },[editor]);
 
     return (
-        <MenuContext.Provider value={contextMenuContextObject}>
-            <div>
-                <Menu showMenu={showContextMenu} setShowMenu={setShowContextMenu} parentRect={{x: contextMenuContextObject.mousePosition.x, y: contextMenuContextObject.mousePosition.y, width: 0, height: 0}}>
+        <MenuRoot value={contextMenuContextObject}>
+            <div style={{position: "fixed", left: contextMenuContextObject.mousePosition.x, top: contextMenuContextObject.mousePosition.y}}>
+                <Menu showMenu={showContextMenu} setShowMenu={setShowContextMenu} parentRect={{x:contextMenuContextObject.mousePosition.x, y:contextMenuContextObject.mousePosition.y, width: 0, height: 0}}>
                     <TableContextOptions editor={editor}/>
                 </Menu>
             </div>
-        </MenuContext.Provider>
+        </MenuRoot>
     );
 }

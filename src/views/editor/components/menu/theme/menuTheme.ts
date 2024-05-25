@@ -30,4 +30,4 @@ export const MENU_THEME_EMPTY: MenuTheme = {
     SubmenuIcon: EmptyComponent,
 };
 
-export const $menuItemParent: CSSProperties = {alignContent: 'center', display: 'flex', alignItems: "stretch"};
+export const $menuItemParent: CSSProperties = {alignContent: 'center', display: 'flex', alignItems: "stretch", position: "relative"};

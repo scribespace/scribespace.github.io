@@ -1,10 +1,10 @@
+import { variableExists, variableExistsOrThrowDev } from "@/utils";
 import { assert } from "@/utils/dev";
 import { Children, ReactElement, useEffect, useMemo, useRef, useState } from "react";
 import Menu from "./menu";
 import { MenuContextData, useMenuContext } from "./menuContext";
 import MenuItem from "./menuItem";
 import { $menuItemParent } from "./theme";
-import { variableExists, variableExistsOrThrowDev } from "@/utils";
 
 interface SubmenuProps {
     disableBackground?: boolean;
@@ -51,21 +51,27 @@ export default function Submenu({ disableBackground, showSubmenu, setShowSubmenu
             const rect = {x: left, y: top, width, height};
             setRect(rect);
         } 
-    },[showMenu]);
+    },[]);
 
-    useEffect(()=>{
-        setShowMenu(false);
-    },[menuItem, setShowMenu]);
+    useEffect(() => {
+        const stopRightClick = () => {
+            setShowMenu(false);
+        };
+
+        document.addEventListener('contextmenu', stopRightClick);
+
+        return () => {
+            document.removeEventListener('contextmenu', stopRightClick);
+        };
+    }, [setShowMenu]);
 
     function onClick() {
         setShowMenu(true);
     }
     
     return (
-        <div>
-            <div ref={menuOptionRef} className={showMenu ? theme.itemSelected : ''} style={$menuItemParent} onClick={onClick}>
-                {menuItem}
-            </div>
+        <div ref={menuOptionRef} className={showMenu ? theme.itemSelected : ''} style={$menuItemParent} onClick={onClick}>
+            {menuItem}
             <Menu showMenu={showMenu} setShowMenu={setShowMenu} parentRect={rect} disableBackground={disableBackground}>
                 {processedDhildren}
             </Menu>
