@@ -1,4 +1,4 @@
-import { Icon } from "@src/components/icon";
+import { Icon } from "@/components/icon";
 import { IconType } from "react-icons";
 import { AiOutlineFileAdd, AiOutlineDelete } from "react-icons/ai";
 

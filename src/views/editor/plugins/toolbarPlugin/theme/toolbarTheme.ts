@@ -1,10 +1,10 @@
 import { EditorThemeClassName } from "lexical";
 import { FaAngleDown } from "react-icons/fa";
 import { MenuTheme } from "@editor/components/menu/theme";
-import { Icon } from "@src/components/icon";
+import { Icon } from "@/components/icon";
 
 export interface ToolbarMenuTheme extends MenuTheme {
-
+    fontFamily: EditorThemeClassName;
 }
 
 export interface ToolbarTheme {
@@ -24,6 +24,8 @@ export const TOOLBAR_MENU_THEME_DEFAULT: ToolbarMenuTheme = {
     itemIconSize: '20px',
 
     SubmenuIcon: Icon( FaAngleDown ),
+
+    fontFamily: 'toolbar-menu-font-family-default',
 };
 
 export const TOOLBAR_THEME_DEFAULT: ToolbarTheme = {

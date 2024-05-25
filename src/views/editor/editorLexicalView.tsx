@@ -19,9 +19,9 @@ import './css/editorInputTheme.css';
 import ToolbarPlugin from './plugins/toolbarPlugin/toolbarPlugin';
 
 import { TableCellNode, TableNode, TableRowNode } from '@lexical/table';
-import useBoundingRect from '@src/hooks/useBoundingRect';
-import { useMainThemeContext } from '@src/mainThemeContext';
-import { MainTheme } from '@src/theme';
+import useBoundingRect from '@/hooks/useBoundingRect';
+import { useMainThemeContext } from '@/mainThemeContext';
+import { MainTheme } from '@/theme';
 import { useRef } from 'react';
 import { ExtendedTableNode, TableBodyNode } from './nodes/table';
 import ExtendedTextNode from './nodes/text';

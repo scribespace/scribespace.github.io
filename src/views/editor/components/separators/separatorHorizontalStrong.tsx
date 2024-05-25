@@ -1,5 +1,5 @@
-import { useMainThemeContext } from "@src/mainThemeContext";
-import { MainTheme } from "@src/theme";
+import { useMainThemeContext } from "@/mainThemeContext";
+import { MainTheme } from "@/theme";
 import { useMemo } from "react";
 import './css/separator.css';
 

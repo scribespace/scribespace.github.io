@@ -1,6 +1,6 @@
-import { useMainThemeContext } from "@src/mainThemeContext";
-import { MainTheme } from "@src/theme";
-import { OpenURL, validateUrl } from "@utils/common";
+import { useMainThemeContext } from "@/mainThemeContext";
+import { MainTheme } from "@/theme";
+import { OpenURL, validateUrl } from "@utils";
 import { useEffect, useMemo, useRef } from "react";
 import { IconBaseProps } from "react-icons";
 import './css/link.css';

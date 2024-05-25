@@ -1,21 +1,20 @@
+import { useMainThemeContext } from "@/mainThemeContext";
+import { MainTheme } from "@/theme";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
-import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
 import {
     $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $getTableRowIndexFromTableCellNode, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
-import { useMainThemeContext } from "@src/mainThemeContext";
-import { MainTheme } from "@src/theme";
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical";
 import { useMemo } from "react";
 import { MenuItem, Submenu } from "../../menu";
 import SubmenuIcon from "../../menu/submenuIcon";
 import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
 import TableNumberInputContextMenu from "./tableNumberInputContextMenu";
+import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 
 
 export default function TableAddRowAfterContextMenu({ editor }: TableContextMenuOptionProps) {
-    const menuContext = useContextMenuContext();
     const {editorTheme}: MainTheme = useMainThemeContext();
 
     const AddRowAfterIcon = useMemo(()=>{
@@ -59,7 +58,7 @@ export default function TableAddRowAfterContextMenu({ editor }: TableContextMenu
         },
             { tag: 'table-add-row-after' });
 
-        menuContext.closeMenu();
+        $closeContextMenu(editor);
     };
 
     return (

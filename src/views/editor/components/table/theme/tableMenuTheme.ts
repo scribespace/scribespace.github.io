@@ -1,7 +1,7 @@
 import { TbColumnInsertLeft, TbColumnInsertRight, TbColumnRemove, TbRowInsertBottom, TbRowInsertTop, TbRowRemove, TbTableOff, TbTablePlus } from "react-icons/tb";
 import { IconType } from "react-icons";
 import { AiOutlineMergeCells, AiOutlineSplitCells } from "react-icons/ai";
-import { Icon } from "@src/components/icon";
+import { Icon } from "@/components/icon";
 
 export interface TableMenuTheme {
     AddTableIcon: IconType;

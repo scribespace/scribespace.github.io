@@ -1,8 +1,5 @@
-
-export function devOnly(dev: ()=>void) {
-    const func = import.meta.env.DEV ? dev : ()=>{};
-    func();
-}
+import { devOnly } from "./dev";
+import { ValueUnit } from "./types";
 
 export function variableExists<T>( variable: T | undefined ): variable is T {
     return typeof variable !== 'undefined';
@@ -12,21 +9,10 @@ export function variableExistsOrThrow<T>( variable: T | undefined ): asserts var
     if ( !variableExists(variable) ) throw Error(`${variable} doesn't exist`);
 }
 
-export function variableExistsOrThrowDev<T>( variable: T | undefined ): asserts variable is T {
-    devOnly(()=>{
+export function variableExistsOrThrowDev<T>(variable: T | undefined): asserts variable is T {
+    devOnly(() => {
         variableExistsOrThrow(variable);
     });
-}
-
-export function assert(test: boolean, message: string) {
-    devOnly(()=>{
-    if ( !test ) throw Error('Assert failed: ' + message);
-    });
-}
-
-export interface ValueUnit {
-    value?: number;
-    unit: string;
 }
 
 export function separateValueAndUnit(valueUnit: string): ValueUnit {
@@ -69,14 +55,9 @@ export const urlRegExp = new RegExp(
     return url === 'https://' || urlRegExp.test(url);
   }
 
-// tslint:disable-next-line
-export const notImplemented = () => {
-    throw Error("Not implemented");
-};export function OpenURL(url: string) {
+export function OpenURL(url: string) {
     if (validateUrl(url)) {
         const validURL = url; // url.match(/^https?:/) ? url : '//' + url;
         window.open(validURL, '_blank')?.focus();
     }
 }
-
-

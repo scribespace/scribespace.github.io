@@ -4,7 +4,7 @@ import TreeView from './tree/treeView';
 import './css/mainView.css';
 
 import { EditorLexicalView } from '@editor/editorLexicalView';
-import useBoundingRect from '@src/hooks/useBoundingRect';
+import useBoundingRect from '@/hooks/useBoundingRect';
 import { FunctionComponent, useRef, useState } from 'react';
 import { AUTH_DISABLED, authGlobal } from '../system/authentication';
 

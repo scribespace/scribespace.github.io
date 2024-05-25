@@ -1,9 +1,9 @@
 import { CAN_REDO_COMMAND, CAN_UNDO_COMMAND, COMMAND_PRIORITY_LOW, REDO_COMMAND, UNDO_COMMAND } from "lexical";
 import { useEffect, useMemo, useState } from "react";
 
-import { useMainThemeContext } from "@src/mainThemeContext";
-import { MainTheme } from "@src/theme";
-import { useToolbarContext } from "../../plugins/toolbarPlugin/context";
+import { useMainThemeContext } from "@/mainThemeContext";
+import { MainTheme } from "@/theme";
+import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
 import { MenuItem } from "../menu";
 import { mergeRegister } from "@lexical/utils";
 

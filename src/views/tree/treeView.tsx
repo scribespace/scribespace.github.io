@@ -8,10 +8,10 @@ import './css/treeView.css';
 import { appGlobals } from "@system/appGlobals";
 import { DeleteResults, FileSystemStatus, FileUploadMode, UploadResult } from "@interfaces/system/fs_interface";
 import { TreeNodeData, TREE_FILE, TREE_STATUS_FILE, NOTES_PATH, TreeNodeApi } from "./common";
-import { useMainThemeContext } from "@src/mainThemeContext";
-import { MainTheme } from "@src/theme";
+import { useMainThemeContext } from "@/mainThemeContext";
+import { MainTheme } from "@/theme";
 import { IconBaseProps } from "react-icons";
-import useBoundingRect from "@src/hooks/useBoundingRect";
+import useBoundingRect from "@/hooks/useBoundingRect";
 
 interface TreeViewProps {
     setSelectedFile: (file: string) => void;

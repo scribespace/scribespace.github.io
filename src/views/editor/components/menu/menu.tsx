@@ -1,26 +1,26 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { MenuContextData, useMenuContext } from "./menuContext";
 
-interface ContextMenuProps {
+interface MenuProps {
     parentRect: {x: number, y: number, width: number, height: number};
     disableBackground?: boolean
-    showContextMenu: boolean
-    setShowContextMenu: (show:boolean) => void;
+    showMenu: boolean
+    setShowMenu: (show:boolean) => void;
     children: React.ReactNode;
 }
 
-export default function Menu({parentRect, disableBackground, showContextMenu, setShowContextMenu, children}: ContextMenuProps) {
+export default function Menu({parentRect, disableBackground, showMenu, setShowMenu, children}: MenuProps) {
     const menuContext: MenuContextData = useMenuContext();
 
     const [position, setPosition] = useState<{ left: string; top: string; }>({ left: '-1px', top: '-1px' });
 
-    const contextMenuContainerRef = useRef<HTMLDivElement>(null);
-    const contextMenuRef = useRef<HTMLDivElement>(null);
+    const menuContainerRef = useRef<HTMLDivElement>(null);
+    const menuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const handleClick = ({ target }: MouseEvent) => {
-            if (contextMenuContainerRef.current && contextMenuContainerRef.current.parentElement && !contextMenuContainerRef.current.parentElement.contains(target as Node)) {
-                setShowContextMenu(false);
+            if (menuContainerRef.current && menuContainerRef.current.parentElement && !menuContainerRef.current.parentElement.contains(target as Node)) {
+                setShowMenu(false);
             }
         };
 
@@ -36,12 +36,12 @@ export default function Menu({parentRect, disableBackground, showContextMenu, se
             document.removeEventListener('click', handleClick);
             document.removeEventListener('contextmenu', stopRightClick);
         };
-    }, [setShowContextMenu]);
+    }, [setShowMenu]);
 
     useLayoutEffect(() => {
-        if (!contextMenuRef.current) return;
+        if (!menuRef.current) return;
 
-        const { width, height } = contextMenuRef.current.getBoundingClientRect();
+        const { width, height } = menuRef.current.getBoundingClientRect();
 
         function setToTheSide() {
             const newPosition = { x: parentRect.x + parentRect.width, y: parentRect.y };
@@ -95,12 +95,12 @@ export default function Menu({parentRect, disableBackground, showContextMenu, se
         } else {
             setToTheSide();
         }
-    }, [showContextMenu, parentRect, menuContext.layout]);
+    }, [showMenu, parentRect, menuContext.layout]);
 
     return (
-        <div ref={contextMenuContainerRef}>
-            {showContextMenu &&
-                <div ref={contextMenuRef} className={menuContext.theme?.float + (disableBackground ? '' : (' ' + menuContext.theme?.container))} style={{ left: position.left, top: position.top }}>
+        <div ref={menuContainerRef}>
+            {showMenu &&
+                <div ref={menuRef} className={menuContext.theme?.float + (disableBackground ? '' : (' ' + menuContext.theme?.container))} style={{ left: position.left, top: position.top }}>
                     {children}
                 </div>}
         </div>

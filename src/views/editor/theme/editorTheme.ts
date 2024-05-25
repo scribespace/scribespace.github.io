@@ -7,10 +7,11 @@ import { TableTheme, TABLE_THEME_DEFAULT } from "@editor/components/table/theme"
 import { TOOLBAR_THEME_DEFAULT, ToolbarTheme } from "@editor/plugins/toolbarPlugin/theme";
 import { UNDO_REDO_THEME_DEFAULT, UndoRedoTheme } from "@editor/components/undoRedo/theme";
 import { FONT_STYLE_THEME_DEFAULT, FontStyleTheme } from "@editor/components/fontStyle/theme";
+import { Font } from "@utils";
 
 export interface EditorInputTheme extends EditorThemeClasses {
     defaultFontSize: EditorThemeClassName;
-    defaultFontFamily: EditorThemeClassName;
+    defaultFontFamily: Font;
 }
 
 export interface EditorTheme {
@@ -52,7 +53,7 @@ export const EDITOR_INPUT_THEME_DEFAULT: EditorInputTheme = {
     tableRow: 'editor-table-row',
 
     defaultFontSize: '',
-    defaultFontFamily: '',
+    defaultFontFamily: {name:'', alt: ''},
 };
 
 export const EDITOR_THEME_DEFAULT: EditorTheme = {

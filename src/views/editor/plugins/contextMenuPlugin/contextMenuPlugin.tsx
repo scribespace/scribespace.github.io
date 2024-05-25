@@ -3,10 +3,13 @@ import { useEffect, useState } from "react";
 import { TableContextOptions } from "@editor/components/table";
 import './css/contextMenuPlugin.css';
 import { ContextMenuContextData, CONTEXT_MENU_CONTEX_DEFAULT } from "./context";
-import { MenuContext } from "@src/views/editor/components/menu/menuContext";
+import { MenuContext } from "@/views/editor/components/menu/menuContext";
 import { Menu } from "@editor/components/menu";
-import { useMainThemeContext } from "@src/mainThemeContext";
-import { MainTheme } from "@src/theme";
+import { useMainThemeContext } from "@/mainThemeContext";
+import { MainTheme } from "@/theme";
+import { mergeRegister } from "@lexical/utils";
+import { CONTEXT_MENU_CLOSE_MENU_COMMAND } from "./common/contextMenuCommands";
+import { COMMAND_PRIORITY_LOW } from "lexical";
 
 export default function ContextMenuPlugin() {
     const { editorTheme }: MainTheme = useMainThemeContext();
@@ -34,24 +37,31 @@ export default function ContextMenuPlugin() {
     useEffect(()=>{
         setContextMenuContextObject((oldState) => ( {...oldState, closeMenu: closeContextMenu}));
 
-        const removeRootListeners = editor.registerRootListener((rootElement, prevElement) => {
-            if (rootElement !== null) {
-                rootElement.addEventListener('contextmenu', openContextMenu);
-            }
-            if (prevElement !== null) {
-                prevElement.removeEventListener('contextmenu', openContextMenu);
-            }
-            });
+        return mergeRegister(
+            editor.registerRootListener((rootElement, prevElement) => {
+                if (rootElement !== null) {
+                    rootElement.addEventListener('contextmenu', openContextMenu);
+                }
+                if (prevElement !== null) {
+                    prevElement.removeEventListener('contextmenu', openContextMenu);
+                }
+            }),
 
-            return () => {
-                removeRootListeners();
-            };
+            editor.registerCommand(
+                CONTEXT_MENU_CLOSE_MENU_COMMAND, 
+                () => {
+                    closeContextMenu();
+                    return false;
+                },
+                COMMAND_PRIORITY_LOW
+            )
+        );
     },[editor]);
 
     return (
         <MenuContext.Provider value={contextMenuContextObject}>
             <div>
-                <Menu showContextMenu={showContextMenu} setShowContextMenu={setShowContextMenu} parentRect={{x: contextMenuContextObject.mousePosition.x, y: contextMenuContextObject.mousePosition.y, width: 0, height: 0}}>
+                <Menu showMenu={showContextMenu} setShowMenu={setShowContextMenu} parentRect={{x: contextMenuContextObject.mousePosition.x, y: contextMenuContextObject.mousePosition.y, width: 0, height: 0}}>
                     <TableContextOptions editor={editor}/>
                 </Menu>
             </div>

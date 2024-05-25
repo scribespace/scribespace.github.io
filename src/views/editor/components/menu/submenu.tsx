@@ -1,17 +1,19 @@
-import { useEffect, useRef, useState, Children, useMemo, ReactElement } from "react";
+import { assert } from "@/utils/dev";
+import { Children, ReactElement, useEffect, useMemo, useRef, useState } from "react";
 import Menu from "./menu";
-import { assert, variableExistsOrThrowDev } from "@src/utils/common";
-import MenuItem from "./menuItem";
 import { MenuContextData, useMenuContext } from "./menuContext";
+import MenuItem from "./menuItem";
 import { $menuItemParent } from "./theme";
+import { variableExists, variableExistsOrThrowDev } from "@/utils";
 
 interface SubmenuProps {
     disableBackground?: boolean;
-    disableSubmenuIcon?: boolean;
+    showSubmenu?: boolean
+    setShowSubmenu?: (show:boolean) => void;
     children: React.ReactNode;
 }
 
-export default function Submenu(props: SubmenuProps) {
+export default function Submenu({ disableBackground, showSubmenu, setShowSubmenu, children }: SubmenuProps) {
     const menuContext: MenuContextData = useMenuContext();
 
     const theme = useMemo(() => {
@@ -19,24 +21,29 @@ export default function Submenu(props: SubmenuProps) {
         return menuContext.theme;
     },[menuContext.theme]);
 
-    const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
+    const showMenuInternal = useState<boolean>(false);
+    const [showMenu, setShowMenu] = useMemo(
+        () => {
+            if ( variableExists( showSubmenu ) && setShowSubmenu ) {
+                return [showSubmenu, setShowSubmenu];
+            }
+            return showMenuInternal;
+        },
+        [setShowSubmenu, showSubmenu, showMenuInternal]
+    );
 
     const menuOptionRef = useRef<HTMLDivElement>(null);
     const [rect, setRect] = useState<{x: number, y: number, width: number, height: number}>({x: -1, y: -1, width: 0, height: 0});
 
-    const [menuItem, children] = useMemo(() => {
-        const childrenArray = Children.toArray(props.children) as ReactElement[];
+    const [menuItem, processedDhildren] = useMemo(() => {
+        const childrenArray = Children.toArray(children) as ReactElement[];
         assert(childrenArray[0]?.type === MenuItem, `Submenu: First child has to be SubmenuItem (${childrenArray[0]?.type})`);
         return [
             childrenArray[0],
             childrenArray.slice(1)
         ];
-    },[props.children]);
+    },[children]);
 
-    useEffect(()=>{
-        setShowContextMenu(false);
-    },[menuItem]);
-    
     useEffect(()=>{
         const menuOption = menuOptionRef.current;
         if ( menuOption != null ){
@@ -44,17 +51,19 @@ export default function Submenu(props: SubmenuProps) {
             const rect = {x: left, y: top, width, height};
             setRect(rect);
         } 
-    },[showContextMenu]);
+    },[showMenu]);
 
     function onClick() {
-        setShowContextMenu(true);
+        setShowMenu(true);
     }
     
     return (
-        <div ref={menuOptionRef} className={showContextMenu ? theme.itemSelected : ''} style={$menuItemParent} onClick={onClick}>
-            {menuItem}
-            <Menu showContextMenu={showContextMenu} setShowContextMenu={setShowContextMenu} parentRect={rect} disableBackground={props.disableBackground}>
-                {children}
+        <div>
+            <div ref={menuOptionRef} className={showMenu ? theme.itemSelected : ''} style={$menuItemParent} onClick={onClick}>
+                {menuItem}
+            </div>
+            <Menu showMenu={showMenu} setShowMenu={setShowMenu} parentRect={rect} disableBackground={disableBackground}>
+                {processedDhildren}
             </Menu>
         </div>
     );

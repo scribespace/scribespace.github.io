@@ -8,8 +8,7 @@ import {$patchStyleText} from '@lexical/selection';
 import { $isTableCellNode, $isTableSelection } from "@lexical/table";
 
 
-export const SET_FONT_FAMILY_COMMAND: LexicalCommand<string> = createCommand();
-export const FONT_FAMILY_CHANGED_COMMAND: LexicalCommand<string> = createCommand();
+
 export const SET_FONT_COLOR_COMMAND: LexicalCommand<string> = createCommand();
 export const SET_BACKGROUND_COLOR_COMMAND: LexicalCommand<string> = createCommand();
 export const FONT_COLOR_CHANGE_COMMAND: LexicalCommand<void> = createCommand();
@@ -23,17 +22,6 @@ export default function RegisterCustomCommands() {
 
         
 
-        const removeSetFontFamily = editor.registerCommand(SET_FONT_FAMILY_COMMAND, (fontFamily: string) => {
-            const selection = $getSelection();
-            if ( $isRangeSelection(selection)) {
-                $patchStyleText( selection, {'font-family': fontFamily});
-                editor.dispatchCommand(FONT_FAMILY_CHANGED_COMMAND, fontFamily);
-            }
-
-            return false;
-        },
-        COMMAND_PRIORITY_LOW);
-        removeFunctionsArray.push( removeSetFontFamily );
 
         const removeSetFontColor = editor.registerCommand(SET_FONT_COLOR_COMMAND, (color: string) => {
             const selection = $getSelection();

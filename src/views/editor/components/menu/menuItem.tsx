@@ -1,7 +1,7 @@
-import { isIcon } from "@src/components/icon";
-import { variableExistsOrThrowDev } from "@src/utils/common";
+import { isIcon } from "@/components/icon";
 import { Children, ReactElement, ReactNode, cloneElement, useMemo } from "react";
 import { MenuContextData, useMenuContext } from "./menuContext";
+import { variableExistsOrThrowDev } from "@/utils";
 
 interface MenuItemProps {
     disabled?: boolean;
@@ -9,7 +9,7 @@ interface MenuItemProps {
     children?: ReactNode;
 }
 
-export default function MenuItem(props: MenuItemProps) {
+export default function MenuItem({disabled, onClick, children }: MenuItemProps) {
     const menuContext: MenuContextData = useMenuContext();
 
     const theme = useMemo(() => {
@@ -17,8 +17,8 @@ export default function MenuItem(props: MenuItemProps) {
         return menuContext.theme;
     },[menuContext.theme]);
 
-    const children = useMemo(() => {
-        const childrenArray = Children.toArray(props.children) as ReactElement[];
+    const preocessedChildren = useMemo(() => {
+        const childrenArray = Children.toArray(children) as ReactElement[];
 
         return childrenArray.map((child) => {
              if (isIcon(child)) {
@@ -30,16 +30,16 @@ export default function MenuItem(props: MenuItemProps) {
             return child;
           });
 
-    },[props.children, theme.itemIcon, theme.itemIconSize]);
+    },[children, theme.itemIcon, theme.itemIconSize]);
 
     const className = useMemo(() => {
         return theme.item
-        + (props.disabled ? (' ' + theme.itemDisabled): '');
-    },[theme.item, theme.itemDisabled, props.disabled]);
+        + (disabled ? (' ' + theme.itemDisabled): '');
+    },[theme.item, theme.itemDisabled, disabled]);
 
     return (
-        <div className={className} onClick={props.onClick}>
-           {children}
+        <div className={className} onClick={onClick}>
+           {preocessedChildren}
         </div>
       );
 }

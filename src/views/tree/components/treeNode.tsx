@@ -9,8 +9,8 @@ import './css/treeNode.css';
 import { TreeNodeData } from '../common';
 import { FolderArrow } from './folderArrow';
 import { Input } from './input';
-import { useMainThemeContext } from '@src/mainThemeContext';
-import { MainTheme } from '@src/theme';
+import { useMainThemeContext } from '@/mainThemeContext';
+import { MainTheme } from '@/theme';
 import { IconBaseProps } from 'react-icons';
   
 export default function TreeNode({ node, style, dragHandle }: NodeRendererProps<TreeNodeData>) {

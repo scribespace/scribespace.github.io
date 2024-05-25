@@ -8,9 +8,9 @@ import { mergeRegister } from '@lexical/utils';
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import LinkEditor from "@editor/components/link";
-import { urlRegExp, validateUrl, OpenURL } from "@utils/common";
-import { useMainThemeContext } from "@src/mainThemeContext";
-import { MainTheme } from "@src/theme";
+import { urlRegExp, validateUrl, OpenURL } from "@utils";
+import { useMainThemeContext } from "@/mainThemeContext";
+import { MainTheme } from "@/theme";
 
 export default function LinkPlugin() {
     const [editor] = useLexicalComposerContext();

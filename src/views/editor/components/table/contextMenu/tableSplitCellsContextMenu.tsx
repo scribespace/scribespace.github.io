@@ -1,18 +1,17 @@
-import { $getNodeByKey, $getSelection, $isRangeSelection, $setSelection } from "lexical";
-import { MenuItem } from "../../menu";
+import { useMainThemeContext } from "@/mainThemeContext";
+import { MainTheme } from "@/theme";
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
 import {
     $findCellNode, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
-import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
-import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
-import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
-import { MainTheme } from "@src/theme";
-import { useMainThemeContext } from "@src/mainThemeContext";
+import { $getNodeByKey, $getSelection, $isRangeSelection, $setSelection } from "lexical";
 import { useMemo } from "react";
+import { MenuItem } from "../../menu";
+import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
+import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 
 export default function TableSplitCellsContextMenu({ editor }: TableContextMenuOptionProps) {
-    const menuContext = useContextMenuContext();
     const {editorTheme}: MainTheme = useMainThemeContext();
 
     const SplitCellIcon = useMemo(()=>{
@@ -50,7 +49,7 @@ export default function TableSplitCellsContextMenu({ editor }: TableContextMenuO
 
             $setSelection(null);
 
-            menuContext.closeMenu();
+            $closeContextMenu(editor);
         });
     };
 

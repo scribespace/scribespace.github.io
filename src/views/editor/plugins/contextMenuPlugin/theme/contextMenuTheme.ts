@@ -1,7 +1,7 @@
 import { EditorThemeClassName } from "lexical";
 import { FaAngleRight } from "react-icons/fa";
 import { MenuTheme } from "@editor/components/menu/theme";
-import { Icon } from "@src/components/icon";
+import { Icon } from "@/components/icon";
 
 export interface ContextMenuMenuTheme extends MenuTheme {
     editorContainer: EditorThemeClassName;

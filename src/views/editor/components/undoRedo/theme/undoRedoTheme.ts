@@ -1,6 +1,6 @@
 import { IconType } from "react-icons";
 import { ImRedo, ImUndo } from "react-icons/im";
-import { Icon } from "@src/components/icon";
+import { Icon } from "@/components/icon";
 
 export interface UndoRedoTheme {
     UndoIcon: IconType;

@@ -1,4 +1,4 @@
-import { EmptyComponent } from "@src/components";
+import { EmptyComponent } from "@/components";
 import { EditorThemeClassName } from "lexical";
 import { CSSProperties } from "react";
 import { IconType } from "react-icons";

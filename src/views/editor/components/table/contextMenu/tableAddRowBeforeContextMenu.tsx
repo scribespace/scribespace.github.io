@@ -1,22 +1,21 @@
+import { useMainThemeContext } from "@/mainThemeContext";
+import { MainTheme } from "@/theme";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
-import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
 import {
     $getTableCellNodeFromLexicalNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
-import { useMainThemeContext } from "@src/mainThemeContext";
-import { MainTheme } from "@src/theme";
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection, $setSelection } from "lexical";
 import { useMemo } from "react";
 import { MenuItem, Submenu } from "../../menu";
 import SubmenuIcon from "../../menu/submenuIcon";
 import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
 import TableNumberInputContextMenu from "./tableNumberInputContextMenu";
+import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 
 
 
 export default function TableAddRowBeforeContextMenu({ editor }: TableContextMenuOptionProps) {
-    const menuContext = useContextMenuContext();
     const {editorTheme}: MainTheme = useMainThemeContext();
 
     const AddRowBeforeIcon = useMemo(()=>{
@@ -51,7 +50,7 @@ export default function TableAddRowBeforeContextMenu({ editor }: TableContextMen
             tableNode?.addRowsBefore(cellNode, value);
 
             $setSelection(null);
-            menuContext.closeMenu();
+            $closeContextMenu(editor);
         },
             { tag: 'table-add-row-before' });
     };

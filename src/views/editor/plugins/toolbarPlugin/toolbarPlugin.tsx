@@ -1,23 +1,17 @@
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 
 import './css/toolbarPlugin.css';
-//import UndoRedoTool from '../../components/undoRedo/undoRedo';
-//import StyleTool from './tools/styleTool';
-//import FontSizeTool from './tools/fontSizeTool';
-//import FontFamilyTool from './tools/fontFamilyTool';
-//import AlignTool from './tools/alignTool';
-//import ColorTools from './tools/colorTool';
-//import LinkTool from './tools/linkTool';
-import TableCreateToolbar from '@src/views/editor/components/table/toolbar/tableCreateToolbar';
+import TableCreateToolbar from '@/views/editor/components/table/toolbar/tableCreateToolbar';
 import { forwardRef, useEffect, useMemo, useState } from 'react';
-import { useMainThemeContext } from '@src/mainThemeContext';
-import { MainTheme } from '@src/theme';
-import { MenuContext } from '@src/views/editor/components/menu/menuContext';
+import { useMainThemeContext } from '@/mainThemeContext';
+import { MainTheme } from '@/theme';
+import { MenuContext } from '@/views/editor/components/menu/menuContext';
 import { TOOLBAR_CONTEX_DEFAULT, ToolbarContextData } from './context';
-import UndoRedoToolbar from '@src/views/editor/components/undoRedo/undoRedoToolbar';
+import UndoRedoToolbar from '@/views/editor/components/undoRedo/undoRedoToolbar';
 import { SeparatorVertical } from '@editor/components/separators';
-import FontStyleToolbar from '@src/views/editor/components/fontStyle/fontStyleToolbar';
+import FontStyleToolbar from '@/views/editor/components/fontStyle/fontStyleToolbar';
 import FontSizeToolbar from '../../components/fontSize/fontSizeToolbar';
+import FontFamilyToolbar from '../../components/fontFamily/fontFamilyToolbar';
 
 const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
     const [editor] = useLexicalComposerContext();
@@ -40,13 +34,14 @@ const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
     return (
         <MenuContext.Provider value={toolbarContext}>
         <div ref={ref} className={toolbarTheme.container}>
-                <UndoRedoToolbar/>
-            <SeparatorVertical/>
-                <FontStyleToolbar/>
-            <SeparatorVertical/>
-                <FontSizeToolbar/>
-            <SeparatorVertical/>
-                <TableCreateToolbar/>
+            <UndoRedoToolbar/>
+                <SeparatorVertical/>
+            <FontStyleToolbar/>
+                <SeparatorVertical/>
+            <FontSizeToolbar/>
+            <FontFamilyToolbar/>
+                <SeparatorVertical/>
+            <TableCreateToolbar/>
         </div>
         </MenuContext.Provider>
     );

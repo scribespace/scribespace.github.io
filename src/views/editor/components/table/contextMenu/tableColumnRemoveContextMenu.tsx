@@ -1,20 +1,19 @@
+import { useMainThemeContext } from "@/mainThemeContext";
+import { MainTheme } from "@/theme";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
-import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
 import { $getTableColumnIndexFromTableCellNode } from "@editor/plugins/tablePlugin/utils";
 import {
     $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
-import { useMainThemeContext } from "@src/mainThemeContext";
-import { MainTheme } from "@src/theme";
 import { $getSelection, $isRangeSelection, $setSelection } from "lexical";
 import { useMemo } from "react";
 import { MenuItem } from "../../menu";
 import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
+import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 
 
 export default function TableColumnRemoveContextMenu({ editor }: TableContextMenuOptionProps) {
-    const menuContext = useContextMenuContext();
     const {editorTheme}: MainTheme = useMainThemeContext();
 
     const RemoveColumnIcon = useMemo(()=>{
@@ -64,7 +63,7 @@ export default function TableColumnRemoveContextMenu({ editor }: TableContextMen
 
             tableNode.removeColumns(cellNode, columnsCount);
             $setSelection(null);
-            menuContext.closeMenu();
+            $closeContextMenu(editor);
         },
             { tag: 'table-column-remove' });
     };

@@ -1,19 +1,18 @@
+import { useMainThemeContext } from "@/mainThemeContext";
+import { MainTheme } from "@/theme";
 import { ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
-import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
 import {
     $findTableNode, $isTableCellNode, $isTableNode, $isTableRowNode, $isTableSelection,
     TableCellNode, TableRowNode
 } from "@lexical/table";
-import { useMainThemeContext } from "@src/mainThemeContext";
-import { MainTheme } from "@src/theme";
 import { $getSelection, $setSelection } from "lexical";
 import { useMemo } from "react";
 import { MenuItem } from "../../menu";
 import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
+import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 
 
 export default function TableMergeCellsContextMenu({ editor }: TableContextMenuOptionProps) {
-    const menuContext = useContextMenuContext();
     const {editorTheme}: MainTheme = useMainThemeContext();
 
     const MergeCellIcon = useMemo(()=>{
@@ -75,7 +74,7 @@ export default function TableMergeCellsContextMenu({ editor }: TableContextMenuO
                 tableBodyNode.getParentOrThrow<ExtendedTableNode>().mergeCells(editor, firstCellNode, rowsToMerge, columnsToMerge);
 
                 $setSelection(null);
-                menuContext.closeMenu();
+                $closeContextMenu(editor);
             }
         });
     };

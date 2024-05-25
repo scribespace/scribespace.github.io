@@ -1,9 +1,9 @@
 import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
 import { $getSelectionStyleValueForProperty } from '@lexical/selection';
 import { mergeRegister } from "@lexical/utils";
-import { useMainThemeContext } from "@src/mainThemeContext";
-import { MainTheme } from "@src/theme";
-import { separateValueAndUnit } from "@src/utils/common";
+import { useMainThemeContext } from "@/mainThemeContext";
+import { MainTheme } from "@/theme";
+import { separateValueAndUnit } from "@/utils/common";
 import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_LOW, SELECTION_CHANGE_COMMAND } from "lexical";
 import { useEffect, useState } from "react";
 import NumberInput from "../numberInput";

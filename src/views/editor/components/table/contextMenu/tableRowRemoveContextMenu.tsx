@@ -1,19 +1,18 @@
-import { $getSelection, $isRangeSelection, $setSelection } from "lexical";
-import { MenuItem } from "../../menu";
+import { useMainThemeContext } from "@/mainThemeContext";
+import { MainTheme } from "@/theme";
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
 import {
     $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $getTableRowIndexFromTableCellNode, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
-import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
-import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
-import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
-import { useMainThemeContext } from "@src/mainThemeContext";
-import { MainTheme } from "@src/theme";
+import { $getSelection, $isRangeSelection, $setSelection } from "lexical";
 import { useMemo } from "react";
+import { MenuItem } from "../../menu";
+import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
+import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 
 
 export default function TableRowRemoveContextMenu({ editor }: TableContextMenuOptionProps) {
-    const menuContext = useContextMenuContext();
     const {editorTheme}: MainTheme = useMainThemeContext();
 
     const RemoveRowIcon = useMemo(()=>{
@@ -62,7 +61,7 @@ export default function TableRowRemoveContextMenu({ editor }: TableContextMenuOp
             tableNode.removeRows(cellNode, rowsCount);
             $setSelection(null);
 
-            menuContext.closeMenu();
+            $closeContextMenu(editor);
         },
             { tag: 'table-row-remove' });
     };

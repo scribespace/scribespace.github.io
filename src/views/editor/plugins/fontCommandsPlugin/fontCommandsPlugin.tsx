@@ -4,14 +4,14 @@ import { $isHeadingNode, $isQuoteNode } from '@lexical/rich-text';
 import { $getNearestBlockElementAncestorOrThrow, mergeRegister } from '@lexical/utils';
 import { $createParagraphNode, $getSelection, $isRangeSelection, $isTextNode, COMMAND_PRIORITY_LOW, TextNode } from "lexical";
 import { useEffect } from "react";
-import { CLEAR_FONT_STYLE_COMMAND, DECREASE_FONT_SIZE_COMMAND, FONT_SIZE_CHANGED_COMMAND, INCREASE_FONT_SIZE_COMMAND, SET_FONT_SIZE_COMMAND } from './fontCommands';
+import { CLEAR_FONT_STYLE_COMMAND, DECREASE_FONT_SIZE_COMMAND, FONT_FAMILY_CHANGED_COMMAND, FONT_SIZE_CHANGED_COMMAND, INCREASE_FONT_SIZE_COMMAND, SET_FONT_FAMILY_COMMAND, SET_FONT_SIZE_COMMAND } from './fontCommands';
 import { $patchStyleText } from '@lexical/selection';
-import { useMainThemeContext } from '@src/mainThemeContext';
-import { MainTheme } from '@src/theme';
+import { useMainThemeContext } from '@/mainThemeContext';
+import { MainTheme } from '@/theme';
 
 export default function FontCommandsPlugin() {
     const [editor] = useLexicalComposerContext();
-    const {editorTheme:{editorInputTheme:{defaultFontSize}}}: MainTheme = useMainThemeContext();
+    const {editorTheme:{editorInputTheme:{defaultFontSize}}, editorTheme:{editorInputTheme:{defaultFontFamily}}}: MainTheme = useMainThemeContext();
 
     useEffect(()=>{
             return mergeRegister( 
@@ -113,5 +113,19 @@ export default function FontCommandsPlugin() {
         );
     }, [defaultFontSize, editor]);
 
+    useEffect(()=>{
+        return mergeRegister( 
+            editor.registerCommand(SET_FONT_FAMILY_COMMAND, (fontFamily: string) => {
+                const selection = $getSelection();
+                if ( $isRangeSelection(selection)) {
+                    $patchStyleText( selection, {'font-family': fontFamily});
+                    editor.dispatchCommand(FONT_FAMILY_CHANGED_COMMAND, fontFamily);
+                }
+
+                return false;
+            },
+            COMMAND_PRIORITY_LOW)
+        );
+    }, [defaultFontFamily, editor]);
     return null;
 }

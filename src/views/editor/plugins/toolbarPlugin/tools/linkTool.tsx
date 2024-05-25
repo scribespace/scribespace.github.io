@@ -2,7 +2,7 @@ import { ImLink } from "react-icons/im";
 import { $getSelection, $isRangeSelection, $isTextNode, COMMAND_PRIORITY_LOW, LexicalEditor, SELECTION_CHANGE_COMMAND } from "lexical";
 import { $isLinkNode, $createLinkNode} from '@lexical/link';
 import { useEffect, useState } from "react";
-import { validateUrl } from "@utils/common";
+import { validateUrl } from "@utils";
 
 interface LinkToolProps {
     editor: LexicalEditor;

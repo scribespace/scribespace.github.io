@@ -1,6 +1,6 @@
 import { IconBaseProps } from "react-icons";
 import { MenuContextData, useMenuContext } from "./menuContext";
-import { variableExistsOrThrowDev } from "@src/utils/common";
+import { variableExistsOrThrowDev } from "@/utils";
 
 export default function SubmenuIcon() {
     const {theme}: MenuContextData = useMenuContext();

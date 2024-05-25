@@ -27,7 +27,7 @@
     user-select: none; /* Standard syntax */
 }
 
-.context-menu-item-selected-default .context-menu-item-default {
+.context-menu-item-selected-default > .context-menu-item-default {
     background-color: rgb(177, 177, 177)
 }
 
@@ -35,7 +35,7 @@
   color: gray;
 }
 
-.context-menu-item-default:hover:not(.context-menu-item-disabled-default):not(.context-menu-item-selected-default .context-menu-item-default) {
+.context-menu-item-default:hover:not(.context-menu-item-disabled-default):not(.context-menu-item-selected-default > .context-menu-item-default) {
     background-color: rgb(209, 209, 209);
 }
 
@@ -48,8 +48,6 @@
 .context-menu-item-submenu-icon-default {
     margin-left: auto;
 }
-
-
 
 .context-menu-editor-container-default {
     box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.582);

@@ -1,4 +1,4 @@
-import { Icon } from "@src/components/icon";
+import { Icon } from "@/components/icon";
 import { EditorThemeClassName } from "lexical";
 import { IconType } from "react-icons";
 import { HiExternalLink } from "react-icons/hi";

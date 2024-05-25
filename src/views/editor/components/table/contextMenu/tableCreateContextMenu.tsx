@@ -1,16 +1,15 @@
+import { useMainThemeContext } from "@/mainThemeContext";
+import { MainTheme } from "@/theme";
 import { $createExtendedTableNodeWithDimensions } from "@editor/nodes/table";
-import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
-import { useMainThemeContext } from "@src/mainThemeContext";
-import { MainTheme } from "@src/theme";
 import { $insertNodes } from "lexical";
 import { useMemo } from "react";
 import { MenuItem, Submenu } from "../../menu";
 import SubmenuIcon from "../../menu/submenuIcon";
 import TableCreator from "../tableCreator";
 import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
+import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 
 export default function TableCreateContextMenu({ editor }: TableContextMenuOptionProps) {
-    const menuContext = useContextMenuContext();
     const {editorTheme}: MainTheme = useMainThemeContext();
 
     const AddTableIcon = useMemo(()=>{
@@ -23,7 +22,7 @@ export default function TableCreateContextMenu({ editor }: TableContextMenuOptio
             $insertNodes([tableNode]);
         });
 
-        menuContext.closeMenu();
+        $closeContextMenu(editor);
     }
 
     return (

@@ -1,16 +1,15 @@
+import { useMainThemeContext } from "@/mainThemeContext";
+import { MainTheme } from "@/theme";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "@editor/nodes/table";
-import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
 import { $isTableSelection } from "@lexical/table";
-import { useMainThemeContext } from "@src/mainThemeContext";
-import { MainTheme } from "@src/theme";
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical";
 import { useMemo } from "react";
 import { MenuItem } from "../../menu";
 import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
+import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 
 
 export default function TableDeleteContextMenu({ editor }: TableContextMenuOptionProps) {
-    const menuContext = useContextMenuContext();
     const {editorTheme}: MainTheme = useMainThemeContext();
 
     const DeleteTableIcon = useMemo(()=>{
@@ -34,7 +33,7 @@ export default function TableDeleteContextMenu({ editor }: TableContextMenuOptio
 
             tableNode.remove();
         });
-        menuContext.closeMenu();
+        $closeContextMenu(editor);
     };
 
     return (

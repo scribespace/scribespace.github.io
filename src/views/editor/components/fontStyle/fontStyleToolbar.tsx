@@ -1,11 +1,11 @@
 import { mergeRegister } from '@lexical/utils';
-import { useMainThemeContext } from "@src/mainThemeContext";
-import { MainTheme } from "@src/theme";
+import { useMainThemeContext } from "@/mainThemeContext";
+import { MainTheme } from "@/theme";
 import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_LOW, FORMAT_TEXT_COMMAND, SELECTION_CHANGE_COMMAND } from "lexical";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
 import { MenuItem } from "../menu";
-import { CLEAR_FONT_STYLE_COMMAND } from '@src/views/editor/plugins/fontCommandsPlugin';
+import { CLEAR_FONT_STYLE_COMMAND } from '@/views/editor/plugins/fontCommandsPlugin';
 import { $menuItemParent } from '../menu/theme';
 
 export default function FontStyleToolbar() {

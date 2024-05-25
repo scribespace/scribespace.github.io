@@ -21,8 +21,8 @@ import { createPortal } from 'react-dom';
 import { Property } from 'csstype';
 
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from '@editor/nodes/table';
-import { useMainThemeContext } from '@src/mainThemeContext';
-import { MainTheme } from '@src/theme';
+import { useMainThemeContext } from '@/mainThemeContext';
+import { MainTheme } from '@/theme';
 
 const DRAG_NONE = 0 as const;
 const DRAG_HORIZONTAL = 1 as const;

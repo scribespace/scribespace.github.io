@@ -1,4 +1,4 @@
-import { Icon } from "@src/components/icon";
+import { Icon } from "@/components/icon";
 import { IconType } from "react-icons";
 import { ImBold, ImItalic, ImUnderline, ImStrikethrough, ImClearFormatting } from "react-icons/im";
 

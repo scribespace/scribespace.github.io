@@ -1,10 +1,11 @@
-import { ValueUnit, separateValueAndUnit, variableExists } from "@utils/common";
+import { separateValueAndUnit, variableExists } from "@utils";
+import { ValueUnit } from "@/utils/types";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { IconBaseProps } from "react-icons";
 import { SeparatorVertical } from '../separators';
 
-import { useMainThemeContext } from "@src/mainThemeContext";
-import { MainTheme } from "@src/theme";
+import { useMainThemeContext } from "@/mainThemeContext";
+import { MainTheme } from "@/theme";
 import './css/numberInput.css';
 
 interface NumberInputProps {

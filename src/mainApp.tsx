@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { WelcomeView } from './views/welcomeView';
-import { MAIN_THEME_DEFAULT, MainTheme } from './theme/mainTheme';
-import { MainThemeContext } from './mainThemeContext';
 import './css/index.css';
+import { MainThemeContext } from './mainThemeContext';
+import { MAIN_THEME_DEFAULT, MainTheme } from './theme/mainTheme';
+import { fontFromStyle } from './utils';
+import { WelcomeView } from './views/welcomeView';
 
 export function MainApp() {
   const [mainTheme, setMainTheme] = useState<MainTheme>(MAIN_THEME_DEFAULT);
@@ -12,7 +13,8 @@ export function MainApp() {
     
     // set defaults
     newTheme.editorTheme.editorInputTheme.defaultFontSize = getComputedStyle(document.documentElement).getPropertyValue("--default-font-size");
-    newTheme.editorTheme.editorInputTheme.defaultFontFamily = getComputedStyle(document.documentElement).getPropertyValue("--default-font-family");
+    const cssFontFamily = getComputedStyle(document.documentElement).getPropertyValue("--default-font-family");
+    newTheme.editorTheme.editorInputTheme.defaultFontFamily = fontFromStyle(cssFontFamily);
 
     setMainTheme(newTheme);
   }, []);

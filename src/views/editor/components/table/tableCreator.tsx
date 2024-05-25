@@ -2,8 +2,8 @@ import { ReactElement, useEffect, useMemo, useRef, useState } from "react";
 
 
 import './css/tableCreator.css';
-import { useMainThemeContext } from "@src/mainThemeContext";
-import { MainTheme } from "@src/theme";
+import { useMainThemeContext } from "@/mainThemeContext";
+import { MainTheme } from "@/theme";
 
 interface TableCreatorProps {
     gridSize: string;
