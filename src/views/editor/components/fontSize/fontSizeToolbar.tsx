@@ -7,7 +7,7 @@ import { separateValueAndUnit } from "@/utils/common";
 import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_LOW, SELECTION_CHANGE_COMMAND } from "lexical";
 import { useEffect, useState } from "react";
 import NumberInput from "../numberInput";
-import { DECREASE_FONT_SIZE_COMMAND, FONT_SIZE_CHANGED_COMMAND, INCREASE_FONT_SIZE_COMMAND, SET_FONT_SIZE_COMMAND } from "@editor/plugins/fontCommandsPlugin";
+import { DECREASE_FONT_SIZE_COMMAND, FONT_SIZE_CHANGED_COMMAND, INCREASE_FONT_SIZE_COMMAND, SET_FONT_SIZE_COMMAND } from "@/views/editor/plugins/fontPlugin";
 
 export default function FontSizeToolbar() {
     const {editor} = useToolbarContext();

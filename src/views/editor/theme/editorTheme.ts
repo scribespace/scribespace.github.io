@@ -9,6 +9,7 @@ import { UNDO_REDO_THEME_DEFAULT, UndoRedoTheme } from "@editor/components/undoR
 import { FONT_STYLE_THEME_DEFAULT, FontStyleTheme } from "@editor/components/fontStyle/theme";
 import { Font } from "@utils";
 import { ALIGN_MENU_THEME_DEFAULT, AlignMenuTheme } from "../components/align/theme";
+import { COLOR_MENU_THEME_DEFAULT, ColorMenuTheme } from "../components/color/theme";
 
 export interface EditorInputTheme extends EditorThemeClasses {
     defaultFontSize: EditorThemeClassName;
@@ -31,6 +32,7 @@ export interface EditorTheme {
     undoRedoTheme: UndoRedoTheme;
     fontStyleTheme: FontStyleTheme;
     alignTheme: AlignMenuTheme;
+    colorTheme: ColorMenuTheme;
 
     toolbarTheme: ToolbarTheme;
     contextMenuTheme: ContextMenuTheme;
@@ -74,6 +76,7 @@ export const EDITOR_THEME_DEFAULT: EditorTheme = {
     undoRedoTheme: UNDO_REDO_THEME_DEFAULT,
     fontStyleTheme: FONT_STYLE_THEME_DEFAULT,
     alignTheme: ALIGN_MENU_THEME_DEFAULT,
+    colorTheme: COLOR_MENU_THEME_DEFAULT,
 
     toolbarTheme: TOOLBAR_THEME_DEFAULT,
     contextMenuTheme: CONTEXT_MENU_THEME_DEFAULT,

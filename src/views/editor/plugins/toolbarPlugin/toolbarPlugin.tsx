@@ -13,6 +13,7 @@ import { MenuRoot } from '../../components/menu';
 import { TOOLBAR_CONTEX_DEFAULT, ToolbarContextData } from './context';
 import './css/toolbarPlugin.css';
 import AlignToolbar from '../../components/align/alignToolbar';
+import { ColorBackgroundToolbar, ColorTextToolbar } from '../../components/color';
 
 const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
     const [editor] = useLexicalComposerContext();
@@ -43,6 +44,9 @@ const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
                 <FontFamilyToolbar/>
                     <SeparatorVertical/>
                 <AlignToolbar/>
+                    <SeparatorVertical/>
+                <ColorTextToolbar/>
+                <ColorBackgroundToolbar/>
                     <SeparatorVertical/>
                 <TableCreateToolbar/>
             </div>

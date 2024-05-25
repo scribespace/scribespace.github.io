@@ -5,7 +5,7 @@ import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_LOW, FORMAT_TEXT_COM
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
 import { MenuItem } from "../menu";
-import { CLEAR_FONT_STYLE_COMMAND } from '@/views/editor/plugins/fontCommandsPlugin';
+import { CLEAR_FONT_STYLE_COMMAND } from '@/views/editor/plugins/fontPlugin';
 import { $menuItemParent } from '../menu/theme';
 
 export default function FontStyleToolbar() {

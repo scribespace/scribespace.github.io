@@ -18,16 +18,17 @@ import './css/editorInputTheme.css';
 
 import ToolbarPlugin from './plugins/toolbarPlugin/toolbarPlugin';
 
-import { TableCellNode, TableNode, TableRowNode } from '@lexical/table';
 import useBoundingRect from '@/hooks/useBoundingRect';
 import { useMainThemeContext } from '@/mainThemeContext';
 import { MainTheme } from '@/theme';
+import { TableCellNode, TableNode, TableRowNode } from '@lexical/table';
 import { useRef } from 'react';
 import { ExtendedTableNode, TableBodyNode } from './nodes/table';
 import ExtendedTextNode from './nodes/text';
+import { ColorPlugin } from './plugins/colorPlugin';
 import ContextMenuPlugin from './plugins/contextMenuPlugin';
-import { FontCommandsPlugin } from './plugins/fontCommandsPlugin';
 import TablePlugin from './plugins/tablePlugin';
+import { FontPlugin } from './plugins/fontPlugin';
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
 // try to recover gracefully without losing user data.
@@ -106,7 +107,8 @@ export function EditorLexicalView({selectedFile} : Props) {
           <TestPlugin selectedFile={selectedFile}/>
           <HistoryPlugin />
           <AutoFocusPlugin />
-          <FontCommandsPlugin/>
+          <FontPlugin/>
+          <ColorPlugin/>
           <LinkPlugin/>
           <TablePlugin/>
           <ContextMenuPlugin/>

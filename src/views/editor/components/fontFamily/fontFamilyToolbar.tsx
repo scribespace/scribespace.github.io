@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { SET_FONT_FAMILY_COMMAND } from '@editor/plugins/fontCommandsPlugin';
+import { SET_FONT_FAMILY_COMMAND } from '@/views/editor/plugins/fontPlugin';
 import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
 import { Font, fontFromStyle, fontToStyle } from '@utils';
 import { MenuItem, Submenu } from "../menu";

@@ -9,7 +9,7 @@ import { $patchStyleText } from '@lexical/selection';
 import { useMainThemeContext } from '@/mainThemeContext';
 import { MainTheme } from '@/theme';
 
-export default function FontCommandsPlugin() {
+export function FontPlugin() {
     const [editor] = useLexicalComposerContext();
     const {editorTheme:{editorInputTheme:{defaultFontSize}}, editorTheme:{editorInputTheme:{defaultFontFamily}}}: MainTheme = useMainThemeContext();
 

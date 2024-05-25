@@ -1,0 +1,2 @@
+export { SET_FONT_COLOR_COMMAND, SET_BACKGROUND_COLOR_COMMAND, FONT_COLOR_CHANGE_COMMAND, BACKGROUND_COLOR_CHANGE_COMMAND } from './colorCommands';
+export { ColorPlugin } from './colorPlugin';
