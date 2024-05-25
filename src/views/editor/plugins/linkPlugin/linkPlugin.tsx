@@ -7,7 +7,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { mergeRegister } from '@lexical/utils';
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import LinkEditor from "@editor/components/link";
+import { LinkEditor } from "@editor/components/link";
 import { urlRegExp, validateUrl, OpenURL } from "@utils";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";

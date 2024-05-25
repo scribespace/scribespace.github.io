@@ -1,14 +1,15 @@
-import { ImLink } from "react-icons/im";
-import { $getSelection, $isRangeSelection, $isTextNode, COMMAND_PRIORITY_LOW, LexicalEditor, SELECTION_CHANGE_COMMAND } from "lexical";
+import { $getSelection, $isRangeSelection, $isTextNode, COMMAND_PRIORITY_LOW, SELECTION_CHANGE_COMMAND } from "lexical";
 import { $isLinkNode, $createLinkNode} from '@lexical/link';
 import { useEffect, useState } from "react";
 import { validateUrl } from "@utils";
+import { useMainThemeContext } from "@/mainThemeContext";
+import { useToolbarContext } from "../../plugins/toolbarPlugin/context";
+import { MenuItem } from "../menu";
+import { $menuItemParent } from "../menu/theme";
 
-interface LinkToolProps {
-    editor: LexicalEditor;
-}
-
-export default function LinkTool({editor} : LinkToolProps) {
+export function LinkToolbar() {
+    const {editor, theme: {itemSelected}} = useToolbarContext();
+    const {editorTheme: {linkTheme: {LinkIcon}} } = useMainThemeContext();
     const [isLinkSelected, setIsLinkSelected] = useState<boolean>(false);
 
     function onClick(e: React.MouseEvent) {
@@ -83,6 +84,10 @@ export default function LinkTool({editor} : LinkToolProps) {
     },[editor]);
 
     return (
-        <ImLink className={ isLinkSelected ? 'item selected' : 'item'} onClick={onClick}/>
+        <div className={isLinkSelected ? itemSelected : ''} style={$menuItemParent}>
+            <MenuItem onClick={onClick}>
+                <LinkIcon/>
+            </MenuItem>
+        </div>
     );
 }

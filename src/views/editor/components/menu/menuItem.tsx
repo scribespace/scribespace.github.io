@@ -7,7 +7,7 @@ import { EditorThemeClassName } from "lexical";
 interface MenuItemProps {
     disabled?: boolean;
     className?: EditorThemeClassName;
-    onClick?: () => void;
+    onClick?: (event: React.MouseEvent) => void;
     children?: ReactNode;
 }
 

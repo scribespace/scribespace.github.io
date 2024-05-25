@@ -1,2 +1,2 @@
-import LinkEditor from './linkEditor';
-export default LinkEditor;
+export { LinkEditor } from './linkEditor';
+export { LinkToolbar } from './linkToolbar';

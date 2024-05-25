@@ -13,7 +13,7 @@ interface LinkEditorProps {
     onURLChange?: (url:string) => void;
 }
 
-export default function LinkEditor({text, url, onTextChange, onURLChange}: LinkEditorProps) {
+export function LinkEditor({text, url, onTextChange, onURLChange}: LinkEditorProps) {
     const { editorTheme }: MainTheme = useMainThemeContext();
     const theme = useMemo(()=> {
         return editorTheme.linkTheme;
