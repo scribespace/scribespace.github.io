@@ -1,7 +1,7 @@
 import { $getSelectionStyleValueForProperty } from '@lexical/selection';
 import { mergeRegister } from '@lexical/utils';
 import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_LOW, SELECTION_CHANGE_COMMAND } from "lexical";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
 import { useMainThemeContext } from "@/mainThemeContext";
@@ -26,6 +26,7 @@ export default function FontFamilyToolbar() {
     const {editor} = useToolbarContext();
     const {editorTheme:{editorInputTheme:{defaultFontFamily}}}: MainTheme = useMainThemeContext();
     const {theme:{fontFamily}, theme:{itemSelected}} = useToolbarContext();
+    const [selectedFamily, setSelectedFamily] = useState<string>('');
     
     const toolRef = useRef<HTMLDivElement>(null);
 
@@ -34,6 +35,14 @@ export default function FontFamilyToolbar() {
         editor.dispatchCommand(SET_FONT_FAMILY_COMMAND, cssFontFamily);
     }
 
+    useEffect(
+        () => {
+            if ( !toolRef.current ) return;
+                toolRef.current.innerHTML = selectedFamily;
+        }, 
+        [selectedFamily]
+    );
+
     useEffect(() => {
         const updateStates = () => {
             const selection = $getSelection();
@@ -41,7 +50,7 @@ export default function FontFamilyToolbar() {
                 if ( toolRef.current ) {
                         const cssFontFamily = $getSelectionStyleValueForProperty(selection, 'font-family', defaultFontFamily.name);
                         const font = fontFromStyle(cssFontFamily);
-                        toolRef.current.innerHTML = font.name;
+                        setSelectedFamily( font.name );
                     }
                 }
             };
@@ -71,7 +80,7 @@ export default function FontFamilyToolbar() {
             {
                 fontFamilies.map((currentFontFamily, id) => {
                     return (
-                        <div key={id*3 + 0} className={(currentFontFamily.name === toolRef.current?.innerHTML) ? itemSelected : ''}>
+                        <div key={id*3 + 0} className={(currentFontFamily.name === selectedFamily) ? itemSelected : ''}>
                             <MenuItem key={id*3 + 1} onClick={() => onSelect(currentFontFamily)}>
                                 <div key={id*3 + 2} style={{fontFamily: fontToStyle(currentFontFamily)}}>{currentFontFamily.name}</div>
                             </MenuItem>
