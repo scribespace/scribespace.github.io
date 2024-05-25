@@ -22,7 +22,6 @@
     min-height: 150px;
     resize: none;
     caret-color: rgb(5, 5, 5);
-    position: relative;
     tab-size: 1;
     outline: 0;
     padding: 15px 10px;
@@ -91,7 +90,7 @@
     text-decoration: underline line-through;
   }
 
-   .editor-table{
+  .editor-table{
     border-collapse: collapse;
     border-spacing: 0;
     table-layout: fixed;
@@ -105,17 +104,6 @@
   .editor-table-row{
     border: 1px solid black;
     border-collapse: collapse;
-  } 
-
-  .editor-layout {
-    border-collapse: separate;
-    table-layout: fixed;
-    width: 100%;
-    border: none;
-  }
-
-  .editor-layout .editor-table-row .editor-table-cell{
-    border: 1px dotted black;
   }
 
   @media print {
@@ -123,7 +111,7 @@
       background-color: transparent !important;
     }
 
-    .editor-layout .editor-table-row .editor-table-cell{
-      border: none;
-    }
+    .print-disabled{ 
+      display: none;
+  } 
 }
