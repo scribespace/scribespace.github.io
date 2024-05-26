@@ -1,16 +1,16 @@
 import { useMainThemeContext } from "@/mainThemeContext";
+import { SET_FONT_COLOR_COMMAND } from "@editor/plugins/colorPlugin";
+import { $closeToolbarMenu, TOOLBAR_CLOSE_MENU_COMMAND } from "@editor/plugins/toolbarPlugin/common";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import { COMMAND_PRIORITY_LOW } from "lexical";
 import { useEffect, useState } from "react";
 import { ColorResult } from 'react-color';
-import { $closeToolbarMenu, TOOLBAR_CLOSE_MENU_COMMAND } from "@editor/plugins/toolbarPlugin/common";
-import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
 import { MenuItem, Submenu } from "../menu";
 import ColorPicker from "./colorPicker";
-import { SET_FONT_COLOR_COMMAND } from "@editor/plugins/colorPlugin";
 
 export default function ColorTextToolbar() {
-    const {editor} = useToolbarContext();
+    const [editor] = useLexicalComposerContext();
     const {editorTheme: {colorTheme: {ColorTextIcon}} } = useMainThemeContext();
 
     const onChange = (color: ColorResult) => {

@@ -29,7 +29,13 @@
   color: gray;
 }
 
-.context-menu-item-default:hover:not(.context-menu-item-disabled-default):not(.context-menu-item-selected-default > .context-menu-item-default) {
+.context-menu-label-defualt {
+    font-weight: bold;
+    text-align: center;
+    flex: 1;
+}
+
+.context-menu-item-default:hover:not(.context-menu-item-disabled-default):not(.context-menu-item-selected-default > .context-menu-item-default):not(:has(.context-menu-label-defualt)) {
     background-color: rgb(209, 209, 209);
 }
 
@@ -49,3 +55,4 @@
     padding: 5px;
     border-radius: 5px;
 }
+

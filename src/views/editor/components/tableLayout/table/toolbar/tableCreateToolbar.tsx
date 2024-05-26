@@ -1,15 +1,15 @@
 import { useMainThemeContext } from "@/mainThemeContext";
 import { $createExtendedTableNodeWithDimensions } from "@editor/nodes/table";
 import { $closeToolbarMenu, TOOLBAR_CLOSE_MENU_COMMAND } from "@editor/plugins/toolbarPlugin/common";
-import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import { $insertNodes, COMMAND_PRIORITY_LOW } from "lexical";
 import { useEffect, useState } from "react";
+import { MenuItem, Submenu } from "../../../menu";
 import { TableCreator } from "../tableCreator";
-import { Submenu, MenuItem } from "../../../menu";
 
 export function TableCreateToolbar() {
-    const {editor} = useToolbarContext();
+    const [editor] = useLexicalComposerContext();
     const {editorTheme: {tableLayoutTheme: {menuTheme: {TableAddIcon}}}} = useMainThemeContext();
     
     const [showSubmenu, setShowSubmenu] = useState<boolean>(false);

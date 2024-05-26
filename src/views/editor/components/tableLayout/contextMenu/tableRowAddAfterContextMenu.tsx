@@ -1,6 +1,7 @@
 import { useMainThemeContext } from "@/mainThemeContext";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
     $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $getTableRowIndexFromTableCellNode, $isTableCellNode, $isTableSelection,
     TableCellNode
@@ -8,10 +9,10 @@ import {
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical";
 import { MenuItem, Submenu } from "../../menu";
 import SubmenuIcon from "../../menu/submenuIcon";
-import { ContextMenuOptionProps } from "./contextMenuCommon";
 import { NumberInputContextMenu } from "./numberInputContextMenu";
 
-export function TableRowAddAfterContextMenu({ editor }: ContextMenuOptionProps) {
+export function TableRowAddAfterContextMenu() {
+    const [editor] = useLexicalComposerContext();
     const {editorTheme: {tableLayoutTheme: {menuTheme: {RowAddAfterIcon}}}} = useMainThemeContext();
 
     const onInputAccepted = (input: HTMLInputElement) => {

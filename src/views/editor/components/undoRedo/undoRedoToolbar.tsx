@@ -3,12 +3,12 @@ import { useEffect, useMemo, useState } from "react";
 
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
-import { MenuItem } from "../menu";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
+import { MenuItem } from "../menu";
 
 export default function UndoRedoToolbar() {
-    const {editor} = useToolbarContext();
+    const [editor] = useLexicalComposerContext();
     const {editorTheme}: MainTheme = useMainThemeContext();
 
     const [canUndo, setCanUndo] = useState<boolean>(false);

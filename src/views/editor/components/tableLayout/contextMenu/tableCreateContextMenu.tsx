@@ -1,13 +1,14 @@
 import { useMainThemeContext } from "@/mainThemeContext";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 import { $createExtendedTableNodeWithDimensions } from "@editor/nodes/table";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $insertNodes } from "lexical";
 import { MenuItem, Submenu } from "../../menu";
 import SubmenuIcon from "../../menu/submenuIcon";
 import { TableCreator } from "../table/tableCreator";
-import { ContextMenuOptionProps } from "./contextMenuCommon";
 
-export function TableCreateContextMenu({ editor }: ContextMenuOptionProps) {
+export function TableCreateContextMenu() {
+    const [editor] = useLexicalComposerContext();
     const {editorTheme: {tableLayoutTheme: {menuTheme: {TableAddIcon}}}} = useMainThemeContext();
 
     function onClick(rowsCount: number, columnsCount: number) {

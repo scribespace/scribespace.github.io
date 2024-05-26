@@ -1,10 +1,12 @@
 import { TbColumnInsertLeft, TbColumnInsertRight, TbColumnRemove, TbRowInsertBottom, TbRowInsertTop, TbRowRemove, TbTableOff, TbTablePlus } from "react-icons/tb";
 import { IconType } from "react-icons";
 import { AiOutlineMergeCells, AiOutlineSplitCells } from "react-icons/ai";
+import { TfiLayoutColumn2 } from "react-icons/tfi";
 import { Icon } from "@/components/icon";
 
 export interface TableLayoutMenuTheme {
     TableAddIcon: IconType;
+    LayoutAddIcon: IconType;
     DeleteIcon: IconType;
     MergeCellIcon: IconType;
     SplitCellIcon: IconType;
@@ -17,6 +19,7 @@ export interface TableLayoutMenuTheme {
 }
 export const TABLE_LAYOUT_MENU_THEME_DEFAULT: TableLayoutMenuTheme = {
     TableAddIcon: Icon( TbTablePlus ),
+    LayoutAddIcon: Icon( TfiLayoutColumn2 ),
     DeleteIcon: Icon( TbTableOff ),
     MergeCellIcon: Icon( AiOutlineMergeCells ),
     SplitCellIcon: Icon( AiOutlineSplitCells ),

@@ -5,6 +5,7 @@ import { Icon } from "@/components/icon";
 
 export interface ContextMenuMenuTheme extends MenuTheme {
     editorContainer: EditorThemeClassName;
+    menuLabel: EditorThemeClassName;
 }
 
 export interface ContextMenuTheme {
@@ -13,6 +14,7 @@ export interface ContextMenuTheme {
 
 export const CONTEXT_MENU_MENU_THEME_DEFAULT: ContextMenuMenuTheme = {
     editorContainer: 'context-menu-editor-container-default',
+    menuLabel: 'context-menu-label-defualt',
 
     containerDefault: 'context-menu-container-default',
     itemDefault: 'context-menu-item-default',

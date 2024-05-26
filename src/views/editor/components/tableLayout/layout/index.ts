@@ -1,1 +1,1 @@
-export { LayoutCreateToolbar} from './layoutToolbar';
+export { LayoutCreateToolbar} from './toolbar/layoutToolbar';

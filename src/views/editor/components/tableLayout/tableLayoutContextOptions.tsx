@@ -10,15 +10,17 @@ import { SeparatorHorizontalStrong, SeparatorHorizontal } from "../separators";
 import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
 import { ColumnAddAfterContextMenu, ColumnAddBeforeContextMenu, ColumnRemoveContextMenu, DeleteContextMenu, MergeCellsContextMenu, SplitCellsContextMenu, TableCreateContextMenu, TableRowAddAfterContextMenu, TableRowAddBeforeContextMenu, TableRowRemoveContextMenu } from "./contextMenu";
 import { $isLayoutBodyNode } from "../../nodes/layout";
+import { MenuItem } from "../menu";
+import { LayoutCreateContextMenu } from "./contextMenu/layoutCreateContextMenu";
 
 interface TableContextOptionsProps {
     editor: LexicalEditor,
 }
 
 export function TableLayoutContextOptions({editor}: TableContextOptionsProps) {
-    const menuContext = useContextMenuContext();
+    const {mousePosition,theme: {menuLabel}} = useContextMenuContext();
 
-    const [insideTable, setInsideTable] = useState<boolean>(false);
+    const [insideTableLayout, setInsideTable] = useState<boolean>(false);
     const [cellsSelected, setCellsSelected] = useState<boolean>(false);
     const [mergedCellSelected, setMergedCellSelected] = useState<boolean>(false);
     const [isLayout, setIsLayout] = useState<boolean>(false);
@@ -70,34 +72,49 @@ export function TableLayoutContextOptions({editor}: TableContextOptionsProps) {
             setMergedCellSelected(mergedCellSelectedState);
             setIsLayout( isLayoutState );
         });
-    },[editor, menuContext.mousePosition]);
+    },[editor, mousePosition]);
 
     return (
         <>
             <SeparatorHorizontalStrong/>
-            <TableCreateContextMenu editor={editor}/>
-            {insideTable && 
-                <DeleteContextMenu editor={editor}/>
+            <TableCreateContextMenu/>
+            <LayoutCreateContextMenu/>
+
+            {insideTableLayout && (
+                <>
+                <SeparatorHorizontalStrong/>
+                {isLayout ?
+                (<MenuItem>
+                    <div className={menuLabel}>Layout</div>
+                </MenuItem>) :
+                (<MenuItem>
+                    <div className={menuLabel}>Table</div>
+                </MenuItem>)}
+                </>
+            )}
+
+            {insideTableLayout && 
+                <DeleteContextMenu/>
             }
             {(cellsSelected || mergedCellSelected) && (
                 <>
                 <SeparatorHorizontal/>
-                {cellsSelected && <MergeCellsContextMenu editor={editor}/>}
-                {mergedCellSelected && <SplitCellsContextMenu editor={editor}/>}
+                {cellsSelected && <MergeCellsContextMenu/>}
+                {mergedCellSelected && <SplitCellsContextMenu/>}
                 </>
             )}
-            {insideTable && (
+            {insideTableLayout && (
             <>
                 <SeparatorHorizontal/>
-                <ColumnRemoveContextMenu editor={editor}/>
-                {!isLayout && <TableRowRemoveContextMenu editor={editor}/>}
+                <ColumnRemoveContextMenu/>
+                {!isLayout && <TableRowRemoveContextMenu/>}
                 <SeparatorHorizontal/>
-                <ColumnAddBeforeContextMenu editor={editor}/>
-                <ColumnAddAfterContextMenu editor={editor}/>
+                <ColumnAddBeforeContextMenu/>
+                <ColumnAddAfterContextMenu/>
                 {!isLayout && 
                     <>
-                    <TableRowAddBeforeContextMenu editor={editor}/>
-                    <TableRowAddAfterContextMenu editor={editor}/>
+                    <TableRowAddBeforeContextMenu/>
+                    <TableRowAddAfterContextMenu/>
                     </>
                 }
             </>

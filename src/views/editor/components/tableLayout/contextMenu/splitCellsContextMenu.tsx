@@ -1,15 +1,16 @@
 import { useMainThemeContext } from "@/mainThemeContext";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
     $findCellNode, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
 import { $getNodeByKey, $getSelection, $isRangeSelection, $setSelection } from "lexical";
 import { MenuItem } from "../../menu";
-import { ContextMenuOptionProps } from "./contextMenuCommon";
 
-export function SplitCellsContextMenu({ editor }: ContextMenuOptionProps) {
+export function SplitCellsContextMenu() {
+    const [editor] = useLexicalComposerContext();
     const {editorTheme: {tableLayoutTheme: {menuTheme: {SplitCellIcon}}}} = useMainThemeContext();
 
     const onClick = () => {

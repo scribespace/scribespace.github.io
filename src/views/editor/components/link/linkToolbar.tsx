@@ -1,14 +1,16 @@
-import { $getSelection, $isRangeSelection, $isTextNode, COMMAND_PRIORITY_LOW, SELECTION_CHANGE_COMMAND } from "lexical";
-import { $isLinkNode, $createLinkNode} from '@lexical/link';
-import { useEffect, useState } from "react";
-import { validateUrl } from "@utils";
 import { useMainThemeContext } from "@/mainThemeContext";
+import { $createLinkNode, $isLinkNode } from '@lexical/link';
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { validateUrl } from "@utils";
+import { $getSelection, $isRangeSelection, $isTextNode, COMMAND_PRIORITY_LOW, SELECTION_CHANGE_COMMAND } from "lexical";
+import { useEffect, useState } from "react";
 import { useToolbarContext } from "../../plugins/toolbarPlugin/context";
 import { MenuItem } from "../menu";
 import { $menuItemParent } from "../menu/theme";
 
 export function LinkToolbar() {
-    const {editor, theme: {itemSelected}} = useToolbarContext();
+    const [editor] = useLexicalComposerContext();
+    const {theme: {itemSelected}} = useToolbarContext();
     const {editorTheme: {linkTheme: {LinkIcon}} } = useMainThemeContext();
     const [isLinkSelected, setIsLinkSelected] = useState<boolean>(false);
 

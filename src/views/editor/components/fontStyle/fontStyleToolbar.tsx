@@ -1,25 +1,21 @@
-import { mergeRegister } from '@lexical/utils';
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_LOW, FORMAT_TEXT_COMMAND, SELECTION_CHANGE_COMMAND } from "lexical";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
-import { MenuItem } from "../menu";
 import { CLEAR_FONT_STYLE_COMMAND } from '@/views/editor/plugins/fontPlugin';
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { mergeRegister } from '@lexical/utils';
+import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_LOW, FORMAT_TEXT_COMMAND, SELECTION_CHANGE_COMMAND } from "lexical";
+import { useCallback, useEffect, useState } from "react";
+import { MenuItem } from "../menu";
 import { $menuItemParent } from '../menu/theme';
 
 export default function FontStyleToolbar() {
-    const {editor} = useToolbarContext();
-    const {editorTheme}: MainTheme = useMainThemeContext();
+    const [editor] = useLexicalComposerContext();
+    const {editorTheme:{fontStyleTheme}, editorTheme:{toolbarTheme:{menuTheme:{itemSelected}}}}: MainTheme = useMainThemeContext();
 
     const [isBold, setIsBold] = useState(false);
     const [isItalic, setIsItalic] = useState(false);
     const [isUnderline, setIsUnderline] = useState(false);
     const [isStrikethrough, setIsStrikethrough] = useState(false);
-
-    const [fontStyleTheme, selectedItemTheme] = useMemo(()=> {
-        return [editorTheme.fontStyleTheme, editorTheme.toolbarTheme.menuTheme.itemSelected];
-    },[editorTheme.fontStyleTheme, editorTheme.toolbarTheme.menuTheme.itemSelected]);
 
     const updateStates = useCallback(() => {
         const selection = $getSelection();
@@ -73,22 +69,22 @@ export default function FontStyleToolbar() {
     
     return (
         <>
-            <div className={isBold ? selectedItemTheme : ''} style={$menuItemParent}>
+            <div className={isBold ? itemSelected : ''} style={$menuItemParent}>
                 <MenuItem onClick={onClickBold}>
                     <fontStyleTheme.BoldIcon/>
                 </MenuItem>
             </div>
-            <div className={isItalic ? selectedItemTheme : ''} style={$menuItemParent}>
+            <div className={isItalic ? itemSelected : ''} style={$menuItemParent}>
                 <MenuItem onClick={onClickItalic}>
                     <fontStyleTheme.ItalicIcon/>
                 </MenuItem>
             </div>
-            <div className={isUnderline ? selectedItemTheme : ''} style={$menuItemParent}>
+            <div className={isUnderline ? itemSelected : ''} style={$menuItemParent}>
                 <MenuItem onClick={onClickUnderline}>
                     <fontStyleTheme.UnderlineIcon/>
                 </MenuItem>
             </div>
-            <div className={isStrikethrough ? selectedItemTheme : ''} style={$menuItemParent}>
+            <div className={isStrikethrough ? itemSelected : ''} style={$menuItemParent}>
                 <MenuItem onClick={onClickStrikethrough}>
                     <fontStyleTheme.StrikethroughIcon/>
                 </MenuItem>

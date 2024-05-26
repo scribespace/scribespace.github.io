@@ -1,15 +1,16 @@
 import { useMainThemeContext } from "@/mainThemeContext";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
     $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $getTableRowIndexFromTableCellNode, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
 import { $getSelection, $isRangeSelection, $setSelection } from "lexical";
 import { MenuItem } from "../../menu";
-import { ContextMenuOptionProps } from "./contextMenuCommon";
 
-export function TableRowRemoveContextMenu({ editor }: ContextMenuOptionProps) {
+export function TableRowRemoveContextMenu() {
+    const [editor] = useLexicalComposerContext();
     const {editorTheme: {tableLayoutTheme: {menuTheme: {RowRemoveIcon}}}} = useMainThemeContext();
 
     const onClick = () => {

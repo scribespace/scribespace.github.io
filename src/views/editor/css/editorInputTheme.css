@@ -97,16 +97,14 @@
     table-layout: fixed;
     width: 100%;
   }
-  .editor-table-cell{
-    border: 1px solid black;
-    border-collapse: collapse;
-    padding: 0;
-  }
   .editor-table-row{
-    border: 1px solid black;
-    border-collapse: collapse;
   } 
 
+  .editor-table-cell{
+    border: 1px solid black;
+    padding: 0;
+  }
+ 
   .editor-layout {
     border-collapse: separate;
     table-layout: fixed;
@@ -114,7 +112,7 @@
     border: none;
   }
 
-  .editor-layout .editor-table-row .editor-table-cell{
+  .editor-layout > tbody > .editor-table-row > .editor-table-cell {
     vertical-align: top;
     border: 1px dotted black;
   }
@@ -124,8 +122,8 @@
       background-image: none !important;
     }
 
-    .editor-layout .editor-table-row .editor-table-cell{
-      border: none;
+    .editor-layout > tbody > .editor-table-row > .editor-table-cell{
+      border: 1px dotted transparent;
     }
 
     @page {

@@ -7,6 +7,7 @@ import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { SET_FONT_FAMILY_COMMAND } from '@/views/editor/plugins/fontPlugin';
 import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { Font, fontFromStyle, fontToStyle } from '@utils';
 import { MenuItem, Submenu } from "../menu";
 
@@ -23,7 +24,7 @@ const fontFamilies: Font[] = [
 ];
 
 export default function FontFamilyToolbar() {
-    const {editor} = useToolbarContext();
+    const [editor] = useLexicalComposerContext();
     const {editorTheme:{editorInputTheme:{defaultFontFamily}}}: MainTheme = useMainThemeContext();
     const {theme:{fontFamily}, theme:{itemSelected}} = useToolbarContext();
     const [selectedFamily, setSelectedFamily] = useState<string>('');

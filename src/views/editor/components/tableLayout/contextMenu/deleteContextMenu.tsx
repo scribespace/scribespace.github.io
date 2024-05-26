@@ -1,13 +1,13 @@
 import { useMainThemeContext } from "@/mainThemeContext";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "@editor/nodes/table";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $isTableSelection } from "@lexical/table";
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical";
 import { MenuItem } from "../../menu";
-import { ContextMenuOptionProps } from "./contextMenuCommon";
 
-
-export function DeleteContextMenu({ editor }: ContextMenuOptionProps) {
+export function DeleteContextMenu() {
+    const [editor] = useLexicalComposerContext();
     const {editorTheme: {tableLayoutTheme: {menuTheme: {DeleteIcon}}}} = useMainThemeContext();
     
     const onClick = () => {
@@ -33,7 +33,7 @@ export function DeleteContextMenu({ editor }: ContextMenuOptionProps) {
     return (
         <MenuItem onClick={onClick}>
             <DeleteIcon/>
-            <div>Delete Table</div>
+            <div>Delete</div>
         </MenuItem>
     );
 }

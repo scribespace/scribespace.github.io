@@ -4,9 +4,11 @@ import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import { $getSelection, $isElementNode, $isNodeSelection, $isRangeSelection, COMMAND_PRIORITY_LOW, ElementFormatType, ElementNode, FORMAT_ELEMENT_COMMAND, SELECTION_CHANGE_COMMAND } from "lexical";
 import { useEffect, useMemo, useState } from "react";
 import { MenuItem, Submenu } from "../menu";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
 export default function AlignToolbar() {
-    const {editor, theme: {horizontalContainer}, theme: {itemSelected}} = useToolbarContext();
+    const [editor] = useLexicalComposerContext();
+    const {theme: {horizontalContainer}, theme: {itemSelected}} = useToolbarContext();
     const {editorTheme: {alignTheme: {AlignLeftIcon, AlignCenterIcon, AlignRightIcon, AlignJustifyIcon}} } = useMainThemeContext();
     const [selectedFormat, setSelectedFormat] = useState<ElementFormatType>( 'left' );
 

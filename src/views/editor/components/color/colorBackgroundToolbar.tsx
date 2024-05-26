@@ -1,7 +1,7 @@
 import { useMainThemeContext } from "@/mainThemeContext";
 import { SET_BACKGROUND_COLOR_COMMAND } from "@editor/plugins/colorPlugin";
 import { $closeToolbarMenu, TOOLBAR_CLOSE_MENU_COMMAND } from "@editor/plugins/toolbarPlugin/common";
-import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import { COMMAND_PRIORITY_LOW } from "lexical";
 import { useEffect, useState } from "react";
@@ -10,7 +10,7 @@ import { MenuItem, Submenu } from "../menu";
 import ColorPicker from "./colorPicker";
 
 export default function ColorBackgroundToolbar() {
-    const {editor} = useToolbarContext();
+    const [editor] = useLexicalComposerContext();
     const {editorTheme: {colorTheme: {ColorBackgroundIcon}} } = useMainThemeContext();
 
     const onChange = (color: ColorResult) => {

@@ -1,16 +1,16 @@
-import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
-import { $getSelectionStyleValueForProperty } from '@lexical/selection';
-import { mergeRegister } from "@lexical/utils";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { separateValueAndUnit } from "@/utils/common";
+import { DECREASE_FONT_SIZE_COMMAND, FONT_SIZE_CHANGED_COMMAND, INCREASE_FONT_SIZE_COMMAND, SET_FONT_SIZE_COMMAND } from "@/views/editor/plugins/fontPlugin";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $getSelectionStyleValueForProperty } from '@lexical/selection';
+import { mergeRegister } from "@lexical/utils";
 import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_LOW, SELECTION_CHANGE_COMMAND } from "lexical";
 import { useEffect, useState } from "react";
 import NumberInput from "../numberInput";
-import { DECREASE_FONT_SIZE_COMMAND, FONT_SIZE_CHANGED_COMMAND, INCREASE_FONT_SIZE_COMMAND, SET_FONT_SIZE_COMMAND } from "@/views/editor/plugins/fontPlugin";
 
 export default function FontSizeToolbar() {
-    const {editor} = useToolbarContext();
+    const [editor] = useLexicalComposerContext();
     const {editorTheme:{editorInputTheme:{defaultFontSize}}}: MainTheme = useMainThemeContext();
     const [fontSize, setFontSize] = useState<string>(defaultFontSize);
 
