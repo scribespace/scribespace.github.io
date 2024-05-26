@@ -120,10 +120,37 @@
 
   @media print {
     .editor-table-cell{
-      background-color: transparent !important;
+      background-image: none !important;
     }
 
     .editor-layout .editor-table-row .editor-table-cell{
       border: none;
     }
+
+    @page {
+      size: A4 portrait;
+    }
+    body * {
+      visibility: hidden;
+    }
+    .section-to-print, .section-to-print * {
+      visibility: visible;
+    }
+    .section-to-print {
+      width: 210mm;
+      position: absolute;
+      left: 0;
+      top: 0;
+      overflow: visible;
+    }
+  
+    body, html {
+      -webkit-print-color-adjust: exact; /* Chrome, Safari */
+      color-adjust: exact;              /* Firefox */
+      background: inherit;              /* Ensure backgrounds are printed */
+    }
+    
+    .print-disabled{ 
+      display: none;
+    } 
 }

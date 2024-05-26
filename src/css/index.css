@@ -12,32 +12,3 @@ body {
   height: 99%;
   background-color: rgb(243, 243, 243);
 }
-
-@media print {
-  @page {
-    size: A4 portrait;
-  }
-  body * {
-    visibility: hidden;
-  }
-  .section-to-print, .section-to-print * {
-    visibility: visible;
-  }
-  .section-to-print {
-    width: 210mm;
-    position: absolute;
-    left: 0;
-    top: 0;
-    overflow: visible;
-  }
-
-  body, html {
-    -webkit-print-color-adjust: exact; /* Chrome, Safari */
-    color-adjust: exact;              /* Firefox */
-    background: inherit;              /* Ensure backgrounds are printed */
-  }
-  
-  .print-disabled{ 
-    display: none;
-  } 
-}
