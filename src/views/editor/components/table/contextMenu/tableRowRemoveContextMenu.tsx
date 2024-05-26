@@ -12,7 +12,7 @@ import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 
 
-export default function TableRowRemoveContextMenu({ editor }: TableContextMenuOptionProps) {
+export function TableRowRemoveContextMenu({ editor }: TableContextMenuOptionProps) {
     const {editorTheme}: MainTheme = useMainThemeContext();
 
     const RemoveRowIcon = useMemo(()=>{

@@ -5,7 +5,7 @@ interface TableContextNumberInputProps {
     onInputAccepted: (target: HTMLInputElement) => void;
 }
 
-export default function TableNumberInputContextMenu({ onInputAccepted }: TableContextNumberInputProps) {
+export function TableNumberInputContextMenu({ onInputAccepted }: TableContextNumberInputProps) {
     const menuContext = useContextMenuContext();
 
     return (

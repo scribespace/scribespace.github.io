@@ -1,6 +1,6 @@
-import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, LexicalEditor, LexicalNode, SerializedElementNode } from "lexical";
+import { $createTableCellNode, $createTableRowNode, TableCellHeaderStates } from "@lexical/table";
+import { $applyNodeReplacement, $createParagraphNode, $createTextNode, DOMConversionMap, DOMConversionOutput, LexicalEditor, LexicalNode, SerializedElementNode } from "lexical";
 import { TableBodyNode } from "../table";
-import { $createTableNodeWithDimensions } from "@lexical/table";
 
 export class LayoutBodyNode extends TableBodyNode {
     constructor(node?: LayoutBodyNode) {
@@ -58,8 +58,23 @@ export class LayoutBodyNode extends TableBodyNode {
   }
   
   export function $createLayoutBodyNodeWithColumns( cols: number ): LayoutBodyNode {
-    const layoutNode = $createTableNodeWithDimensions(1, cols, false) as LayoutBodyNode;
-     return layoutNode;
+    const tableNode = $createLayoutBodyNode();
+
+    const tableRowNode = $createTableRowNode();
+
+    for (let iColumn = 0; iColumn < cols; iColumn++) {
+      const headerState = TableCellHeaderStates.NO_STATUS;
+
+      const tableCellNode = $createTableCellNode(headerState);
+      const paragraphNode = $createParagraphNode();
+      paragraphNode.append($createTextNode());
+      tableCellNode.append(paragraphNode);
+      tableRowNode.append(tableCellNode);
+    }
+
+    tableNode.append(tableRowNode);
+
+  return tableNode;
   }
   
   export function $convertLayoutBodyElement(): DOMConversionOutput {

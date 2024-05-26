@@ -11,6 +11,6 @@ export {
     TableRowRemoveContextMenu as TableContextRowRemove, 
     TableSplitCellsContextMenu as TableContextSplitCells 
 } from "./contextMenu";
-export { default as TableContextOptions } from './tableContextOptions';
-export { default as TableCreator } from './tableCreator';
+export { TableContextOptions } from './tableContextOptions';
+export { TableCreator } from './tableCreator';
 

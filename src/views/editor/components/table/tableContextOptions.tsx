@@ -24,7 +24,7 @@ interface TableContextOptionsProps {
     editor: LexicalEditor,
 }
 
-export default function TableContextOptions({editor}: TableContextOptionsProps) {
+export function TableContextOptions({editor}: TableContextOptionsProps) {
     const menuContext = useContextMenuContext();
 
     const [insideTable, setInsideTable] = useState<boolean>(false);

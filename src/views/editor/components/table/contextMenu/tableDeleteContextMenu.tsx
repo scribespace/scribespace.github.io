@@ -9,7 +9,7 @@ import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 
 
-export default function TableDeleteContextMenu({ editor }: TableContextMenuOptionProps) {
+export function TableDeleteContextMenu({ editor }: TableContextMenuOptionProps) {
     const {editorTheme}: MainTheme = useMainThemeContext();
 
     const DeleteTableIcon = useMemo(()=>{

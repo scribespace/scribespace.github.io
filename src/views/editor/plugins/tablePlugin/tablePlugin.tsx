@@ -20,9 +20,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Property } from 'csstype';
 
-import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from '@editor/nodes/table';
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from '@editor/nodes/table';
 import { useMainThemeContext } from '@/mainThemeContext';
 import { MainTheme } from '@/theme';
+import { assert } from '@/utils';
 
 const DRAG_NONE = 0 as const;
 const DRAG_HORIZONTAL = 1 as const;
@@ -450,6 +451,8 @@ export default function TablePlugin() {
     },[dragDirection, activeCell, editor, updateColumnWidth, updateRowHeight]);
     
     useEffect(()=>{
+      assert( editor.hasNodes([ExtendedTableNode, TableBodyNode]), "ExtendedTableNode, TableBodyNode not registered in editor" );
+
       return mergeRegister(
         editor.registerMutationListener( TableRowNode, (keys) => {
           editor.update(()=>{

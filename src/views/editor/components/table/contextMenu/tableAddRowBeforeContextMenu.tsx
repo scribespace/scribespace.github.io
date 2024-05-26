@@ -10,12 +10,12 @@ import { useMemo } from "react";
 import { MenuItem, Submenu } from "../../menu";
 import SubmenuIcon from "../../menu/submenuIcon";
 import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
-import TableNumberInputContextMenu from "./tableNumberInputContextMenu";
+import {TableNumberInputContextMenu} from "./tableNumberInputContextMenu";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 
 
 
-export default function TableAddRowBeforeContextMenu({ editor }: TableContextMenuOptionProps) {
+export function TableAddRowBeforeContextMenu({ editor }: TableContextMenuOptionProps) {
     const {editorTheme}: MainTheme = useMainThemeContext();
 
     const AddRowBeforeIcon = useMemo(()=>{

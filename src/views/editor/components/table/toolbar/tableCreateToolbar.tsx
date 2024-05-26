@@ -7,7 +7,7 @@ import { mergeRegister } from "@lexical/utils";
 import { $insertNodes, COMMAND_PRIORITY_LOW } from "lexical";
 import { useEffect, useMemo, useState } from "react";
 import { MenuItem, Submenu } from "../../menu";
-import TableCreator from "../tableCreator";
+import { TableCreator } from "../tableCreator";
 
 export default function TableCreateToolbar() {
     const {editor} = useToolbarContext();

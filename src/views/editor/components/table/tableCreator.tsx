@@ -12,7 +12,7 @@ interface TableCreatorProps {
     onClick: (rowsCount: number, columnsCount: number)=>void;
 }
 
-export default function TableCreator(props: TableCreatorProps) {
+export function TableCreator(props: TableCreatorProps) {
     const { editorTheme }: MainTheme = useMainThemeContext();
 
     const theme = useMemo(()=>{

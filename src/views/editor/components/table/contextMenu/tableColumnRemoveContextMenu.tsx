@@ -13,7 +13,7 @@ import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 
 
-export default function TableColumnRemoveContextMenu({ editor }: TableContextMenuOptionProps) {
+export function TableColumnRemoveContextMenu({ editor }: TableContextMenuOptionProps) {
     const {editorTheme}: MainTheme = useMainThemeContext();
 
     const RemoveColumnIcon = useMemo(()=>{

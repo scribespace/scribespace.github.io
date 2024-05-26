@@ -29,6 +29,8 @@ import { ColorPlugin } from './plugins/colorPlugin';
 import ContextMenuPlugin from './plugins/contextMenuPlugin';
 import TablePlugin from './plugins/tablePlugin';
 import { FontPlugin } from './plugins/fontPlugin';
+import { LayoutBodyNode, LayoutNode } from './nodes/layout';
+import { LayoutPlugin } from './plugins/layoutPlugin';
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
 // try to recover gracefully without losing user data.
@@ -87,6 +89,8 @@ export function EditorLexicalView({selectedFile} : Props) {
       ExtendedTableNode,
       TableBodyNode,
       { replace: TableNode, withKlass: TableBodyNode, with: () => new TableBodyNode() },
+      LayoutNode,
+      LayoutBodyNode,
       TableRowNode,
       TableCellNode,      
     ]
@@ -111,6 +115,7 @@ export function EditorLexicalView({selectedFile} : Props) {
           <ColorPlugin/>
           <LinkPlugin/>
           <TablePlugin/>
+          <LayoutPlugin/>
           <ContextMenuPlugin/>
       </LexicalComposer>
   );

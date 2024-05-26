@@ -5,11 +5,11 @@ import { $insertNodes } from "lexical";
 import { useMemo } from "react";
 import { MenuItem, Submenu } from "../../menu";
 import SubmenuIcon from "../../menu/submenuIcon";
-import TableCreator from "../tableCreator";
+import {TableCreator} from "../tableCreator";
 import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 
-export default function TableCreateContextMenu({ editor }: TableContextMenuOptionProps) {
+export function TableCreateContextMenu({ editor }: TableContextMenuOptionProps) {
     const {editorTheme}: MainTheme = useMainThemeContext();
 
     const AddTableIcon = useMemo(()=>{

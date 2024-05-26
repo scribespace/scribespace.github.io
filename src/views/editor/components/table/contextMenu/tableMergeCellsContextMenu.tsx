@@ -12,7 +12,7 @@ import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 
 
-export default function TableMergeCellsContextMenu({ editor }: TableContextMenuOptionProps) {
+export function TableMergeCellsContextMenu({ editor }: TableContextMenuOptionProps) {
     const {editorTheme}: MainTheme = useMainThemeContext();
 
     const MergeCellIcon = useMemo(()=>{

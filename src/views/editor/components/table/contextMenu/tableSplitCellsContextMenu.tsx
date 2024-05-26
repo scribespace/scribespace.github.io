@@ -11,7 +11,7 @@ import { MenuItem } from "../../menu";
 import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 
-export default function TableSplitCellsContextMenu({ editor }: TableContextMenuOptionProps) {
+export function TableSplitCellsContextMenu({ editor }: TableContextMenuOptionProps) {
     const {editorTheme}: MainTheme = useMainThemeContext();
 
     const SplitCellIcon = useMemo(()=>{

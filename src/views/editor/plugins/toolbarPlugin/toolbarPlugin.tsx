@@ -15,6 +15,7 @@ import './css/toolbarPlugin.css';
 import AlignToolbar from '../../components/align/alignToolbar';
 import { ColorBackgroundToolbar, ColorTextToolbar } from '../../components/color';
 import { LinkToolbar } from '../../components/link';
+import { LayoutCreateToolbar } from '../../components/layout';
 
 const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
     const [editor] = useLexicalComposerContext();
@@ -51,6 +52,7 @@ const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
                     <SeparatorVertical/>
                 <LinkToolbar/>
                     <SeparatorVertical/>
+                <LayoutCreateToolbar/>
                 <TableCreateToolbar/>
             </div>
         </MenuRoot>
