@@ -1,10 +1,10 @@
 import { $createTableCellNode, $createTableRowNode, TableCellHeaderStates } from "@lexical/table";
-import { $applyNodeReplacement, $createParagraphNode, $createTextNode, DOMConversionMap, DOMConversionOutput, LexicalEditor, LexicalNode, SerializedElementNode } from "lexical";
+import { $applyNodeReplacement, $createParagraphNode, $createTextNode, DOMConversionMap, DOMConversionOutput, LexicalEditor, LexicalNode, NodeKey, SerializedElementNode } from "lexical";
 import { TableBodyNode } from "../table";
 
 export class LayoutBodyNode extends TableBodyNode {
-    constructor(node?: LayoutBodyNode) {
-        super(node);
+    constructor(key?: NodeKey) {
+        super(key);
     }
   
     static getType(): string {
@@ -12,7 +12,7 @@ export class LayoutBodyNode extends TableBodyNode {
     }
   
     static clone(node: LayoutBodyNode): LayoutBodyNode {
-      return new LayoutBodyNode( node );
+      return new LayoutBodyNode( node.__key );
     }
          
     removeRows() { }

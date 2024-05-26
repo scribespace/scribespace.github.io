@@ -1,11 +1,11 @@
 import { $getTableNodeFromLexicalNodeOrThrow } from "@lexical/table";
-import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, EditorConfig, LexicalNode } from "lexical";
+import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, EditorConfig, LexicalNode, NodeKey } from "lexical";
 import { $convertColElements, ExtendedTableNode, SerializedExtendedTableNode } from "../table";
 import { $createLayoutBodyNodeWithColumns, $isLayoutBodyNode, LayoutBodyNode } from "./layoutBodyNode";
 
 export class LayoutNode extends ExtendedTableNode {
-    constructor(node?: LayoutNode) {
-      super(node);
+    constructor(columnsWidths?: number[], key?: NodeKey) {
+      super(columnsWidths, key);
     }
 
   static getType(): string {
@@ -13,7 +13,7 @@ export class LayoutNode extends ExtendedTableNode {
   }
 
   static clone(node: LayoutNode): LayoutNode {
-    return new LayoutNode( node );
+    return new LayoutNode( node.__columnsWidths, node.__key );
   }
 
   getTableBodyNode() {

@@ -208,7 +208,7 @@ export default function LinkPlugin() {
     }
 
     return (
-        <div>
+        <>
             <NodeEventPlugin
                 nodeType={LinkNode}
                 eventType={'click'}
@@ -225,6 +225,6 @@ export default function LinkPlugin() {
                 <LinkEditor url={linkURL} text={linkText} onTextChange={onTextChange} onURLChange={onURLChange}/>
               </div>
             )}
-        </div>
+        </>
     );
 }

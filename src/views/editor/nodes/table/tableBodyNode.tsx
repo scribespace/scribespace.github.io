@@ -1,10 +1,10 @@
-import { TableNode, TableRowNode, TableCellNode, $createTableNodeWithDimensions, $isTableRowNode, $getTableRowIndexFromTableCellNode, $createTableRowNode, $createTableCellNode, TableCellHeaderStates } from '@lexical/table';
-import { $applyNodeReplacement, $isParagraphNode, DOMConversionMap, DOMConversionOutput, LexicalEditor, LexicalNode, SerializedElementNode } from 'lexical';
 import { $createTableCellNodeWithParagraph, $getTableColumnIndexFromTableCellNode, ResolvedCell, ResolvedRow } from '@editor/plugins/tablePlugin/utils';
+import { $createTableCellNode, $createTableNodeWithDimensions, $createTableRowNode, $getTableRowIndexFromTableCellNode, $isTableRowNode, TableCellHeaderStates, TableCellNode, TableNode, TableRowNode } from '@lexical/table';
+import { $applyNodeReplacement, $isParagraphNode, DOMConversionMap, DOMConversionOutput, LexicalEditor, LexicalNode, NodeKey, SerializedElementNode } from 'lexical';
 
 export class TableBodyNode extends TableNode {
-  constructor(node?: TableBodyNode) {
-      super(node?.__key);
+  constructor(key?: NodeKey) {
+      super(key);
   }
 
   static getType(): string {
@@ -12,7 +12,7 @@ export class TableBodyNode extends TableNode {
   }
 
   static clone(node: TableBodyNode): TableBodyNode {
-    return new TableBodyNode( node );
+    return new TableBodyNode(node.__key);
   }
 
   static addColumnsGroupBefore( columnsWidths: number[], columnID: number, columnsToAdd: number) {

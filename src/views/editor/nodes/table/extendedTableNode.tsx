@@ -1,5 +1,5 @@
 import { TableCellNode, $getTableNodeFromLexicalNodeOrThrow } from '@lexical/table';
-import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, EditorConfig, EditorThemeClassName, ElementNode, LexicalEditor, LexicalNode, SerializedElementNode, Spread } from 'lexical';
+import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, EditorConfig, EditorThemeClassName, ElementNode, LexicalEditor, LexicalNode, NodeKey, SerializedElementNode, Spread } from 'lexical';
 import {addClassNamesToElement} from '@lexical/utils';
 import { $createTableBodyNodeWithDimensions, $isTableBodyNode, TableBodyNode } from './tableBodyNode';
 
@@ -13,9 +13,9 @@ export type SerializedExtendedTableNode = Spread<
 export class ExtendedTableNode extends ElementNode {
     __columnsWidths: number[] = [];
 
-    constructor(node?: ExtendedTableNode) {
-      super(node?.__key);
-      this.__columnsWidths = node ? structuredClone(node.__columnsWidths) : [];
+    constructor(columnsWidths?: number[], key?: NodeKey) {
+      super(key);
+      this.__columnsWidths = columnsWidths ? structuredClone(columnsWidths) : [];
   }
 
   static getType(): string {
@@ -23,7 +23,7 @@ export class ExtendedTableNode extends ElementNode {
   }
 
   static clone(node: ExtendedTableNode): ExtendedTableNode {
-    return new ExtendedTableNode( node );
+    return new ExtendedTableNode( node.__columnsWidths, node.__key );
   }
 
   getColumnsWidths() {

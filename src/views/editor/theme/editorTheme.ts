@@ -58,6 +58,9 @@ export const EDITOR_INPUT_THEME_DEFAULT: EditorInputTheme = {
     tableCell: 'editor-table-cell',
     tableRow: 'editor-table-row',
 
+    image: 'editor-image',
+    imageContainer: 'editor-image-container',
+
     defaultFontSize: '',
     defaultFontFamily: {name:'', alt: ''},
 

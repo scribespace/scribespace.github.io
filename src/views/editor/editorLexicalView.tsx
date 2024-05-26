@@ -31,6 +31,9 @@ import TablePlugin from './plugins/tablePlugin';
 import { FontPlugin } from './plugins/fontPlugin';
 import { LayoutBodyNode, LayoutNode } from './nodes/layout';
 import { LayoutPlugin } from './plugins/layoutPlugin';
+import { ImageNode } from './nodes/image';
+import { DragDropPlugin } from './plugins/dragDropPlugin';
+import { ImagePlugin } from './plugins/imagePlugin';
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
 // try to recover gracefully without losing user data.
@@ -92,7 +95,8 @@ export function EditorLexicalView({selectedFile} : Props) {
       LayoutNode,
       LayoutBodyNode,
       TableRowNode,
-      TableCellNode,      
+      TableCellNode,     
+      ImageNode, 
     ]
   };
 
@@ -117,6 +121,8 @@ export function EditorLexicalView({selectedFile} : Props) {
           <TablePlugin/>
           <LayoutPlugin/>
           <ContextMenuPlugin/>
+          <DragDropPlugin/>
+          <ImagePlugin/>
       </LexicalComposer>
   );
 }

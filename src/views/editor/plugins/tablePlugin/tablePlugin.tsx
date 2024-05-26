@@ -621,7 +621,7 @@ export default function TablePlugin() {
     };
 
     return (
-        <div>
+        <>
             <LexicalTablePlugin/>
             {activeCell && createPortal(
                 <div ref={resizerRef}>
@@ -633,6 +633,6 @@ export default function TablePlugin() {
                     <div className={editorTheme.editorPrintDisabled} style={ styles.marker || undefined }></div>
                 </div>    
             , document.body)}
-        </div>
+        </>
     );
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import './css/index.css';
+import './css/commonTheme.css';
 import { MainThemeContext } from './mainThemeContext';
 import { MAIN_THEME_DEFAULT, MainTheme } from './theme/mainTheme';
 import { fontFromStyle } from './utils';
