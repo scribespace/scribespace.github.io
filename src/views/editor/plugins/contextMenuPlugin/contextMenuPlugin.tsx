@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { CONTEXT_MENU_CLOSE_MENU_COMMAND } from "./common/contextMenuCommands";
 import { CONTEXT_MENU_CONTEX_DEFAULT, ContextMenuContextData } from "./context";
 import './css/contextMenuPlugin.css';
-import { TableContextOptions } from "../../components/table";
+import { TableLayoutContextOptions } from "../../components/tableLayout/tableLayoutContextOptions";
 
 export default function ContextMenuPlugin() {
     const { editorTheme }: MainTheme = useMainThemeContext();
@@ -60,7 +60,7 @@ export default function ContextMenuPlugin() {
         <MenuRoot value={contextMenuContextObject}>
             <div style={{position: "fixed", left: contextMenuContextObject.mousePosition.x, top: contextMenuContextObject.mousePosition.y}}>
                 <Menu showMenu={showContextMenu} setShowMenu={setShowContextMenu} parentRect={{x:contextMenuContextObject.mousePosition.x, y:contextMenuContextObject.mousePosition.y, width: 0, height: 0}}>
-                    <TableContextOptions editor={editor}/>
+                    <TableLayoutContextOptions editor={editor}/>
                 </Menu>
             </div>
         </MenuRoot>

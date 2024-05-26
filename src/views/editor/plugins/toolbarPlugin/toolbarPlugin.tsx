@@ -3,7 +3,6 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { useMainThemeContext } from '@/mainThemeContext';
 import { MainTheme } from '@/theme';
 import FontStyleToolbar from '@/views/editor/components/fontStyle/fontStyleToolbar';
-import TableCreateToolbar from '@/views/editor/components/table/toolbar/tableCreateToolbar';
 import UndoRedoToolbar from '@/views/editor/components/undoRedo/undoRedoToolbar';
 import { SeparatorVertical } from '@editor/components/separators';
 import { forwardRef, useEffect, useMemo, useState } from 'react';
@@ -15,7 +14,8 @@ import './css/toolbarPlugin.css';
 import AlignToolbar from '../../components/align/alignToolbar';
 import { ColorBackgroundToolbar, ColorTextToolbar } from '../../components/color';
 import { LinkToolbar } from '../../components/link';
-import { LayoutCreateToolbar } from '../../components/layout';
+import { LayoutCreateToolbar } from '../../components/tableLayout/layout';
+import {TableCreateToolbar} from '../../components/tableLayout/table/toolbar/tableCreateToolbar';
 
 const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
     const [editor] = useLexicalComposerContext();

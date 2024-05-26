@@ -1,24 +1,19 @@
 import { useMainThemeContext } from "@/mainThemeContext";
-import { MainTheme } from "@/theme";
 import { $createExtendedTableNodeWithDimensions } from "@editor/nodes/table";
 import { $closeToolbarMenu, TOOLBAR_CLOSE_MENU_COMMAND } from "@editor/plugins/toolbarPlugin/common";
 import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
 import { mergeRegister } from "@lexical/utils";
 import { $insertNodes, COMMAND_PRIORITY_LOW } from "lexical";
-import { useEffect, useMemo, useState } from "react";
-import { MenuItem, Submenu } from "../../menu";
+import { useEffect, useState } from "react";
 import { TableCreator } from "../tableCreator";
+import { Submenu, MenuItem } from "../../../menu";
 
-export default function TableCreateToolbar() {
+export function TableCreateToolbar() {
     const {editor} = useToolbarContext();
-    const {editorTheme}: MainTheme = useMainThemeContext();
-
+    const {editorTheme: {tableLayoutTheme: {menuTheme: {TableAddIcon}}}} = useMainThemeContext();
+    
     const [showSubmenu, setShowSubmenu] = useState<boolean>(false);
 
-    const AddTableIcon = useMemo(()=>{
-        return editorTheme.tableTheme.menuTheme.AddTableIcon;
-    },[editorTheme.tableTheme.menuTheme.AddTableIcon]);
- 
     function onClick(rowsCount: number, columnsCount: number) {
         editor.update(() => {
             const tableNode = $createExtendedTableNodeWithDimensions(rowsCount, columnsCount);
@@ -46,7 +41,7 @@ export default function TableCreateToolbar() {
     return (
         <Submenu className="" showSubmenu={showSubmenu} setShowSubmenu={setShowSubmenu}>
             <MenuItem>
-                <AddTableIcon/>
+                <TableAddIcon/>
             </MenuItem>
             <TableCreator gridSize="100px" rowsCount={10} columnsCount={10} onClick={onClick} />
         </Submenu>

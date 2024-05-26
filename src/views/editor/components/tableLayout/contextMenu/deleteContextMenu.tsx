@@ -1,20 +1,14 @@
 import { useMainThemeContext } from "@/mainThemeContext";
-import { MainTheme } from "@/theme";
+import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "@editor/nodes/table";
 import { $isTableSelection } from "@lexical/table";
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical";
-import { useMemo } from "react";
 import { MenuItem } from "../../menu";
-import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
-import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
+import { ContextMenuOptionProps } from "./contextMenuCommon";
 
 
-export function TableDeleteContextMenu({ editor }: TableContextMenuOptionProps) {
-    const {editorTheme}: MainTheme = useMainThemeContext();
-
-    const DeleteTableIcon = useMemo(()=>{
-        return editorTheme.tableTheme.menuTheme.DeleteTableIcon;
-    },[editorTheme.tableTheme.menuTheme.DeleteTableIcon]);
+export function DeleteContextMenu({ editor }: ContextMenuOptionProps) {
+    const {editorTheme: {tableLayoutTheme: {menuTheme: {DeleteIcon}}}} = useMainThemeContext();
     
     const onClick = () => {
         editor.update(() => {
@@ -38,7 +32,7 @@ export function TableDeleteContextMenu({ editor }: TableContextMenuOptionProps) 
 
     return (
         <MenuItem onClick={onClick}>
-            <DeleteTableIcon/>
+            <DeleteIcon/>
             <div>Delete Table</div>
         </MenuItem>
     );

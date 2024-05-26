@@ -1,8 +1,8 @@
 import { useCallback } from "react";
-import { MenuItem } from "../menu";
-import { useToolbarContext } from "../../plugins/toolbarPlugin/context";
-import { $createLayoutNodeWithColumns } from "../../nodes/layout";
 import { $insertNodes } from "lexical";
+import { $createLayoutNodeWithColumns } from "@/views/editor/nodes/layout";
+import { useToolbarContext } from "@/views/editor/plugins/toolbarPlugin/context";
+import { MenuItem } from "../../menu";
 
 export function LayoutCreateToolbar() {
     const {editor} = useToolbarContext();

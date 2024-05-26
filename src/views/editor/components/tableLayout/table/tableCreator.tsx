@@ -16,8 +16,8 @@ export function TableCreator(props: TableCreatorProps) {
     const { editorTheme }: MainTheme = useMainThemeContext();
 
     const theme = useMemo(()=>{
-        return editorTheme.tableTheme.creatorTheme;
-    },[editorTheme.tableTheme.creatorTheme]);
+        return editorTheme.tableLayoutTheme.tableTheme.creatorTheme;
+    },[editorTheme.tableLayoutTheme.tableTheme.creatorTheme]);
     
     const [cells, setCells] = useState<ReactElement[]>();
     const templateColumnsRef = useRef<string>('');

@@ -1,11 +1,11 @@
 import NumberInput from "../../numberInput";
 import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
 
-interface TableContextNumberInputProps {
+interface ContextNumberInputProps {
     onInputAccepted: (target: HTMLInputElement) => void;
 }
 
-export function TableNumberInputContextMenu({ onInputAccepted }: TableContextNumberInputProps) {
+export function NumberInputContextMenu({ onInputAccepted }: ContextNumberInputProps) {
     const menuContext = useContextMenuContext();
 
     return (

@@ -1,23 +1,16 @@
 import { useMainThemeContext } from "@/mainThemeContext";
-import { MainTheme } from "@/theme";
+import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 import { ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
 import {
     $findTableNode, $isTableCellNode, $isTableNode, $isTableRowNode, $isTableSelection,
     TableCellNode, TableRowNode
 } from "@lexical/table";
 import { $getSelection, $setSelection } from "lexical";
-import { useMemo } from "react";
 import { MenuItem } from "../../menu";
-import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
-import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
+import { ContextMenuOptionProps } from "./contextMenuCommon";
 
-
-export function TableMergeCellsContextMenu({ editor }: TableContextMenuOptionProps) {
-    const {editorTheme}: MainTheme = useMainThemeContext();
-
-    const MergeCellIcon = useMemo(()=>{
-        return editorTheme.tableTheme.menuTheme.MergeCellIcon;
-    },[editorTheme.tableTheme.menuTheme.MergeCellIcon]);
+export function MergeCellsContextMenu({ editor }: ContextMenuOptionProps) {
+    const {editorTheme: {tableLayoutTheme: {menuTheme: {MergeCellIcon}}}} = useMainThemeContext();
 
     const onClick = () => {
         editor.update(() => {

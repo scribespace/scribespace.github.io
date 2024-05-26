@@ -1,20 +1,14 @@
 import { useMainThemeContext } from "@/mainThemeContext";
-import { MainTheme } from "@/theme";
+import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 import { $createExtendedTableNodeWithDimensions } from "@editor/nodes/table";
 import { $insertNodes } from "lexical";
-import { useMemo } from "react";
 import { MenuItem, Submenu } from "../../menu";
 import SubmenuIcon from "../../menu/submenuIcon";
-import {TableCreator} from "../tableCreator";
-import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
-import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
+import { TableCreator } from "../table/tableCreator";
+import { ContextMenuOptionProps } from "./contextMenuCommon";
 
-export function TableCreateContextMenu({ editor }: TableContextMenuOptionProps) {
-    const {editorTheme}: MainTheme = useMainThemeContext();
-
-    const AddTableIcon = useMemo(()=>{
-        return editorTheme.tableTheme.menuTheme.AddTableIcon;
-    },[editorTheme.tableTheme.menuTheme.AddTableIcon]);
+export function TableCreateContextMenu({ editor }: ContextMenuOptionProps) {
+    const {editorTheme: {tableLayoutTheme: {menuTheme: {TableAddIcon}}}} = useMainThemeContext();
 
     function onClick(rowsCount: number, columnsCount: number) {
         editor.update(() => {
@@ -28,7 +22,7 @@ export function TableCreateContextMenu({ editor }: TableContextMenuOptionProps) 
     return (
         <Submenu className="">
             <MenuItem>
-                <AddTableIcon/>
+                <TableAddIcon/>
                 <div>Create Table</div>
                 <SubmenuIcon/>
             </MenuItem>

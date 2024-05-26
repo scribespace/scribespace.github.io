@@ -3,13 +3,13 @@ import { EditorThemeClassName, EditorThemeClasses } from "lexical";
 import { LINK_THEME_DEFAULT, LinkTheme } from "@editor/components/link/theme";
 import { NumberInputTheme, NUMBER_INPUT_THEME_DEFAULT } from "@editor/components/numberInput/theme";
 import { SeparatorTheme, SEPARATOR_THEME_DEFAULT } from "@editor/components/separators/theme";
-import { TableTheme, TABLE_THEME_DEFAULT } from "@editor/components/table/theme";
 import { TOOLBAR_THEME_DEFAULT, ToolbarTheme } from "@editor/plugins/toolbarPlugin/theme";
 import { UNDO_REDO_THEME_DEFAULT, UndoRedoTheme } from "@editor/components/undoRedo/theme";
 import { FONT_STYLE_THEME_DEFAULT, FontStyleTheme } from "@editor/components/fontStyle/theme";
 import { Font } from "@utils";
 import { ALIGN_MENU_THEME_DEFAULT, AlignMenuTheme } from "../components/align/theme";
 import { COLOR_MENU_THEME_DEFAULT, ColorMenuTheme } from "../components/color/theme";
+import { TABLE_LAYOUT_THEME_DEFAULT, TableLayoutTheme } from "../components/tableLayout/theme";
 
 export interface EditorInputTheme extends EditorThemeClasses {
     defaultFontSize: EditorThemeClassName;
@@ -27,7 +27,7 @@ export interface EditorTheme {
     editorSeeThrough: EditorThemeClassName;
     editorPrintDisabled: EditorThemeClassName;
 
-    tableTheme: TableTheme;
+    tableLayoutTheme: TableLayoutTheme;
     separatorTheme: SeparatorTheme;
     linkTheme: LinkTheme;
     numberInputTheme: NumberInputTheme;
@@ -73,7 +73,7 @@ export const EDITOR_THEME_DEFAULT: EditorTheme = {
     editorSeeThrough: 'editor-see-through',
     editorPrintDisabled: 'print-disabled',
 
-    tableTheme: TABLE_THEME_DEFAULT,
+    tableLayoutTheme: TABLE_LAYOUT_THEME_DEFAULT,
     numberInputTheme: NUMBER_INPUT_THEME_DEFAULT,
     separatorTheme: SEPARATOR_THEME_DEFAULT,
     linkTheme: LINK_THEME_DEFAULT,

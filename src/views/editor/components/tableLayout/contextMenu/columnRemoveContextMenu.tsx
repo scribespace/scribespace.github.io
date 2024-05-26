@@ -1,36 +1,31 @@
 import { useMainThemeContext } from "@/mainThemeContext";
-import { MainTheme } from "@/theme";
+import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
+import { $getTableColumnIndexFromTableCellNode } from "@editor/plugins/tablePlugin/utils";
 import {
-    $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $getTableRowIndexFromTableCellNode, $isTableCellNode, $isTableSelection,
+    $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $isTableCellNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
 import { $getSelection, $isRangeSelection, $setSelection } from "lexical";
-import { useMemo } from "react";
 import { MenuItem } from "../../menu";
-import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
-import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
+import { ContextMenuOptionProps } from "./contextMenuCommon";
 
 
-export function TableRowRemoveContextMenu({ editor }: TableContextMenuOptionProps) {
-    const {editorTheme}: MainTheme = useMainThemeContext();
-
-    const RemoveRowIcon = useMemo(()=>{
-        return editorTheme.tableTheme.menuTheme.RemoveRowIcon;
-    },[editorTheme.tableTheme.menuTheme.RemoveRowIcon]);
+export function ColumnRemoveContextMenu({ editor }: ContextMenuOptionProps) {
+    const {editorTheme: {tableLayoutTheme: {menuTheme: {ColumnRemoveIcon}}}} = useMainThemeContext();
 
     const onClick = () => {
         editor.update(() => {
             let tableNode: ExtendedTableNode | null = null;
             let cellNode: TableCellNode | null = null;
-            let rowsCount = 0;
+            let columnsCount = 0;
 
             const selection = $getSelection();
             if ($isRangeSelection(selection)) {
                 cellNode = $getTableCellNodeFromLexicalNode(selection.anchor.getNode());
-                if (!$isTableCellNode(cellNode)) throw Error("TableContextRowRemove: expecetd cell node");
+                if (!$isTableCellNode(cellNode)) throw Error("TableContextColumnRemove: expecetd cell node");
                 tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(cellNode);
-                rowsCount = 1;
+                columnsCount = 1;
             }
 
             if ($isTableSelection(selection)) {
@@ -42,34 +37,35 @@ export function TableRowRemoveContextMenu({ editor }: TableContextMenuOptionProp
                 const tableBodyNode = $getTableNodeFromLexicalNodeOrThrow(cellNode) as TableBodyNode;
                 tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>();
 
-                const rowID = $getTableRowIndexFromTableCellNode(cellNode);
+                const resolvedTable = tableBodyNode.getResolvedTable();
+                const columnID = $getTableColumnIndexFromTableCellNode(cellNode, resolvedTable);
+
                 for (const node of selection.getNodes()) {
                     if ($isTableCellNode(node)) {
                         if (tableBodyNode == $getTableNodeFromLexicalNodeOrThrow(node)) {
-                            const testRowID = $getTableRowIndexFromTableCellNode(node);
+                            const testColumnID = $getTableColumnIndexFromTableCellNode(node, resolvedTable);
 
-                            rowsCount = Math.max(rowsCount, testRowID - rowID);
+                            columnsCount = Math.max(columnsCount, testColumnID - columnID);
                         }
                     }
                 }
-                ++rowsCount;
+                ++columnsCount;
             }
 
-            if (!cellNode) throw Error("TableContextRowRemove: null Cell Node");
-            if (!tableNode) throw Error("TableContextRowRemove: null Table Node");
+            if (!cellNode) throw Error("TableContextColumnRemove: null Cell Node");
+            if (!tableNode) throw Error("TableContextColumnRemove: null Table Node");
 
-            tableNode.removeRows(cellNode, rowsCount);
+            tableNode.removeColumns(cellNode, columnsCount);
             $setSelection(null);
-
             $closeContextMenu(editor);
         },
-            { tag: 'table-row-remove' });
+            { tag: 'table-column-remove' });
     };
 
     return (
-        <MenuItem onClick={onClick}>
-            <RemoveRowIcon/>
-            <div>Remove Row</div>
+        <MenuItem onClick={onClick} >
+            <ColumnRemoveIcon/>
+            <div>Remove Column</div>
         </MenuItem>
     );
 }

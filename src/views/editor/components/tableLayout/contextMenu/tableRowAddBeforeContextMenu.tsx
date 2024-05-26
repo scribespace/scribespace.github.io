@@ -1,26 +1,18 @@
 import { useMainThemeContext } from "@/mainThemeContext";
-import { MainTheme } from "@/theme";
+import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
 import {
     $getTableCellNodeFromLexicalNode, $isTableSelection,
     TableCellNode
 } from "@lexical/table";
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection, $setSelection } from "lexical";
-import { useMemo } from "react";
 import { MenuItem, Submenu } from "../../menu";
 import SubmenuIcon from "../../menu/submenuIcon";
-import { TableContextMenuOptionProps } from "./tableContextMenuCommon";
-import {TableNumberInputContextMenu} from "./tableNumberInputContextMenu";
-import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
+import { ContextMenuOptionProps } from "./contextMenuCommon";
+import { NumberInputContextMenu } from "./numberInputContextMenu";
 
-
-
-export function TableAddRowBeforeContextMenu({ editor }: TableContextMenuOptionProps) {
-    const {editorTheme}: MainTheme = useMainThemeContext();
-
-    const AddRowBeforeIcon = useMemo(()=>{
-        return editorTheme.tableTheme.menuTheme.AddRowBeforeIcon;
-    },[editorTheme.tableTheme.menuTheme.AddRowBeforeIcon]);
+export function TableRowAddBeforeContextMenu({ editor }: ContextMenuOptionProps) {
+    const {editorTheme: {tableLayoutTheme: {menuTheme: {RowAddBeforeIcon}}}} = useMainThemeContext();
 
     const onInputAccepted = (input: HTMLInputElement) => {
         const value = input.valueAsNumber;
@@ -58,11 +50,11 @@ export function TableAddRowBeforeContextMenu({ editor }: TableContextMenuOptionP
     return (
         <Submenu className="">
             <MenuItem>
-                <AddRowBeforeIcon/>
+                <RowAddBeforeIcon/>
                 <div>Insert Row Before</div>
                 <SubmenuIcon/>
             </MenuItem>
-            <TableNumberInputContextMenu onInputAccepted={onInputAccepted} />
+            <NumberInputContextMenu onInputAccepted={onInputAccepted} />
         </Submenu>
     );
 }
