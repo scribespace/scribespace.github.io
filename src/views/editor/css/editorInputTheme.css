@@ -98,7 +98,7 @@
     table-layout: fixed;
     width: 100%;
   }
-  
+
   .editor-table-row{
   } 
 
@@ -117,14 +117,6 @@
   .editor-layout > tbody > .editor-table-row > .editor-table-cell {
     vertical-align: top;
     border: 1px dotted black;
-  }
-
-  .editor-image {
-    max-width: 100%;
-  }
-
-  .editor-image-container {
-
   }
 
   @media print {

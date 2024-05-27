@@ -10,6 +10,7 @@ import { Font } from "@utils";
 import { ALIGN_MENU_THEME_DEFAULT, AlignMenuTheme } from "../components/align/theme";
 import { COLOR_MENU_THEME_DEFAULT, ColorMenuTheme } from "../components/color/theme";
 import { TABLE_LAYOUT_THEME_DEFAULT, TableLayoutTheme } from "../components/tableLayout/theme";
+import { IMAGE_THEME_DEFAULT, ImageTheme } from "../plugins/imagePlugin/theme";
 
 export interface EditorInputTheme extends EditorThemeClasses {
     defaultFontSize: EditorThemeClassName;
@@ -35,6 +36,7 @@ export interface EditorTheme {
     fontStyleTheme: FontStyleTheme;
     alignTheme: AlignMenuTheme;
     colorTheme: ColorMenuTheme;
+    imageTheme: ImageTheme;
 
     toolbarTheme: ToolbarTheme;
     contextMenuTheme: ContextMenuTheme;
@@ -58,8 +60,7 @@ export const EDITOR_INPUT_THEME_DEFAULT: EditorInputTheme = {
     tableCell: 'editor-table-cell',
     tableRow: 'editor-table-row',
 
-    image: 'editor-image',
-    imageContainer: 'editor-image-container',
+    image: 'image-node-default',
 
     defaultFontSize: '',
     defaultFontFamily: {name:'', alt: ''},
@@ -84,6 +85,7 @@ export const EDITOR_THEME_DEFAULT: EditorTheme = {
     fontStyleTheme: FONT_STYLE_THEME_DEFAULT,
     alignTheme: ALIGN_MENU_THEME_DEFAULT,
     colorTheme: COLOR_MENU_THEME_DEFAULT,
+    imageTheme: IMAGE_THEME_DEFAULT,
 
     toolbarTheme: TOOLBAR_THEME_DEFAULT,
     contextMenuTheme: CONTEXT_MENU_THEME_DEFAULT,

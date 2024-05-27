@@ -5,5 +5,5 @@ export interface CommonTheme {
 }
 
 export const COMMON_THEME_DEFAULT: CommonTheme = {
-    pulsing: '.pulsing',
+    pulsing: 'pulsing',
 };

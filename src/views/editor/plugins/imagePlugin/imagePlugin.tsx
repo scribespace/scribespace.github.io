@@ -1,11 +1,14 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useEffect } from "react";
-import { DRAG_DROP_ADD_TYPES_LISTENER_COMMAND } from "../dragDropPlugin";
-import { INSERT_IMAGES_COMMAND } from "./imageCommands";
-import { $insertNodes, COMMAND_PRIORITY_LOW } from "lexical";
 import { assert } from "@/utils";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { mergeRegister } from "@lexical/utils";
+import { $insertNodes, COMMAND_PRIORITY_LOW } from "lexical";
+import { useEffect } from "react";
 import { ImageNode } from "../../nodes/image";
 import { $createImageNode } from "../../nodes/image/imageNode";
+import { DRAG_DROP_ADD_TYPES_LISTENER_COMMAND } from "../dragDropPlugin";
+import { INSERT_IMAGES_COMMAND } from "./imageCommands";
+
+import './css/image.css';
 
 export function ImagePlugin() {
     const [editor] = useLexicalComposerContext();
@@ -38,13 +41,15 @@ export function ImagePlugin() {
 
             editor.dispatchCommand( DRAG_DROP_ADD_TYPES_LISTENER_COMMAND, {types: supportedFormat, listener: dragDropListener} );
 
-            return editor.registerCommand(
-                INSERT_IMAGES_COMMAND,
-                (images: File[]) => {
-                    insertImages(images);
-                    return true;
-                },
-                COMMAND_PRIORITY_LOW
+            return mergeRegister( 
+                editor.registerCommand(
+                    INSERT_IMAGES_COMMAND,
+                    (images: File[]) => {
+                        insertImages(images);
+                        return true;
+                    },
+                    COMMAND_PRIORITY_LOW
+                ),
             );
         },
         [editor]

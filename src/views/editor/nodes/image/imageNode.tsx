@@ -1,7 +1,8 @@
-import { Image } from '@editor/components/image';
+import { ImageComponent } from '@editor/components/image';
 import { addClassNamesToElement } from "@lexical/utils";
 import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, DOMExportOutput, DecoratorNode, EditorConfig, LexicalNode, NodeKey, SerializedLexicalNode } from "lexical";
 import { ReactElement } from "react";
+import { EditorInputTheme } from '../../theme/editorTheme';
 
 export class ImageNode extends DecoratorNode<ReactElement> {
     _imageFile: File | undefined = undefined;
@@ -56,7 +57,7 @@ export class ImageNode extends DecoratorNode<ReactElement> {
 
       createDOM(config: EditorConfig): HTMLElement {
         const span = document.createElement('span');
-        addClassNamesToElement(span, config.theme.imageContainer);
+        addClassNamesToElement(span, (config.theme as EditorInputTheme).image);
         return span;
       }
     
@@ -66,7 +67,7 @@ export class ImageNode extends DecoratorNode<ReactElement> {
 
       decorate(): JSX.Element {
         return (
-            <Image file={this._imageFile}/>
+            <ImageComponent file={this._imageFile} nodeKey={this.getKey()}/>
         );
       }
 }

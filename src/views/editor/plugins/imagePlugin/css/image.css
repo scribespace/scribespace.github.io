@@ -1,0 +1,8 @@
+
+.image-element-default {
+    width: 100%;
+    height: 100%;
+}
+.image-selected-default {
+    outline: 2px solid rgb(60, 132, 244);
+}
