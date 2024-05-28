@@ -26,34 +26,47 @@ interface ImageProps {
     nodeKey: NodeKey;
 }
 
+interface ImageLoaderArgs {
+    file: Blob | null;
+}
+
 export default function ImageComponent( { src, file, nodeKey } : ImageProps) {
     const [editor] = useLexicalComposerContext();
 
     const {commonTheme: {pulsing}, editorTheme: {imageTheme}} = useMainThemeContext();
 
     const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(nodeKey);
-    //const [imageLoadingState, setImageLoadingState] = useState<ImageLoadingState>( {src: '/images/no-image', state: IMAGE_STATE_PLACEHOLDER} );
+    //const [imageLoadingState, setImageLoadingState] = useState<ImageLoadingState>( {src: '/images/no-image.png', state: IMAGE_STATE_LOADING} );
 
     const imageRef = useRef<HTMLImageElement>(null);
+    const fileCopyRef = useRef<ImageLoaderArgs>({file: null});
+
+    useEffect(
+        () => {
+            if ( fileCopyRef.current.file == null && file ) {
+                fileCopyRef.current = {file: new Blob([file])};
+            }
+        },
+        [file]
+    );
 
     const webWorkerFunc = useCallback(
         async (args: unknown): Promise<WebWorkerResult<ImageLoadingState>> =>  {
-            const {file} = args as {file?: File};
-
+            const {file} = args as {file?: Blob};
+            
             if ( file ) {
                 return { result: {src: URL.createObjectURL(file), state: 2/*IMAGE_STATE_URL_OBJ*/}, terminate: false };
             }
-
             return { result: {src: '/images/no-image.png', state: 4/*IMAGE_STATE_MISSING*/} };
         },
         []
     );
-    const webWorkerArgs = useMemo( () => {return {file};}, [file]);
 
     const imageLoadingState = useWebWorker(
         webWorkerFunc,
-        webWorkerArgs,
-        {src: '/images/no-image.png', state: IMAGE_STATE_LOADING}
+        fileCopyRef.current,
+        {src: '/images/no-image.png', state: IMAGE_STATE_LOADING},
+        [fileCopyRef.current.file]
     );
     
     useEffect(
@@ -76,10 +89,8 @@ export default function ImageComponent( { src, file, nodeKey } : ImageProps) {
     );
 
     return (
-        <>
         <div className={(isSelected ? " " + imageTheme.selected : '')} style={{display: "inline-block", overflow: "hidden", maxWidth: "100%", width: "max-content", height: "max-content", margin: "0", padding: "0"}}>
             <img ref={imageRef} className={imageTheme.element + (imageLoadingState.state == IMAGE_STATE_LOADING ? (' ' + pulsing): '')} src={imageLoadingState.src} alt={`No image ${imageLoadingState.src}`}/>
         </div>
-        </>
     );
 }
