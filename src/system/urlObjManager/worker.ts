@@ -8,15 +8,5 @@ export const UrlObjManagerThreadInterface = {
 
         throw Error("No File provided");
     },
-
-    urlToUrlObj(test: string, test2: number) {
-        return new Promise<[string, number]>(
-            (resolve) => {
-                setTimeout(() => resolve([`${test}${test2}`,test2*2]), 2000);
-            }
-        );
-    },
 };
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const urlObjManagerThread = new WebWorkerThread(UrlObjManagerThreadInterface);
+new WebWorkerThread(UrlObjManagerThreadInterface);
