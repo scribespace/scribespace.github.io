@@ -74,7 +74,7 @@ function TestPlugin( {selectedFile} : Props ) {
     return null;
 }
 
-export function EditorLexicalView({selectedFile} : Props) {
+export function EditorView({selectedFile} : Props) {
   const {editorTheme}: MainTheme = useMainThemeContext();
   const toolbarRef = useRef<HTMLDivElement>(null);
   const {height: toolbarHeight } = useBoundingRect(toolbarRef);

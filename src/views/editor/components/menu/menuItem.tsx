@@ -1,8 +1,8 @@
 import { isIcon } from "@/components/icon";
+import { variableExists } from "@/utils";
+import { EditorThemeClassName } from "lexical";
 import { Children, ReactElement, ReactNode, cloneElement, useMemo } from "react";
 import { MenuContextData, useMenuContext } from "./menuContext";
-import { variableExists, variableExistsOrThrowDev } from "@/utils";
-import { EditorThemeClassName } from "lexical";
 
 interface MenuItemProps {
     disabled?: boolean;
@@ -15,7 +15,6 @@ export default function MenuItem({disabled, className, onClick, children }: Menu
     const menuContext: MenuContextData = useMenuContext();
 
     const theme = useMemo(() => {
-        variableExistsOrThrowDev(menuContext.theme);
         return menuContext.theme;
     },[menuContext.theme]);
 

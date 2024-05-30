@@ -1,4 +1,4 @@
-import { ImageComponent } from '@editor/components/image';
+import { Image } from '@editor/components/image';
 import { addClassNamesToElement } from "@lexical/utils";
 import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, DOMExportOutput, DecoratorNode, EditorConfig, LexicalNode, NodeKey, SerializedLexicalNode } from "lexical";
 import { ReactElement } from "react";
@@ -67,7 +67,7 @@ export class ImageNode extends DecoratorNode<ReactElement> {
 
       decorate(): JSX.Element {
         return (
-            <ImageComponent file={this._imageFile} nodeKey={this.getKey()}/>
+            <Image file={this._imageFile} nodeKey={this.getKey()}/>
         );
       }
 }

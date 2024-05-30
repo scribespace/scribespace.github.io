@@ -1,12 +1,11 @@
-import useTraceUpdate from "@/hooks/useTraceUpdate";
-import { useWebWorker } from "@/hooks/useWebWorker";
-import { WebWorkerResult } from "@/hooks/useWebWorker/useWebWorker";
+import { useWebWorkerJob } from "@/hooks/useWebWorkerJob";
+import { WebWorkerResult } from "@/hooks/useWebWorkerJob/useWebWorkerJob";
 import { useMainThemeContext } from "@/mainThemeContext";
-import { variableExists } from "@/utils";
+import { appGlobals } from "@/system/appGlobals";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection } from '@lexical/react/useLexicalNodeSelection';
 import { CLICK_COMMAND, COMMAND_PRIORITY_LOW, NodeKey } from "lexical";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 const IMAGE_STATE_PLACEHOLDER = 0 as const;
 const IMAGE_STATE_LOADING = 1 as const;
@@ -30,7 +29,7 @@ interface ImageLoaderArgs {
     file: Blob | null;
 }
 
-export default function ImageComponent( { src, file, nodeKey } : ImageProps) {
+export function Image( { file, nodeKey } : ImageProps) {
     const [editor] = useLexicalComposerContext();
 
     const {commonTheme: {pulsing}, editorTheme: {imageTheme}} = useMainThemeContext();
@@ -52,6 +51,7 @@ export default function ImageComponent( { src, file, nodeKey } : ImageProps) {
 
     const webWorkerFunc = useCallback(
         async (args: unknown): Promise<WebWorkerResult<ImageLoadingState>> =>  {
+            
             const {file} = args as {file?: Blob};
             
             if ( file ) {
@@ -62,15 +62,19 @@ export default function ImageComponent( { src, file, nodeKey } : ImageProps) {
         []
     );
 
-    const imageLoadingState = useWebWorker(
+    const imageLoadingState = {src: '/images/no-image.png', state: IMAGE_STATE_LOADING};
+    /*useWebWorkerJob(
         webWorkerFunc,
         fileCopyRef.current,
         {src: '/images/no-image.png', state: IMAGE_STATE_LOADING},
         [fileCopyRef.current.file]
-    );
+    );*/
     
     useEffect(
         () => {
+            appGlobals.blobManager.urlToUrlObj( (t: string) => {console.log(t);}, undefined, 'hello' , 2 );
+            appGlobals.blobManager.blobToUrlObj()
+
             return editor.registerCommand(
                 CLICK_COMMAND,
                 (event: MouseEvent) => {

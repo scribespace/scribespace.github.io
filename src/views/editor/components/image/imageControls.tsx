@@ -1,7 +1,7 @@
-interface ImageControlsProps {
-    imageElement: HTMLImageElement;
-}
+// interface ImageControlsProps {
+//     imageElement: HTMLImageElement;
+// }
 
-export function ImageControls({imageElement}) {
+// export function ImageControls({imageElement}) {
 
-}
+// }

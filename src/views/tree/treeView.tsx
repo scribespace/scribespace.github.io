@@ -32,12 +32,12 @@ export default function TreeView({setSelectedFile}: TreeViewProps) {
     const treeOpenNodes = useRef<Set<string>>(new Set<string>());
     const onToggleEnabled = useRef<boolean>(true);
 
-    function UpdateDataVersion() {
+    function updateDataVersion() {
         setDataVersion( (prev)=> prev+1);
-        UploadTree();
+        uploadTree();
     }
 
-    function UploadTree() {
+    function uploadTree() {
         const treeJSON = JSON.stringify(tree?.data);
         appGlobals.system?.getFileSystem().uploadFile(TREE_FILE, {content: new Blob([treeJSON])}, FileUploadMode.Replace).then((result) => {
             if (!result) throw Error('UploadTree: no result');
@@ -45,7 +45,7 @@ export default function TreeView({setSelectedFile}: TreeViewProps) {
         });
     }
 
-    function UploadTreeStatus() {
+    function uploadTreeStatus() {
         const treeStatusJSON = JSON.stringify([...treeOpenNodes.current]);
         appGlobals.system?.getFileSystem().uploadFile(TREE_STATUS_FILE, {content: new Blob([treeStatusJSON])}, FileUploadMode.Replace).then((result) => {
             if (!result) throw Error('UploadTreeStatus: no result');
@@ -78,12 +78,12 @@ export default function TreeView({setSelectedFile}: TreeViewProps) {
         for (const id of args.dragIds) {
             tree?.move({ id, parentId: args.parentId, index: args.index });
         }
-        UpdateDataVersion();
+        updateDataVersion();
       };
     
       const onRename: RenameHandler<TreeNodeData> = ({ name, id }) => {
         tree?.update({ id, changes: { name } as TreeNodeData });
-        UpdateDataVersion();
+        updateDataVersion();
       };
 
     const onCreate: CreateHandler<TreeNodeData> = async ({ parentId, index }) => {
@@ -99,7 +99,7 @@ export default function TreeView({setSelectedFile}: TreeViewProps) {
             const id = result.fileInfo.name;
             const node = { id, name: "New File", children: [] } as TreeNodeData;
             tree?.create({ parentId, index, data:node });
-            UpdateDataVersion();
+            updateDataVersion();
             return node;
         }
         return null;
@@ -114,7 +114,7 @@ export default function TreeView({setSelectedFile}: TreeViewProps) {
         if (result.status !== FileSystemStatus.Success && result.status !== FileSystemStatus.NotFound) throw Error('Couldnt delete note, status: ' + result.status);
 
         tree?.drop({id});
-        UpdateDataVersion();
+        updateDataVersion();
       };
 
       const onSelect = (nodes: TreeNodeApi[]) => {
@@ -134,10 +134,10 @@ export default function TreeView({setSelectedFile}: TreeViewProps) {
         } else {
             treeOpenNodes.current.add(nodeID);
         }
-        UploadTreeStatus();
+        uploadTreeStatus();
       };
 
-      function DownloadAndSetTreeStatus() {
+      function downloadAndSetTreeStatus() {
         appGlobals.system?.getFileSystem().downloadFile(TREE_STATUS_FILE).then((result) => {
             if ( result.status === FileSystemStatus.Success ) {
                 result.file?.content?.text().then((treeStatusJSON) => {
@@ -158,7 +158,7 @@ export default function TreeView({setSelectedFile}: TreeViewProps) {
             if ( result.status === FileSystemStatus.Success ) {
                 result.file?.content?.text().then((treeJSON) => {
                     setTree( new SimpleTree<TreeNodeData>(JSON.parse(treeJSON)) );
-                    DownloadAndSetTreeStatus();
+                    downloadAndSetTreeStatus();
                 });
             } else {
                 setTree( new SimpleTree<TreeNodeData>([]) );

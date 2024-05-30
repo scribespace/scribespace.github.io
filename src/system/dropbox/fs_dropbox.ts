@@ -273,8 +273,8 @@ export class DropboxFS implements FileSystem {
         }
 
         const fileMeta = respond.result;
-        variableExistsOrThrow(fileMeta.path_lower);
-        variableExistsOrThrow(fileMeta.fileBlob);
+        variableExistsOrThrow(fileMeta.path_lower, 'Missing fileMeta.path_lower');
+        variableExistsOrThrow(fileMeta.fileBlob, 'Missing fileMeta.fileBlob');
         const fileExtension = fileMeta.path_lower.split('.').pop();
         let fileType = '';
         switch (fileExtension) {

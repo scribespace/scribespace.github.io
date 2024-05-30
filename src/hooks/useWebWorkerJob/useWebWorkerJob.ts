@@ -6,12 +6,12 @@ export interface WebWorkerResult<T> {
     terminate?: boolean;
 }
 
-export default function useWebWorker<T>( func: (args: unknown) => WebWorkerResult<T>|Promise<WebWorkerResult<T>>, args: unknown, initialValue: T, deps?: DependencyList ) {
+export default function useWebWorkerJob<T>( func: (args: unknown) => WebWorkerResult<T>|Promise<WebWorkerResult<T>>, args: unknown, initialValue: T, deps?: DependencyList ) {
     const [result, setResult] = useState<T>(initialValue);
 
     useEffect(
         () => {
-            const webWorker = new Worker(new URL('./worker.js', import.meta.url));
+            const webWorker = new Worker(new URL('./workerJob.ts', import.meta.url), {name: 'useWebWorker', type: 'module'});
             webWorker.onmessage = function (event) {
                 const {result, terminate} = event.data as WebWorkerResult<T>;
                 setResult(result);
@@ -19,7 +19,7 @@ export default function useWebWorker<T>( func: (args: unknown) => WebWorkerResul
                     webWorker.terminate();
               };
 
-            webWorker.postMessage({func: func.toString(), arg: args});
+            webWorker.postMessage({funcStr: func.toString(), arg: args});
 
             return () => webWorker.terminate();
         },

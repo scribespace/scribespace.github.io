@@ -1,11 +1,11 @@
-import { variableExists, variableExistsOrThrowDev } from "@/utils";
+import { variableExists } from "@/utils";
 import { assert } from "@/utils/dev";
+import { EditorThemeClassName } from "lexical";
 import { Children, ReactElement, useEffect, useMemo, useRef, useState } from "react";
 import Menu from "./menu";
 import { MenuContextData, useMenuContext } from "./menuContext";
 import MenuItem from "./menuItem";
 import { $menuItemParent } from "./theme";
-import { EditorThemeClassName } from "lexical";
 
 interface SubmenuProps {
     className?: EditorThemeClassName;
@@ -21,7 +21,6 @@ export default function Submenu({ className, showSubmenu, setShowSubmenu, childr
     const menuOptionRef = useRef<HTMLDivElement>(null);
     
     const theme = useMemo(() => {
-        variableExistsOrThrowDev(menuContext.theme);
         return menuContext.theme;
     },[menuContext.theme]);
 

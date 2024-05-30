@@ -3,7 +3,7 @@ import TreeView from './tree/treeView';
 
 import './css/mainView.css';
 
-import { EditorLexicalView } from '@editor/editorLexicalView';
+import { EditorView } from '@/views/editor/editorView';
 import useBoundingRect from '@/hooks/useBoundingRect';
 import { FunctionComponent, useRef, useState } from 'react';
 import { AUTH_DISABLED, authGlobal } from '../system/authentication';
@@ -31,7 +31,7 @@ export const MainView: FunctionComponent<Props> = ({changeAuthButtonState}) => {
           <TreeView setSelectedFile={setSelectedFile}/>
         </div>
         <div className='editor-view'>
-          <EditorLexicalView selectedFile={selectedFile}/>
+          <EditorView selectedFile={selectedFile}/>
         </div>
       </div>
     </div>

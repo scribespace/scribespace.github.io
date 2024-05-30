@@ -1,17 +1,48 @@
 import { devOnly } from "./dev";
-import { ValueUnit } from "./types";
+import { Func, ValueUnit } from "./types";
 
 export function variableExists<T>( variable: T | undefined ): variable is T {
     return typeof variable !== 'undefined';
 }
 
-export function variableExistsOrThrow<T>( variable: T | undefined ): asserts variable is T {
-    if ( !variableExists(variable) ) throw Error(`${variable} doesn't exist`);
+export function variableExistsOrThrow<T>( variable: T | undefined, message: string ): asserts variable is T {
+    if ( !variableExists(variable) ) throw Error(message);
 }
 
-export function variableExistsOrThrowDev<T>(variable: T | undefined): asserts variable is T {
+export function variableExistsOrThrowDev<T>(variable: T | undefined, message: string): asserts variable is T {
     devOnly(() => {
-        variableExistsOrThrow(variable);
+        variableExistsOrThrow(variable, message);
+    });
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isKey<T extends object>( key: keyof any, obj: T ): key is keyof T {
+    return key in obj;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isKeyOrThrow<T extends object>( key: keyof any, obj: T ): asserts key is keyof T {
+    if ( !isKey(key, obj) ) throw Error(`${String(key)} isn't part of ${obj}`);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isKeyOrThrowDev<T extends object>( key: keyof any, obj: T ): asserts key is keyof T {
+    devOnly(() => {
+        isKeyOrThrow(key, obj);
+    });
+}
+
+export function isFunction(func: unknown): func is Func {
+    return typeof func == 'function';
+}
+
+export function isFunctionOrThrow(func: unknown): asserts func is Func {
+    if ( !isFunction(func) ) throw Error( `${func} not a function` );
+}
+
+export function isFunctionOrThrowDev(func: unknown): asserts func is Func {
+    devOnly(()=> {
+        isFunctionOrThrow(func);
     });
 }
 
