@@ -1,7 +1,6 @@
 import { useWebWorkerJob } from "@/hooks/useWebWorkerJob";
 import { WebWorkerResult } from "@/hooks/useWebWorkerJob/useWebWorkerJob";
 import { useMainThemeContext } from "@/mainThemeContext";
-import { appGlobals } from "@/system/appGlobals";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection } from '@lexical/react/useLexicalNodeSelection';
 import { CLICK_COMMAND, COMMAND_PRIORITY_LOW, NodeKey } from "lexical";
@@ -62,19 +61,15 @@ export function Image( { file, nodeKey } : ImageProps) {
         []
     );
 
-    const imageLoadingState = {src: '/images/no-image.png', state: IMAGE_STATE_LOADING};
-    /*useWebWorkerJob(
+    const imageLoadingState = useWebWorkerJob(
         webWorkerFunc,
         fileCopyRef.current,
         {src: '/images/no-image.png', state: IMAGE_STATE_LOADING},
         [fileCopyRef.current.file]
-    );*/
+    );
     
     useEffect(
         () => {
-            appGlobals.blobManager.urlToUrlObj( (t: string) => {console.log(t);}, undefined, 'hello' , 2 );
-            appGlobals.blobManager.blobToUrlObj()
-
             return editor.registerCommand(
                 CLICK_COMMAND,
                 (event: MouseEvent) => {

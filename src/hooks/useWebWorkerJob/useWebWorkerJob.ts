@@ -11,7 +11,7 @@ export default function useWebWorkerJob<T>( func: (args: unknown) => WebWorkerRe
 
     useEffect(
         () => {
-            const webWorker = new Worker(new URL('./workerJob.ts', import.meta.url), {name: 'useWebWorker', type: 'module'});
+            const webWorker = new Worker(new URL('./worker.ts', import.meta.url), {name: 'useWebWorker', type: 'module'});
             webWorker.onmessage = function (event) {
                 const {result, terminate} = event.data as WebWorkerResult<T>;
                 setResult(result);
