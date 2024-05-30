@@ -1,9 +1,9 @@
 import { System } from "../interfaces/system/system_interface";
-import { BlobManager } from "./blobManager";
+import { UrlObjManager } from "./urlObjManager";
 
 class AppGlobals {
     system: null | System = null; 
-    blobManager: BlobManager = new BlobManager();
+    urlObjManager: UrlObjManager = new UrlObjManager();
 }
 
 export const appGlobals = new AppGlobals();

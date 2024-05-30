@@ -1,10 +1,9 @@
-import { useWebWorkerJob } from "@/hooks/useWebWorkerJob";
-import { WebWorkerResult } from "@/hooks/useWebWorkerJob/useWebWorkerJob";
 import { useMainThemeContext } from "@/mainThemeContext";
+import { appGlobals } from "@/system/appGlobals";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection } from '@lexical/react/useLexicalNodeSelection';
 import { CLICK_COMMAND, COMMAND_PRIORITY_LOW, NodeKey } from "lexical";
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const IMAGE_STATE_PLACEHOLDER = 0 as const;
 const IMAGE_STATE_LOADING = 1 as const;
@@ -24,50 +23,35 @@ interface ImageProps {
     nodeKey: NodeKey;
 }
 
-interface ImageLoaderArgs {
-    file: Blob | null;
-}
-
 export function Image( { file, nodeKey } : ImageProps) {
     const [editor] = useLexicalComposerContext();
 
     const {commonTheme: {pulsing}, editorTheme: {imageTheme}} = useMainThemeContext();
 
     const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(nodeKey);
-    //const [imageLoadingState, setImageLoadingState] = useState<ImageLoadingState>( {src: '/images/no-image.png', state: IMAGE_STATE_LOADING} );
+    const [imageLoadingState, setImageLoadingState] = useState<ImageLoadingState>( {src: '/images/no-image.png', state: IMAGE_STATE_PLACEHOLDER} );
 
     const imageRef = useRef<HTMLImageElement>(null);
-    const fileCopyRef = useRef<ImageLoaderArgs>({file: null});
+    const fileCopyRef = useRef<Blob | null>(null);
 
     useEffect(
         () => {
-            if ( fileCopyRef.current.file == null && file ) {
-                fileCopyRef.current = {file: new Blob([file])};
+            if ( fileCopyRef.current == null && file ) {
+                fileCopyRef.current = new Blob([file]);
+
+                setImageLoadingState( (current) => {return {...current, state: IMAGE_STATE_LOADING}; });
+                appGlobals.urlObjManager.blobToUrlObj( 
+                    (urlObj: string) => {
+                        setImageLoadingState( {src: urlObj, state: IMAGE_STATE_URL_OBJ});
+                    }, 
+                    undefined, 
+                    fileCopyRef.current 
+                );
             }
         },
         [file]
     );
 
-    const webWorkerFunc = useCallback(
-        async (args: unknown): Promise<WebWorkerResult<ImageLoadingState>> =>  {
-            
-            const {file} = args as {file?: Blob};
-            
-            if ( file ) {
-                return { result: {src: URL.createObjectURL(file), state: 2/*IMAGE_STATE_URL_OBJ*/}, terminate: false };
-            }
-            return { result: {src: '/images/no-image.png', state: 4/*IMAGE_STATE_MISSING*/} };
-        },
-        []
-    );
-
-    const imageLoadingState = useWebWorkerJob(
-        webWorkerFunc,
-        fileCopyRef.current,
-        {src: '/images/no-image.png', state: IMAGE_STATE_LOADING},
-        [fileCopyRef.current.file]
-    );
-    
     useEffect(
         () => {
             return editor.registerCommand(
