@@ -1,6 +1,6 @@
 import { WebWorkerThread } from "@/interfaces/webWorker/webWorkerThread";
 
-export const UrlObjManagerThreadInterface = {
+export const UrlObjManagerWorkerInterface = {
     blobToUrlObj(blob: Blob): [urlObj: string] {
         if ( blob ) {
             return [URL.createObjectURL(blob)];
@@ -9,4 +9,4 @@ export const UrlObjManagerThreadInterface = {
         throw Error("No File provided");
     },
 };
-new WebWorkerThread(UrlObjManagerThreadInterface);
+new WebWorkerThread(UrlObjManagerWorkerInterface);

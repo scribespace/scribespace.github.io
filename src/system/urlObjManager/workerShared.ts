@@ -1,8 +1,8 @@
 import { WebWorkerManagerInterface } from "@/interfaces/webWorker/webWorkerShared";
-import { UrlObjManagerThreadInterface } from "./worker";
+import { UrlObjManagerWorkerInterface } from "./urlObjManagerWorker";
 
-type UrlObjManagerThreadInterfaceType = typeof UrlObjManagerThreadInterface;
-type UrlObjManagerInterface = WebWorkerManagerInterface<UrlObjManagerThreadInterfaceType>;
+type UrlObjManagerWorkerInterfaceType = typeof UrlObjManagerWorkerInterface;
+type UrlObjManagerInterface = WebWorkerManagerInterface<UrlObjManagerWorkerInterfaceType>;
 
-export { UrlObjManagerThreadInterface };
-export type { UrlObjManagerInterface, UrlObjManagerThreadInterfaceType };
+export { UrlObjManagerWorkerInterface };
+export type { UrlObjManagerInterface, UrlObjManagerWorkerInterfaceType };
