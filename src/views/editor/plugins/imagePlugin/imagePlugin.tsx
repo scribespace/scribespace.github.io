@@ -10,6 +10,7 @@ import { INSERT_IMAGES_COMMAND } from "./imageCommands";
 
 import './css/image.css';
 
+
 export function ImagePlugin() {
     const [editor] = useLexicalComposerContext();
 
@@ -28,10 +29,10 @@ export function ImagePlugin() {
                 const imageNodes: ImageNode[] = [];
 
                 for ( const image of images ) {
-                    const imageNode = $createImageNode();
-                    imageNode.setImageFile(image);
+                    const imageNode = $createImageNode(undefined, image);
                     imageNodes.push(imageNode);
                 }
+
                 $insertNodes(imageNodes);
             }
 

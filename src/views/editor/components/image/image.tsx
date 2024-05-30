@@ -2,54 +2,57 @@ import { useMainThemeContext } from "@/mainThemeContext";
 import { appGlobals } from "@/system/appGlobals";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection } from '@lexical/react/useLexicalNodeSelection';
-import { CLICK_COMMAND, COMMAND_PRIORITY_LOW, NodeKey } from "lexical";
+import { $getNodeByKey, CLICK_COMMAND, COMMAND_PRIORITY_LOW, NodeKey } from "lexical";
 import { useEffect, useRef, useState } from "react";
-
-const IMAGE_STATE_PLACEHOLDER = 0 as const;
-const IMAGE_STATE_LOADING = 1 as const;
-const IMAGE_STATE_URL_OBJ = 2 as const;
-const IMAGE_STATE_LINK = 3 as const;
-const IMAGE_STATE_MISSING = 4 as const;
-type ImageState = typeof IMAGE_STATE_PLACEHOLDER | typeof IMAGE_STATE_LOADING | typeof IMAGE_STATE_URL_OBJ | typeof IMAGE_STATE_LINK | typeof IMAGE_STATE_MISSING;
-
-interface ImageLoadingState {
-    src: string;
-    state: ImageState;
-}
+import { $isImageNode } from "../../nodes/image/imageNode";
 
 interface ImageProps {
     src?: string;
-    file?: File;
-    nodeKey: NodeKey;
+    blob?: Blob;
+    imageKey: NodeKey;
 }
 
-export function Image( { file, nodeKey } : ImageProps) {
+interface ImageSrc {
+    src: string;
+    loading: boolean;
+}
+
+const MISSING_IMAGE = '/images/no-image.png';
+
+export function Image( { src, blob, imageKey } : ImageProps) {
     const [editor] = useLexicalComposerContext();
 
     const {commonTheme: {pulsing}, editorTheme: {imageTheme}} = useMainThemeContext();
 
-    const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(nodeKey);
-    const [imageLoadingState, setImageLoadingState] = useState<ImageLoadingState>( {src: '/images/no-image.png', state: IMAGE_STATE_PLACEHOLDER} );
+    const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(imageKey);
+
+    const [imageSrc, setImageSrc] = useState<ImageSrc>({src: src || '', loading: false});
 
     const imageRef = useRef<HTMLImageElement>(null);
-    const fileCopyRef = useRef<Blob | null>(null);
 
     useEffect(
         () => {
-            if ( fileCopyRef.current == null && file ) {
-                fileCopyRef.current = new Blob([file]);
+            if ( imageSrc.src == '' && blob ) {
+                setImageSrc( {src: MISSING_IMAGE, loading: true} );
+                appGlobals.urlObjManager.blobsToUrlObjs(
+                    (urlsObjs) => {
+                        setImageSrc( {src: urlsObjs[0], loading: false} );
 
-                setImageLoadingState( (current) => {return {...current, state: IMAGE_STATE_LOADING}; });
-                appGlobals.urlObjManager.blobToUrlObj( 
-                    (urlObj: string) => {
-                        setImageLoadingState( {src: urlObj, state: IMAGE_STATE_URL_OBJ});
-                    }, 
-                    undefined, 
-                    fileCopyRef.current 
+                        editor.update( 
+                            () => {
+                                const imageNode = $getNodeByKey( imageKey );
+                                if ( $isImageNode(imageNode) ) {
+                                    imageNode.setSrc( urlsObjs[0] );
+                                }
+                            }
+                         );
+                    },
+                    undefined,
+                    [blob]
                 );
             }
         },
-        [file]
+        [blob, editor, imageKey, imageSrc.src]
     );
 
     useEffect(
@@ -73,7 +76,7 @@ export function Image( { file, nodeKey } : ImageProps) {
 
     return (
         <div className={(isSelected ? " " + imageTheme.selected : '')} style={{display: "inline-block", overflow: "hidden", maxWidth: "100%", width: "max-content", height: "max-content", margin: "0", padding: "0"}}>
-            <img ref={imageRef} className={imageTheme.element + (imageLoadingState.state == IMAGE_STATE_LOADING ? (' ' + pulsing): '')} src={imageLoadingState.src} alt={`No image ${imageLoadingState.src}`}/>
+            <img ref={imageRef} className={imageTheme.element + (imageSrc.loading ? (' ' + pulsing): '')} src={imageSrc.src} alt={`No image ${imageSrc.src}`}/>
         </div>
     );
 }

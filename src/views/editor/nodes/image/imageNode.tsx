@@ -1,14 +1,25 @@
 import { Image } from '@editor/components/image';
 import { addClassNamesToElement } from "@lexical/utils";
-import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, DOMExportOutput, DecoratorNode, EditorConfig, LexicalNode, NodeKey, SerializedLexicalNode } from "lexical";
+import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, DOMExportOutput, DecoratorNode, EditorConfig, LexicalNode, NodeKey, SerializedLexicalNode, Spread } from "lexical";
 import { ReactElement } from "react";
 import { EditorInputTheme } from '../../theme/editorTheme';
 
-export class ImageNode extends DecoratorNode<ReactElement> {
-    _imageFile: File | undefined = undefined;
+export type SerializedImageNode = Spread<
+  {
+    src: string;
+  },
+  SerializedLexicalNode
+>;
 
-    constructor(key?: NodeKey) {
+export class ImageNode extends DecoratorNode<ReactElement> {
+    __src: string;
+    __blob?: Blob;
+
+    constructor(src?: string, blob?: Blob, key?: NodeKey) {
         super(key);
+
+        this.__src = src || '';
+        this.__blob = blob;
     }
 
     static getType(): string {
@@ -19,19 +30,20 @@ export class ImageNode extends DecoratorNode<ReactElement> {
         return new ImageNode(node.__key);
       }
 
-      static importJSON(): ImageNode {
-        const imageNode = $createImageNode();
-        return imageNode;
+      setSrc(src: string) {
+        const self = this.getWritable();
+        self.__src = src;
       }
 
-      setImageFile(image: File) {
-        const self = this.getWritable();
-        self._imageFile = image;
+      static importJSON(serializedNode: SerializedImageNode): ImageNode {
+        const imageNode = $createImageNode(serializedNode.src);
+        return imageNode;
       }
     
-      exportJSON(): SerializedLexicalNode {
+      exportJSON(): SerializedImageNode {
         return {
           ...super.exportJSON(),
+          src: this.__src,
           type: 'image',
           version: 1,
         };
@@ -67,18 +79,18 @@ export class ImageNode extends DecoratorNode<ReactElement> {
 
       decorate(): JSX.Element {
         return (
-            <Image file={this._imageFile} nodeKey={this.getKey()}/>
+            <Image src={this.__src} blob={this.__blob} imageKey={this.getKey()}/>
         );
       }
 }
 
-export function $createImageNode(): ImageNode {
-    return $applyNodeReplacement( new ImageNode() );
+  export function $createImageNode(src?: string, blob?: Blob): ImageNode {
+      return $applyNodeReplacement( new ImageNode(src, blob) );
   }
-  
+
   export function $isImageNode(
     node: LexicalNode | null | undefined,
-  ): node is ImageNode {
+  ): node is ImageNode {  
     return node instanceof ImageNode;
   }
   
@@ -88,6 +100,6 @@ export function $createImageNode(): ImageNode {
     if (img.src.startsWith('file:///')) {
       return null;
     }
-    const node = $createImageNode();
+    const node = $createImageNode(img.src);
     return {node};
   }
