@@ -29,7 +29,7 @@ export function ImagePlugin() {
                 const imageNodes: ImageNode[] = [];
 
                 for ( const image of images ) {
-                    const imageNode = $createImageNode(undefined, image);
+                    const imageNode = $createImageNode(undefined, undefined, undefined, image);
                     imageNodes.push(imageNode);
                 }
 

@@ -7,19 +7,27 @@ import { EditorInputTheme } from '../../theme/editorTheme';
 export type SerializedImageNode = Spread<
   {
     src: string;
+    width?: number;
+    height?: number;
   },
   SerializedLexicalNode
 >;
 
 export class ImageNode extends DecoratorNode<ReactElement> {
     __src: string;
+    __width?: number;
+    __height?: number;
+
     __blob?: Blob;
 
-    constructor(src?: string, blob?: Blob, key?: NodeKey) {
+    constructor(src?: string, width?: number, height?: number, blob?: Blob, key?: NodeKey) {
         super(key);
 
         this.__src = src || '';
         this.__blob = blob;
+
+        this.__width = width;
+        this.__height = height;
     }
 
     static getType(): string {
@@ -27,16 +35,26 @@ export class ImageNode extends DecoratorNode<ReactElement> {
       }
 
       static clone(node: ImageNode): ImageNode {
-        return new ImageNode(node.__src, node.__blob, node.__key);
+        return new ImageNode(node.__src, node.__width, node.__height, node.__blob, node.__key);
       }
 
       setSrc(src: string) {
-    const self = this.getWritable();
+        const self = this.getWritable();
         self.__src = src;
       }
 
+      setWidth(width: number) {
+        const self = this.getWritable();
+        self.__width = width;
+      }
+
+      setHeight(height: number) {
+        const self = this.getWritable();
+        self.__height = height;
+      }
+
       static importJSON(serializedNode: SerializedImageNode): ImageNode {
-        const imageNode = $createImageNode(serializedNode.src);
+        const imageNode = $createImageNode(serializedNode.src, serializedNode.width, serializedNode.height);
         return imageNode;
       }
     
@@ -44,6 +62,8 @@ export class ImageNode extends DecoratorNode<ReactElement> {
         return {
           ...super.exportJSON(),
           src: this.__src,
+          width: this.__width,
+          height: this.__height,
           type: 'image',
           version: 1,
         };
@@ -60,10 +80,9 @@ export class ImageNode extends DecoratorNode<ReactElement> {
     
       exportDOM(): DOMExportOutput {
         const element = document.createElement('img');
-        // element.setAttribute('src', this.__src);
-        // element.setAttribute('alt', this.__altText);
-        // element.setAttribute('width', this.__width.toString());
-        // element.setAttribute('height', this.__height.toString());
+        element.setAttribute('src', this.__src);        
+        element.setAttribute('width', `${this.__width}px`);
+        element.setAttribute('height', `${this.__height}px`);
         return {element};
       }
 
@@ -79,13 +98,13 @@ export class ImageNode extends DecoratorNode<ReactElement> {
 
       decorate(): JSX.Element {
         return (
-            <Image src={this.__src} blob={this.__blob} imageKey={this.getKey()}/>
+            <Image src={this.__src} width={this.__width} height={this.__height} blob={this.__blob} imageKey={this.getKey()}/>
         );
       }
 }
 
-  export function $createImageNode(src?: string, blob?: Blob): ImageNode {
-      return $applyNodeReplacement( new ImageNode(src, blob) );
+  export function $createImageNode(src?: string, width?: number, height?: number, blob?: Blob): ImageNode {
+      return $applyNodeReplacement( new ImageNode(src, width, height, blob) );
   }
 
   export function $isImageNode(
@@ -97,9 +116,11 @@ export class ImageNode extends DecoratorNode<ReactElement> {
 
   function $convertImageElement(domNode: Node): null | DOMConversionOutput {
     const img = domNode as HTMLImageElement;
-    if (img.src.startsWith('file:///')) {
+    const {src, width, height} = img;
+    if (src.startsWith('file:///')) {
       return null;
     }
-    const node = $createImageNode(img.src);
+
+    const node = $createImageNode(src, width, height);
     return {node};
   }

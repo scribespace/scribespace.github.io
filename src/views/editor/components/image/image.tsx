@@ -1,22 +1,13 @@
 import { useMainThemeContext } from "@/mainThemeContext";
 import { appGlobals } from "@/system/appGlobals";
+import { assert, separateValueAndUnit, variableExists } from "@/utils";
+import { notNullOrThrowDev, valueValidOrThrowDev } from "@/utils/dev";
+import { MousePosition } from "@/utils/types";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection } from '@lexical/react/useLexicalNodeSelection';
 import { $getNodeByKey, CLICK_COMMAND, COMMAND_PRIORITY_LOW, NodeKey } from "lexical";
-import { CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CSSProperties, useCallback, useEffect, useRef, useState } from "react";
 import { $isImageNode } from "../../nodes/image/imageNode";
-import { MousePosition } from "@/utils/types";
-
-interface ImageProps {
-    src?: string;
-    blob?: Blob;
-    imageKey: NodeKey;
-}
-
-interface ImageSrc {
-    src: string;
-    loading: boolean;
-}
 
 interface ImageControlsStyles {
     topControl: CSSProperties;
@@ -50,17 +41,24 @@ enum ResizeDirection {
 
 const MISSING_IMAGE = '/images/no-image.png' as const;
 
-export function Image( { src, blob, imageKey } : ImageProps) {
+interface ImageProps {
+    src?: string;
+    width?: number;
+    height?: number;
+    blob?: Blob;
+    imageKey: NodeKey;
+}
+
+export function Image( { src, width, height, blob, imageKey } : ImageProps) {
     const [editor] = useLexicalComposerContext();
 
-    const {commonTheme: {pulsing}, editorTheme: {imageTheme}} = useMainThemeContext();
+    const {commonTheme: {pulsing}, editorTheme: {imageTheme}, editorTheme: {imageTheme: {control: imageControl}}} = useMainThemeContext();
 
     const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(imageKey);
 
-    const [imageSrc, setImageSrc] = useState<ImageSrc>({src: src || MISSING_IMAGE, loading: false});
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [resizeDirection, setResizeDirection] = useState<ResizeDirection>(ResizeDirection.None);
     const [markerStyle, setMarkerStyle] = useState<CSSProperties>( {} );
-    const [imageStyle, setImageStyle] = useState<CSSProperties>({display: "inline-block", overflow: "hidden", maxWidth: "100%", width: "max-content"});
     const [controlStyles, setControlStyles] = useState<ImageControlsStyles>( {
         topControl: {},
         bottomControl: {},
@@ -74,120 +72,158 @@ export function Image( { src, blob, imageKey } : ImageProps) {
     } );
     
     const mouseStartPositionRef = useRef<MousePosition>( {x: -1, y: -1} );
+    const mouseCurrentPositionRef = useRef<MousePosition>( {x: -1, y: -1} );
     const imageSizeRef = useRef<{x: number, y: number, width: number, height: number}>( {x: -1, y: -1, width: -1, height: -1} );
+    const containerSizeRef = useRef<{x: number, y: number, width: number, height: number}>( {x: -1, y: -1, width: -1, height: -1} );
     const imageRef = useRef<HTMLImageElement>(null);
+
+    const processResize = useCallback(
+        (shiftKey: boolean) => {
+            if ( resizeDirection == ResizeDirection.None ) return;
+
+            const offset = { x: mouseCurrentPositionRef.current.x - mouseStartPositionRef.current.x, y: mouseCurrentPositionRef.current.y - mouseStartPositionRef.current.y };
+
+            let x0 = imageSizeRef.current.x;
+            let y0 = imageSizeRef.current.y;
+            let x1 = imageSizeRef.current.x + imageSizeRef.current.width;
+            let y1 = imageSizeRef.current.y + imageSizeRef.current.height;
+
+            if ( resizeDirection & ResizeDirection.Left ) {
+                x0 = mouseCurrentPositionRef.current.x;
+                x1 = x0 + imageSizeRef.current.width - offset.x;
+            }
+
+            if ( resizeDirection & ResizeDirection.Right ) {
+                x1 = x0 + imageSizeRef.current.width + offset.x;
+            }
+
+            if ( resizeDirection & ResizeDirection.Top ) {
+                y0 = mouseCurrentPositionRef.current.y;
+                y1 = y0 + imageSizeRef.current.height - offset.y;
+            }
+
+            if ( resizeDirection & ResizeDirection.Bottom ) {
+                y1 = y0 + imageSizeRef.current.height + offset.y;
+            }
+
+            if ( shiftKey ) {
+                if ( (resizeDirection & ResizeDirection.TopLeft) == ResizeDirection.TopLeft ) {
+                    if ( Math.abs( offset.x ) > Math.abs( offset.y ) ) {
+                        const newOffsetY = offset.x * imageSizeRef.current.height / imageSizeRef.current.width;
+                        y0 = mouseStartPositionRef.current.y + newOffsetY;                                    
+                    } else {
+                        const newOffsetX = offset.y * imageSizeRef.current.width / imageSizeRef.current.height;
+                        x0 = mouseStartPositionRef.current.x + newOffsetX; 
+                    }
+                }
+
+                if ( (resizeDirection & ResizeDirection.BottomRight) == ResizeDirection.BottomRight ) {
+                    if ( Math.abs( offset.x ) > Math.abs( offset.y ) ) {
+                        const newOffsetY = offset.x * imageSizeRef.current.height / imageSizeRef.current.width;
+                        y1 = mouseStartPositionRef.current.y + newOffsetY;                                    
+                    } else {
+                        const newOffsetX = offset.y * imageSizeRef.current.width / imageSizeRef.current.height;
+                        x1 = mouseStartPositionRef.current.x + newOffsetX; 
+                    }
+                }
+
+                if ( (resizeDirection & ResizeDirection.BottomLeft) == ResizeDirection.BottomLeft ) {
+                    if ( Math.abs( offset.x ) > Math.abs( offset.y ) ) {
+                        const newOffsetY = offset.x * imageSizeRef.current.height / imageSizeRef.current.width;
+                        y1 = mouseStartPositionRef.current.y - newOffsetY;                                    
+                    } else {
+                        const newOffsetX = offset.y * imageSizeRef.current.width / imageSizeRef.current.height;
+                        x0 = mouseStartPositionRef.current.x - newOffsetX; 
+                    }
+                }
+
+                if ( (resizeDirection & ResizeDirection.TopRight) == ResizeDirection.TopRight ) {
+                    if ( Math.abs( offset.x ) > Math.abs( offset.y ) ) {
+                        const newOffsetY = offset.x * imageSizeRef.current.height / imageSizeRef.current.width;
+                        y0 = mouseStartPositionRef.current.y - newOffsetY;                                    
+                    } else {
+                        const newOffsetX = offset.y * imageSizeRef.current.width / imageSizeRef.current.height;
+                        x1 = mouseStartPositionRef.current.x - newOffsetX; 
+                    }
+                }
+            }
+
+            x0 = Math.max( x0, containerSizeRef.current.x );
+            y0 = Math.max( y0, containerSizeRef.current.y );
+
+            x1 = Math.min( x1, containerSizeRef.current.x + containerSizeRef.current.width );
+            y1 = Math.min( y1, containerSizeRef.current.y + containerSizeRef.current.height );
+
+            const currentMarkerStyle: CSSProperties = {};
+            
+            if ( resizeDirection & ResizeDirection.Left || resizeDirection & ResizeDirection.Right ) {
+                currentMarkerStyle.width = `${x1 - x0}px`;
+                if ( resizeDirection & ResizeDirection.Left ) {
+                    currentMarkerStyle.left = `${x0}px`;
+                }
+            }
+            
+            if ( resizeDirection & ResizeDirection.Top || resizeDirection & ResizeDirection.Bottom ) {
+                currentMarkerStyle.height = `${y1 - y0}px`;
+                if ( resizeDirection & ResizeDirection.Top ) {
+                    currentMarkerStyle.top = `${y0}px`;
+                }
+            }
+
+            setMarkerStyle( (current) => { return {...current, ...currentMarkerStyle}; } );
+        },
+        [resizeDirection]
+    );
 
     useEffect(
         () => {
             const onMouseMove = ( event: MouseEvent ) => {
-                if ( resizeDirection != ResizeDirection.None ) {
-                    const offset = { x: event.clientX - mouseStartPositionRef.current.x, y: event.clientY - mouseStartPositionRef.current.y };
-
-                    let x0 = imageSizeRef.current.x;
-                    let y0 = imageSizeRef.current.y;
-                    let x1 = imageSizeRef.current.x + imageSizeRef.current.width;
-                    let y1 = imageSizeRef.current.y + imageSizeRef.current.height;
-
-                    if ( resizeDirection & ResizeDirection.Left ) {
-                        x0 = event.clientX;
-                        x1 = x0 + imageSizeRef.current.width - offset.x;
-                    }
-
-                    if ( resizeDirection & ResizeDirection.Right ) {
-                        x1 = x0 + imageSizeRef.current.width + offset.x;
-                    }
-
-                    if ( resizeDirection & ResizeDirection.Top ) {
-                        y0 = event.clientY;
-                        y1 = y0 + imageSizeRef.current.height - offset.y;
-                    }
-
-                    if ( resizeDirection & ResizeDirection.Bottom ) {
-                        y1 = y0 + imageSizeRef.current.height + offset.y;
-                    }
-
-                    if ( event.shiftKey ) {
-                        if ( (resizeDirection & ResizeDirection.TopLeft) == ResizeDirection.TopLeft ) {
-                            if ( Math.abs( offset.x ) > Math.abs( offset.y ) ) {
-                                const newOffsetY = offset.x * imageSizeRef.current.height / imageSizeRef.current.width;
-                                y0 = mouseStartPositionRef.current.y + newOffsetY;                                    
-                            } else {
-                                const newOffsetX = offset.y * imageSizeRef.current.width / imageSizeRef.current.height;
-                                x0 = mouseStartPositionRef.current.x + newOffsetX; 
-                            }
-                        }
-
-                        if ( (resizeDirection & ResizeDirection.BottomRight) == ResizeDirection.BottomRight ) {
-                            if ( Math.abs( offset.x ) > Math.abs( offset.y ) ) {
-                                const newOffsetY = offset.x * imageSizeRef.current.height / imageSizeRef.current.width;
-                                y1 = mouseStartPositionRef.current.y + newOffsetY;                                    
-                            } else {
-                                const newOffsetX = offset.y * imageSizeRef.current.width / imageSizeRef.current.height;
-                                x1 = mouseStartPositionRef.current.x + newOffsetX; 
-                            }
-                        }
-
-                        if ( (resizeDirection & ResizeDirection.BottomLeft) == ResizeDirection.BottomLeft ) {
-                            if ( Math.abs( offset.x ) > Math.abs( offset.y ) ) {
-                                const newOffsetY = offset.x * imageSizeRef.current.height / imageSizeRef.current.width;
-                                y1 = mouseStartPositionRef.current.y - newOffsetY;                                    
-                            } else {
-                                const newOffsetX = offset.y * imageSizeRef.current.width / imageSizeRef.current.height;
-                                x0 = mouseStartPositionRef.current.x - newOffsetX; 
-                            }
-                        }
-
-                        if ( (resizeDirection & ResizeDirection.TopRight) == ResizeDirection.TopRight ) {
-                            if ( Math.abs( offset.x ) > Math.abs( offset.y ) ) {
-                                const newOffsetY = offset.x * imageSizeRef.current.height / imageSizeRef.current.width;
-                                y0 = mouseStartPositionRef.current.y - newOffsetY;                                    
-                            } else {
-                                const newOffsetX = offset.y * imageSizeRef.current.width / imageSizeRef.current.height;
-                                x1 = mouseStartPositionRef.current.x - newOffsetX; 
-                            }
-                        }
-                    }
-
-                    const currentMarkerStyle: CSSProperties = {};
-                    
-                    if ( resizeDirection & ResizeDirection.Left || resizeDirection & ResizeDirection.Right ) {
-                        currentMarkerStyle.width = `${x1 - x0}px`;
-                        if ( resizeDirection & ResizeDirection.Left ) {
-                            currentMarkerStyle.left = `${x0}px`;
-                        }
-                    }
-                    
-                    if ( resizeDirection & ResizeDirection.Top || resizeDirection & ResizeDirection.Bottom ) {
-                        currentMarkerStyle.height = `${y1 - y0}px`;
-                        if ( resizeDirection & ResizeDirection.Top ) {
-                            currentMarkerStyle.top = `${y0}px`;
-                        }
-                    }
-
-                    setMarkerStyle( (current) => { return {...current, ...currentMarkerStyle}; } );
-                }
+                mouseCurrentPositionRef.current = { x: event.clientX, y: event.clientY };
+                processResize(event.shiftKey);
+                
             };
 
             const onMouseUp = () => {
                 if ( resizeDirection != ResizeDirection.None ) {
                     setResizeDirection( ResizeDirection.None );
 
-                    setImageStyle( (current) => { return {...current, width: markerStyle.width, height: markerStyle.height }; } );
+                    editor.update( () => {
+                        const imageNode = $getNodeByKey( imageKey );
+                        if ( $isImageNode(imageNode) ) {
+                            valueValidOrThrowDev( markerStyle.width );
+                            valueValidOrThrowDev( markerStyle.height );
+
+                            const width = separateValueAndUnit(markerStyle.width.toString()).value;
+                            const height = separateValueAndUnit(markerStyle.height.toString()).value;
+                            imageNode.setWidth( width );
+                            imageNode.setHeight( height );
+                        }                        
+                    });
+                }
+            };
+
+            const onKeyChanged = (event: KeyboardEvent) => {
+                if ( event.key == "Shift" ) {
+                    processResize(event.shiftKey);
                 }
             };
 
             document.addEventListener('mousemove', onMouseMove);
             document.addEventListener('mouseup', onMouseUp);
+            document.addEventListener('keydown', onKeyChanged);
+            document.addEventListener('keyup', onKeyChanged);
 
             return () => {
                 document.removeEventListener('mousemove', onMouseMove);
                 document.removeEventListener('mouseup', onMouseUp);
-            };
+                document.removeEventListener('keydown', onKeyChanged);
+                document.removeEventListener('keyup', onKeyChanged);
+        };
         },
-        [markerStyle.height, markerStyle.width, resizeDirection]
+        [editor, imageKey, markerStyle.height, markerStyle.width, processResize, resizeDirection]
     );
 
-    useEffect(
+    const setupControls = useCallback( 
         () => {
             const styles: ImageControlsStyles = {
                 topControl: {},
@@ -202,9 +238,16 @@ export function Image( { src, blob, imageKey } : ImageProps) {
 
             };
             let currentMarkerControl: CSSProperties = {};
+            currentMarkerControl.visibility= "hidden";
 
-            if ( isSelected && imageRef.current ) {
-                const commonStyle: CSSProperties = { zIndex: 4, position: "fixed", width: "10px", height: "10px", backgroundColor: "blue" };
+            if ( isSelected ) {
+                notNullOrThrowDev( imageRef.current );
+                const anchorSize = imageControl.anchorSize;
+                const anchorHalfSize = imageControl.anchorSize * 0.5;
+
+                const {x, y, width: imageWidth, height: imageHeight} = imageRef.current.getBoundingClientRect();
+                
+                const commonStyle: CSSProperties = { zIndex: 4, position: "fixed", width: `${anchorSize}px`, height: `${anchorSize}px` };
                 styles.topControl = structuredClone( commonStyle );
                 styles.bottomControl = structuredClone( commonStyle );
                 styles.leftControl = structuredClone( commonStyle );
@@ -215,58 +258,86 @@ export function Image( { src, blob, imageKey } : ImageProps) {
                 styles.bottomLeftControl = structuredClone( commonStyle );
                 styles.bottomRightControl = structuredClone( commonStyle );
 
-                currentMarkerControl = { ...commonStyle, border: "blue solid 2px", backgroundColor: "transparent", visibility: "hidden" };
+                currentMarkerControl = { zIndex: 4, position: "fixed", backgroundColor: "transparent", visibility: "visible", left: `${x}px`, top: `${y}px`, width: `${imageWidth}px`, height: `${imageHeight}px` };
                 
-                const {x, y, width, height} = imageRef.current.getBoundingClientRect();
-                styles.topControl.left = `${x + 0.5 * width - 5}px`;
-                styles.topControl.top = `${y - 5}px`;
+                styles.topControl.left = `${x + 0.5 * imageWidth - anchorHalfSize}px`;
+                styles.topControl.top = `${y - anchorHalfSize}px`;
                 styles.topControl.cursor = 'n-resize';
                 
-                styles.bottomControl.left = `${x + 0.5 * width - 5}px`;
-                styles.bottomControl.top = `${y + height - 5}px`;
+                styles.bottomControl.left = `${x + 0.5 * imageWidth - anchorHalfSize}px`;
+                styles.bottomControl.top = `${y + imageHeight - anchorHalfSize}px`;
                 styles.bottomControl.cursor = 's-resize';
 
-                styles.leftControl.left = `${x - 5}px`;
-                styles.leftControl.top = `${y + 0.5 * height - 5}px`;
+                styles.leftControl.left = `${x - anchorHalfSize}px`;
+                styles.leftControl.top = `${y + 0.5 * imageHeight - anchorHalfSize}px`;
                 styles.leftControl.cursor = 'w-resize';
                 
-                styles.rightControl.left = `${x + width - 5}px`;
-                styles.rightControl.top = `${y + 0.5 * height - 5}px`;
+                styles.rightControl.left = `${x + imageWidth - anchorHalfSize}px`;
+                styles.rightControl.top = `${y + 0.5 * imageHeight - anchorHalfSize}px`;
                 styles.rightControl.cursor = 'e-resize';
 
-                styles.topLeftControl.left = `${x - 5}px`;
-                styles.topLeftControl.top = `${y - 5}px`;
+                styles.topLeftControl.left = `${x - anchorHalfSize}px`;
+                styles.topLeftControl.top = `${y - anchorHalfSize}px`;
                 styles.topLeftControl.cursor = 'nw-resize';
 
-                styles.topRightControl.left = `${x + width - 5}px`;
-                styles.topRightControl.top = `${y - 5}px`;
+                styles.topRightControl.left = `${x + imageWidth - anchorHalfSize}px`;
+                styles.topRightControl.top = `${y - anchorHalfSize}px`;
                 styles.topRightControl.cursor = 'ne-resize';
 
-                styles.bottomLeftControl.left = `${x - 5}px`;
-                styles.bottomLeftControl.top = `${y + height - 5}px`;
+                styles.bottomLeftControl.left = `${x - anchorHalfSize}px`;
+                styles.bottomLeftControl.top = `${y + imageHeight - anchorHalfSize}px`;
                 styles.bottomLeftControl.cursor = 'sw-resize';
 
-                styles.bottomRightControl.left = `${x + width - 5}px`;
-                styles.bottomRightControl.top = `${y + height - 5}px`;
+                styles.bottomRightControl.left = `${x + imageWidth - anchorHalfSize}px`;
+                styles.bottomRightControl.top = `${y + imageHeight - anchorHalfSize}px`;
                 styles.bottomRightControl.cursor = 'se-resize';              
             }
             setControlStyles( styles );
             setMarkerStyle( currentMarkerControl );
         },
-        [isSelected]
+        [imageControl.anchorSize, isSelected]
+    );
+
+    useEffect(
+        () => {
+            setupControls();
+        },
+        [setupControls, width, height]
     );
 
     const onResizeImage = useCallback(
          ( direction: ResizeDirection ): React.MouseEventHandler<HTMLDivElement> => (event: React.MouseEvent<HTMLDivElement>) => {
-            if ( !imageRef.current ) return;
+            notNullOrThrowDev(imageRef.current);
+            const parentElement = imageRef.current.parentElement;
+            notNullOrThrowDev(parentElement);
 
             mouseStartPositionRef.current = { x: event.clientX, y: event.clientY };
-
             const {x, y, width, height} = imageRef.current.getBoundingClientRect();
             imageSizeRef.current = {x, y, width, height};
 
+            editor.update( () => {
+                const imageNode = $getNodeByKey(imageKey);
+                assert( imageNode != null, "Wrong key for ImageNode" );
+
+                const rootElement = editor.getElementByKey( imageNode!.getTopLevelElementOrThrow().getParentOrThrow().getKey());
+                notNullOrThrowDev(rootElement);
+
+                containerSizeRef.current = rootElement.getBoundingClientRect();
+                const rootStyle = getComputedStyle(rootElement);
+                
+                const paddingLeft = rootStyle.paddingLeft ? separateValueAndUnit( rootStyle.paddingLeft ).value : 0;
+                const paddingTop = rootStyle.paddingTop ? separateValueAndUnit( rootStyle.paddingTop ).value : 0;
+                const paddingRight = rootStyle.paddingRight ? separateValueAndUnit( rootStyle.paddingRight ).value : 0;
+                const paddingBottom = rootStyle.paddingBottom ? separateValueAndUnit( rootStyle.paddingBottom ).value : 0;
+
+                containerSizeRef.current.x += paddingLeft;
+                containerSizeRef.current.y += paddingTop;
+                containerSizeRef.current.width -= paddingRight + paddingLeft;
+                containerSizeRef.current.height -= paddingBottom + paddingTop;
+            });
+
+
             const currentMarkerStyle: CSSProperties = {};
-            currentMarkerStyle.visibility = "visible";
             currentMarkerStyle.left = `${x}px`;
             currentMarkerStyle.top = `${y}px`;
             currentMarkerStyle.width = `${width}px`;
@@ -279,16 +350,16 @@ export function Image( { src, blob, imageKey } : ImageProps) {
             event.preventDefault();
             event.stopPropagation();
          },
-         []
+         [editor, imageKey]
     );
 
     useEffect(
         () => {
-            if ( imageSrc.src == MISSING_IMAGE && blob ) {
-                setImageSrc( (current) => { return {...current, loading: true}; } );
+            if ( (src == '' || src == MISSING_IMAGE) && blob ) {
+                setIsLoading( true );
                 appGlobals.urlObjManager.blobsToUrlObjs(
                     (urlsObjs) => {
-                        setImageSrc( {src: urlsObjs[0], loading: false} );
+                        setIsLoading( false );
 
                         editor.update( 
                             () => {
@@ -296,7 +367,8 @@ export function Image( { src, blob, imageKey } : ImageProps) {
                                 if ( $isImageNode(imageNode) ) {
                                     imageNode.setSrc( urlsObjs[0] );
                                 }
-                            }
+                            },
+                            { tag: 'history-merge' }// merge history with prev
                          );
                     },
                     undefined,
@@ -304,7 +376,7 @@ export function Image( { src, blob, imageKey } : ImageProps) {
                 );
             }
         },
-        [blob, editor, imageKey, imageSrc.src]
+        [blob, editor, imageKey, src]
     );
 
     useEffect(
@@ -328,23 +400,23 @@ export function Image( { src, blob, imageKey } : ImageProps) {
 
     return (
         <>
-            <div className={(isSelected ? " " + imageTheme.selected : '')} style={imageStyle}>
-                <img ref={imageRef} className={imageTheme.element + (imageSrc.loading ? (' ' + pulsing): '')} style={{display:"block"}} src={imageSrc.src} alt={`No image ${imageSrc.src}`}/>  
+            <div className={(isSelected ? " " + imageTheme.selected : '')} style={{display: "inline-block", overflow: "hidden", maxWidth: "100%", width, height}}>
+                <img ref={imageRef} className={imageTheme.element + (isLoading ? (' ' + pulsing): '')} style={{display:"block"}} src={src || MISSING_IMAGE} alt={`No image ${src || MISSING_IMAGE}`}/>  
             </div>
 
             {isSelected && 
                 <>
-                    <div style={markerStyle}></div>
+                    <div className={imageControl.marker} style={markerStyle}></div>
 
-                    <div style={controlStyles.topControl} onMouseDown={onResizeImage(ResizeDirection.Top)}></div>
-                    <div style={controlStyles.bottomControl} onMouseDown={onResizeImage(ResizeDirection.Bottom)}></div>
-                    <div style={controlStyles.leftControl} onMouseDown={onResizeImage(ResizeDirection.Left)}></div>
-                    <div style={controlStyles.rightControl} onMouseDown={onResizeImage(ResizeDirection.Right)}></div>
+                    <div className={imageControl.anchor} style={controlStyles.topControl} onMouseDown={onResizeImage(ResizeDirection.Top)}></div>
+                    <div className={imageControl.anchor} style={controlStyles.bottomControl} onMouseDown={onResizeImage(ResizeDirection.Bottom)}></div>
+                    <div className={imageControl.anchor} style={controlStyles.leftControl} onMouseDown={onResizeImage(ResizeDirection.Left)}></div>
+                    <div className={imageControl.anchor} style={controlStyles.rightControl} onMouseDown={onResizeImage(ResizeDirection.Right)}></div>
 
-                    <div style={controlStyles.topLeftControl} onMouseDown={onResizeImage(ResizeDirection.TopLeft)}></div>
-                    <div style={controlStyles.topRightControl} onMouseDown={onResizeImage(ResizeDirection.TopRight)}></div>
-                    <div style={controlStyles.bottomLeftControl} onMouseDown={onResizeImage(ResizeDirection.BottomLeft)}></div>
-                    <div style={controlStyles.bottomRightControl} onMouseDown={onResizeImage(ResizeDirection.BottomRight)}></div>
+                    <div className={imageControl.anchor} style={controlStyles.topLeftControl} onMouseDown={onResizeImage(ResizeDirection.TopLeft)}></div>
+                    <div className={imageControl.anchor} style={controlStyles.topRightControl} onMouseDown={onResizeImage(ResizeDirection.TopRight)}></div>
+                    <div className={imageControl.anchor} style={controlStyles.bottomLeftControl} onMouseDown={onResizeImage(ResizeDirection.BottomLeft)}></div>
+                    <div className={imageControl.anchor} style={controlStyles.bottomRightControl} onMouseDown={onResizeImage(ResizeDirection.BottomRight)}></div>
                 </>
             }
         </>

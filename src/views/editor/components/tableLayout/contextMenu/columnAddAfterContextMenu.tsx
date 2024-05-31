@@ -61,7 +61,7 @@ export function ColumnAddAfterContextMenu() {
         <Submenu className="">
             <MenuItem>
                 <ColumnAddAfterIcon/>
-                <div>Insert Column Before</div>
+                <div>Insert Column After</div>
                 <SubmenuIcon/>
             </MenuItem>
             <NumberInputContextMenu onInputAccepted={onInputAccepted} />

@@ -1,7 +1,7 @@
 import { assert } from "./dev";
 
 export interface ValueUnit {
-    value?: number;
+    value: number;
     unit: string;
 }
 
