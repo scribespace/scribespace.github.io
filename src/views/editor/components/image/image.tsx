@@ -83,46 +83,84 @@ export function Image( { src, blob, imageKey } : ImageProps) {
                 if ( resizeDirection != ResizeDirection.None ) {
                     const offset = { x: event.clientX - mouseStartPositionRef.current.x, y: event.clientY - mouseStartPositionRef.current.y };
 
-                    let x = 0;
-                    let y = 0;
-                    let width = 0;
-                    let height = 0;
+                    let x0 = imageSizeRef.current.x;
+                    let y0 = imageSizeRef.current.y;
+                    let x1 = imageSizeRef.current.x + imageSizeRef.current.width;
+                    let y1 = imageSizeRef.current.y + imageSizeRef.current.height;
 
                     if ( resizeDirection & ResizeDirection.Left ) {
-                        x = event.clientX;
-                        width = imageSizeRef.current.width - offset.x;
+                        x0 = event.clientX;
+                        x1 = x0 + imageSizeRef.current.width - offset.x;
                     }
 
                     if ( resizeDirection & ResizeDirection.Right ) {
-                        width = imageSizeRef.current.width + offset.x;
+                        x1 = x0 + imageSizeRef.current.width + offset.x;
                     }
 
                     if ( resizeDirection & ResizeDirection.Top ) {
-                        y = event.clientY;
-                        height = imageSizeRef.current.height - offset.y;
+                        y0 = event.clientY;
+                        y1 = y0 + imageSizeRef.current.height - offset.y;
                     }
 
                     if ( resizeDirection & ResizeDirection.Bottom ) {
-                        height = imageSizeRef.current.height + offset.y;
+                        y1 = y0 + imageSizeRef.current.height + offset.y;
                     }
 
                     if ( event.shiftKey ) {
-                        
+                        if ( (resizeDirection & ResizeDirection.TopLeft) == ResizeDirection.TopLeft ) {
+                            if ( Math.abs( offset.x ) > Math.abs( offset.y ) ) {
+                                const newOffsetY = offset.x * imageSizeRef.current.height / imageSizeRef.current.width;
+                                y0 = mouseStartPositionRef.current.y + newOffsetY;                                    
+                            } else {
+                                const newOffsetX = offset.y * imageSizeRef.current.width / imageSizeRef.current.height;
+                                x0 = mouseStartPositionRef.current.x + newOffsetX; 
+                            }
+                        }
+
+                        if ( (resizeDirection & ResizeDirection.BottomRight) == ResizeDirection.BottomRight ) {
+                            if ( Math.abs( offset.x ) > Math.abs( offset.y ) ) {
+                                const newOffsetY = offset.x * imageSizeRef.current.height / imageSizeRef.current.width;
+                                y1 = mouseStartPositionRef.current.y + newOffsetY;                                    
+                            } else {
+                                const newOffsetX = offset.y * imageSizeRef.current.width / imageSizeRef.current.height;
+                                x1 = mouseStartPositionRef.current.x + newOffsetX; 
+                            }
+                        }
+
+                        if ( (resizeDirection & ResizeDirection.BottomLeft) == ResizeDirection.BottomLeft ) {
+                            if ( Math.abs( offset.x ) > Math.abs( offset.y ) ) {
+                                const newOffsetY = offset.x * imageSizeRef.current.height / imageSizeRef.current.width;
+                                y1 = mouseStartPositionRef.current.y - newOffsetY;                                    
+                            } else {
+                                const newOffsetX = offset.y * imageSizeRef.current.width / imageSizeRef.current.height;
+                                x0 = mouseStartPositionRef.current.x - newOffsetX; 
+                            }
+                        }
+
+                        if ( (resizeDirection & ResizeDirection.TopRight) == ResizeDirection.TopRight ) {
+                            if ( Math.abs( offset.x ) > Math.abs( offset.y ) ) {
+                                const newOffsetY = offset.x * imageSizeRef.current.height / imageSizeRef.current.width;
+                                y0 = mouseStartPositionRef.current.y - newOffsetY;                                    
+                            } else {
+                                const newOffsetX = offset.y * imageSizeRef.current.width / imageSizeRef.current.height;
+                                x1 = mouseStartPositionRef.current.x - newOffsetX; 
+                            }
+                        }
                     }
 
                     const currentMarkerStyle: CSSProperties = {};
                     
                     if ( resizeDirection & ResizeDirection.Left || resizeDirection & ResizeDirection.Right ) {
-                        currentMarkerStyle.width = `${width}px`;
+                        currentMarkerStyle.width = `${x1 - x0}px`;
                         if ( resizeDirection & ResizeDirection.Left ) {
-                            currentMarkerStyle.left = `${x}px`;
+                            currentMarkerStyle.left = `${x0}px`;
                         }
                     }
                     
                     if ( resizeDirection & ResizeDirection.Top || resizeDirection & ResizeDirection.Bottom ) {
-                        currentMarkerStyle.height = `${height}px`;
+                        currentMarkerStyle.height = `${y1 - y0}px`;
                         if ( resizeDirection & ResizeDirection.Top ) {
-                            currentMarkerStyle.top = `${y}px`;
+                            currentMarkerStyle.top = `${y0}px`;
                         }
                     }
 
@@ -292,7 +330,6 @@ export function Image( { src, blob, imageKey } : ImageProps) {
         <>
             <div className={(isSelected ? " " + imageTheme.selected : '')} style={imageStyle}>
                 <img ref={imageRef} className={imageTheme.element + (imageSrc.loading ? (' ' + pulsing): '')} style={{display:"block"}} src={imageSrc.src} alt={`No image ${imageSrc.src}`}/>  
-
             </div>
 
             {isSelected && 
