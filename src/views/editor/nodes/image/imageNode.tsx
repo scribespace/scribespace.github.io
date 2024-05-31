@@ -27,11 +27,11 @@ export class ImageNode extends DecoratorNode<ReactElement> {
       }
 
       static clone(node: ImageNode): ImageNode {
-        return new ImageNode(node.__key);
+        return new ImageNode(node.__src, node.__blob, node.__key);
       }
 
       setSrc(src: string) {
-        const self = this.getWritable();
+    const self = this.getWritable();
         self.__src = src;
       }
 

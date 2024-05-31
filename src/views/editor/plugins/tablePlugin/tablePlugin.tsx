@@ -1,29 +1,40 @@
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { TablePlugin as LexicalTablePlugin } from '@lexical/react/LexicalTablePlugin';
 import {
-  SELECTION_CHANGE_COMMAND, COMMAND_PRIORITY_LOW,
-  $getSelection, $isRangeSelection, $createTextNode, $getNearestNodeFromDOMNode,
-
-  $getNodeByKey,
-  $createParagraphNode,
-  $isParagraphNode, LexicalEditor,
-  LexicalNode,
-  RangeSelection
-} from 'lexical';
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import {
-  $isTableSelection, $getTableNodeFromLexicalNodeOrThrow, $isTableCellNode, $isTableNode, $getTableRowIndexFromTableCellNode, $isTableRowNode,
-  TableDOMCell, TableNode, TableRowNode, TableCellNode, getDOMCellFromTarget,
-  $computeTableMap
+  $computeTableMap,
+  $getTableNodeFromLexicalNodeOrThrow,
+  $getTableRowIndexFromTableCellNode,
+  $isTableCellNode, $isTableNode,
+  $isTableRowNode,
+  $isTableSelection,
+  TableCellNode,
+  TableDOMCell, TableNode, TableRowNode,
+  getDOMCellFromTarget
 } from '@lexical/table';
 import { $findMatchingParent, mergeRegister } from '@lexical/utils';
+import { Property } from 'csstype';
+import {
+  $createParagraphNode,
+  $createTextNode, $getNearestNodeFromDOMNode,
+
+  $getNodeByKey,
+  $getSelection,
+  $isParagraphNode,
+  $isRangeSelection,
+  COMMAND_PRIORITY_LOW,
+  LexicalEditor,
+  LexicalNode,
+  RangeSelection,
+  SELECTION_CHANGE_COMMAND
+} from 'lexical';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Property } from 'csstype';
 
-import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from '@editor/nodes/table';
 import { useMainThemeContext } from '@/mainThemeContext';
 import { MainTheme } from '@/theme';
 import { assert } from '@/utils';
+import { MousePosition } from '@/utils/types';
+import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from '@editor/nodes/table';
 
 const DRAG_NONE = 0 as const;
 const DRAG_HORIZONTAL = 1 as const;
@@ -39,11 +50,6 @@ type CellClickPart = typeof CELL_TOP | typeof CELL_BOTTOM | typeof CELL_LEFT | t
 const INVALID_CELL_NODE = 1 as const;
 
 const COLUMN_MARGIN = 10;
-
-type MousePosition = {
-    x: number;
-    y: number;
-};
 
 function getTableEdgeCursorPosition(
   editor: LexicalEditor,

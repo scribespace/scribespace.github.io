@@ -33,3 +33,7 @@ export type CreateFunctions<T extends string> = {
 
 
 export type ObjectInterface = { [key: string]: Func };
+export type MousePosition = {
+  x: number;
+  y: number;
+};
