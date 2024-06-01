@@ -1,10 +1,9 @@
-import { assert } from "@/utils";
+import { assert } from "@utils";
+import { $createImageNode, ImageNode } from "@editor/nodes/image";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import { $insertNodes, COMMAND_PRIORITY_LOW } from "lexical";
 import { useEffect } from "react";
-import { ImageNode } from "../../nodes/image";
-import { $createImageNode } from "../../nodes/image/imageNode";
 import { DRAG_DROP_ADD_TYPES_LISTENER_COMMAND } from "../dragDropPlugin";
 import { INSERT_IMAGES_COMMAND } from "./imageCommands";
 

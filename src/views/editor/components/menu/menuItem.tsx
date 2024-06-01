@@ -1,5 +1,5 @@
-import { isIcon } from "@/components/icon";
-import { variableExists } from "@/utils";
+import { isIcon } from "@/components";
+import { variableExists } from "@utils";
 import { EditorThemeClassName } from "lexical";
 import { Children, ReactElement, ReactNode, cloneElement, useMemo } from "react";
 import { MenuContextData, useMenuContext } from "./menuContext";

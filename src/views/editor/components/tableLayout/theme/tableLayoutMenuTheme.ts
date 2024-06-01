@@ -2,7 +2,7 @@ import { TbColumnInsertLeft, TbColumnInsertRight, TbColumnRemove, TbRowInsertBot
 import { IconType } from "react-icons";
 import { AiOutlineMergeCells, AiOutlineSplitCells } from "react-icons/ai";
 import { TfiLayoutColumn2 } from "react-icons/tfi";
-import { Icon } from "@/components/icon";
+import { Icon } from "@/components";
 
 export interface TableLayoutMenuTheme {
     TableAddIcon: IconType;

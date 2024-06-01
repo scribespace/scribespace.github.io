@@ -32,9 +32,8 @@ import { createPortal } from 'react-dom';
 
 import { useMainThemeContext } from '@/mainThemeContext';
 import { MainTheme } from '@/theme';
-import { assert } from '@/utils';
-import { MousePosition } from '@/utils/types';
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from '@editor/nodes/table';
+import { MousePosition, assert } from '@utils';
 
 const DRAG_NONE = 0 as const;
 const DRAG_HORIZONTAL = 1 as const;

@@ -2,7 +2,7 @@ import { PiCheckSquareOffsetBold } from "react-icons/pi";
 import { EditorThemeClassName } from "lexical";
 import { IconType } from "react-icons";
 import { HiPlusSm, HiMinusSm } from "react-icons/hi";
-import { Icon } from "@/components/icon";
+import { Icon } from "@/components";
 
 export interface NumberInputTheme {
     container: EditorThemeClassName;

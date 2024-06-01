@@ -1,4 +1,4 @@
-import { WebWorkerManagerInterface } from "@/interfaces/webWorker/webWorkerShared";
+import { WebWorkerManagerInterface } from "@/interfaces/webWorker";
 import { UrlObjManagerWorkerInterface } from "./urlObjManagerWorker";
 
 type UrlObjManagerWorkerInterfaceType = typeof UrlObjManagerWorkerInterface;

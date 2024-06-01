@@ -1,9 +1,9 @@
+import { fontFromStyle } from '@utils';
 import { useEffect, useState } from 'react';
-import './css/index.css';
 import './css/commonTheme.css';
+import './css/index.css';
 import { MainThemeContext } from './mainThemeContext';
-import { MAIN_THEME_DEFAULT, MainTheme } from './theme/mainTheme';
-import { fontFromStyle } from './utils';
+import { MAIN_THEME_DEFAULT, MainTheme } from './theme';
 import { WelcomeView } from './views/welcomeView';
 
 export function MainApp() {

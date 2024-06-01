@@ -1,3 +1,4 @@
-export { WebWorkerManager } from './webWorkerManager';
-export type { WebWorkerCallback, WebWorkerPayload, WebWorkerResult } from './webWorkerShared';
+export * from './webWorkerManager';
+export type * from './webWorkerShared';
+export * from './webWorkerThread';
 

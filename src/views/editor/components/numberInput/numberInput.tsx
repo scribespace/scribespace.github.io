@@ -1,5 +1,4 @@
-import { separateValueAndUnit, variableExists } from "@utils";
-import { ValueUnit } from "@/utils/types";
+import { ValueUnit, separateValueAndUnit, variableExists } from "@utils";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { IconBaseProps } from "react-icons";
 import { SeparatorVertical } from '../separators';

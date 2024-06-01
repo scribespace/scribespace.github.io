@@ -1,4 +1,5 @@
-import { variableExistsOrThrow } from "./common";
+import { isFunctionOrThrow, isKeyOrThrow, variableExistsOrThrow } from "./common";
+import { Func } from "./types";
 
 export function devOnly(dev: () => void) {
     const func = import.meta.env.DEV ? dev : () => { };
@@ -36,3 +37,23 @@ export function valueValidOrThrowDev<T>(value: T | null | undefined): asserts va
 export const notImplemented = () => {
     throw Error("Not implemented");
 };
+
+export function variableExistsOrThrowDev<T>(variable: T | undefined, message: string): asserts variable is T {
+    devOnly(() => {
+        variableExistsOrThrow(variable, message);
+    });
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isKeyOrThrowDev<T extends object>(key: keyof any, obj: T): asserts key is keyof T {
+    devOnly(() => {
+        isKeyOrThrow(key, obj);
+    });
+}
+
+export function isFunctionOrThrowDev(func: unknown): asserts func is Func {
+    devOnly(() => {
+        isFunctionOrThrow(func);
+    });
+}
+

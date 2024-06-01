@@ -1,6 +1,4 @@
-import { variableExistsOrThrowDev } from "@/utils";
-import { isKeyOrThrowDev } from "@/utils/common";
-import { ObjectInterface } from "@/utils/types";
+import { ObjectInterface, isKeyOrThrowDev, variableExistsOrThrowDev } from "@utils";
 import { WebWorkerCallback, WebWorkerError, WebWorkerManagerFunctionGeneric, WebWorkerPayload, WebWorkerResolveGeneric, WebWorkerResult } from "./webWorkerShared";
 
 export class WebWorkerManager<ThreadInterface extends ObjectInterface> {    

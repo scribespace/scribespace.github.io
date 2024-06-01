@@ -1,4 +1,4 @@
-import { WebWorkerThread } from "@/interfaces/webWorker/webWorkerThread";
+import { WebWorkerThread } from "@/interfaces/webWorker";
 
 export const UrlObjManagerWorkerInterface = {
     blobsToUrlObjs(blobs: Blob[]): [urlObjs: string[]] {

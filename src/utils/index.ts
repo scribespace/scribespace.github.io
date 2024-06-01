@@ -1,7 +1,7 @@
-export type { Font, ValueUnit } from './types';
-export { fontToStyle, fontFromStyle } from './types';
+export type * from './types';
+export * from './types';
+export * from './typesFunc';
 
-export { OpenURL, copyExistingValues, isObject, separateValueAndUnit, urlRegExp, validateUrl, variableExists, variableExistsOrThrow, variableExistsOrThrowDev } from './common';
-
-export { assert, devOnly, notImplemented } from './dev';
+export * from './common';
+export * from './dev';
 

@@ -1,9 +1,16 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import {visualizer} from 'rollup-plugin-visualizer';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    visualizer({
+      filename: './stats.html',
+      open: false, // Automatically open the visualization file after build
+    }),
+  ],
   resolve: {
     alias: {
       '@': '/src/',
@@ -23,6 +30,12 @@ export default defineConfig({
             id.includes('libs/lexical')
           ) {
             return '@lexical';
+          } 
+
+          if (
+            id.includes('views/editor')
+          ) {
+            return '@editor';
           } 
         },
       },

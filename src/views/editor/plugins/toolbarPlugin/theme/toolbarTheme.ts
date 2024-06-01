@@ -1,7 +1,7 @@
 import { EditorThemeClassName } from "lexical";
 import { FaAngleDown } from "react-icons/fa";
 import { MenuTheme } from "@editor/components/menu/theme";
-import { Icon } from "@/components/icon";
+import { Icon } from "@/components";
 
 export interface ToolbarMenuTheme extends MenuTheme {
     fontFamily: EditorThemeClassName;

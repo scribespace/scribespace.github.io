@@ -2,7 +2,7 @@ import { Image } from '@editor/components/image';
 import { addClassNamesToElement } from "@lexical/utils";
 import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, DOMExportOutput, DecoratorNode, EditorConfig, LexicalNode, NodeKey, SerializedLexicalNode, Spread } from "lexical";
 import { ReactElement } from "react";
-import { EditorInputTheme } from '../../theme/editorTheme';
+import { EditorInputTheme } from '@editor/theme/editorTheme';
 
 export type SerializedImageNode = Spread<
   {
@@ -53,6 +53,12 @@ export class ImageNode extends DecoratorNode<ReactElement> {
         self.__height = height;
       }
 
+      setWidthHeight(width: number, height: number) {
+        const self = this.getWritable();
+        self.__width = width;
+        self.__height = height;
+      }
+
       static importJSON(serializedNode: SerializedImageNode): ImageNode {
         const imageNode = $createImageNode(serializedNode.src, serializedNode.width, serializedNode.height);
         return imageNode;
@@ -98,7 +104,14 @@ export class ImageNode extends DecoratorNode<ReactElement> {
 
       decorate(): JSX.Element {
         return (
-            <Image src={this.__src} width={this.__width} height={this.__height} blob={this.__blob} imageKey={this.getKey()}/>
+            <Image 
+              src={this.__src} 
+              width={this.__width} 
+              height={this.__height} 
+              blob={this.__blob} 
+              imageKey={this.getKey()} 
+              setSrc={(src:string)=> {this.setSrc(src);} } 
+              setWidthHeight={(width: number, height: number) => {this.setWidthHeight(width, height);}}/>
         );
       }
 }

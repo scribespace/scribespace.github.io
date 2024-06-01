@@ -1,13 +1,10 @@
 import { useMainThemeContext } from "@/mainThemeContext";
 import { appGlobals } from "@/system/appGlobals";
-import { assert, separateValueAndUnit, variableExists } from "@/utils";
-import { notNullOrThrowDev, valueValidOrThrowDev } from "@/utils/dev";
-import { MousePosition } from "@/utils/types";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection } from '@lexical/react/useLexicalNodeSelection';
+import { MousePosition, assert, notNullOrThrowDev, separateValueAndUnit, valueValidOrThrowDev } from "@utils";
 import { $getNodeByKey, CLICK_COMMAND, COMMAND_PRIORITY_LOW, NodeKey } from "lexical";
 import { CSSProperties, useCallback, useEffect, useRef, useState } from "react";
-import { $isImageNode } from "../../nodes/image/imageNode";
 
 interface ImageControlsStyles {
     topControl: CSSProperties;
@@ -47,9 +44,11 @@ interface ImageProps {
     height?: number;
     blob?: Blob;
     imageKey: NodeKey;
+    setSrc: ( src: string) => void;
+    setWidthHeight: (width: number, height: number) => void;
 }
 
-export function Image( { src, width, height, blob, imageKey } : ImageProps) {
+export function Image( { src, width, height, blob, imageKey, setSrc, setWidthHeight } : ImageProps) {
     const [editor] = useLexicalComposerContext();
 
     const {commonTheme: {pulsing}, editorTheme: {imageTheme}, editorTheme: {imageTheme: {control: imageControl}}} = useMainThemeContext();
@@ -184,22 +183,18 @@ export function Image( { src, width, height, blob, imageKey } : ImageProps) {
             };
 
             const onMouseUp = () => {
-                if ( resizeDirection != ResizeDirection.None ) {
-                    setResizeDirection( ResizeDirection.None );
+                if ( resizeDirection == ResizeDirection.None )  return;
+                
+                setResizeDirection( ResizeDirection.None );
 
-                    editor.update( () => {
-                        const imageNode = $getNodeByKey( imageKey );
-                        if ( $isImageNode(imageNode) ) {
-                            valueValidOrThrowDev( markerStyle.width );
-                            valueValidOrThrowDev( markerStyle.height );
+                editor.update( () => {
+                    valueValidOrThrowDev( markerStyle.width );
+                    valueValidOrThrowDev( markerStyle.height );
 
-                            const width = separateValueAndUnit(markerStyle.width.toString()).value;
-                            const height = separateValueAndUnit(markerStyle.height.toString()).value;
-                            imageNode.setWidth( width );
-                            imageNode.setHeight( height );
-                        }                        
-                    });
-                }
+                    const width = separateValueAndUnit(markerStyle.width.toString()).value;
+                    const height = separateValueAndUnit(markerStyle.height.toString()).value;
+                    setWidthHeight( width, height );
+                });
             };
 
             const onKeyChanged = (event: KeyboardEvent) => {
@@ -220,7 +215,7 @@ export function Image( { src, width, height, blob, imageKey } : ImageProps) {
                 document.removeEventListener('keyup', onKeyChanged);
         };
         },
-        [editor, imageKey, markerStyle.height, markerStyle.width, processResize, resizeDirection]
+        [editor, markerStyle.height, markerStyle.width, processResize, resizeDirection, setWidthHeight]
     );
 
     const setupControls = useCallback( 
@@ -363,10 +358,7 @@ export function Image( { src, width, height, blob, imageKey } : ImageProps) {
 
                         editor.update( 
                             () => {
-                                const imageNode = $getNodeByKey( imageKey );
-                                if ( $isImageNode(imageNode) ) {
-                                    imageNode.setSrc( urlsObjs[0] );
-                                }
+                                setSrc( urlsObjs[0] );
                             },
                             { tag: 'history-merge' }// merge history with prev
                          );
@@ -376,7 +368,7 @@ export function Image( { src, width, height, blob, imageKey } : ImageProps) {
                 );
             }
         },
-        [blob, editor, imageKey, src]
+        [blob, editor, imageKey, setSrc, src]
     );
 
     useEffect(

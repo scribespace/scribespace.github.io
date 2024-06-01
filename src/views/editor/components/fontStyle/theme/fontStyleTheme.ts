@@ -1,6 +1,6 @@
 import { Icon } from "@/components/icon";
 import { IconType } from "react-icons";
-import { ImBold, ImItalic, ImUnderline, ImStrikethrough, ImClearFormatting } from "react-icons/im";
+import { ImBold, ImClearFormatting, ImItalic, ImStrikethrough, ImUnderline } from "react-icons/im";
 
 export interface FontStyleTheme {
     BoldIcon: IconType;

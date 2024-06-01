@@ -1,4 +1,4 @@
-import { ObjectInterface } from "@/utils/types";
+import { ObjectInterface } from "@utils";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type WebWorkerResolveGeneric = (...args: any[]) => void;

@@ -1,4 +1,5 @@
-import { ColorChangeHandler, CompactPicker } from 'react-color';
+import CompactPicker from 'react-color/lib/components/compact/Compact';
+import { ColorChangeHandler } from 'react-color';
 
 import './css/colorPicker.css';
 import { useMainThemeContext } from '@/mainThemeContext';

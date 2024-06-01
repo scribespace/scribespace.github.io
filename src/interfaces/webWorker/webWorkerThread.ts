@@ -1,4 +1,4 @@
-import { isFunctionOrThrowDev } from "@/utils/common";
+import { isFunctionOrThrowDev } from "@utils";
 import { WebWorkerPayload, WebWorkerResult } from "./webWorkerShared";
 
 export class WebWorkerThread<ThreadInterface> {

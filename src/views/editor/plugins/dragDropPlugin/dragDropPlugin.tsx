@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { DRAG_DROP_ADD_TYPES_LISTENER_COMMAND, DragDropListener } from "./dragDropCommands";
 import { assert } from "@/utils";
 
-export default function DragDropPlugin() {
+export function DragDropPlugin() {
     const [editor] = useLexicalComposerContext();
 
     useEffect( 

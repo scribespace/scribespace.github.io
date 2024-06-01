@@ -1,1 +1,1 @@
-export { UrlObjManager } from './urlObjManager';
+export * from './urlObjManager';
