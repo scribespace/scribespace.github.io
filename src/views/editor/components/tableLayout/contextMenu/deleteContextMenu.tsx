@@ -1,10 +1,10 @@
+import { MenuItem } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode } from "@editor/nodes/table";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $isTableSelection } from "@lexical/table";
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical";
-import { MenuItem } from "../../menu";
 
 export function DeleteContextMenu() {
     const [editor] = useLexicalComposerContext();

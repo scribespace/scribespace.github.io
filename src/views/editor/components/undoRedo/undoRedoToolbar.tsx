@@ -5,7 +5,7 @@ import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
-import { MenuItem } from "../menu";
+import { MenuItem } from "@/components/menu";
 
 export default function UndoRedoToolbar() {
     const [editor] = useLexicalComposerContext();

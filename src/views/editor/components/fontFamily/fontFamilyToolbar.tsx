@@ -9,7 +9,7 @@ import { SET_FONT_FAMILY_COMMAND } from '@/views/editor/plugins/fontPlugin';
 import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { Font, fontFromStyle, fontToStyle } from '@utils';
-import { MenuItem, Submenu } from "../menu";
+import { Submenu, MenuItem } from '@/components/menu';
 
 const fontFamilies: Font[] = [
     {name: "Arial", alt: "sans-serif"},

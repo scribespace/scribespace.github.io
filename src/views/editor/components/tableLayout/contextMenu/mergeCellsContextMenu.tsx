@@ -1,3 +1,4 @@
+import { MenuItem } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 import { ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
@@ -7,7 +8,6 @@ import {
     TableCellNode, TableRowNode
 } from "@lexical/table";
 import { $getSelection, $setSelection } from "lexical";
-import { MenuItem } from "../../menu";
 
 export function MergeCellsContextMenu() {
     const [editor] = useLexicalComposerContext();    

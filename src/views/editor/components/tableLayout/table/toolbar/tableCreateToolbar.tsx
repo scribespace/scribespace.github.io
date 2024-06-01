@@ -5,8 +5,8 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { mergeRegister } from "@lexical/utils";
 import { $insertNodes, COMMAND_PRIORITY_LOW } from "lexical";
 import { useEffect, useState } from "react";
-import { MenuItem, Submenu } from "../../../menu";
 import { TableCreator } from "../tableCreator";
+import { Submenu, MenuItem } from "@/components/menu";
 
 export function TableCreateToolbar() {
     const [editor] = useLexicalComposerContext();

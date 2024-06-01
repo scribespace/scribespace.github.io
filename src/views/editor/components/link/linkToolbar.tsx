@@ -5,8 +5,8 @@ import { validateUrl } from "@utils";
 import { $getSelection, $isRangeSelection, $isTextNode, COMMAND_PRIORITY_LOW, SELECTION_CHANGE_COMMAND } from "lexical";
 import { useEffect, useState } from "react";
 import { useToolbarContext } from "../../plugins/toolbarPlugin/context";
-import { MenuItem } from "../menu";
-import { $menuItemParent } from "../menu/theme";
+import { MenuItem } from "@/components/menu";
+import { $menuItemParent } from "@/components/menu/theme";
 
 export function LinkToolbar() {
     const [editor] = useLexicalComposerContext();

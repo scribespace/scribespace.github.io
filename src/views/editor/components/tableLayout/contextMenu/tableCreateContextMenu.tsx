@@ -3,9 +3,9 @@ import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/comm
 import { $createExtendedTableNodeWithDimensions } from "@editor/nodes/table";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $insertNodes } from "lexical";
-import { MenuItem, Submenu } from "../../menu";
-import SubmenuIcon from "../../menu/submenuIcon";
 import { TableCreator } from "../table/tableCreator";
+import { Submenu, MenuItem } from "@/components/menu";
+import SubmenuIcon from "@/components/menu/submenuIcon";
 
 export function TableCreateContextMenu() {
     const [editor] = useLexicalComposerContext();

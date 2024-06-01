@@ -1,27 +1,25 @@
+:root {
+  --toolbar-background-default:rgb(241, 241, 241);
+}
+
 .toolbar-container-default {
     display: flex;
-    background-color: white;
+    background-color: var(--toolbar-background-default);
     border: 1px solid rgb(173, 173, 173);
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     padding: 4px;
-    align-content: center;
-    align-items: center;
   }
 
 .toolbar-menu-container-default {
-  box-shadow: var(--default-box-shadow);
-  background-color: #fff;
-  border-radius: 3px;
   min-width: 200px;
   min-height: 10px;
-  padding-bottom: 8px;
-  padding-top: 8px;
   padding-left: 2px;
   padding-right: 2px;
 }
 
 .toolbar-menu-horizontal-container-default {
+  background-color: var(--toolbar-background-default);
   min-width: 0px;
   min-height: 0px;
   display: flex;
@@ -31,39 +29,7 @@
 }
 
 .toolbar-menu-item-default {
-  border-radius: 5px;
   padding: 3px;
-  vertical-align: middle;
-  align-content: center;
-  border: 0 solid;
-  background-color: transparent;
-  border-radius: 3px;
-  display: flex;
-    
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE 10 and IE 11 */
-  user-select: none; /* Standard syntax */
-}
-
-.toolbar-menu-item-disabled-default {
-  color: gray;
-}
-
-.toolbar-menu-item-selected-default > .toolbar-menu-item-default {
-  background-color: rgb(177, 177, 177)
-}
-
-.toolbar-menu-item-default:hover:not(.toolbar-menu-item-disabled-default) {
-  background-color: rgb(209, 209, 209);
-  cursor: pointer;
-}
-
-.toolbar-menu-item-icon-default {
-  vertical-align: middle;
-}
-
-.toolbar-menu-item-submenu-icon-default {
-  margin-left: auto;
 }
 
 .toolbar-menu-font-family-default {

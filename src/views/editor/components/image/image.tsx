@@ -5,6 +5,7 @@ import { useLexicalNodeSelection } from '@lexical/react/useLexicalNodeSelection'
 import { MousePosition, assert, notNullOrThrowDev, separateValueAndUnit, valueValidOrThrowDev } from "@utils";
 import { $getNodeByKey, CLICK_COMMAND, COMMAND_PRIORITY_LOW, NodeKey } from "lexical";
 import { CSSProperties, useCallback, useEffect, useRef, useState } from "react";
+import { ImageEditor } from "./imageEditor/imageEditor";
 
 interface ImageControlsStyles {
     topControl: CSSProperties;
@@ -51,7 +52,16 @@ interface ImageProps {
 export function Image( { src, width, height, blob, imageKey, setSrc, setWidthHeight } : ImageProps) {
     const [editor] = useLexicalComposerContext();
 
-    const {commonTheme: {pulsing}, editorTheme: {imageTheme}, editorTheme: {imageTheme: {control: imageControl}}} = useMainThemeContext();
+    const {
+        commonTheme: {pulsing}, 
+        editorTheme: {imageTheme}, 
+        editorTheme: {
+            imageTheme: {
+                control: imageControl,
+                editor: imageEditor
+            }
+        }
+    } = useMainThemeContext();
 
     const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(imageKey);
 
@@ -74,6 +84,7 @@ export function Image( { src, width, height, blob, imageKey, setSrc, setWidthHei
     const mouseCurrentPositionRef = useRef<MousePosition>( {x: -1, y: -1} );
     const imageSizeRef = useRef<{x: number, y: number, width: number, height: number}>( {x: -1, y: -1, width: -1, height: -1} );
     const containerSizeRef = useRef<{x: number, y: number, width: number, height: number}>( {x: -1, y: -1, width: -1, height: -1} );
+    const imageEditorRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
 
     const processResize = useCallback(
@@ -241,6 +252,11 @@ export function Image( { src, width, height, blob, imageKey, setSrc, setWidthHei
                 const anchorHalfSize = imageControl.anchorSize * 0.5;
 
                 const {x, y, width: imageWidth, height: imageHeight} = imageRef.current.getBoundingClientRect();
+
+                const imageEditorElement = imageEditorRef.current;
+                notNullOrThrowDev(imageEditorElement);
+                const {width: imageEditorWidth} = imageEditorElement.getBoundingClientRect();
+                imageEditorElement.style.left = `${0.5 * (imageWidth - imageEditorWidth)}px`;
                 
                 const commonStyle: CSSProperties = { zIndex: 4, position: "fixed", width: `${anchorSize}px`, height: `${anchorSize}px` };
                 styles.topControl = structuredClone( commonStyle );
@@ -409,6 +425,10 @@ export function Image( { src, width, height, blob, imageKey, setSrc, setWidthHei
                     <div className={imageControl.anchor} style={controlStyles.topRightControl} onMouseDown={onResizeImage(ResizeDirection.TopRight)}></div>
                     <div className={imageControl.anchor} style={controlStyles.bottomLeftControl} onMouseDown={onResizeImage(ResizeDirection.BottomLeft)}></div>
                     <div className={imageControl.anchor} style={controlStyles.bottomRightControl} onMouseDown={onResizeImage(ResizeDirection.BottomRight)}></div>
+                    
+                    <div ref={imageEditorRef} className={imageEditor.container}>
+                        <ImageEditor/>
+                    </div>
                 </>
             }
         </>

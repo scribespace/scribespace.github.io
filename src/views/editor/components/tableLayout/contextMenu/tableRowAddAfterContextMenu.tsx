@@ -7,9 +7,9 @@ import {
     TableCellNode
 } from "@lexical/table";
 import { $getNodeByKeyOrThrow, $getSelection, $isRangeSelection } from "lexical";
-import { MenuItem, Submenu } from "../../menu";
-import SubmenuIcon from "../../menu/submenuIcon";
 import { NumberInputContextMenu } from "./numberInputContextMenu";
+import { Submenu, MenuItem } from "@/components/menu";
+import SubmenuIcon from "@/components/menu/submenuIcon";
 
 export function TableRowAddAfterContextMenu() {
     const [editor] = useLexicalComposerContext();

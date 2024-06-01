@@ -1,6 +1,6 @@
-import { MenuContext, MenuContextData } from "@/views/editor/components/menu/menuContext";
 import { useContext } from "react";
 import { TOOLBAR_MENU_THEME_DEFAULT, ToolbarMenuTheme } from "../theme";
+import { MenuContextData, MenuContext } from "@/components/menu/menuContext";
 
 export interface ToolbarContextData extends MenuContextData<ToolbarMenuTheme> {
     

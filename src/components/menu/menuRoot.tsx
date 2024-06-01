@@ -30,7 +30,7 @@ export default function MenuRoot({value, children}: MenuRootProps) {
 
     return (
         <MenuContext.Provider  value={value}>
-            <div ref={rootRef}>
+            <div ref={rootRef} style={{display: "inherit"}}>
                 {children}
             </div>
         </MenuContext.Provider>

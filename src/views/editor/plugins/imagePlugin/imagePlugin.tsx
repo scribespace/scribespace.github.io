@@ -7,7 +7,6 @@ import { useEffect } from "react";
 import { DRAG_DROP_ADD_TYPES_LISTENER_COMMAND } from "../dragDropPlugin";
 import { INSERT_IMAGES_COMMAND } from "./imageCommands";
 
-import './css/image.css';
 
 
 export function ImagePlugin() {

@@ -2,7 +2,6 @@ import { CONTEXT_MENU_THEME_DEFAULT, ContextMenuTheme } from "@editor/plugins/co
 import { EditorThemeClassName, EditorThemeClasses } from "lexical";
 import { LINK_THEME_DEFAULT, LinkTheme } from "@editor/components/link/theme";
 import { NumberInputTheme, NUMBER_INPUT_THEME_DEFAULT } from "@editor/components/numberInput/theme";
-import { SeparatorTheme, SEPARATOR_THEME_DEFAULT } from "@editor/components/separators/theme";
 import { TOOLBAR_THEME_DEFAULT, ToolbarTheme } from "@editor/plugins/toolbarPlugin/theme";
 import { UNDO_REDO_THEME_DEFAULT, UndoRedoTheme } from "@editor/components/undoRedo/theme";
 import { FONT_STYLE_THEME_DEFAULT, FontStyleTheme } from "@editor/components/fontStyle/theme";
@@ -10,7 +9,8 @@ import { Font } from "@utils";
 import { ALIGN_MENU_THEME_DEFAULT, AlignMenuTheme } from "../components/align/theme";
 import { COLOR_MENU_THEME_DEFAULT, ColorMenuTheme } from "../components/color/theme";
 import { TABLE_LAYOUT_THEME_DEFAULT, TableLayoutTheme } from "../components/tableLayout/theme";
-import { IMAGE_THEME_DEFAULT, ImageTheme } from "../plugins/imagePlugin/theme";
+import { SEPARATOR_THEME_DEFAULT, SeparatorTheme } from "@/components/separators/theme";
+import { IMAGE_THEME_DEFAULT, ImageTheme } from "../components/image/theme";
 
 export interface EditorInputTheme extends EditorThemeClasses {
     defaultFontSize: EditorThemeClassName;

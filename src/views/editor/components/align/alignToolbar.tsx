@@ -3,8 +3,8 @@ import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import { $getSelection, $isElementNode, $isNodeSelection, $isRangeSelection, COMMAND_PRIORITY_LOW, ElementFormatType, ElementNode, FORMAT_ELEMENT_COMMAND, SELECTION_CHANGE_COMMAND } from "lexical";
 import { useEffect, useMemo, useState } from "react";
-import { MenuItem, Submenu } from "../menu";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { MenuItem, Submenu } from "@/components/menu";
 
 export default function AlignToolbar() {
     const [editor] = useLexicalComposerContext();

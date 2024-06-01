@@ -1,3 +1,4 @@
+import { MenuItem } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 import { $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
@@ -8,7 +9,6 @@ import {
     TableCellNode
 } from "@lexical/table";
 import { $getSelection, $isRangeSelection, $setSelection } from "lexical";
-import { MenuItem } from "../../menu";
 
 
 export function ColumnRemoveContextMenu() {

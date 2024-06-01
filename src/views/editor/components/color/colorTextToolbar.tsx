@@ -6,8 +6,8 @@ import { mergeRegister } from "@lexical/utils";
 import { COMMAND_PRIORITY_LOW } from "lexical";
 import { useEffect, useState } from "react";
 import { ColorResult } from 'react-color';
-import { MenuItem, Submenu } from "../menu";
 import ColorPicker from "./colorPicker";
+import { Submenu, MenuItem } from "@/components/menu";
 
 export default function ColorTextToolbar() {
     const [editor] = useLexicalComposerContext();

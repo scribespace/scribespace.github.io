@@ -2,12 +2,12 @@ import { $createLayoutNodeWithColumns } from "@/views/editor/nodes/layout";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $insertNodes, COMMAND_PRIORITY_LOW } from "lexical";
 import { useCallback, useEffect, useState } from "react";
-import { MenuItem, Submenu } from "../../../menu";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { $closeToolbarMenu, TOOLBAR_CLOSE_MENU_COMMAND } from "@/views/editor/plugins/toolbarPlugin/common";
 import { mergeRegister } from "@lexical/utils";
 import NumberInput from "../../../numberInput";
 import { useToolbarContext } from "@/views/editor/plugins/toolbarPlugin/context";
+import { Submenu, MenuItem } from "@/components/menu";
 
 export function LayoutCreateToolbar() {
     const [editor] = useLexicalComposerContext();

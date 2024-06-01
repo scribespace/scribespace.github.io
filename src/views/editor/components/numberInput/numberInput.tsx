@@ -1,11 +1,12 @@
 import { ValueUnit, separateValueAndUnit, variableExists } from "@utils";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { IconBaseProps } from "react-icons";
-import { SeparatorVertical } from '../separators';
 
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import './css/numberInput.css';
+import { SeparatorVertical } from "@/components/separators";
+import { NumberInputTheme } from "./theme";
 
 interface NumberInputProps {
     type: 'text' | 'number';
@@ -14,11 +15,12 @@ interface NumberInputProps {
     max?: number;
     useAcceptButton?: boolean;
     supportedUnits?: string[];
+    themeOverride?: NumberInputTheme;
     onInputChanged?: (target: HTMLInputElement, change: number) => void;
     onInputAccepted?: (target: HTMLInputElement) => void;
 }
 
-export default function NumberInput({type, value, min, max, useAcceptButton, supportedUnits, onInputChanged, onInputAccepted}: NumberInputProps) {
+export default function NumberInput({type, value, min, max, useAcceptButton, supportedUnits, themeOverride, onInputChanged, onInputAccepted}: NumberInputProps) {
     const { editorTheme }: MainTheme = useMainThemeContext();
     
     const inputRef = useRef<HTMLInputElement>(null);
@@ -120,8 +122,9 @@ export default function NumberInput({type, value, min, max, useAcceptButton, sup
     }
 
     const theme = useMemo(()=> {
+        if ( variableExists(themeOverride) ) return themeOverride;
         return editorTheme.numberInputTheme;
-    },[editorTheme.numberInputTheme]);
+    },[editorTheme.numberInputTheme, themeOverride]);
 
     function DecreaseIcon(props: IconBaseProps) {
         return theme.DecreaseIcon(props);

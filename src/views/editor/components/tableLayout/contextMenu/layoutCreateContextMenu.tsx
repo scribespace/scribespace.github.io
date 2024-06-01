@@ -3,9 +3,9 @@ import { $createLayoutNodeWithColumns } from "@/views/editor/nodes/layout";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $insertNodes } from "lexical";
-import { MenuItem, Submenu } from "../../menu";
-import SubmenuIcon from "../../menu/submenuIcon";
 import { NumberInputContextMenu } from "./numberInputContextMenu";
+import { Submenu, MenuItem } from "@/components/menu";
+import SubmenuIcon from "@/components/menu/submenuIcon";
 
 export function LayoutCreateContextMenu() {
     const [editor] = useLexicalComposerContext();

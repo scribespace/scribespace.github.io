@@ -1,6 +1,5 @@
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { Menu, MenuRoot } from "@editor/components/menu";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import { COMMAND_PRIORITY_LOW } from "lexical";
@@ -9,6 +8,7 @@ import { CONTEXT_MENU_CLOSE_MENU_COMMAND } from "./common/contextMenuCommands";
 import { CONTEXT_MENU_CONTEX_DEFAULT, ContextMenuContextData } from "./context";
 import './css/contextMenuPlugin.css';
 import { TableLayoutContextOptions } from "../../components/tableLayout/tableLayoutContextOptions";
+import { MenuRoot, Menu } from "@/components/menu";
 
 export default function ContextMenuPlugin() {
     const { editorTheme }: MainTheme = useMainThemeContext();

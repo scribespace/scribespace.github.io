@@ -1,3 +1,5 @@
+import { MenuItem } from "@/components/menu";
+import { $menuItemParent } from "@/components/menu/theme";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { CLEAR_FONT_STYLE_COMMAND } from '@/views/editor/plugins/fontPlugin';
@@ -5,8 +7,6 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { mergeRegister } from '@lexical/utils';
 import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_LOW, FORMAT_TEXT_COMMAND, SELECTION_CHANGE_COMMAND } from "lexical";
 import { useCallback, useEffect, useState } from "react";
-import { MenuItem } from "../menu";
-import { $menuItemParent } from '../menu/theme';
 
 export default function FontStyleToolbar() {
     const [editor] = useLexicalComposerContext();

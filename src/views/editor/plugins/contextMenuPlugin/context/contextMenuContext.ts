@@ -1,6 +1,6 @@
-import { MenuContext, MenuContextData } from "@/views/editor/components/menu/menuContext";
 import { useContext } from "react";
 import { CONTEXT_MENU_MENU_THEME_DEFAULT, ContextMenuMenuTheme } from "../theme";
+import { MenuContextData, MenuContext } from "@/components/menu/menuContext";
 
 export interface ContextMenuContextData extends MenuContextData<ContextMenuMenuTheme> {
     mousePosition: { x: number; y: number; };

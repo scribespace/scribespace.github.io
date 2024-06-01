@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react";
-import { $getNodeByKey, $getSelection, $isRangeSelection, LexicalEditor } from "lexical";
 import {
     $findCellNode, $findTableNode, $isTableCellNode, $isTableSelection,
 } from "@lexical/table";
+import { $getNodeByKey, $getSelection, $isRangeSelection, LexicalEditor } from "lexical";
+import { useEffect, useState } from "react";
 
-
-import { SeparatorHorizontalStrong, SeparatorHorizontal } from "../separators";
-
+import { MenuItem } from "@/components/menu";
+import { SeparatorHorizontal, SeparatorHorizontalStrong } from "@/components/separators";
 import { useContextMenuContext } from "@editor/plugins/contextMenuPlugin/context";
-import { ColumnAddAfterContextMenu, ColumnAddBeforeContextMenu, ColumnRemoveContextMenu, DeleteContextMenu, MergeCellsContextMenu, SplitCellsContextMenu, TableCreateContextMenu, TableRowAddAfterContextMenu, TableRowAddBeforeContextMenu, TableRowRemoveContextMenu } from "./contextMenu";
 import { $isLayoutBodyNode } from "../../nodes/layout";
-import { MenuItem } from "../menu";
+import { ColumnAddAfterContextMenu, ColumnAddBeforeContextMenu, ColumnRemoveContextMenu, DeleteContextMenu, MergeCellsContextMenu, SplitCellsContextMenu, TableCreateContextMenu, TableRowAddAfterContextMenu, TableRowAddBeforeContextMenu, TableRowRemoveContextMenu } from "./contextMenu";
 import { LayoutCreateContextMenu } from "./contextMenu/layoutCreateContextMenu";
 
 interface TableContextOptionsProps {
