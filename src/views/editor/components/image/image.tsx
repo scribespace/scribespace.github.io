@@ -5,7 +5,6 @@ import { useLexicalNodeSelection } from '@lexical/react/useLexicalNodeSelection'
 import { MousePosition, assert, notNullOrThrowDev, separateValueAndUnit, valueValidOrThrowDev } from "@utils";
 import { $getNodeByKey, CLICK_COMMAND, COMMAND_PRIORITY_LOW, NodeKey } from "lexical";
 import { CSSProperties, useCallback, useEffect, useRef, useState } from "react";
-import { ImageEditor } from "./imageEditor/imageEditor";
 
 interface ImageControlsStyles {
     topControl: CSSProperties;
@@ -58,7 +57,6 @@ export function Image( { src, width, height, blob, imageKey, setSrc, setWidthHei
         editorTheme: {
             imageTheme: {
                 control: imageControl,
-                editor: imageEditor
             }
         }
     } = useMainThemeContext();
@@ -84,7 +82,6 @@ export function Image( { src, width, height, blob, imageKey, setSrc, setWidthHei
     const mouseCurrentPositionRef = useRef<MousePosition>( {x: -1, y: -1} );
     const imageSizeRef = useRef<{x: number, y: number, width: number, height: number}>( {x: -1, y: -1, width: -1, height: -1} );
     const containerSizeRef = useRef<{x: number, y: number, width: number, height: number}>( {x: -1, y: -1, width: -1, height: -1} );
-    const imageEditorRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
 
     const processResize = useCallback(
@@ -185,6 +182,129 @@ export function Image( { src, width, height, blob, imageKey, setSrc, setWidthHei
         [resizeDirection]
     );
 
+    const onResizeImage = useCallback(
+        ( direction: ResizeDirection ): React.MouseEventHandler<HTMLDivElement> => (event: React.MouseEvent<HTMLDivElement>) => {
+           notNullOrThrowDev(imageRef.current);
+           const parentElement = imageRef.current.parentElement;
+           notNullOrThrowDev(parentElement);
+
+           mouseStartPositionRef.current = { x: event.clientX, y: event.clientY };
+           const {x, y, width, height} = imageRef.current.getBoundingClientRect();
+           imageSizeRef.current = {x, y, width, height};
+
+           editor.update( () => {
+               const imageNode = $getNodeByKey(imageKey);
+               assert( imageNode != null, "Wrong key for ImageNode" );
+
+               const rootElement = editor.getElementByKey( imageNode!.getTopLevelElementOrThrow().getParentOrThrow().getKey());
+               notNullOrThrowDev(rootElement);
+
+               containerSizeRef.current = rootElement.getBoundingClientRect();
+               const rootStyle = getComputedStyle(rootElement);
+               
+               const paddingLeft = rootStyle.paddingLeft ? separateValueAndUnit( rootStyle.paddingLeft ).value : 0;
+               const paddingTop = rootStyle.paddingTop ? separateValueAndUnit( rootStyle.paddingTop ).value : 0;
+               const paddingRight = rootStyle.paddingRight ? separateValueAndUnit( rootStyle.paddingRight ).value : 0;
+               const paddingBottom = rootStyle.paddingBottom ? separateValueAndUnit( rootStyle.paddingBottom ).value : 0;
+
+               containerSizeRef.current.x += paddingLeft;
+               containerSizeRef.current.y += paddingTop;
+               containerSizeRef.current.width -= paddingRight + paddingLeft;
+               containerSizeRef.current.height -= paddingBottom + paddingTop;
+           });
+
+
+           const currentMarkerStyle: CSSProperties = {};
+           currentMarkerStyle.left = `${x}px`;
+           currentMarkerStyle.top = `${y}px`;
+           currentMarkerStyle.width = `${width}px`;
+           currentMarkerStyle.height = `${height}px`;
+
+           setMarkerStyle( (current) => { return {...current, ...currentMarkerStyle}; } );
+
+           setResizeDirection(direction);
+
+           event.preventDefault();
+           event.stopPropagation();
+        },
+        [editor, imageKey]
+   );
+
+   const setupControls = useCallback( 
+    () => {
+        const styles: ImageControlsStyles = {
+            topControl: {},
+            bottomControl: {},
+            leftControl: {},
+            rightControl: {},
+
+            topLeftControl: {},
+            topRightControl: {},
+            bottomLeftControl: {},
+            bottomRightControl: {},
+
+        };
+        let currentMarkerControl: CSSProperties = {};
+        currentMarkerControl.visibility= "hidden";
+
+        if ( isSelected ) {
+            notNullOrThrowDev( imageRef.current );
+            const anchorSize = imageControl.anchorSize;
+            const anchorHalfSize = imageControl.anchorSize * 0.5;
+
+            const {x, y, width: imageWidth, height: imageHeight} = imageRef.current.getBoundingClientRect();
+
+            const commonStyle: CSSProperties = { zIndex: 4, position: "fixed", width: `${anchorSize}px`, height: `${anchorSize}px` };
+            styles.topControl = structuredClone( commonStyle );
+            styles.bottomControl = structuredClone( commonStyle );
+            styles.leftControl = structuredClone( commonStyle );
+            styles.rightControl = structuredClone( commonStyle );
+
+            styles.topLeftControl = structuredClone( commonStyle );
+            styles.topRightControl = structuredClone( commonStyle );
+            styles.bottomLeftControl = structuredClone( commonStyle );
+            styles.bottomRightControl = structuredClone( commonStyle );
+
+            currentMarkerControl = { zIndex: 4, position: "fixed", backgroundColor: "transparent", visibility: "visible", left: `${x}px`, top: `${y}px`, width: `${imageWidth}px`, height: `${imageHeight}px` };
+            
+            styles.topControl.left = `${x + 0.5 * imageWidth - anchorHalfSize}px`;
+            styles.topControl.top = `${y - anchorHalfSize}px`;
+            styles.topControl.cursor = 'n-resize';
+            
+            styles.bottomControl.left = `${x + 0.5 * imageWidth - anchorHalfSize}px`;
+            styles.bottomControl.top = `${y + imageHeight - anchorHalfSize}px`;
+            styles.bottomControl.cursor = 's-resize';
+
+            styles.leftControl.left = `${x - anchorHalfSize}px`;
+            styles.leftControl.top = `${y + 0.5 * imageHeight - anchorHalfSize}px`;
+            styles.leftControl.cursor = 'w-resize';
+            
+            styles.rightControl.left = `${x + imageWidth - anchorHalfSize}px`;
+            styles.rightControl.top = `${y + 0.5 * imageHeight - anchorHalfSize}px`;
+            styles.rightControl.cursor = 'e-resize';
+
+            styles.topLeftControl.left = `${x - anchorHalfSize}px`;
+            styles.topLeftControl.top = `${y - anchorHalfSize}px`;
+            styles.topLeftControl.cursor = 'nw-resize';
+
+            styles.topRightControl.left = `${x + imageWidth - anchorHalfSize}px`;
+            styles.topRightControl.top = `${y - anchorHalfSize}px`;
+            styles.topRightControl.cursor = 'ne-resize';
+
+            styles.bottomLeftControl.left = `${x - anchorHalfSize}px`;
+            styles.bottomLeftControl.top = `${y + imageHeight - anchorHalfSize}px`;
+            styles.bottomLeftControl.cursor = 'sw-resize';
+
+            styles.bottomRightControl.left = `${x + imageWidth - anchorHalfSize}px`;
+            styles.bottomRightControl.top = `${y + imageHeight - anchorHalfSize}px`;
+            styles.bottomRightControl.cursor = 'se-resize';              
+        }
+        setControlStyles( styles );
+        setMarkerStyle( currentMarkerControl );
+    },
+    [imageControl.anchorSize, isSelected]
+);
+
     useEffect(
         () => {
             const onMouseMove = ( event: MouseEvent ) => {
@@ -229,139 +349,11 @@ export function Image( { src, width, height, blob, imageKey, setSrc, setWidthHei
         [editor, markerStyle.height, markerStyle.width, processResize, resizeDirection, setWidthHeight]
     );
 
-    const setupControls = useCallback( 
-        () => {
-            const styles: ImageControlsStyles = {
-                topControl: {},
-                bottomControl: {},
-                leftControl: {},
-                rightControl: {},
-
-                topLeftControl: {},
-                topRightControl: {},
-                bottomLeftControl: {},
-                bottomRightControl: {},
-
-            };
-            let currentMarkerControl: CSSProperties = {};
-            currentMarkerControl.visibility= "hidden";
-
-            if ( isSelected ) {
-                notNullOrThrowDev( imageRef.current );
-                const anchorSize = imageControl.anchorSize;
-                const anchorHalfSize = imageControl.anchorSize * 0.5;
-
-                const {x, y, width: imageWidth, height: imageHeight} = imageRef.current.getBoundingClientRect();
-
-                const imageEditorElement = imageEditorRef.current;
-                notNullOrThrowDev(imageEditorElement);
-                const {width: imageEditorWidth} = imageEditorElement.getBoundingClientRect();
-                imageEditorElement.style.left = `${0.5 * (imageWidth - imageEditorWidth)}px`;
-                
-                const commonStyle: CSSProperties = { zIndex: 4, position: "fixed", width: `${anchorSize}px`, height: `${anchorSize}px` };
-                styles.topControl = structuredClone( commonStyle );
-                styles.bottomControl = structuredClone( commonStyle );
-                styles.leftControl = structuredClone( commonStyle );
-                styles.rightControl = structuredClone( commonStyle );
-
-                styles.topLeftControl = structuredClone( commonStyle );
-                styles.topRightControl = structuredClone( commonStyle );
-                styles.bottomLeftControl = structuredClone( commonStyle );
-                styles.bottomRightControl = structuredClone( commonStyle );
-
-                currentMarkerControl = { zIndex: 4, position: "fixed", backgroundColor: "transparent", visibility: "visible", left: `${x}px`, top: `${y}px`, width: `${imageWidth}px`, height: `${imageHeight}px` };
-                
-                styles.topControl.left = `${x + 0.5 * imageWidth - anchorHalfSize}px`;
-                styles.topControl.top = `${y - anchorHalfSize}px`;
-                styles.topControl.cursor = 'n-resize';
-                
-                styles.bottomControl.left = `${x + 0.5 * imageWidth - anchorHalfSize}px`;
-                styles.bottomControl.top = `${y + imageHeight - anchorHalfSize}px`;
-                styles.bottomControl.cursor = 's-resize';
-
-                styles.leftControl.left = `${x - anchorHalfSize}px`;
-                styles.leftControl.top = `${y + 0.5 * imageHeight - anchorHalfSize}px`;
-                styles.leftControl.cursor = 'w-resize';
-                
-                styles.rightControl.left = `${x + imageWidth - anchorHalfSize}px`;
-                styles.rightControl.top = `${y + 0.5 * imageHeight - anchorHalfSize}px`;
-                styles.rightControl.cursor = 'e-resize';
-
-                styles.topLeftControl.left = `${x - anchorHalfSize}px`;
-                styles.topLeftControl.top = `${y - anchorHalfSize}px`;
-                styles.topLeftControl.cursor = 'nw-resize';
-
-                styles.topRightControl.left = `${x + imageWidth - anchorHalfSize}px`;
-                styles.topRightControl.top = `${y - anchorHalfSize}px`;
-                styles.topRightControl.cursor = 'ne-resize';
-
-                styles.bottomLeftControl.left = `${x - anchorHalfSize}px`;
-                styles.bottomLeftControl.top = `${y + imageHeight - anchorHalfSize}px`;
-                styles.bottomLeftControl.cursor = 'sw-resize';
-
-                styles.bottomRightControl.left = `${x + imageWidth - anchorHalfSize}px`;
-                styles.bottomRightControl.top = `${y + imageHeight - anchorHalfSize}px`;
-                styles.bottomRightControl.cursor = 'se-resize';              
-            }
-            setControlStyles( styles );
-            setMarkerStyle( currentMarkerControl );
-        },
-        [imageControl.anchorSize, isSelected]
-    );
-
     useEffect(
         () => {
             setupControls();
         },
         [setupControls, width, height]
-    );
-
-    const onResizeImage = useCallback(
-         ( direction: ResizeDirection ): React.MouseEventHandler<HTMLDivElement> => (event: React.MouseEvent<HTMLDivElement>) => {
-            notNullOrThrowDev(imageRef.current);
-            const parentElement = imageRef.current.parentElement;
-            notNullOrThrowDev(parentElement);
-
-            mouseStartPositionRef.current = { x: event.clientX, y: event.clientY };
-            const {x, y, width, height} = imageRef.current.getBoundingClientRect();
-            imageSizeRef.current = {x, y, width, height};
-
-            editor.update( () => {
-                const imageNode = $getNodeByKey(imageKey);
-                assert( imageNode != null, "Wrong key for ImageNode" );
-
-                const rootElement = editor.getElementByKey( imageNode!.getTopLevelElementOrThrow().getParentOrThrow().getKey());
-                notNullOrThrowDev(rootElement);
-
-                containerSizeRef.current = rootElement.getBoundingClientRect();
-                const rootStyle = getComputedStyle(rootElement);
-                
-                const paddingLeft = rootStyle.paddingLeft ? separateValueAndUnit( rootStyle.paddingLeft ).value : 0;
-                const paddingTop = rootStyle.paddingTop ? separateValueAndUnit( rootStyle.paddingTop ).value : 0;
-                const paddingRight = rootStyle.paddingRight ? separateValueAndUnit( rootStyle.paddingRight ).value : 0;
-                const paddingBottom = rootStyle.paddingBottom ? separateValueAndUnit( rootStyle.paddingBottom ).value : 0;
-
-                containerSizeRef.current.x += paddingLeft;
-                containerSizeRef.current.y += paddingTop;
-                containerSizeRef.current.width -= paddingRight + paddingLeft;
-                containerSizeRef.current.height -= paddingBottom + paddingTop;
-            });
-
-
-            const currentMarkerStyle: CSSProperties = {};
-            currentMarkerStyle.left = `${x}px`;
-            currentMarkerStyle.top = `${y}px`;
-            currentMarkerStyle.width = `${width}px`;
-            currentMarkerStyle.height = `${height}px`;
-
-            setMarkerStyle( (current) => { return {...current, ...currentMarkerStyle}; } );
-
-            setResizeDirection(direction);
-
-            event.preventDefault();
-            event.stopPropagation();
-         },
-         [editor, imageKey]
     );
 
     useEffect(
@@ -425,10 +417,6 @@ export function Image( { src, width, height, blob, imageKey, setSrc, setWidthHei
                     <div className={imageControl.anchor} style={controlStyles.topRightControl} onMouseDown={onResizeImage(ResizeDirection.TopRight)}></div>
                     <div className={imageControl.anchor} style={controlStyles.bottomLeftControl} onMouseDown={onResizeImage(ResizeDirection.BottomLeft)}></div>
                     <div className={imageControl.anchor} style={controlStyles.bottomRightControl} onMouseDown={onResizeImage(ResizeDirection.BottomRight)}></div>
-                    
-                    <div ref={imageEditorRef} className={imageEditor.container}>
-                        <ImageEditor/>
-                    </div>
                 </>
             }
         </>

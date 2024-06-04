@@ -30,7 +30,7 @@ export class ExtendedTableNode extends ElementNode {
     return this.getLatest().__columnsWidths;
   }
   setColumnsWidths(columns: number[]) {
-    this.getWritable().__columnsWidths = columns;
+    this.getWritable().__columnsWidths = structuredClone(columns);
   }
 
   initColGroup(columnsCount: number) {

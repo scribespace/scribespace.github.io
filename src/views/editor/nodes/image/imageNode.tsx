@@ -1,8 +1,8 @@
 import { Image } from '@editor/components/image';
+import { EditorInputTheme } from '@editor/theme/editorTheme';
 import { addClassNamesToElement } from "@lexical/utils";
 import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, DOMExportOutput, DecoratorNode, EditorConfig, LexicalNode, NodeKey, SerializedLexicalNode, Spread } from "lexical";
 import { ReactElement } from "react";
-import { EditorInputTheme } from '@editor/theme/editorTheme';
 
 export type SerializedImageNode = Spread<
   {
@@ -111,7 +111,8 @@ export class ImageNode extends DecoratorNode<ReactElement> {
               blob={this.__blob} 
               imageKey={this.getKey()} 
               setSrc={(src:string)=> {this.setSrc(src);} } 
-              setWidthHeight={(width: number, height: number) => {this.setWidthHeight(width, height);}}/>
+              setWidthHeight={(width: number, height: number) => {this.setWidthHeight(width, height);}}
+              />
         );
       }
 }
