@@ -1,9 +1,9 @@
 import { assert } from "@utils";
-import { $createImageNode, ImageNode } from "@editor/nodes/image";
+import { $createImageNode, $isImageNode, ImageNode } from "@editor/nodes/image";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
-import { $insertNodes, COMMAND_PRIORITY_LOW } from "lexical";
-import { useEffect } from "react";
+import { $getSelection, $insertNodes, $isNodeSelection, COMMAND_PRIORITY_LOW, KEY_BACKSPACE_COMMAND, KEY_DELETE_COMMAND } from "lexical";
+import { useCallback, useEffect } from "react";
 import { DRAG_DROP_ADD_TYPES_LISTENER_COMMAND } from "../dragDropPlugin";
 import { INSERT_IMAGES_COMMAND } from "./imageCommands";
 
@@ -11,6 +11,26 @@ import { INSERT_IMAGES_COMMAND } from "./imageCommands";
 
 export function ImagePlugin() {
     const [editor] = useLexicalComposerContext();
+
+    const onDelete = useCallback(
+        (event: KeyboardEvent) => {
+            const selection = $getSelection();
+            if ( $isNodeSelection(selection)) {
+                event.preventDefault();
+                let nodeDeleted = false;
+                for ( const node of selection.getNodes() ) {
+                    if ( $isImageNode(node) ) {
+                        node.remove();
+                        nodeDeleted = true;
+                    }
+                }
+
+                return nodeDeleted;
+            }
+            return false;
+        },
+        []
+    );
 
     useEffect(
         () => {
@@ -49,9 +69,19 @@ export function ImagePlugin() {
                     },
                     COMMAND_PRIORITY_LOW
                 ),
+                editor.registerCommand(
+                  KEY_DELETE_COMMAND,
+                  onDelete,
+                  COMMAND_PRIORITY_LOW,
+                ),
+                editor.registerCommand(
+                  KEY_BACKSPACE_COMMAND,
+                  onDelete,
+                  COMMAND_PRIORITY_LOW,
+                ),
             );
         },
-        [editor]
+        [editor, onDelete]
     );
 
     return null;
