@@ -66,7 +66,6 @@ export class ImageNode extends DecoratorNode<ReactElement> {
     
       exportJSON(): SerializedImageNode {
         return {
-          ...super.exportJSON(),
           src: this.__src,
           width: this.__width,
           height: this.__height,

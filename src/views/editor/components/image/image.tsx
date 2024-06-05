@@ -360,7 +360,7 @@ export function Image( { src, width, height, blob, imageKey, setSrc, setWidthHei
         () => {
             if ( (src == '' || src == MISSING_IMAGE) && blob ) {
                 setIsLoading( true );
-                appGlobals.urlObjManager.blobsToUrlObjs(
+                appGlobals.imageManager.blobsToUrlObjs(
                     (urlsObjs) => {
                         setIsLoading( false );
 

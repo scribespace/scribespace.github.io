@@ -1,9 +1,9 @@
 import { System } from "../interfaces/system/system_interface";
-import { UrlObjManager } from "./urlObjManager";
+import { ImageManager } from "./imageManager";
 
 class AppGlobals {
     system: null | System = null; 
-    urlObjManager: UrlObjManager = new UrlObjManager();
+    imageManager: ImageManager = new ImageManager();
 }
 
 export const appGlobals = new AppGlobals();
