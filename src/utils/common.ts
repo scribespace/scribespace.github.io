@@ -34,9 +34,9 @@ export function separateValueAndUnit(valueUnit: string): ValueUnit {
             value: parseFloat(match[1]),
             unit: match[2] || ''
         };
-    } else {
-        throw new Error('separateValueAndUnit: Invalid input format');
     }
+
+    return {value: NaN};
 }
 
 export function isObject(item: unknown): item is Record<string, unknown> {
@@ -66,7 +66,7 @@ export const urlRegExp = new RegExp(
     return url === 'https://' || urlRegExp.test(url);
   }
 
-export function OpenURL(url: string) {
+export function openURL(url: string) {
     if (validateUrl(url)) {
         const validURL = url; // url.match(/^https?:/) ? url : '//' + url;
         window.open(validURL, '_blank')?.focus();

@@ -285,7 +285,7 @@ export default function TablePlugin() {
               }
     
               const tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(tableCellNode);
-              const tableBodyNode = tableNode.getTableBodyNodeWritable();
+              const tableBodyNode = tableNode.getTableBodyNode();
                 
               // Create look up table for cells
               const columnsCount = tableNode.getColumnsWidths().length;
@@ -381,7 +381,7 @@ export default function TablePlugin() {
               tableNode.setColumnWidth(columnIDRef.current, columnWidth + widthOffset);
               tableNode.setColumnWidth(columnIDRef.current + 1, nextColumnWidth - widthOffset);
             },
-            {tag: 'table-update-column-width'},
+            {tag: 'history-merge'},
           );
         },
         [activeCell, editor],

@@ -202,10 +202,10 @@ export function Image( { src, width, height, blob, imageKey, setSrc, setWidthHei
                containerSizeRef.current = rootElement.getBoundingClientRect();
                const rootStyle = getComputedStyle(rootElement);
                
-               const paddingLeft = rootStyle.paddingLeft ? separateValueAndUnit( rootStyle.paddingLeft ).value : 0;
-               const paddingTop = rootStyle.paddingTop ? separateValueAndUnit( rootStyle.paddingTop ).value : 0;
-               const paddingRight = rootStyle.paddingRight ? separateValueAndUnit( rootStyle.paddingRight ).value : 0;
-               const paddingBottom = rootStyle.paddingBottom ? separateValueAndUnit( rootStyle.paddingBottom ).value : 0;
+               const paddingLeft    = rootStyle.paddingLeft     ? separateValueAndUnit( rootStyle.paddingLeft ).value : 0;
+               const paddingTop     = rootStyle.paddingTop      ? separateValueAndUnit( rootStyle.paddingTop ).value : 0;
+               const paddingRight   = rootStyle.paddingRight    ? separateValueAndUnit( rootStyle.paddingRight ).value : 0;
+               const paddingBottom  = rootStyle.paddingBottom   ? separateValueAndUnit( rootStyle.paddingBottom ).value : 0;
 
                containerSizeRef.current.x += paddingLeft;
                containerSizeRef.current.y += paddingTop;

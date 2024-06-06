@@ -152,15 +152,15 @@ export class TableBodyNode extends TableNode {
 
     for ( const cell of cellsToRemove ) {
       for ( const cellChild of cell.getChildren() ) {
-        if ( !$isParagraphNode(cellChild) || cellChild.getTextContentSize() > 0 )
+        if ( !$isParagraphNode(cellChild) || cellChild.getTextContentSize() > 0 ) {
           startCell.append(cellChild);
+        }
       }
       cell.remove();
     }
 
     startCell.setColSpan(columnsCount);
     startCell.setRowSpan(rowsCount);
-
   }
 
   splitCell( _editor: LexicalEditor, cell: TableCellNode ) {

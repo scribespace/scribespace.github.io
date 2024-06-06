@@ -1,6 +1,6 @@
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { OpenURL, validateUrl } from "@utils";
+import { openURL, validateUrl } from "@utils";
 import { useEffect, useMemo, useRef } from "react";
 import { IconBaseProps } from "react-icons";
 import './css/link.css';
@@ -24,20 +24,20 @@ export function LinkEditor({text, url, onTextChange, onURLChange}: LinkEditorPro
     const textInput = useRef<HTMLInputElement>(null);
     const currentURL = useRef<string>('');
     
-    function OpenURLFromInput() {
+    function openURLFromInput() {
         const url = urlInput.current?.value;
         if ( url )
-            OpenURL(url);
+            openURL(url);
     }
 
-    function TextChangeAccepted(e: React.KeyboardEvent<HTMLInputElement>) {
+    function yextChangeAccepted(e: React.KeyboardEvent<HTMLInputElement>) {
         if ( e.key == "Enter" && onTextChange) {
             onTextChange((e.target as HTMLInputElement).value);
             e.preventDefault();
         }
     }
 
-    function URLChangeAccepted(e: React.KeyboardEvent<HTMLInputElement>) {
+    function urlChangeAccepted(e: React.KeyboardEvent<HTMLInputElement>) {
         const inputeElement = (e.target as HTMLInputElement);
         if ( e.key == "Enter" && onURLChange) {
             if ( validateUrl(inputeElement.value) ) {
@@ -78,12 +78,12 @@ export function LinkEditor({text, url, onTextChange, onURLChange}: LinkEditorPro
     <div className={theme.editor}>
         <div className={theme.container}>
             <TextIcon className={theme.icon}/>
-            <input ref={textInput} type="text" className={theme.input} defaultValue={text ? text : url} onKeyDown={TextChangeAccepted}/>
+            <input ref={textInput} type="text" className={theme.input} defaultValue={text ? text : url} onKeyDown={yextChangeAccepted}/>
         </div>
         <div className={theme.container}>
             <LinkIcon className={theme.icon}/>
-            <input ref={urlInput} type="text" className={theme.input} defaultValue={url} onKeyDown={URLChangeAccepted}/>
-            <OpenIcon className={theme.button} onClick={OpenURLFromInput}/>
+            <input ref={urlInput} type="text" className={theme.input} defaultValue={url} onKeyDown={urlChangeAccepted}/>
+            <OpenIcon className={theme.button} onClick={openURLFromInput}/>
         </div>
     </div>
 );

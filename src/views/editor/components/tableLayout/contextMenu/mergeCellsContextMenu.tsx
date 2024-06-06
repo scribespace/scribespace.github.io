@@ -1,7 +1,7 @@
 import { MenuItem } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
-import { ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
+import { TableBodyNode } from "@editor/nodes/table";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
     $findTableNode, $isTableCellNode, $isTableNode, $isTableRowNode, $isTableSelection,
@@ -65,7 +65,7 @@ export function MergeCellsContextMenu() {
                 }
 
                 const firstCellNode = selectedNodes[firstCellNodeID] as TableCellNode;
-                tableBodyNode.getParentOrThrow<ExtendedTableNode>().mergeCells(editor, firstCellNode, rowsToMerge, columnsToMerge);
+                tableBodyNode.mergeCells(editor, firstCellNode, rowsToMerge, columnsToMerge);
 
                 $setSelection(null);
                 $closeContextMenu(editor);

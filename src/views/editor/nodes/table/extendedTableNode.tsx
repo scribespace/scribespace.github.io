@@ -1,6 +1,7 @@
-import { TableCellNode, $getTableNodeFromLexicalNodeOrThrow } from '@lexical/table';
+import { separateValueAndUnit, variableExists } from '@/utils';
+import { $getTableNodeFromLexicalNodeOrThrow, TableCellNode } from '@lexical/table';
+import { addClassNamesToElement } from '@lexical/utils';
 import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, EditorConfig, EditorThemeClassName, ElementNode, LexicalEditor, LexicalNode, NodeKey, SerializedElementNode, Spread } from 'lexical';
-import {addClassNamesToElement} from '@lexical/utils';
 import { $createTableBodyNodeWithDimensions, $isTableBodyNode, TableBodyNode } from './tableBodyNode';
 
 export type SerializedExtendedTableNode = Spread<
@@ -69,18 +70,12 @@ export class ExtendedTableNode extends ElementNode {
     return tableBody;
   }
   
-  getTableBodyNodeWritable() {
-    const tableBody = this.getWritable().getChildAtIndex(0);
-    if ( !$isTableBodyNode(tableBody) ) throw Error("Expected TableBodyNode under child 0");
-    return tableBody;
-  }
-
   mergeCells( editor: LexicalEditor, startCell: TableCellNode, rowsCount: number, columnsCount: number ) {
-    this.getTableBodyNodeWritable().mergeCells(editor, startCell, rowsCount, columnsCount);
+    this.getTableBodyNode().mergeCells(editor, startCell, rowsCount, columnsCount);
   }
 
   splitCell( editor: LexicalEditor, cell: TableCellNode ) {
-    this.getTableBodyNodeWritable().splitCell( editor, cell);
+    this.getTableBodyNode().splitCell( editor, cell);
   }
   
   removeRows(cellNode: TableCellNode, rowsCount: number ) {
@@ -89,23 +84,23 @@ export class ExtendedTableNode extends ElementNode {
       return;
     }
 
-    this.getTableBodyNodeWritable().removeRows(cellNode, rowsCount);
+    this.getTableBodyNode().removeRows(cellNode, rowsCount);
   }
 
   addRowsBefore(cellNode: TableCellNode, rowsToAdd: number ) {
-    this.getTableBodyNodeWritable().addRowsBefore(cellNode, rowsToAdd);
+    this.getTableBodyNode().addRowsBefore(cellNode, rowsToAdd);
   }
 
   addRowsAfter(cellNode: TableCellNode, rowsToAdd: number ) {
-    this.getTableBodyNodeWritable().addRowsAfter(cellNode, rowsToAdd);
+    this.getTableBodyNode().addRowsAfter(cellNode, rowsToAdd);
   }
 
   addColumnsBefore(cellNode: TableCellNode, columnsToAdd: number ) {
-    this.getTableBodyNodeWritable().addColumnsBefore(cellNode, columnsToAdd, this.getWritable().__columnsWidths);
+    this.getTableBodyNode().addColumnsBefore(cellNode, columnsToAdd, this.getWritable().__columnsWidths);
   }
 
   addColumnsAfter(cellNode: TableCellNode, columnsToAdd: number ) {
-    this.getTableBodyNodeWritable().addColumnsAfter(cellNode, columnsToAdd, this.getWritable().__columnsWidths);
+    this.getTableBodyNode().addColumnsAfter(cellNode, columnsToAdd, this.getWritable().__columnsWidths);
   }
 
   removeColumns(cellNode: TableCellNode, columnsCount: number ) {
@@ -113,9 +108,9 @@ export class ExtendedTableNode extends ElementNode {
       this.remove();
       return;
     }
-    this.getTableBodyNodeWritable().removeColumns(cellNode, columnsCount, this.getWritable().__columnsWidths);
+    this.getTableBodyNode().removeColumns(cellNode, columnsCount, this.getWritable().__columnsWidths);
   }
-
+  
   createDOMWithCSS(css: EditorThemeClassName|undefined): HTMLElement {
     const self = this.getLatest();
 
@@ -237,9 +232,13 @@ export function $convertColElements(tableNode: ExtendedTableNode, domNode: Eleme
   tableNode.__columnsWidths = [];
 
   for ( const colElement of colElements ) {
-    const colElementWidthMatch = colElement.style.width.match(/\d+/);
-    const colElementWidth = colElementWidthMatch ? Number(colElementWidthMatch[0]) : -1;
-    tableNode.__columnsWidths.push(colElementWidth);
+    const colElementStyleWidth = separateValueAndUnit( colElement.style.width );
+    let width = variableExists(colElementStyleWidth.value) ? colElementStyleWidth.value : -1;
+    if ( width == -1 ) {
+      const colElementWidth = separateValueAndUnit( colElement.width );
+      width = variableExists(colElementWidth.value) ? colElementWidth.value : -1;
+    }
+    tableNode.__columnsWidths.push(width);
   }
 }
 

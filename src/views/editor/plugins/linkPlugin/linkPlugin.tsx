@@ -8,7 +8,7 @@ import { mergeRegister } from '@lexical/utils';
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LinkEditor } from "@editor/components/link";
-import { urlRegExp, validateUrl, OpenURL } from "@utils";
+import { urlRegExp, validateUrl, openURL } from "@utils";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 
@@ -216,7 +216,7 @@ export default function LinkPlugin() {
                     const element = editor.getElementByKey(nodeKey) as HTMLLinkElement;
                     if ( (e as MouseEvent).ctrlKey && element) {
                         const url = element.href;
-                        OpenURL(url);
+                        openURL(url);
                     }                    
                 }}/>
             <LexicalLinkPlugin validateUrl={validateUrl}/>

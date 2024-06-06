@@ -1,7 +1,7 @@
 
 export interface ValueUnit {
     value: number;
-    unit: string;
+    unit?: string;
 }
 
 export interface Font {

@@ -1,5 +1,5 @@
 import { $getTableNodeFromLexicalNodeOrThrow } from "@lexical/table";
-import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, EditorConfig, LexicalNode, NodeKey } from "lexical";
+import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, EditorConfig, LexicalEditor, LexicalNode, NodeKey } from "lexical";
 import { $convertColElements, ExtendedTableNode, SerializedExtendedTableNode } from "../table";
 import { $createLayoutBodyNodeWithColumns, $isLayoutBodyNode, LayoutBodyNode } from "./layoutBodyNode";
 
@@ -22,11 +22,6 @@ export class LayoutNode extends ExtendedTableNode {
     return tableBody;
   }
   
-  getTableBodyNodeWritable() {
-    const tableBody = this.getWritable().getChildAtIndex(0);
-    if ( !$isLayoutBodyNode(tableBody) ) throw Error("Expected LayoutBodyNode under child 0");
-    return tableBody;
-  }
   removeRows() {}
 
   addRowsBefore() {}
@@ -37,6 +32,7 @@ export class LayoutNode extends ExtendedTableNode {
     return this.createDOMWithCSS(config.theme.layout);
   }
 
+  
   static importDOM(): DOMConversionMap | null {
     return {
       table: () => ({
