@@ -1,27 +1,43 @@
 import { $getTableNodeFromLexicalNodeOrThrow } from "@lexical/table";
-import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, EditorConfig, LexicalEditor, LexicalNode, NodeKey } from "lexical";
-import { $convertColElements, ExtendedTableNode, SerializedExtendedTableNode } from "../table";
-import { $createLayoutBodyNodeWithColumns, $isLayoutBodyNode, LayoutBodyNode } from "./layoutBodyNode";
+import {
+  $applyNodeReplacement,
+  DOMConversionMap,
+  DOMConversionOutput,
+  EditorConfig,
+  LexicalNode,
+  NodeKey,
+} from "lexical";
+import {
+  $convertColElements,
+  ExtendedTableNode,
+  SerializedExtendedTableNode,
+} from "../table";
+import {
+  $createLayoutBodyNodeWithColumns,
+  $isLayoutBodyNode,
+  LayoutBodyNode,
+} from "./layoutBodyNode";
 
 export class LayoutNode extends ExtendedTableNode {
-    constructor(columnsWidths?: number[], key?: NodeKey) {
-      super(columnsWidths, key);
-    }
+  constructor(columnsWidths?: number[], key?: NodeKey) {
+    super(columnsWidths, key);
+  }
 
   static getType(): string {
-    return 'layout';
+    return "layout";
   }
 
   static clone(node: LayoutNode): LayoutNode {
-    return new LayoutNode( node.__columnsWidths, node.__key );
+    return new LayoutNode(node.__columnsWidths, node.__key);
   }
 
   getTableBodyNode() {
     const tableBody = this.getLatest().getChildAtIndex(0);
-    if ( !$isLayoutBodyNode(tableBody) ) throw Error("Expected LayoutBodyNode under child 0");
+    if (!$isLayoutBodyNode(tableBody))
+      throw Error("Expected LayoutBodyNode under child 0");
     return tableBody;
   }
-  
+
   removeRows() {}
 
   addRowsBefore() {}
@@ -32,7 +48,6 @@ export class LayoutNode extends ExtendedTableNode {
     return this.createDOMWithCSS(config.theme.layout);
   }
 
-  
   static importDOM(): DOMConversionMap | null {
     return {
       table: () => ({
@@ -52,13 +67,13 @@ export class LayoutNode extends ExtendedTableNode {
   exportJSON(): SerializedExtendedTableNode {
     return {
       ...super.exportJSON(),
-      type: 'layout',
+      type: "layout",
       version: 1,
     };
   }
 }
 
-export function $createLayoutNodeWithColumns( cols: number ): ExtendedTableNode {
+export function $createLayoutNodeWithColumns(cols: number): ExtendedTableNode {
   const layoutNode = $createLayoutNode();
   const layoutBodyNode = $createLayoutBodyNodeWithColumns(cols);
 
@@ -69,23 +84,26 @@ export function $createLayoutNodeWithColumns( cols: number ): ExtendedTableNode 
 }
 
 export function $getLayoutNodeFromLexicalNodeOrThrow(node: LexicalNode) {
-  return ($getTableNodeFromLexicalNodeOrThrow(node) as LayoutBodyNode).getParentOrThrow<LayoutNode>();
+  return (
+    $getTableNodeFromLexicalNodeOrThrow(node) as LayoutBodyNode
+  ).getParentOrThrow<LayoutNode>();
 }
 
 export function $convertLayoutElement(domNode: Node): DOMConversionOutput {
-    const layoutNode = $createLayoutNode();
-    if ( !(domNode instanceof Element) ) throw Error("Expected Element");
-  
-    $convertColElements(layoutNode, domNode);
-  
-    return {node: layoutNode}; 
-  }
+  const layoutNode = $createLayoutNode();
+  if (!(domNode instanceof Element)) throw Error("Expected Element");
 
-export function $createLayoutNode(): LayoutNode {
-	return $applyNodeReplacement(new LayoutNode());
+  $convertColElements(layoutNode, domNode);
 
+  return { node: layoutNode };
 }
 
-export function $isLayoutNode(node: LexicalNode | null | undefined): node is LayoutNode {
-	return node instanceof LayoutNode;
+export function $createLayoutNode(): LayoutNode {
+  return $applyNodeReplacement(new LayoutNode());
+}
+
+export function $isLayoutNode(
+  node: LexicalNode | null | undefined,
+): node is LayoutNode {
+  return node instanceof LayoutNode;
 }

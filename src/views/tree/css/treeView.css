@@ -1,7 +1,7 @@
 .tree-div {
-    overflow: visible;
+  overflow: visible;
 }
 
-div[role=tree] {
-    white-space: nowrap;
+div[role="tree"] {
+  white-space: nowrap;
 }

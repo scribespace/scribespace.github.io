@@ -1,1 +1,1 @@
-export {LayoutPlugin} from './layoutPlugin';
+export { LayoutPlugin } from "./layoutPlugin";

@@ -1,3 +1,3 @@
-import ContextMenuPlugin from './contextMenuPlugin';
+import ContextMenuPlugin from "./contextMenuPlugin";
 
 export default ContextMenuPlugin;

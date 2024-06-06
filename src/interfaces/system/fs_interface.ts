@@ -1,47 +1,50 @@
 export enum FileSystemStatus {
-    Unknown,
-    Success,
-    NotFound,
-    MismatchHash,
+  Unknown,
+  Success,
+  NotFound,
+  MismatchHash,
 }
 
 export enum FileUploadMode {
-    Add,
-    Replace,
+  Add,
+  Replace,
 }
 
 export interface File {
-    content: Blob | null;
+  content: Blob | null;
 }
 
 export interface FileInfo {
-    hash: string | undefined;
-    name: string | undefined;
+  hash: string | undefined;
+  name: string | undefined;
 }
 
 export interface FileResult {
-    status: FileSystemStatus;
-} 
+  status: FileSystemStatus;
+}
 
 export interface UploadResult extends FileResult {
-    fileInfo?: FileInfo;
+  fileInfo?: FileInfo;
 }
 export interface DownloadResult extends FileResult {
-    file?: File;
-    fileInfo?: FileInfo;
+  file?: File;
+  fileInfo?: FileInfo;
 }
-export interface DeleteResults extends FileResult {
-}
+export interface DeleteResults extends FileResult {}
 
 export interface GetMetadataResults extends FileResult {
-    fileInfo?: FileInfo;
+  fileInfo?: FileInfo;
 }
 
 export interface FileSystem {
-    calculateFileHash(file: File): Promise<string>;
-    getFileHash(path: string): Promise<string>; // return file's hash from server as string
-    uploadFile(path: string, file: File, mode: FileUploadMode): Promise<UploadResult>;
-    downloadFile(path: string): Promise<DownloadResult>;
-    deleteFile(path: string): Promise<DeleteResults>;
-    getFileURL(path: string): Promise<string>;
+  calculateFileHash(file: File): Promise<string>;
+  getFileHash(path: string): Promise<string>; // return file's hash from server as string
+  uploadFile(
+    path: string,
+    file: File,
+    mode: FileUploadMode,
+  ): Promise<UploadResult>;
+  downloadFile(path: string): Promise<DownloadResult>;
+  deleteFile(path: string): Promise<DeleteResults>;
+  getFileURL(path: string): Promise<string>;
 }

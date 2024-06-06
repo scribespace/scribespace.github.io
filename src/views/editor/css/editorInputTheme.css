@@ -1,4 +1,3 @@
-
 :root {
   --default-font-size: 10pt;
   --default-font-family: Arial, sans-serif;
@@ -6,151 +5,153 @@
 }
 
 .editor-container {
-    width: 210mm;
-    height: 100%;
+  width: 210mm;
+  height: 100%;
 }
 
 .editor-inner {
-    background-color: white;
-    border: 1px solid rgb(173, 173, 173);
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-    box-sizing: border-box;
-    overflow: hidden;
+  background-color: white;
+  border: 1px solid rgb(173, 173, 173);
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .editor-input {
-    min-height: 150px;
-    resize: none;
-    caret-color: rgb(5, 5, 5);
-    position: relative;
-    tab-size: 1;
-    outline: 0;
-    padding: 15px 10px;
-    height: 100%;
-    box-sizing: border-box;
-    overflow: auto;
-  }
+  min-height: 150px;
+  resize: none;
+  caret-color: rgb(5, 5, 5);
+  position: relative;
+  tab-size: 1;
+  outline: 0;
+  padding: 15px 10px;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: auto;
+}
 
-  .editor-see-through {
-    z-index: 5;
-    position: absolute;
-    
-    opacity: 0.2;
-  }
+.editor-see-through {
+  z-index: 5;
+  position: absolute;
 
-  .editor-see-through:hover {
-      opacity: 1;
-  }
+  opacity: 0.2;
+}
+
+.editor-see-through:hover {
+  opacity: 1;
+}
 
 .ltr {
-    text-align: left;
-  }
-  
-  .rtl {
-    text-align: right;
-  }
+  text-align: left;
+}
 
-  .editor-paragraph {
-    margin: 0;
-    margin-bottom: 8px;
-    position: relative;
-  }
+.rtl {
+  text-align: right;
+}
 
-  .link {
-    color: rgb(33, 111, 219);
-    text-decoration: underline;
-  }
+.editor-paragraph {
+  margin: 0;
+  margin-bottom: 8px;
+  position: relative;
+}
 
-  .link:visited {
-    color: rgb(109, 53, 131);
-  }
+.link {
+  color: rgb(33, 111, 219);
+  text-decoration: underline;
+}
 
-  .editor-text {
-    font-size: var(--default-font-size);
-    font-family: var(--default-font-family)
-  }
+.link:visited {
+  color: rgb(109, 53, 131);
+}
 
-  .editor-text-bold {
-    font-weight: bold;
-  }
-  
-  .editor-text-italic {
-    font-style: italic;
-  }
-  
-  .editor-text-underline {
-    text-decoration: underline;
-  }
-  
-  .editor-text-strikethrough {
-    text-decoration: line-through;
-  }
-  
-  .editor-text-underlineStrikethrough {
-    text-decoration: underline line-through;
-  }
+.editor-text {
+  font-size: var(--default-font-size);
+  font-family: var(--default-font-family);
+}
 
-   .editor-table{
-    border-collapse: collapse;
-    border-spacing: 0;
-    table-layout: fixed;
-    width: 100%;
-  }
+.editor-text-bold {
+  font-weight: bold;
+}
 
-  .editor-table-row{
-  } 
+.editor-text-italic {
+  font-style: italic;
+}
 
-  .editor-table-cell{
-    border: 1px solid black;
-    padding: 0;
-  }
- 
-  .editor-layout {
-    border-collapse: separate;
-    table-layout: fixed;
-    width: 100%;
-    border: none;
+.editor-text-underline {
+  text-decoration: underline;
+}
+
+.editor-text-strikethrough {
+  text-decoration: line-through;
+}
+
+.editor-text-underlineStrikethrough {
+  text-decoration: underline line-through;
+}
+
+.editor-table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.editor-table-row {
+}
+
+.editor-table-cell {
+  border: 1px solid black;
+  padding: 0;
+}
+
+.editor-layout {
+  border-collapse: separate;
+  table-layout: fixed;
+  width: 100%;
+  border: none;
+}
+
+.editor-layout > tbody > .editor-table-row > .editor-table-cell {
+  vertical-align: top;
+  border: 1px dotted black;
+}
+
+@media print {
+  .editor-table-cell {
+    background-image: none !important;
   }
 
   .editor-layout > tbody > .editor-table-row > .editor-table-cell {
-    vertical-align: top;
-    border: 1px dotted black;
+    border: 1px dotted transparent;
   }
 
-  @media print {
-    .editor-table-cell{
-      background-image: none !important;
-    }
+  @page {
+    size: A4 portrait;
+  }
+  body * {
+    visibility: hidden;
+  }
+  .section-to-print,
+  .section-to-print * {
+    visibility: visible;
+  }
+  .section-to-print {
+    width: 210mm;
+    position: absolute;
+    left: 0;
+    top: 0;
+    overflow: visible;
+  }
 
-    .editor-layout > tbody > .editor-table-row > .editor-table-cell{
-      border: 1px dotted transparent;
-    }
+  body,
+  html {
+    -webkit-print-color-adjust: exact; /* Chrome, Safari */
+    color-adjust: exact; /* Firefox */
+    background: inherit; /* Ensure backgrounds are printed */
+  }
 
-    @page {
-      size: A4 portrait;
-    }
-    body * {
-      visibility: hidden;
-    }
-    .section-to-print, .section-to-print * {
-      visibility: visible;
-    }
-    .section-to-print {
-      width: 210mm;
-      position: absolute;
-      left: 0;
-      top: 0;
-      overflow: visible;
-    }
-  
-    body, html {
-      -webkit-print-color-adjust: exact; /* Chrome, Safari */
-      color-adjust: exact;              /* Firefox */
-      background: inherit;              /* Ensure backgrounds are printed */
-    }
-    
-    .print-disabled{ 
-      display: none;
-    } 
+  .print-disabled {
+    display: none;
+  }
 }

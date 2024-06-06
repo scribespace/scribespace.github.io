@@ -1,18 +1,18 @@
 @keyframes pulsingAnimation {
-    0% {
+  0% {
     background-color: transparent;
-      filter: brightness(100%);
-    }
-    50% {
-        background-color: white;
-      filter: brightness(50%);
-    }
-    100% {
-        background-color: transparent;
-      filter: brightness(100%);
-    }
+    filter: brightness(100%);
   }
+  50% {
+    background-color: white;
+    filter: brightness(50%);
+  }
+  100% {
+    background-color: transparent;
+    filter: brightness(100%);
+  }
+}
 
 .pulsing {
-    animation: pulsingAnimation 2s infinite;
+  animation: pulsingAnimation 2s infinite;
 }

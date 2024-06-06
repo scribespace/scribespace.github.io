@@ -8,4 +8,5 @@ export const SET_FONT_SIZE_COMMAND: LexicalCommand<string> = createCommand();
 export const FONT_SIZE_CHANGED_COMMAND: LexicalCommand<void> = createCommand();
 
 export const SET_FONT_FAMILY_COMMAND: LexicalCommand<string> = createCommand();
-export const FONT_FAMILY_CHANGED_COMMAND: LexicalCommand<string> = createCommand();
+export const FONT_FAMILY_CHANGED_COMMAND: LexicalCommand<string> =
+  createCommand();

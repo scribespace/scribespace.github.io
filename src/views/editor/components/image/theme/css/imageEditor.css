@@ -1,16 +1,16 @@
 .image-editor-container-default {
-    background-color: white;
-    box-shadow: var(--default-box-shadow);
-    border-radius: 5px;
-    padding: 5px;
+  background-color: white;
+  box-shadow: var(--default-box-shadow);
+  border-radius: 5px;
+  padding: 5px;
 
-    align-content: center;
-    align-items: center;
+  align-content: center;
+  align-items: center;
 
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  flex-direction: row;
 }
 
-.image-editor-menu-item-default{
-    padding: 3px;
+.image-editor-menu-item-default {
+  padding: 3px;
 }

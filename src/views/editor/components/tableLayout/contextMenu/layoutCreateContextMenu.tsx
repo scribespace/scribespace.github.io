@@ -8,28 +8,38 @@ import { Submenu, MenuItem } from "@/components/menu";
 import SubmenuIcon from "@/components/menu/submenuIcon";
 
 export function LayoutCreateContextMenu() {
-    const [editor] = useLexicalComposerContext();
-    const {editorTheme: {tableLayoutTheme: {menuTheme: {LayoutAddIcon}}}} = useMainThemeContext();
+  const [editor] = useLexicalComposerContext();
+  const {
+    editorTheme: {
+      tableLayoutTheme: {
+        menuTheme: { LayoutAddIcon },
+      },
+    },
+  } = useMainThemeContext();
 
-    const onInputAccepted = (input: HTMLInputElement) => {
-        const cols = input.valueAsNumber;
+  const onInputAccepted = (input: HTMLInputElement) => {
+    const cols = input.valueAsNumber;
 
-        editor.update(() => {
-            const layoutNode = $createLayoutNodeWithColumns(cols);
-            $insertNodes([layoutNode]);
-        });
+    editor.update(() => {
+      const layoutNode = $createLayoutNodeWithColumns(cols);
+      $insertNodes([layoutNode]);
+    });
 
-        $closeContextMenu(editor);
-    };
+    $closeContextMenu(editor);
+  };
 
-    return (
-        <Submenu className="">
-            <MenuItem>
-                <LayoutAddIcon/>
-                <div>Create Layout</div>
-                <SubmenuIcon/>
-            </MenuItem>
-            <NumberInputContextMenu value={2} min={2} onInputAccepted={onInputAccepted} />
-        </Submenu>
-    );
+  return (
+    <Submenu className="">
+      <MenuItem>
+        <LayoutAddIcon />
+        <div>Create Layout</div>
+        <SubmenuIcon />
+      </MenuItem>
+      <NumberInputContextMenu
+        value={2}
+        min={2}
+        onInputAccepted={onInputAccepted}
+      />
+    </Submenu>
+  );
 }

@@ -1,1 +1,1 @@
-export * from './useWebWorkerJob';
+export * from "./useWebWorkerJob";

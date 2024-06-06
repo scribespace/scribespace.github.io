@@ -1,4 +1,3 @@
-export * from './webWorkerManager';
-export type * from './webWorkerShared';
-export * from './webWorkerThread';
-
+export * from "./webWorkerManager";
+export type * from "./webWorkerShared";
+export * from "./webWorkerThread";

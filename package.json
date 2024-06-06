@@ -10,9 +10,10 @@
     "lint:fix": "eslint . --ext ts,tsx --report-unused-disable-directives --fix",
     "validate": "npm run testcircular && npm run lint",
     "preview": "vite preview",
-    "postinstall": "node ./postinstall.js",
-    "copylexical": "node ./copylexical.js",
-    "installlexical": "node ./installlexical.js",
+    "postinstall": "node ./scripts/postinstall.js",
+    "copylexical": "node ./scripts/copylexical.js",
+    "installlexical": "node ./scripts/installlexical.js",
+    "formatall": "prettier ./src/ --write",
     "testcircular": "madge --warning --circular ./src"
   },
   "dependencies": {
@@ -60,6 +61,7 @@
     "eslint-plugin-react-refresh": "^0.4.6",
     "fs-extra": "^11.2.0",
     "madge": "^7.0.0",
+    "prettier": "3.3.1",
     "rollup-plugin-visualizer": "^5.12.0",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"

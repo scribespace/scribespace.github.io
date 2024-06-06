@@ -1,5 +1,3 @@
-export interface LayoutTheme {
-}
+export interface LayoutTheme {}
 
-export const LAYOUT_THEME_DEFAULT: LayoutTheme = {
-};
+export const LAYOUT_THEME_DEFAULT: LayoutTheme = {};

@@ -1,3 +1,1 @@
-
-export { TableCreator } from './tableCreator';
-
+export { TableCreator } from "./tableCreator";

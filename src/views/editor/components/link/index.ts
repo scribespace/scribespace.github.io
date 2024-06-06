@@ -1,2 +1,2 @@
-export { LinkEditor } from './linkEditor';
-export { LinkToolbar } from './linkToolbar';
+export { LinkEditor } from "./linkEditor";
+export { LinkToolbar } from "./linkToolbar";

@@ -1,8 +1,27 @@
-import { separateValueAndUnit, variableExists } from '@/utils';
-import { $getTableNodeFromLexicalNodeOrThrow, TableCellNode } from '@lexical/table';
-import { addClassNamesToElement } from '@lexical/utils';
-import { $applyNodeReplacement, DOMConversionMap, DOMConversionOutput, EditorConfig, EditorThemeClassName, ElementNode, LexicalEditor, LexicalNode, NodeKey, SerializedElementNode, Spread } from 'lexical';
-import { $createTableBodyNodeWithDimensions, $isTableBodyNode, TableBodyNode } from './tableBodyNode';
+import { separateValueAndUnit, variableExists } from "@/utils";
+import {
+  $getTableNodeFromLexicalNodeOrThrow,
+  TableCellNode,
+} from "@lexical/table";
+import { addClassNamesToElement } from "@lexical/utils";
+import {
+  $applyNodeReplacement,
+  DOMConversionMap,
+  DOMConversionOutput,
+  EditorConfig,
+  EditorThemeClassName,
+  ElementNode,
+  LexicalEditor,
+  LexicalNode,
+  NodeKey,
+  SerializedElementNode,
+  Spread,
+} from "lexical";
+import {
+  $createTableBodyNodeWithDimensions,
+  $isTableBodyNode,
+  TableBodyNode,
+} from "./tableBodyNode";
 
 export type SerializedExtendedTableNode = Spread<
   {
@@ -12,19 +31,19 @@ export type SerializedExtendedTableNode = Spread<
 >;
 
 export class ExtendedTableNode extends ElementNode {
-    __columnsWidths: number[] = [];
+  __columnsWidths: number[] = [];
 
-    constructor(columnsWidths?: number[], key?: NodeKey) {
-      super(key);
-      this.__columnsWidths = columnsWidths ? structuredClone(columnsWidths) : [];
+  constructor(columnsWidths?: number[], key?: NodeKey) {
+    super(key);
+    this.__columnsWidths = columnsWidths ? structuredClone(columnsWidths) : [];
   }
 
   static getType(): string {
-    return 'extended-table';
+    return "extended-table";
   }
 
   static clone(node: ExtendedTableNode): ExtendedTableNode {
-    return new ExtendedTableNode( node.__columnsWidths, node.__key );
+    return new ExtendedTableNode(node.__columnsWidths, node.__key);
   }
 
   getColumnsWidths() {
@@ -39,8 +58,8 @@ export class ExtendedTableNode extends ElementNode {
 
     const columnsWidths: number[] = [];
 
-    for ( let c = 0; c < columnsCount; ++c ) {
-        columnsWidths.push(-1);
+    for (let c = 0; c < columnsCount; ++c) {
+      columnsWidths.push(-1);
     }
 
     self.__columnsWidths = columnsWidths;
@@ -48,38 +67,53 @@ export class ExtendedTableNode extends ElementNode {
 
   setColumnWidth(columnID: number, width: number) {
     const self = this.getWritable();
-    if ( columnID < 0 || columnID >= self.__columnsWidths.length ) {
-        throw Error(`ExtendedTableNode -> setColumnWidth: wrong column ID: ${columnID}. ColCount: ${self.__columnsWidths.length}`);
+    if (columnID < 0 || columnID >= self.__columnsWidths.length) {
+      throw Error(
+        `ExtendedTableNode -> setColumnWidth: wrong column ID: ${columnID}. ColCount: ${self.__columnsWidths.length}`,
+      );
     }
 
     self.__columnsWidths[columnID] = width;
   }
 
-  getColumnWidth(columnID: number ): number {
+  getColumnWidth(columnID: number): number {
     const self = this.getLatest();
-    if ( columnID < 0 || columnID >= self.__columnsWidths.length ) {
-        throw Error(`ExtendedTableNode -> getColumnWidth: wrong column ID: ${columnID}. Or columns not updated: ${self.__columnsWidths.length}`);
+    if (columnID < 0 || columnID >= self.__columnsWidths.length) {
+      throw Error(
+        `ExtendedTableNode -> getColumnWidth: wrong column ID: ${columnID}. Or columns not updated: ${self.__columnsWidths.length}`,
+      );
     }
-    
+
     return self.__columnsWidths[columnID];
   }
 
   getTableBodyNode() {
     const tableBody = this.getLatest().getChildAtIndex(0);
-    if ( !$isTableBodyNode(tableBody) ) throw Error("Expected TableBodyNode under child 0");
+    if (!$isTableBodyNode(tableBody))
+      throw Error("Expected TableBodyNode under child 0");
     return tableBody;
   }
-  
-  mergeCells( editor: LexicalEditor, startCell: TableCellNode, rowsCount: number, columnsCount: number ) {
-    this.getTableBodyNode().mergeCells(editor, startCell, rowsCount, columnsCount);
+
+  mergeCells(
+    editor: LexicalEditor,
+    startCell: TableCellNode,
+    rowsCount: number,
+    columnsCount: number,
+  ) {
+    this.getTableBodyNode().mergeCells(
+      editor,
+      startCell,
+      rowsCount,
+      columnsCount,
+    );
   }
 
-  splitCell( editor: LexicalEditor, cell: TableCellNode ) {
-    this.getTableBodyNode().splitCell( editor, cell);
+  splitCell(editor: LexicalEditor, cell: TableCellNode) {
+    this.getTableBodyNode().splitCell(editor, cell);
   }
-  
-  removeRows(cellNode: TableCellNode, rowsCount: number ) {
-    if ( rowsCount == this.getTableBodyNode().getChildrenSize() ) {
+
+  removeRows(cellNode: TableCellNode, rowsCount: number) {
+    if (rowsCount == this.getTableBodyNode().getChildrenSize()) {
       this.remove();
       return;
     }
@@ -87,42 +121,54 @@ export class ExtendedTableNode extends ElementNode {
     this.getTableBodyNode().removeRows(cellNode, rowsCount);
   }
 
-  addRowsBefore(cellNode: TableCellNode, rowsToAdd: number ) {
+  addRowsBefore(cellNode: TableCellNode, rowsToAdd: number) {
     this.getTableBodyNode().addRowsBefore(cellNode, rowsToAdd);
   }
 
-  addRowsAfter(cellNode: TableCellNode, rowsToAdd: number ) {
+  addRowsAfter(cellNode: TableCellNode, rowsToAdd: number) {
     this.getTableBodyNode().addRowsAfter(cellNode, rowsToAdd);
   }
 
-  addColumnsBefore(cellNode: TableCellNode, columnsToAdd: number ) {
-    this.getTableBodyNode().addColumnsBefore(cellNode, columnsToAdd, this.getWritable().__columnsWidths);
+  addColumnsBefore(cellNode: TableCellNode, columnsToAdd: number) {
+    this.getTableBodyNode().addColumnsBefore(
+      cellNode,
+      columnsToAdd,
+      this.getWritable().__columnsWidths,
+    );
   }
 
-  addColumnsAfter(cellNode: TableCellNode, columnsToAdd: number ) {
-    this.getTableBodyNode().addColumnsAfter(cellNode, columnsToAdd, this.getWritable().__columnsWidths);
+  addColumnsAfter(cellNode: TableCellNode, columnsToAdd: number) {
+    this.getTableBodyNode().addColumnsAfter(
+      cellNode,
+      columnsToAdd,
+      this.getWritable().__columnsWidths,
+    );
   }
 
-  removeColumns(cellNode: TableCellNode, columnsCount: number ) {
-    if ( columnsCount == this.getWritable().getColumnsWidths().length ) {
+  removeColumns(cellNode: TableCellNode, columnsCount: number) {
+    if (columnsCount == this.getWritable().getColumnsWidths().length) {
       this.remove();
       return;
     }
-    this.getTableBodyNode().removeColumns(cellNode, columnsCount, this.getWritable().__columnsWidths);
+    this.getTableBodyNode().removeColumns(
+      cellNode,
+      columnsCount,
+      this.getWritable().__columnsWidths,
+    );
   }
-  
-  createDOMWithCSS(css: EditorThemeClassName|undefined): HTMLElement {
+
+  createDOMWithCSS(css: EditorThemeClassName | undefined): HTMLElement {
     const self = this.getLatest();
 
-    const tableElement = document.createElement('table');
+    const tableElement = document.createElement("table");
     addClassNamesToElement(tableElement, css);
 
-    const colgroup = document.createElement('colgroup');
-    for ( const columnWidth of self.__columnsWidths ) {
-        const colElement = document.createElement('col');
-        if ( columnWidth != -1 )
-            colElement.style.cssText = `width: ${columnWidth}px`;
-        colgroup.append(colElement);
+    const colgroup = document.createElement("colgroup");
+    for (const columnWidth of self.__columnsWidths) {
+      const colElement = document.createElement("col");
+      if (columnWidth != -1)
+        colElement.style.cssText = `width: ${columnWidth}px`;
+      colgroup.append(colElement);
     }
 
     tableElement.append(colgroup);
@@ -134,40 +180,43 @@ export class ExtendedTableNode extends ElementNode {
     return this.createDOMWithCSS(config.theme.table);
   }
 
-  updateDOM(
-    _prevNode?: unknown,
-    dom?: HTMLElement,
-  ) {
+  updateDOM(_prevNode?: unknown, dom?: HTMLElement) {
     const self = this.getLatest();
-    if ( dom ) {
-      if ( !(dom instanceof HTMLTableElement) ) throw Error("expected HTMLTableColElement");
-        
-        const colgroupElement = dom.getElementsByTagName('colgroup')[0] as HTMLTableColElement;
-    if ( !(colgroupElement instanceof HTMLTableColElement) ) throw Error("expected HTMLTableColElement");
+    if (dom) {
+      if (!(dom instanceof HTMLTableElement))
+        throw Error("expected HTMLTableColElement");
+
+      const colgroupElement = dom.getElementsByTagName(
+        "colgroup",
+      )[0] as HTMLTableColElement;
+      if (!(colgroupElement instanceof HTMLTableColElement))
+        throw Error("expected HTMLTableColElement");
 
       if (colgroupElement.childElementCount != self.__columnsWidths.length) {
         const children = colgroupElement.children;
-        while ( colgroupElement.childElementCount > 0 ) {
+        while (colgroupElement.childElementCount > 0) {
           const child = children.item(0) as Element;
           colgroupElement.removeChild(child);
         }
 
-        for ( let c = 0; c < self.__columnsWidths.length; ++c ) {
-          const colElement = document.createElement('col');
+        for (let c = 0; c < self.__columnsWidths.length; ++c) {
+          const colElement = document.createElement("col");
           colgroupElement.append(colElement);
         }
       }
-      
-      const colsElements = colgroupElement.getElementsByTagName('col');
+
+      const colsElements = colgroupElement.getElementsByTagName("col");
       const colsCount = colsElements.length;
-      for ( let c = 0; c < colsCount; ++c ) {
+      for (let c = 0; c < colsCount; ++c) {
         const colElement = colsElements[c] as HTMLTableColElement;
         const colElementWidthMatch = colElement.style.width.match(/\d+/);
-        const colElementWidth = colElementWidthMatch ? Number(colElementWidthMatch[0]) : -1;
+        const colElementWidth = colElementWidthMatch
+          ? Number(colElementWidthMatch[0])
+          : -1;
 
         const colNodeWidth = self.__columnsWidths[c];
 
-        if ( colElementWidth != colNodeWidth ) {
+        if (colElementWidth != colNodeWidth) {
           colElement.style.cssText = `width: ${colNodeWidth}px`;
         }
       }
@@ -178,7 +227,7 @@ export class ExtendedTableNode extends ElementNode {
 
   exportDOM(editor: LexicalEditor) {
     return {
-      ...super.exportDOM(editor)
+      ...super.exportDOM(editor),
     };
   }
 
@@ -191,7 +240,9 @@ export class ExtendedTableNode extends ElementNode {
     };
   }
 
-  static importJSON(serializedNode: SerializedExtendedTableNode): ExtendedTableNode {
+  static importJSON(
+    serializedNode: SerializedExtendedTableNode,
+  ): ExtendedTableNode {
     const tableNode = $createExtendedTableNode();
     tableNode.setColumnsWidths(serializedNode.columnsWidths);
 
@@ -202,7 +253,7 @@ export class ExtendedTableNode extends ElementNode {
     return {
       ...super.exportJSON(),
       columnsWidths: this.getColumnsWidths(),
-      type: 'extended-table',
+      type: "extended-table",
       version: 1,
     };
   }
@@ -212,7 +263,10 @@ export class ExtendedTableNode extends ElementNode {
   }
 }
 
-export function $createExtendedTableNodeWithDimensions( rows: number, cols: number ): ExtendedTableNode {
+export function $createExtendedTableNodeWithDimensions(
+  rows: number,
+  cols: number,
+): ExtendedTableNode {
   const tableNode = $createExtendedTableNode();
   const tableBodyNode = $createTableBodyNodeWithDimensions(rows, cols);
 
@@ -223,39 +277,55 @@ export function $createExtendedTableNodeWithDimensions( rows: number, cols: numb
 }
 
 export function $getExtendedTableNodeFromLexicalNodeOrThrow(node: LexicalNode) {
-  return ($getTableNodeFromLexicalNodeOrThrow(node) as TableBodyNode).getParentOrThrow<ExtendedTableNode>();
+  return (
+    $getTableNodeFromLexicalNodeOrThrow(node) as TableBodyNode
+  ).getParentOrThrow<ExtendedTableNode>();
 }
 
-export function $convertColElements(tableNode: ExtendedTableNode, domNode: Element ) {
-  const colElements = domNode.getElementsByTagName('col');
+export function $convertColElements(
+  tableNode: ExtendedTableNode,
+  domNode: Element,
+) {
+  const colElements = domNode.getElementsByTagName("col");
 
   tableNode.__columnsWidths = [];
 
-  for ( const colElement of colElements ) {
-    const colElementStyleWidth = separateValueAndUnit( colElement.style.width );
-    let width = variableExists(colElementStyleWidth.value) ? colElementStyleWidth.value : -1;
-    if ( width == -1 ) {
-      const colElementWidth = separateValueAndUnit( colElement.width );
-      width = variableExists(colElementWidth.value) ? colElementWidth.value : -1;
+  for (const colElement of colElements) {
+    const colElementStyleWidth = separateValueAndUnit(colElement.style.width);
+    let width = variableExists(colElementStyleWidth.value)
+      ? colElementStyleWidth.value
+      : -1;
+    if (width == -1) {
+      const colElementWidth = separateValueAndUnit(colElement.width);
+      width = variableExists(colElementWidth.value)
+        ? colElementWidth.value
+        : -1;
     }
     tableNode.__columnsWidths.push(width);
   }
 }
 
-export function $convertExtendedTableElement(domNode: Node): DOMConversionOutput {
+export function $convertExtendedTableElement(
+  domNode: Node,
+): DOMConversionOutput {
   const tableNode = $createExtendedTableNode();
-  if ( !(domNode instanceof Element) ) throw Error("Expected Element");
+  if (!(domNode instanceof Element)) throw Error("Expected Element");
 
   $convertColElements(tableNode, domNode);
 
-  return {node: tableNode}; 
+  return { node: tableNode };
 }
 
 export function $createExtendedTableNode(): ExtendedTableNode {
-	return $applyNodeReplacement(new ExtendedTableNode());
+  const tableNode: ExtendedTableNode = $applyNodeReplacement(
+    new ExtendedTableNode(),
+  );
 
+  return tableNode;
 }
 
-export function $isExtendedTableNode(node: LexicalNode | null | undefined): node is ExtendedTableNode {
-	return node instanceof ExtendedTableNode;
+export function $isExtendedTableNode(
+  node: LexicalNode | null | undefined,
+): node is ExtendedTableNode {
+  return node instanceof ExtendedTableNode;
 }

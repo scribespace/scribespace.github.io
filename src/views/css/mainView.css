@@ -1,20 +1,20 @@
 .main-view {
-    display: grid;
-    grid-template-columns: 30% auto;
-    column-gap: 1%;
-    width: 100%;
+  display: grid;
+  grid-template-columns: 30% auto;
+  column-gap: 1%;
+  width: 100%;
 }
 
 .toolbox-view {
-    float: right;
+  float: right;
 }
 
 .tree-view {
-    height: 100%;
-    overflow: hidden;
+  height: 100%;
+  overflow: hidden;
 }
 
 .editor-view {
-    width: 100%; /* Width matching A4 paper size in pixels */
-    overflow: hidden;
+  width: 100%; /* Width matching A4 paper size in pixels */
+  overflow: hidden;
 }

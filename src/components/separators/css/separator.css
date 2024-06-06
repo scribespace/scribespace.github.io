@@ -1,27 +1,27 @@
 .separator-horizontal-default {
-    height: 1px;
-    background-color: rgb(197, 197, 197);
-    margin: 4px;
-    align-self: stretch;
+  height: 1px;
+  background-color: rgb(197, 197, 197);
+  margin: 4px;
+  align-self: stretch;
 }
 
 .separator-horizontal-strong-default {
-    height: 2px;
-    background-color: rgb(173, 173, 173);
-    margin: 4px;
-    align-self: stretch;
+  height: 2px;
+  background-color: rgb(173, 173, 173);
+  margin: 4px;
+  align-self: stretch;
 }
 
 .separator-vertical-default {
-    width: 1px;
-    background-color: rgb(197, 197, 197);
-    margin: 4px;
-    align-self: stretch;
+  width: 1px;
+  background-color: rgb(197, 197, 197);
+  margin: 4px;
+  align-self: stretch;
 }
 
 .separator-vertical-strong-default {
-    width: 2px;
-    background-color: rgb(173, 173, 173);
-    margin: 4px;
-    align-self: stretch;
+  width: 2px;
+  background-color: rgb(173, 173, 173);
+  margin: 4px;
+  align-self: stretch;
 }

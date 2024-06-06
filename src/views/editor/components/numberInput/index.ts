@@ -1,2 +1,2 @@
-import NumberInput from './numberInput';
+import NumberInput from "./numberInput";
 export default NumberInput;

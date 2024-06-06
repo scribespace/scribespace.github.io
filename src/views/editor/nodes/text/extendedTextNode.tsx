@@ -9,8 +9,8 @@ import {
   TextNode,
   SerializedTextNode,
   LexicalNode,
-  $applyNodeReplacement
-} from 'lexical';
+  $applyNodeReplacement,
+} from "lexical";
 
 export class ExtendedTextNode extends TextNode {
   constructor(text: string, key?: NodeKey) {
@@ -18,7 +18,7 @@ export class ExtendedTextNode extends TextNode {
   }
 
   static getType(): string {
-    return 'extended-text';
+    return "extended-text";
   }
 
   static clone(node: ExtendedTextNode): ExtendedTextNode {
@@ -31,7 +31,7 @@ export class ExtendedTextNode extends TextNode {
       ...importers,
       span: () => ({
         conversion: patchStyleConversion(importers?.span),
-        priority: 1
+        priority: 1,
       }),
     };
   }
@@ -42,7 +42,7 @@ export class ExtendedTextNode extends TextNode {
 
   isSimpleText() {
     return (
-      (this.__type === 'text' || this.__type === 'extended-text') &&
+      (this.__type === "text" || this.__type === "extended-text") &&
       this.__mode === 0
     );
   }
@@ -50,22 +50,24 @@ export class ExtendedTextNode extends TextNode {
   exportJSON(): SerializedTextNode {
     return {
       ...super.exportJSON(),
-      type: 'extended-text',
+      type: "extended-text",
       version: 1,
     };
   }
 }
 
 export function $createExtendedTextNode(text: string): ExtendedTextNode {
-	return $applyNodeReplacement(new ExtendedTextNode(text));
+  return $applyNodeReplacement(new ExtendedTextNode(text));
 }
 
-export function $isExtendedTextNode(node: LexicalNode | null | undefined): node is ExtendedTextNode {
-	return node instanceof ExtendedTextNode;
+export function $isExtendedTextNode(
+  node: LexicalNode | null | undefined,
+): node is ExtendedTextNode {
+  return node instanceof ExtendedTextNode;
 }
 
 function patchStyleConversion(
-  originalDOMConverter?: (node: HTMLElement) => DOMConversion | null
+  originalDOMConverter?: (node: HTMLElement) => DOMConversion | null,
 ): (node: HTMLElement) => DOMConversionOutput | null {
   return (node) => {
     const original = originalDOMConverter?.(node);
@@ -96,13 +98,13 @@ function patchStyleConversion(
             fontSize ? `font-size: ${fontSize}` : null,
           ]
             .filter((value) => value != null)
-            .join('; ');
+            .join("; ");
           if (style.length) {
             return result.setStyle(style);
           }
         }
         return result;
-      }
+      },
     };
   };
 }

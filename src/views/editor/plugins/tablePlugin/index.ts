@@ -1,2 +1,2 @@
-import TablePlugin from './tablePlugin';
+import TablePlugin from "./tablePlugin";
 export default TablePlugin;

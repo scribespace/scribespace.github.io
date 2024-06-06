@@ -1,2 +1,2 @@
-export * from './colorCommands';
-export * from './colorPlugin';
+export * from "./colorCommands";
+export * from "./colorPlugin";

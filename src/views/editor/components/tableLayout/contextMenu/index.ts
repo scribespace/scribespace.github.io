@@ -1,4 +1,3 @@
-
 export { SplitCellsContextMenu } from "./splitCellsContextMenu";
 export { MergeCellsContextMenu } from "./mergeCellsContextMenu";
 export { TableCreateContextMenu } from "./tableCreateContextMenu";

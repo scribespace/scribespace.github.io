@@ -1,48 +1,59 @@
 import { isIcon } from "@/components";
 import { variableExists } from "@utils";
 import { EditorThemeClassName } from "lexical";
-import { Children, ReactElement, ReactNode, cloneElement, useMemo } from "react";
+import {
+  Children,
+  ReactElement,
+  ReactNode,
+  cloneElement,
+  useMemo,
+} from "react";
 import { MenuContextData, useMenuContext } from "./menuContext";
 
 interface MenuItemProps {
-    disabled?: boolean;
-    className?: EditorThemeClassName;
-    onClick?: (event: React.MouseEvent) => void;
-    children?: ReactNode;
+  disabled?: boolean;
+  className?: EditorThemeClassName;
+  onClick?: (event: React.MouseEvent) => void;
+  children?: ReactNode;
 }
 
-export default function MenuItem({disabled, className, onClick, children }: MenuItemProps) {
-    const menuContext: MenuContextData = useMenuContext();
+export default function MenuItem({
+  disabled,
+  className,
+  onClick,
+  children,
+}: MenuItemProps) {
+  const menuContext: MenuContextData = useMenuContext();
 
-    const theme = useMemo(() => {
-        return menuContext.theme;
-    },[menuContext.theme]);
+  const theme = useMemo(() => {
+    return menuContext.theme;
+  }, [menuContext.theme]);
 
-    const preocessedChildren = useMemo(() => {
-        const childrenArray = Children.toArray(children) as ReactElement[];
+  const preocessedChildren = useMemo(() => {
+    const childrenArray = Children.toArray(children) as ReactElement[];
 
-        return childrenArray.map((child) => {
-             if (isIcon(child)) {
-              return cloneElement(child, {
-                size: theme.itemIconSize,
-                className: `${theme.itemIcon} ${child.props.className}`,
-              });
-             }
-            return child;
-          });
+    return childrenArray.map((child) => {
+      if (isIcon(child)) {
+        return cloneElement(child, {
+          size: theme.itemIconSize,
+          className: `${theme.itemIcon} ${child.props.className}`,
+        });
+      }
+      return child;
+    });
+  }, [children, theme.itemIcon, theme.itemIconSize]);
 
-    },[children, theme.itemIcon, theme.itemIconSize]);
+  const selectedClassName = useMemo(() => {
+    const mainClassName = variableExists(className)
+      ? className
+      : theme.itemDefault;
 
-    const selectedClassName = useMemo(() => {
-        const mainClassName = variableExists(className) ? className : theme.itemDefault;
+    return mainClassName + (disabled ? " " + theme.itemDisabled : "");
+  }, [className, theme.itemDefault, theme.itemDisabled, disabled]);
 
-        return mainClassName
-        + (disabled ? (' ' + theme.itemDisabled): '');
-    },[className, theme.itemDefault, theme.itemDisabled, disabled]);
-
-    return (
-        <div className={selectedClassName} onClick={onClick}>
-           {preocessedChildren}
-        </div>
-      );
+  return (
+    <div className={selectedClassName} onClick={onClick}>
+      {preocessedChildren}
+    </div>
+  );
 }

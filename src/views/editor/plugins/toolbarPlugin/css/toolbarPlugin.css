@@ -1,15 +1,15 @@
 :root {
-  --toolbar-background-default:rgb(241, 241, 241);
+  --toolbar-background-default: rgb(241, 241, 241);
 }
 
 .toolbar-container-default {
-    display: flex;
-    background-color: var(--toolbar-background-default);
-    border: 1px solid rgb(173, 173, 173);
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    padding: 4px;
-  }
+  display: flex;
+  background-color: var(--toolbar-background-default);
+  border: 1px solid rgb(173, 173, 173);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  padding: 4px;
+}
 
 .toolbar-menu-container-default {
   min-width: 200px;

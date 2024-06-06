@@ -1,1 +1,1 @@
-export * from './imagePlugin';
+export * from "./imagePlugin";

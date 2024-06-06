@@ -1,2 +1,2 @@
-export type * from './menuTheme';
-export * from './menuTheme';
+export type * from "./menuTheme";
+export * from "./menuTheme";
