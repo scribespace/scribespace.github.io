@@ -18,7 +18,7 @@ export function ThrowDropboxError<T>(error: T): never {
 }
 
 export function isDropboxResponseError<T extends object>(
-  error: unknown,
+  error: unknown
 ): error is DropboxResponseError<DropboxError<T>> {
   return (
     typeof error === "object" &&
@@ -35,7 +35,7 @@ export function isDropboxResponseError<T extends object>(
 }
 
 export function isDropboxResponseErrorOrThrow<T extends object>(
-  error: unknown,
+  error: unknown
 ): asserts error is DropboxResponseError<DropboxError<T>> {
   if (!isDropboxResponseError<T>(error))
     ThrowDropboxError(`Unknown Dropbox Error: ${error}`);
@@ -108,3 +108,6 @@ export const DropboxLinkAudiencePublic: sharing.LinkAudiencePublic = {
 };
 export const DropboxUploadSessionTypeConcurrent: files.UploadSessionTypeConcurrent =
   { ".tag": "concurrent" };
+
+export const REDIRECT_URI = import.meta.env.VITE_DROPBOX_REDIRECT_URI; //you need this for redirection, otherwise it just shows Dropbox page with key that you need to enter in appexport const CLIENT_ID = import.meta.env.VITE_DROPBOX_CLIENT_ID; //app key
+export const CLIENT_ID = import.meta.env.VITE_DROPBOX_CLIENT_ID; //app key

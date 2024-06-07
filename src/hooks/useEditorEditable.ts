@@ -1,9 +1,9 @@
-import { appGlobals } from "@/system/appGlobals";
+import { $getMainEditor, appGlobals } from "@/system/appGlobals";
 import { useEffect, useMemo, useState } from "react";
 
 export function useEditorEditable() {
   const editor = useMemo(
-    () => appGlobals.editorObject,
+    () => $getMainEditor(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [appGlobals.editorObject]
   );

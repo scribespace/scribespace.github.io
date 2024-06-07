@@ -1,7 +1,8 @@
-import { ThrowDropboxError, DROPBOX_APP } from "./dropbox_common";
+import { ThrowDropboxError, DROPBOX_APP } from "./dropboxCommon";
 import * as DropboxAPI from "dropbox";
-import { Authenticate, AuthData } from "@interfaces/system/auth_interface";
-import { REDIRECT_URI, CLIENT_ID } from "./app_dropbox";
+import { Authenticate, AuthData } from "@/interfaces/system/authInterface";
+import { CLIENT_ID } from "./dropboxCommon";
+import { REDIRECT_URI } from "./dropboxCommon";
 
 export class DropboxAuth implements Authenticate {
   private dbxAuth: DropboxAPI.DropboxAuth;
@@ -45,12 +46,12 @@ export class DropboxAuth implements Authenticate {
       /* usePKCE - Whether or not to use Sha256 based PKCE. PKCE should be only use
        * on client apps which doesn't call your server. It is less secure than non-PKCE flow but
        * can be used if you are unable to safely retrieve your app secret*/
-      true,
+      true
     );
     window.sessionStorage.clear();
     window.sessionStorage.setItem(
       "codeVerifier",
-      this.dbxAuth.getCodeVerifier(),
+      this.dbxAuth.getCodeVerifier()
     );
     window.location.href = String(authUrl);
   }

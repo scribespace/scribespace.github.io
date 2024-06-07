@@ -1,5 +1,5 @@
 import { useMainThemeContext } from "@/mainThemeContext";
-import { appGlobals } from "@/system/appGlobals";
+import { $getImageManager, appGlobals } from "@/system/appGlobals";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 import {
@@ -15,7 +15,14 @@ import {
   COMMAND_PRIORITY_LOW,
   NodeKey,
 } from "lexical";
-import { CSSProperties, useCallback, useEffect, useRef, useState } from "react";
+import {
+  CSSProperties,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 interface ImageControlsStyles {
   topControl: CSSProperties;
@@ -81,9 +88,8 @@ export function Image({
   const [isSelected, setSelected, clearSelection] =
     useLexicalNodeSelection(imageKey);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [resizeDirection, setResizeDirection] = useState<ResizeDirection>(
-    ResizeDirection.None,
+    ResizeDirection.None
   );
   const [markerStyle, setMarkerStyle] = useState<CSSProperties>({});
   const [controlStyles, setControlStyles] = useState<ImageControlsStyles>({
@@ -221,11 +227,11 @@ export function Image({
 
       x1 = Math.min(
         x1,
-        containerSizeRef.current.x + containerSizeRef.current.width,
+        containerSizeRef.current.x + containerSizeRef.current.width
       );
       y1 = Math.min(
         y1,
-        containerSizeRef.current.y + containerSizeRef.current.height,
+        containerSizeRef.current.y + containerSizeRef.current.height
       );
 
       const currentMarkerStyle: CSSProperties = {};
@@ -254,7 +260,7 @@ export function Image({
         return { ...current, ...currentMarkerStyle };
       });
     },
-    [resizeDirection],
+    [resizeDirection]
   );
 
   const onResizeImage = useCallback(
@@ -274,7 +280,7 @@ export function Image({
           assert(imageNode != null, "Wrong key for ImageNode");
 
           const rootElement = editor.getElementByKey(
-            imageNode!.getTopLevelElementOrThrow().getParentOrThrow().getKey(),
+            imageNode!.getTopLevelElementOrThrow().getParentOrThrow().getKey()
           );
           notNullOrThrowDev(rootElement);
 
@@ -315,7 +321,7 @@ export function Image({
         event.preventDefault();
         event.stopPropagation();
       },
-    [editor, imageKey],
+    [editor, imageKey]
   );
 
   const setupControls = useCallback(() => {
@@ -425,7 +431,7 @@ export function Image({
 
         const width = separateValueAndUnit(markerStyle.width.toString()).value;
         const height = separateValueAndUnit(
-          markerStyle.height.toString(),
+          markerStyle.height.toString()
         ).value;
         setWidthHeight(width, height);
       });
@@ -461,22 +467,47 @@ export function Image({
     setupControls();
   }, [setupControls, width, height]);
 
+  const [isProcessed, setIsProcessed] = useState<boolean>(false);
+  const [currentSrc, setCurrentSrc] = useState<string>(src || MISSING_IMAGE);
+
+  // const onImageLoad = useCallback(
+  //   () => {
+  //       if (  )
+  //   },
+  //   []
+  // );
+
+//   useEffect(() => {
+//     if (isProcessed == false && src && src != "" && src != MISSING_IMAGE) {
+//       if (src.startsWith(appGlobals.system!.getSystemDomain())) {
+//         appGlobals.imageManager.preloadImageUrl(
+//           () => {
+//             setCurrentSrc(src);
+//             setIsProcessed(true);
+//           },
+//           undefined,
+//           src
+//         );
+//       } else {
+//         setCurrentSrc(src);
+//         setIsProcessed(true);
+//       }
+//     }
+//   }, [isProcessed, src]);
+
   useEffect(() => {
     if ((src == "" || src == MISSING_IMAGE) && blob) {
-      setIsLoading(true);
-      appGlobals.imageManager.blobsToUrlObjs(
+      setIsProcessed(false);
+      setCurrentSrc(MISSING_IMAGE);
+      $getImageManager().blobsToUrlObjs(
         (urlsObjs) => {
-          setIsLoading(false);
+            setCurrentSrc(urlsObjs[0]);
 
-          editor.update(
-            () => {
-              setSrc(urlsObjs[0]);
-            },
-            { tag: "history-merge" }, // merge history with prev
-          );
+            //upload
+            //setSrc to display
         },
         undefined,
-        [blob],
+        [blob]
       );
     }
   }, [blob, editor, imageKey, setSrc, src]);
@@ -493,7 +524,7 @@ export function Image({
 
         return false;
       },
-      COMMAND_PRIORITY_LOW,
+      COMMAND_PRIORITY_LOW
     );
   }, [clearSelection, editor, setSelected]);
 
@@ -511,10 +542,10 @@ export function Image({
       >
         <img
           ref={imageRef}
-          className={imageTheme.element + (isLoading ? " " + pulsing : "")}
+          className={imageTheme.element + (isProcessed ? "" : " " + pulsing)}
           style={{ display: "block" }}
-          src={src || MISSING_IMAGE}
-          alt={`No image ${src || MISSING_IMAGE}`}
+          src={currentSrc}
+          alt={`No image ${currentSrc}`}
         />
       </div>
 

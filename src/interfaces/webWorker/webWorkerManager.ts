@@ -38,7 +38,7 @@ export class WebWorkerManager<ThreadInterface extends ObjectInterface> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ...args: any[]
       ) => {
-        this.callFunction(key as keyof ThreadInterface, args, resolve, onerror);
+        this.callFunction(key as keyof ThreadInterface, args, resolve, onerror ? onerror : (error)=> console.error(error));
       };
     }
   }

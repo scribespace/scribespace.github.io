@@ -36,15 +36,15 @@ export class ImageNode extends DecoratorNode<ReactElement> {
     width?: number,
     height?: number,
     blob?: Blob,
-    key?: NodeKey,
+    key?: NodeKey
   ) {
     super(key);
 
     this.__src = src || "";
     this.__blob = blob;
 
-    this.__width = width;
-    this.__height = height;
+    this.__width = width && width > 0 ? width : undefined;
+    this.__height = height && height > 0 ? height : undefined;
   }
 
   static getType(): string {
@@ -57,7 +57,7 @@ export class ImageNode extends DecoratorNode<ReactElement> {
       node.__width,
       node.__height,
       node.__blob,
-      node.__key,
+      node.__key
     );
   }
 
@@ -86,7 +86,7 @@ export class ImageNode extends DecoratorNode<ReactElement> {
     const imageNode = $createImageNode(
       serializedNode.src,
       serializedNode.width,
-      serializedNode.height,
+      serializedNode.height
     );
     return imageNode;
   }
@@ -151,13 +151,13 @@ export function $createImageNode(
   src?: string,
   width?: number,
   height?: number,
-  blob?: Blob,
+  blob?: Blob
 ): ImageNode {
   return $applyNodeReplacement(new ImageNode(src, width, height, blob));
 }
 
 export function $isImageNode(
-  node: LexicalNode | null | undefined,
+  node: LexicalNode | null | undefined
 ): node is ImageNode {
   return node instanceof ImageNode;
 }

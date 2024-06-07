@@ -1,17 +1,13 @@
 import { WebWorkerManager } from "@/interfaces/webWorker";
-import { ImageManagerWorkerInterface } from "./imageManagerWorker";
-import {
-  ImageManagerInterface,
-  ImageManagerWorkerInterfaceType,
-} from "./workerShared";
 
 import workerURL from "./imageManagerWorker?worker&url";
+import { ImageManagerWorkerImplementation, ImageManagerWorkerInterface, ImageManagerWorkerWrapper } from "./workerShared";
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-export interface ImageManager extends ImageManagerInterface {}
+export interface ImageManager extends ImageManagerWorkerWrapper {}
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-export class ImageManager extends WebWorkerManager<ImageManagerWorkerInterfaceType> {
+export class ImageManager extends WebWorkerManager<ImageManagerWorkerInterface> {
   constructor() {
-    super(workerURL, ImageManagerWorkerInterface);
+    super(workerURL, ImageManagerWorkerImplementation);
   }
 }

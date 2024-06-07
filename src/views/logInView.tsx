@@ -1,9 +1,9 @@
 import { FunctionComponent } from "react";
 
-import { DROPBOX_APP } from "../system/dropbox/dropbox_common";
+import { DROPBOX_APP } from "../system/dropbox/dropboxCommon";
 import { SYSTEM_NAME } from "../system/authentication";
 
-import { Dropbox } from "../system/dropbox/dropbox";
+import { DropboxSystem } from "../system/dropbox/dropboxSystem";
 
 import { FaDropbox } from "react-icons/fa";
 
@@ -16,7 +16,7 @@ type Props = {
 export const LogInView: FunctionComponent<Props> = ({ isLogInDisabled }) => {
   function DropboxLogIn() {
     window.localStorage.setItem(SYSTEM_NAME, DROPBOX_APP);
-    const dropbox = new Dropbox();
+    const dropbox = new DropboxSystem();
     dropbox.auth.RequestLogin();
   }
 

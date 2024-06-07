@@ -1,116 +1,67 @@
-import * as DropboxAPI from "dropbox";
 import {
-  ThrowDropboxError,
-  DropboxUploadSmallFileError,
-  isDropboxResponseErrorOrThrow as isDropboxErrorResponseOrThrow,
-  DropboxUploadSessionStartError,
-  DropboxUploadSessionAppendError,
-  DropboxUploadError,
-  DropboxUploadSessionFinishError,
+  FileSystem,
+} from "@/interfaces/system/fileSystem/fileSystemInterface";
+import {
+  DeleteResults as DeleteResult,
+  DownloadResult,
+  File,
+  FileInfo,
+  FileSystemStatus,
+  FileUploadMode,
+  GetMetadataResults,
+  UploadResult
+} from "@/interfaces/system/fileSystem/fileSystemShared";
+import { FileSystemWorkerInterface, FileSystemWorkerWrapper } from "@/interfaces/system/fileSystem/fileSystemWorkerInterface";
+import { WebWorkerManager } from "@/interfaces/webWorker";
+import { variableExistsOrThrow } from "@utils";
+import * as DropboxAPI from "dropbox";
+import { DropboxAuth } from "../dropboxAuth";
+import {
+  DropboxCommitInfo,
+  DropboxCreateSharedLinkWithSettingsError,
+  DropboxDeleteError,
   DropboxDownloadError,
   DropboxFileBlobResponse,
   DropboxFileMetadata,
   DropboxGetMetadataError,
-  DropboxDeleteError,
-  DropboxCreateSharedLinkWithSettingsError,
-  DropboxLookupError,
-  DropboxCommitInfo,
+  DropboxLinkAudiencePublic,
+  DropboxUploadSessionAppendError,
+  DropboxUploadSessionFinishError,
+  DropboxUploadSessionStartError,
+  DropboxUploadSessionTypeConcurrent,
+  DropboxUploadSmallFileError,
   DropboxWriteModeAdd,
   DropboxWriteModeOverwrite,
-  DropboxLinkAudiencePublic,
-  DropboxUploadSessionTypeConcurrent,
-} from "./dropbox_common";
-import {
-  FileSystem,
-  File,
-  FileSystemStatus,
-  UploadResult,
-  DownloadResult,
-  FileInfo,
-  FileUploadMode,
-  DeleteResults as DeleteResult,
-  GetMetadataResults,
-  FileResult,
-} from "@interfaces/system/fs_interface";
-import { variableExistsOrThrow } from "@utils";
+  ThrowDropboxError,
+  isDropboxResponseErrorOrThrow as isDropboxErrorResponseOrThrow,
+} from "../dropboxCommon";
+import { HandleDeleteError, HandleDownloadError, HandleGetMetadataError, HandleUploadError } from "./dropboxFileSystemShared";
+import { DropboxFileSystemWorkerImplementation } from "./dropboxFileSystemWorkerImplementation";
+import workerURL from "./dropboxFileSystemWorkerImplementation?worker&url";
 
-function HandleLookupError(
-  path: string,
-  lookupError: DropboxLookupError,
-): FileResult {
-  switch (lookupError[".tag"]) {
-    case "not_found": //LookupErrorNotFound
-      return { status: FileSystemStatus.NotFound };
-    default:
-      ThrowDropboxError(
-        "Unsupported LookupError type. File: " +
-          path +
-          " Tag: " +
-          lookupError[".tag"],
-      );
-  }
-}
-
-function HandleDownloadError(
-  path: string,
-  downloadError: DropboxDownloadError,
-): FileResult {
-  switch (downloadError[".tag"]) {
-    case "path": //DownloadErrorPath
-      return HandleLookupError(path, downloadError.path);
-    default:
-      ThrowDropboxError("Unsupported DownloadError type. File: " + path);
-  }
-}
-
-function HandleDeleteError(
-  path: string,
-  deleteError: DropboxDeleteError,
-): FileResult {
-  switch (deleteError[".tag"]) {
-    case "path_lookup": //DeleteErrorPathLookup
-      return HandleLookupError(path, deleteError.path_lookup);
-    default:
-      ThrowDropboxError("Unsupported DownloadError type. File: " + path);
-  }
-}
-
-function HandleUploadError(
-  path: string,
-  uploadError: DropboxUploadError,
-): FileResult {
-  switch (uploadError[".tag"]) {
-    case "content_hash_mismatch":
-      return { status: FileSystemStatus.MismatchHash };
-    default:
-      ThrowDropboxError(
-        "Unsupported UploadError type. File: " +
-          path +
-          " Tag: " +
-          uploadError[".tag"],
-      );
-  }
-}
-
-function HandleGetMetadataError(
-  path: string,
-  getMetadataError: DropboxGetMetadataError,
-) {
-  switch (getMetadataError[".tag"]) {
-    case "path": //DownloadErrorPath
-      return HandleLookupError(path, getMetadataError.path);
-    default:
-      ThrowDropboxError("Unsupported GetMetadataError type. File: " + path);
-  }
-}
-
-export class DropboxFS implements FileSystem {
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+export interface DropboxFileSystem extends FileSystemWorkerWrapper{}
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+export class DropboxFileSystem extends WebWorkerManager<FileSystemWorkerInterface> implements FileSystem {
   private dbx: DropboxAPI.Dropbox;
   constructor(dbx: DropboxAPI.Dropbox) {
+    super(workerURL, DropboxFileSystemWorkerImplementation);
     this.dbx = dbx;
   }
 
-  async calculateFileHash(file: File): Promise<string> {
+  registerFileSystemAsync(auth: DropboxAuth) {
+    const dbxAuth = auth.GetDropboxAuth();
+    const authOptions: DropboxAPI.DropboxOptions = {
+      accessToken: dbxAuth.getAccessToken(),
+      accessTokenExpiresAt: dbxAuth.getAccessTokenExpiresAt(),
+      refreshToken: dbxAuth.getRefreshToken(),
+      clientId: dbxAuth.getClientId(),
+    };
+
+    this.registerFileSystemWorker( ()=>{}, undefined, authOptions );
+  }
+
+  async calculateFileHashSync(file: File): Promise<string> {
     if (file.content === null)
       ThrowDropboxError("calculateFileHash: File has no content");
     /*
@@ -152,7 +103,7 @@ export class DropboxFS implements FileSystem {
 
     const finalHashArrayBuffer = await crypto.subtle.digest(
       "SHA-256",
-      mergedHash,
+      mergedHash
     );
     const finalHash = new Uint8Array(finalHashArrayBuffer);
     const hexHash: string[] = new Array<string>(mergedBufferSize);
@@ -169,7 +120,7 @@ export class DropboxFS implements FileSystem {
     path: string,
     file: File,
     commit: DropboxCommitInfo,
-    fileHash: Promise<string>,
+    fileHash: Promise<string>
   ): Promise<UploadResult> {
     if (file.content === null)
       ThrowDropboxError("uploadSmallFile: File has no content");
@@ -206,7 +157,7 @@ export class DropboxFS implements FileSystem {
     path: string,
     file: File,
     commit: DropboxCommitInfo,
-    fileHash: Promise<string>,
+    fileHash: Promise<string>
   ): Promise<UploadResult> {
     if (file.content === null)
       ThrowDropboxError("uploadBigFile: File has no content");
@@ -248,7 +199,7 @@ export class DropboxFS implements FileSystem {
           this.dbx.filesUploadSessionAppendV2({
             cursor: cursor,
             contents: blobs[id],
-          }),
+          })
         );
       }
 
@@ -262,7 +213,7 @@ export class DropboxFS implements FileSystem {
           cursor: cursor,
           contents: lastBlob,
           close: true,
-        }),
+        })
       );
       await Promise.all(uploadPromises);
     } catch (error) {
@@ -300,10 +251,10 @@ export class DropboxFS implements FileSystem {
     return { status: FileSystemStatus.Success, fileInfo };
   }
 
-  async uploadFile(
+  async uploadFileSync(
     path: string,
     file: File,
-    mode: FileUploadMode,
+    mode: FileUploadMode
   ): Promise<UploadResult> {
     if (file.content === null)
       ThrowDropboxError("uploadFile: File has no content");
@@ -327,7 +278,7 @@ export class DropboxFS implements FileSystem {
         ThrowDropboxError("Unknown upload mode");
     }
 
-    const fileHash: Promise<string> = this.calculateFileHash(file);
+    const fileHash: Promise<string> = this.calculateFileHashSync(file);
     if (file.content.size < smallFileMaxSize) {
       return this.uploadSmallFile(path, file, settings, fileHash);
     } else {
@@ -335,7 +286,7 @@ export class DropboxFS implements FileSystem {
     }
   }
 
-  async downloadFile(path: string): Promise<DownloadResult> {
+  async downloadFileSync(path: string): Promise<DownloadResult> {
     let respond: DropboxFileBlobResponse;
     try {
       respond = await this.dbx.filesDownload({ path: path });
@@ -372,7 +323,7 @@ export class DropboxFS implements FileSystem {
           content: fileMeta.fileBlob.slice(0, fileMeta.fileBlob.size, fileType),
         }
       : { content: fileMeta.fileBlob };
-    const fileHash: string = await this.calculateFileHash(file);
+    const fileHash: string = await this.calculateFileHashSync(file);
 
     if (fileHash !== fileMeta.content_hash) {
       return { status: FileSystemStatus.MismatchHash };
@@ -407,7 +358,7 @@ export class DropboxFS implements FileSystem {
     };
   }
 
-  async getFileHash(path: string): Promise<string> {
+  async getFileHashSync(path: string): Promise<string> {
     const fileMeta = await this.getMetadata(path);
 
     if (!fileMeta.fileInfo?.hash) {
@@ -419,7 +370,7 @@ export class DropboxFS implements FileSystem {
     return fileMeta.fileInfo.hash;
   }
 
-  async deleteFile(path: string): Promise<DeleteResult> {
+  async deleteFileSync(path: string): Promise<DeleteResult> {
     try {
       await this.dbx.filesDeleteV2({ path: path });
     } catch (error) {
@@ -437,7 +388,7 @@ export class DropboxFS implements FileSystem {
     return result;
   }
 
-  async getFileURL(path: string): Promise<string> {
+  async getFileURLSync(path: string): Promise<string> {
     try {
       const share = await this.dbx.sharingCreateSharedLinkWithSettings({
         path: path,
@@ -452,7 +403,7 @@ export class DropboxFS implements FileSystem {
       return url;
     } catch (error) {
       isDropboxErrorResponseOrThrow<DropboxCreateSharedLinkWithSettingsError>(
-        error,
+        error
       );
       const shareError = error.error;
       if (!shareError.error) {

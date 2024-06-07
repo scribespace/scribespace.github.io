@@ -3,34 +3,35 @@ import { useEffect, useRef, useState } from "react";
 import TreeNode from "./components/treeNode";
 
 import {
-  Tree,
-  TreeApi,
-  SimpleTree,
   CreateHandler,
   DeleteHandler,
   MoveHandler,
   RenameHandler,
+  SimpleTree,
+  Tree,
+  TreeApi,
 } from "react-arborist";
 import "./css/treeView.css";
 
-import { appGlobals } from "@system/appGlobals";
+import useBoundingRect from "@/hooks/useBoundingRect";
 import {
   DeleteResults,
+  DownloadResult,
   FileSystemStatus,
   FileUploadMode,
-  UploadResult,
-} from "@interfaces/system/fs_interface";
-import {
-  TreeNodeData,
-  TREE_FILE,
-  TREE_STATUS_FILE,
-  NOTES_PATH,
-  TreeNodeApi,
-} from "./common";
+  UploadResult
+} from "@/interfaces/system/fileSystem/fileSystemShared";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
+import { $getFileSystem } from "@system/appGlobals";
 import { IconBaseProps } from "react-icons";
-import useBoundingRect from "@/hooks/useBoundingRect";
+import {
+  NOTES_PATH,
+  TREE_FILE,
+  TREE_STATUS_FILE,
+  TreeNodeApi,
+  TreeNodeData,
+} from "./common";
 
 interface TreeViewProps {
   setSelectedFile: (file: string) => void;
@@ -58,12 +59,11 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
 
   function uploadTree() {
     const treeJSON = JSON.stringify(tree?.data);
-    appGlobals.system
-      ?.getFileSystem()
-      .uploadFile(
+    $getFileSystem()
+      .uploadFileSync(
         TREE_FILE,
         { content: new Blob([treeJSON]) },
-        FileUploadMode.Replace,
+        FileUploadMode.Replace
       )
       .then((result) => {
         if (!result) throw Error("UploadTree: no result");
@@ -74,12 +74,11 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
 
   function uploadTreeStatus() {
     const treeStatusJSON = JSON.stringify([...treeOpenNodes.current]);
-    appGlobals.system
-      ?.getFileSystem()
-      .uploadFile(
+    $getFileSystem()
+      .uploadFileSync(
         TREE_STATUS_FILE,
         { content: new Blob([treeStatusJSON]) },
-        FileUploadMode.Replace,
+        FileUploadMode.Replace
       )
       .then((result) => {
         if (!result) throw Error("UploadTreeStatus: no result");
@@ -125,13 +124,11 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
     const fileName =
       "scribe-space-id-" + crypto.randomUUID() + new Date().toJSON();
 
-    const result: UploadResult | undefined = await appGlobals.system
-      ?.getFileSystem()
-      .uploadFile(
-        NOTES_PATH + fileName,
-        { content: new Blob([""]) },
-        FileUploadMode.Add,
-      );
+    const result: UploadResult | undefined = await $getFileSystem().uploadFileSync(
+      NOTES_PATH + fileName,
+      { content: new Blob([""]) },
+      FileUploadMode.Add
+    );
     if (!result) throw Error("onCreate note: no result");
     if (result.status !== FileSystemStatus.Success)
       throw Error("Couldnt upload note, status: " + result.status);
@@ -154,9 +151,8 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
     if (args.ids.length > 1) throw Error("onDelete: Too many files selected!");
     const id = args.ids[0];
 
-    const result: DeleteResults | undefined = await appGlobals.system
-      ?.getFileSystem()
-      .deleteFile(id);
+    const result: DeleteResults | undefined =
+      await $getFileSystem().deleteFileSync(id);
     if (!result) throw Error("onDelete note: no result");
     if (
       result.status !== FileSystemStatus.Success &&
@@ -189,10 +185,8 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
   };
 
   function downloadAndSetTreeStatus() {
-    appGlobals.system
-      ?.getFileSystem()
-      .downloadFile(TREE_STATUS_FILE)
-      .then((result) => {
+    $getFileSystem().downloadFileAsync(
+        (result: DownloadResult) => {
         if (result.status === FileSystemStatus.Success) {
           result.file?.content?.text().then((treeStatusJSON) => {
             const treeStatusArray = JSON.parse(treeStatusJSON);
@@ -204,13 +198,12 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
             onToggleEnabled.current = true;
           });
         }
-      });
+      }, undefined, TREE_STATUS_FILE);
   }
 
   useEffect(() => {
-    appGlobals.system
-      ?.getFileSystem()
-      .downloadFile(TREE_FILE)
+    $getFileSystem()
+      .downloadFileSync(TREE_FILE)
       .then((result) => {
         if (result.status === FileSystemStatus.Success) {
           result.file?.content?.text().then((treeJSON) => {

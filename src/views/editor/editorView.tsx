@@ -7,7 +7,7 @@ import { ListItemNode, ListNode } from "@lexical/list";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
-import { appGlobals } from "@system/appGlobals";
+import { $getFileSystem } from "@system/appGlobals";
 import LinkPlugin from "./plugins/linkPlugin";
 
 import ToolbarPlugin from "./plugins/toolbarPlugin/toolbarPlugin";
@@ -45,9 +45,8 @@ function TestPlugin({ selectedFile }: Props) {
   const [editor] = useLexicalComposerContext();
 
   if (selectedFile != "") {
-    appGlobals.system
-      ?.getFileSystem()
-      .downloadFile(selectedFile)
+    $getFileSystem()
+      .downloadFileSync(selectedFile)
       .then((result) => {
         if (!result.file || !result.file.content) {
           throw Error("EditorView couldnt load note!");
