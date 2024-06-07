@@ -3,6 +3,7 @@ import { EditorThemeClassName } from "lexical";
 import { IconType } from "react-icons";
 import { HiPlusSm, HiMinusSm } from "react-icons/hi";
 import { Icon } from "@/components";
+import "./css/numberInput.css";
 
 export interface NumberInputTheme {
   container: EditorThemeClassName;

@@ -17,7 +17,7 @@
   -moz-appearance: textfield;
 }
 
-.number-input-editor-input-default:hover:not(:focus) {
+.number-input-editor-input-default:hover:not(:focus):not(.disabled) {
   background-color: rgb(209, 209, 209);
 }
 
@@ -30,7 +30,6 @@
 .number-input-editor-button-default {
   border-radius: 3px;
   padding: 5px;
-  cursor: pointer;
   vertical-align: middle;
   border: 0 solid;
   background-color: transparent;
@@ -41,6 +40,10 @@
   -ms-user-select: none; /* Internet Explorer/Edge */
 }
 
-.number-input-editor-button-default:hover {
+.number-input-editor-button-default:not(.disabled) {
+  cursor: pointer;
+}
+
+.number-input-editor-button-default:hover:not(.disabled) {
   background-color: rgb(209, 209, 209);
 }

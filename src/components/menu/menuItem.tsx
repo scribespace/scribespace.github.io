@@ -6,9 +6,12 @@ import {
   ReactElement,
   ReactNode,
   cloneElement,
+  useEffect,
   useMemo,
+  useState,
 } from "react";
 import { MenuContextData, useMenuContext } from "./menuContext";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
 interface MenuItemProps {
   disabled?: boolean;
@@ -23,7 +26,16 @@ export default function MenuItem({
   onClick,
   children,
 }: MenuItemProps) {
+  const [editor] = useLexicalComposerContext();
   const menuContext: MenuContextData = useMenuContext();
+
+  const [isEditorEditable, setIsEditorEditable] = useState(() =>
+    editor.isEditable()
+  );
+
+  const isDisabled = useMemo(() => {
+    return disabled || !isEditorEditable;
+  }, [disabled, isEditorEditable]);
 
   const theme = useMemo(() => {
     return menuContext.theme;
@@ -48,11 +60,22 @@ export default function MenuItem({
       ? className
       : theme.itemDefault;
 
-    return mainClassName + (disabled ? " " + theme.itemDisabled : "");
-  }, [className, theme.itemDefault, theme.itemDisabled, disabled]);
+    return mainClassName + (isDisabled ? " " + theme.itemDisabled : "");
+  }, [className, theme.itemDefault, theme.itemDisabled, isDisabled]);
+
+  useEffect(() => {
+    return editor.registerEditableListener((editable) => {
+      setIsEditorEditable(editable);
+    });
+  }, [editor]);
 
   return (
-    <div className={selectedClassName} onClick={onClick}>
+    <div
+      className={selectedClassName}
+      onClick={(event) => {
+        if (onClick && !isDisabled) onClick(event);
+      }}
+    >
       {preocessedChildren}
     </div>
   );

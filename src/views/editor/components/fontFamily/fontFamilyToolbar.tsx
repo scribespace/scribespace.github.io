@@ -61,7 +61,7 @@ export default function FontFamilyToolbar() {
           const cssFontFamily = $getSelectionStyleValueForProperty(
             selection,
             "font-family",
-            defaultFontFamily.name,
+            defaultFontFamily.name
           );
           const font = fontFromStyle(cssFontFamily);
           setSelectedFamily(font.name);
@@ -76,13 +76,13 @@ export default function FontFamilyToolbar() {
           updateStates();
           return false;
         },
-        COMMAND_PRIORITY_LOW,
+        COMMAND_PRIORITY_LOW
       ),
       editor.registerUpdateListener(({ editorState }) => {
         editorState.read(() => {
           updateStates();
         });
-      }),
+      })
     );
   }, [defaultFontFamily, editor]);
 

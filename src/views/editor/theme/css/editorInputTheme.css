@@ -31,6 +31,10 @@
   overflow: auto;
 }
 
+.editor-inner .disabled {
+  opacity: 0.5;
+}
+
 .editor-see-through {
   z-index: 5;
   position: absolute;

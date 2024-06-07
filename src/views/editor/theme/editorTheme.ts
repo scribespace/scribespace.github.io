@@ -39,6 +39,8 @@ import {
 } from "@/components/separators/theme";
 import { IMAGE_THEME_DEFAULT, ImageTheme } from "../components/image/theme";
 
+import "./css/editorInputTheme.css";
+
 export interface EditorInputTheme extends EditorThemeClasses {
   defaultFontSize: EditorThemeClassName;
   defaultFontFamily: Font;

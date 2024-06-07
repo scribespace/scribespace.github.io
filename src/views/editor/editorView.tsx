@@ -13,8 +13,6 @@ import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { appGlobals } from "@system/appGlobals";
 import LinkPlugin from "./plugins/linkPlugin";
 
-import "./css/editorInputTheme.css";
-
 import ToolbarPlugin from "./plugins/toolbarPlugin/toolbarPlugin";
 
 import useBoundingRect from "@/hooks/useBoundingRect";
@@ -33,6 +31,8 @@ import { LayoutPlugin } from "./plugins/layoutPlugin";
 import { ImageNode } from "./nodes/image";
 import { DragDropPlugin } from "./plugins/dragDropPlugin";
 import { ImagePlugin } from "./plugins/imagePlugin";
+import { EditorInput } from "./components/editorInput/editorInput";
+
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
 // try to recover gracefully without losing user data.
@@ -67,6 +67,8 @@ function TestPlugin({ selectedFile }: Props) {
             $getRoot().clear();
             // Insert them at a selection.
             $insertNodes(nodes);
+
+            editor.setEditable(true);
           });
         });
       });
@@ -83,6 +85,7 @@ export function EditorView({ selectedFile }: Props) {
     namespace: "ScribleSpace",
     theme: editorTheme.editorInputTheme,
     onError,
+    editable: false,
     nodes: [
       ListNode,
       ListItemNode,
@@ -116,16 +119,7 @@ export function EditorView({ selectedFile }: Props) {
           className={editorTheme.editorInner}
           style={{ height: `calc(100% - ${toolbarHeight}px)` }}
         >
-          <RichTextPlugin
-            contentEditable={
-              <ContentEditable
-                className={editorTheme.editorEditable}
-                spellCheck={false}
-              />
-            }
-            placeholder={null}
-            ErrorBoundary={LexicalErrorBoundary}
-          />
+          <EditorInput />
         </div>
       </div>
       <TestPlugin selectedFile={selectedFile} />

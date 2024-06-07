@@ -18,6 +18,7 @@ import {
 } from "lexical";
 import { useEffect, useState } from "react";
 import NumberInput from "../numberInput";
+import { MenuItem } from "@/components/menu";
 
 export default function FontSizeToolbar() {
   const [editor] = useLexicalComposerContext();
@@ -27,6 +28,9 @@ export default function FontSizeToolbar() {
     },
   }: MainTheme = useMainThemeContext();
   const [fontSize, setFontSize] = useState<string>(defaultFontSize);
+  const [isEditorEditable, setIsEditorEditable] = useState(() =>
+    editor.isEditable()
+  );
 
   useEffect(() => {
     function updateStates() {
@@ -36,8 +40,8 @@ export default function FontSizeToolbar() {
           $getSelectionStyleValueForProperty(
             selection,
             "font-size",
-            defaultFontSize,
-          ),
+            defaultFontSize
+          )
         );
     }
 
@@ -48,7 +52,7 @@ export default function FontSizeToolbar() {
           updateStates();
           return false;
         },
-        COMMAND_PRIORITY_LOW,
+        COMMAND_PRIORITY_LOW
       ),
       editor.registerCommand(
         FONT_SIZE_CHANGED_COMMAND,
@@ -56,10 +60,16 @@ export default function FontSizeToolbar() {
           updateStates();
           return false;
         },
-        COMMAND_PRIORITY_LOW,
-      ),
+        COMMAND_PRIORITY_LOW
+      )
     );
   }, [defaultFontSize, editor]);
+
+  useEffect(() => {
+    return editor.registerEditableListener((editable) => {
+      setIsEditorEditable(editable);
+    });
+  }, [editor]);
 
   const onChange = (_: HTMLInputElement, change: number) => {
     if (change == -1) {
@@ -74,18 +84,21 @@ export default function FontSizeToolbar() {
     valueUnit.unit = valueUnit.unit == "" ? "pt" : valueUnit.unit;
     editor.dispatchCommand(
       SET_FONT_SIZE_COMMAND,
-      `${valueUnit.value}${valueUnit.unit}`,
+      `${valueUnit.value}${valueUnit.unit}`
     );
   };
 
   return (
-    <NumberInput
-      type="text"
-      supportedUnits={["", "pt", "px", "mm"]}
-      value={fontSize}
-      min={0}
-      onInputChanged={onChange}
-      onInputAccepted={onInputAccepted}
-    />
+    <MenuItem className="">
+      <NumberInput
+        type="text"
+        disabled={!isEditorEditable}
+        supportedUnits={["", "pt", "px", "mm"]}
+        value={fontSize}
+        min={0}
+        onInputChanged={onChange}
+        onInputAccepted={onInputAccepted}
+      />
+    </MenuItem>
   );
 }

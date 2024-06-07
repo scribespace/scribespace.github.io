@@ -4,13 +4,13 @@ import { IconBaseProps } from "react-icons";
 
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import "./css/numberInput.css";
 import { SeparatorVertical } from "@/components/separators";
 import { NumberInputTheme } from "./theme";
 
 interface NumberInputProps {
   type: "text" | "number";
   value: string;
+  disabled?: boolean;
   min?: number;
   max?: number;
   useAcceptButton?: boolean;
@@ -25,6 +25,7 @@ export default function NumberInput({
   value,
   min,
   max,
+  disabled,
   useAcceptButton,
   supportedUnits,
   themeOverride,
@@ -51,7 +52,7 @@ export default function NumberInput({
 
       return value;
     },
-    [max, min],
+    [max, min]
   );
 
   const validateValue = useCallback(
@@ -66,7 +67,7 @@ export default function NumberInput({
 
       return true;
     },
-    [units],
+    [units]
   );
 
   function processValue(valueUnit: ValueUnit): string {
@@ -80,6 +81,7 @@ export default function NumberInput({
 
   const changeValue = useCallback(
     (change: number) => {
+      if (disabled) return;
       if (!inputRef.current) return;
 
       const valueStr = inputRef.current.value;
@@ -104,10 +106,11 @@ export default function NumberInput({
         if (onInputChanged) onInputChanged(inputRef.current, change);
       }
     },
-    [correctValue, onInputChanged, validateValue],
+    [correctValue, disabled, onInputChanged, validateValue]
   );
 
   function onAccept() {
+    if (disabled) return;
     if (!inputRef.current) return;
 
     const valueStr = inputRef.current.value;
@@ -141,6 +144,11 @@ export default function NumberInput({
     if (variableExists(themeOverride)) return themeOverride;
     return editorTheme.numberInputTheme;
   }, [editorTheme.numberInputTheme, themeOverride]);
+
+  const disabledTheme = useMemo(() => {
+    if (disabled) return "disabled ";
+    return "";
+  }, [disabled]);
 
   function DecreaseIcon(props: IconBaseProps) {
     return theme.DecreaseIcon(props);
@@ -178,23 +186,24 @@ export default function NumberInput({
   }, [inputRef, changeValue]);
 
   return (
-    <div className={theme.container}>
+    <div className={disabledTheme + theme.container}>
       <DecreaseIcon
-        className={theme.controlButton}
+        className={disabledTheme + theme.controlButton}
         onClick={() => {
           changeValue(-1);
         }}
       />
       <input
         ref={inputRef}
-        className={theme.input}
+        className={disabledTheme + theme.input}
         type={type}
         defaultValue={value}
         onKeyDown={onKeyDown}
         onBlur={onBlur}
+        disabled={disabled}
       />
       <IncreaseIcon
-        className={theme.controlButton}
+        className={disabledTheme + theme.controlButton}
         onClick={() => {
           changeValue(1);
         }}
@@ -202,7 +211,10 @@ export default function NumberInput({
       {useAcceptButton && (
         <>
           <SeparatorVertical />
-          <AcceptIcon className={theme.acceptButton} onClick={onAccept} />
+          <AcceptIcon
+            className={disabledTheme + theme.acceptButton}
+            onClick={onAccept}
+          />
         </>
       )}
     </div>

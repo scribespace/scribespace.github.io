@@ -33,6 +33,7 @@ export const MENU_THEME_DEFAULT: MenuTheme = {
 export const $menuItemParent: CSSProperties = {
   alignContent: "center",
   display: "flex",
-  alignItems: "stretch",
+  alignItems: "center",
+  height: "100%",
   position: "relative",
 };
