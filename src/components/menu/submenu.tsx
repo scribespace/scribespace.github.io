@@ -1,3 +1,4 @@
+import { useEditorEditable } from "@/hooks/useEditorEditable";
 import { variableExists } from "@/utils";
 import { assert } from "@/utils/dev";
 import { EditorThemeClassName } from "lexical";
@@ -13,7 +14,6 @@ import Menu from "./menu";
 import { MenuContextData, useMenuContext } from "./menuContext";
 import MenuItem from "./menuItem";
 import { $menuItemParent } from "./theme";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
 interface SubmenuProps {
   className?: EditorThemeClassName;
@@ -28,7 +28,6 @@ export default function Submenu({
   setShowSubmenu,
   children,
 }: SubmenuProps) {
-  const [editor] = useLexicalComposerContext();
   const menuContext: MenuContextData = useMenuContext();
   const showMenuInternal = useState<boolean>(false);
   const [rect, setRect] = useState<{
@@ -37,9 +36,7 @@ export default function Submenu({
     width: number;
     height: number;
   }>({ x: -1, y: -1, width: 0, height: 0 });
-  const [isEditorEditable, setIsEditorEditable] = useState(() =>
-    editor.isEditable()
-  );
+  const isEditorEditable = useEditorEditable();
 
   const menuOptionRef = useRef<HTMLDivElement>(null);
 
@@ -58,7 +55,7 @@ export default function Submenu({
     const childrenArray = Children.toArray(children) as ReactElement[];
     assert(
       childrenArray[0]?.type === MenuItem,
-      `Submenu: First child has to be SubmenuItem (${childrenArray[0]?.type})`
+      `Submenu: First child has to be MenuItem (${childrenArray[0]?.type})`
     );
     return [childrenArray[0], childrenArray.slice(1)];
   }, [children]);
@@ -83,12 +80,6 @@ export default function Submenu({
       document.removeEventListener("contextmenu", stopRightClick);
     };
   }, [setShowMenu]);
-
-  useEffect(() => {
-    return editor.registerEditableListener((editable) => {
-      setIsEditorEditable(editable);
-    });
-  }, [editor]);
 
   function onClick() {
     if (isEditorEditable) setShowMenu(true);

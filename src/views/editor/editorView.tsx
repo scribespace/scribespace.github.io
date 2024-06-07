@@ -6,10 +6,7 @@ import { LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
-import { ContentEditable } from "@lexical/react/LexicalContentEditable";
-import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
-import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { appGlobals } from "@system/appGlobals";
 import LinkPlugin from "./plugins/linkPlugin";
 
@@ -20,18 +17,18 @@ import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import { useRef } from "react";
+import { EditorInput } from "./components/editorInput/editorInput";
+import { ImageNode } from "./nodes/image";
+import { LayoutBodyNode, LayoutNode } from "./nodes/layout";
 import { ExtendedTableNode, TableBodyNode } from "./nodes/table";
 import ExtendedTextNode from "./nodes/text";
 import { ColorPlugin } from "./plugins/colorPlugin";
 import ContextMenuPlugin from "./plugins/contextMenuPlugin";
-import TablePlugin from "./plugins/tablePlugin";
-import { FontPlugin } from "./plugins/fontPlugin";
-import { LayoutBodyNode, LayoutNode } from "./nodes/layout";
-import { LayoutPlugin } from "./plugins/layoutPlugin";
-import { ImageNode } from "./nodes/image";
 import { DragDropPlugin } from "./plugins/dragDropPlugin";
+import { FontPlugin } from "./plugins/fontPlugin";
 import { ImagePlugin } from "./plugins/imagePlugin";
-import { EditorInput } from "./components/editorInput/editorInput";
+import { LayoutPlugin } from "./plugins/layoutPlugin";
+import TablePlugin from "./plugins/tablePlugin";
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will

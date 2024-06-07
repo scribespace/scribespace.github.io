@@ -19,6 +19,7 @@ import {
 import { useEffect, useState } from "react";
 import NumberInput from "../numberInput";
 import { MenuItem } from "@/components/menu";
+import { useEditorEditable } from "@/hooks/useEditorEditable";
 
 export default function FontSizeToolbar() {
   const [editor] = useLexicalComposerContext();
@@ -28,9 +29,7 @@ export default function FontSizeToolbar() {
     },
   }: MainTheme = useMainThemeContext();
   const [fontSize, setFontSize] = useState<string>(defaultFontSize);
-  const [isEditorEditable, setIsEditorEditable] = useState(() =>
-    editor.isEditable()
-  );
+  const isEditorEditable = useEditorEditable();
 
   useEffect(() => {
     function updateStates() {
@@ -64,12 +63,6 @@ export default function FontSizeToolbar() {
       )
     );
   }, [defaultFontSize, editor]);
-
-  useEffect(() => {
-    return editor.registerEditableListener((editable) => {
-      setIsEditorEditable(editable);
-    });
-  }, [editor]);
 
   const onChange = (_: HTMLInputElement, change: number) => {
     if (change == -1) {

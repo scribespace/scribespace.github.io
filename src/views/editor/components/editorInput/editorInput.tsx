@@ -1,22 +1,22 @@
+import { useEditorEditable } from "@/hooks/useEditorEditable";
 import { useMainThemeContext } from "@/mainThemeContext";
+import { appGlobals } from "@/system/appGlobals";
 import { MainTheme } from "@/theme";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export function EditorInput() {
   const [editor] = useLexicalComposerContext();
-  const [isEditorEditable, setIsEditorEditable] = useState(() =>
-    editor.isEditable()
-  );
+
+  const isEditorEditable = useEditorEditable();
+
   const { editorTheme }: MainTheme = useMainThemeContext();
 
   useEffect(() => {
-    return editor.registerEditableListener((editable) => {
-      setIsEditorEditable(editable);
-    });
+    appGlobals.editorObject = editor;
   }, [editor]);
 
   return (

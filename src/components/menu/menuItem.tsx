@@ -1,4 +1,5 @@
 import { isIcon } from "@/components";
+import { useEditorEditable } from "@/hooks/useEditorEditable";
 import { variableExists } from "@utils";
 import { EditorThemeClassName } from "lexical";
 import {
@@ -6,12 +7,9 @@ import {
   ReactElement,
   ReactNode,
   cloneElement,
-  useEffect,
   useMemo,
-  useState,
 } from "react";
 import { MenuContextData, useMenuContext } from "./menuContext";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
 interface MenuItemProps {
   disabled?: boolean;
@@ -26,12 +24,9 @@ export default function MenuItem({
   onClick,
   children,
 }: MenuItemProps) {
-  const [editor] = useLexicalComposerContext();
   const menuContext: MenuContextData = useMenuContext();
 
-  const [isEditorEditable, setIsEditorEditable] = useState(() =>
-    editor.isEditable()
-  );
+  const isEditorEditable = useEditorEditable();
 
   const isDisabled = useMemo(() => {
     return disabled || !isEditorEditable;
@@ -62,12 +57,6 @@ export default function MenuItem({
 
     return mainClassName + (isDisabled ? " " + theme.itemDisabled : "");
   }, [className, theme.itemDefault, theme.itemDisabled, isDisabled]);
-
-  useEffect(() => {
-    return editor.registerEditableListener((editable) => {
-      setIsEditorEditable(editable);
-    });
-  }, [editor]);
 
   return (
     <div
