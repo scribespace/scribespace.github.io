@@ -54,7 +54,7 @@ export class WebWorkerManager<WebWorkerFunctions, WebWorkerFunctionsExtended = W
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected processCallback(callbackID: number, ...args: any[]) {
+  protected processCallback(callbackID: number, args: any) {
     const callback = this.__callbacksMap.get(callbackID);
     variableExistsOrThrowDev(callback, `Missing callback ${callbackID}`);
     callback.resolve(args);

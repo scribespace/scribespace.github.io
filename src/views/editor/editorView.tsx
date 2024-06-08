@@ -29,6 +29,7 @@ import { FontPlugin } from "./plugins/fontPlugin";
 import { ImagePlugin } from "./plugins/imagePlugin";
 import { LayoutPlugin } from "./plugins/layoutPlugin";
 import TablePlugin from "./plugins/tablePlugin";
+import { DownloadResult } from "@/interfaces/system/fileSystem/fileSystemShared";
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
@@ -45,9 +46,8 @@ function TestPlugin({ selectedFile }: Props) {
   const [editor] = useLexicalComposerContext();
 
   if (selectedFile != "") {
-    $getFileSystem()
-      .downloadFile(selectedFile)
-      .then((result) => {
+    $getFileSystem().downloadFileAsync(
+      (result: DownloadResult) => {
         if (!result.file || !result.file.content) {
           throw Error("EditorView couldnt load note!");
         }
@@ -67,7 +67,9 @@ function TestPlugin({ selectedFile }: Props) {
             editor.setEditable(true);
           });
         });
-      });
+      },
+      undefined, selectedFile
+    );
   }
   return null;
 }

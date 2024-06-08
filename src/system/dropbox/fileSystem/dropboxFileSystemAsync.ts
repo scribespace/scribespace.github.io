@@ -1,5 +1,5 @@
 import { FileSystemBase } from "@/interfaces/system/fileSystem/fileSystemInterface";
-import { FileSystemWorkerRegister, FileSystemWorkerWrapper } from "@/interfaces/system/fileSystem/fileSystemWorkerInterface";
+import { FileSystemWorkerRegister, FileSystemWorkerWrapper } from "@/interfaces/system/fileSystem/fileSystemInterface";
 import { WebWorkerManager } from "@/interfaces/webWorker";
 import * as DropboxAPI from "dropbox";
 import { DropboxAuth } from "../dropboxAuth";

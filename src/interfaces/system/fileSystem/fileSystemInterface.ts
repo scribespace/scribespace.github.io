@@ -1,8 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { WebWorkerManagerInterface } from "@/interfaces/webWorker";
 import { DeleteResults, DownloadResult, File, FileUploadMode, UploadResult } from "./fileSystemShared";
-import { FileSystemWorkerRegister, FileSystemWorkerWrapper } from "./fileSystemWorkerInterface";
-
-export interface FileSystemAsync extends FileSystemWorkerWrapper, FileSystemWorkerRegister {
-}
 
 export interface FileSystemBase{
   calculateFileHash(file: File): Promise<string>;
@@ -11,6 +9,15 @@ export interface FileSystemBase{
   downloadFile(path: string): Promise<DownloadResult>;
   deleteFile(path: string): Promise<DeleteResults>;
   getFileURL(path: string): Promise<string>;
+}
+
+export interface FileSystemWorkerRegister {
+  registerFileSystemWorker(api: any): void;
+}
+
+export type FileSystemWorkerWrapper = WebWorkerManagerInterface<FileSystemBase, "Async">;
+
+export interface FileSystemAsync extends FileSystemWorkerWrapper, FileSystemWorkerRegister {
 }
 
 export interface FileSystem extends FileSystemAsync, FileSystemBase {

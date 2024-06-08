@@ -1,12 +1,12 @@
 import { WebWorkerThread } from "@/interfaces/webWorker";
 import { GetExtendedFileSystemBase } from "./dropboxFileSystemBase";
 import { EmptyClass } from "@/utils";
-import { FileSystemWorkerFunctions } from "@/interfaces/system/fileSystem/fileSystemWorkerInterface";
+import { FileSystemWorkerRegister } from "@/interfaces/system/fileSystem/fileSystemInterface";
 import * as DropboxAPI from "dropbox";
 
 export const DropboxFileSystemWorkerImplementation = GetExtendedFileSystemBase(EmptyClass);
 
-export class DropboxFileSystemWorkerImplementationExtended extends DropboxFileSystemWorkerImplementation implements FileSystemWorkerFunctions {
+export class DropboxFileSystemWorkerImplementationExtended extends DropboxFileSystemWorkerImplementation implements FileSystemWorkerRegister {
   
   constructor() {
     //@ts-expect-error Class defined in mixin needs this argument
