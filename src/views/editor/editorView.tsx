@@ -2,18 +2,20 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $getRoot, $insertNodes, TextNode } from "lexical";
 
 import { $generateNodesFromDOM } from "@lexical/html";
+import { CodeNode, CodeHighlightNode } from "@lexical/code";
 import { LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
-import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { $getFileSystem } from "@system/appGlobals";
 import LinkPlugin from "./plugins/linkPlugin";
 
 import ToolbarPlugin from "./plugins/toolbarPlugin/toolbarPlugin";
 
 import useBoundingRect from "@/hooks/useBoundingRect";
+import { DownloadResult } from "@/interfaces/system/fileSystem/fileSystemShared";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
@@ -30,7 +32,6 @@ import { FontPlugin } from "./plugins/fontPlugin";
 import { ImagePlugin } from "./plugins/imagePlugin";
 import { LayoutPlugin } from "./plugins/layoutPlugin";
 import TablePlugin from "./plugins/tablePlugin";
-import { DownloadResult } from "@/interfaces/system/fileSystem/fileSystemShared";
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
@@ -108,6 +109,8 @@ export function EditorView({ selectedFile }: Props) {
       TableRowNode,
       TableCellNode,
       ImageNode,
+      CodeNode,
+      CodeHighlightNode,
     ],
   };
 

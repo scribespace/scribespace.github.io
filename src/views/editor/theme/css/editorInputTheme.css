@@ -93,6 +93,13 @@
   text-decoration: underline line-through;
 }
 
+.editor-textCode {
+  background-color: rgb(158, 158, 158);
+  padding: 1px 0.25rem;
+  font-family: Menlo, Consolas, Monaco, monospace;
+  font-size: 94%;
+}
+
 .editor-table {
   border-collapse: collapse;
   border-spacing: 0;
@@ -118,6 +125,58 @@
 .editor-layout > tbody > .editor-table-row > .editor-table-cell {
   vertical-align: top;
   border: 1px dotted black;
+}
+
+.editor-code {
+  background-color: rgb(126, 126, 126);
+  border: rgb(32, 32, 32) solid 1px;
+  font-family: Menlo, Consolas, Monaco, monospace;
+  display: block;
+  padding: 8px 8px 8px 20px;
+  line-height: 1.53;
+  font-size: 13px;
+  margin: 0;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  overflow-x: auto;
+  position: relative;
+  tab-size: 2;
+}
+.editor-code:before {
+  content: attr(data-gutter);
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 8px;
+  color: #777;
+  white-space: pre-wrap;
+  text-align: right;
+  min-width: 25px;
+}
+
+.editor-tokenComment {
+  color: slategray;
+}
+.editor-tokenPunctuation {
+  color: #999;
+}
+.editor-tokenProperty {
+  color: #905;
+}
+.editor-tokenSelector {
+  color: rgb(72, 100, 15);
+}
+.editor-tokenOperator {
+  color: #9a6e3a;
+}
+.editor-tokenAttr {
+  color: rgb(11, 84, 116);
+}
+.editor-tokenVariable {
+  color: rgb(161, 105, 0);
+}
+.editor-tokenFunction {
+  color: #971731;
 }
 
 @media print {
