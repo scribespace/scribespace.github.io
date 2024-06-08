@@ -4,6 +4,7 @@ import { $getRoot, $insertNodes, TextNode } from "lexical";
 import { $generateNodesFromDOM } from "@lexical/html";
 import { LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
+import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
@@ -132,6 +133,7 @@ export function EditorView({ selectedFile }: Props) {
       <ContextMenuPlugin />
       <DragDropPlugin />
       <ImagePlugin />
+      <ListPlugin/>
     </LexicalComposer>
   );
 }

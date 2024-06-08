@@ -250,7 +250,11 @@ function $createListOrMerge(node, listType) {
   } else {
     const list = $createListNode(listType);
     list.append(listItem);
-    node.replace(list);
+    if (lexical.$isRootOrShadowRoot(node)) {
+      node.append(list);
+    } else {
+      node.replace(list);
+    }
     return list;
   }
 }
