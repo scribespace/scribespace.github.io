@@ -1,18 +1,18 @@
 import {
-  ObjectInterface,
   isKeyOrThrowDev,
-  variableExistsOrThrowDev,
+  variableExistsOrThrowDev
 } from "@utils";
 import {
   WebWorkerCallback,
   WebWorkerError,
   WebWorkerManagerFunctionGeneric,
+  WebWorkerManagerInterfaceCreateMapping,
   WebWorkerPayload,
   WebWorkerResolveGeneric,
-  WebWorkerResult,
+  WebWorkerResult
 } from "./webWorkerShared";
 
-export class WebWorkerManager<ThreadInterface extends ObjectInterface> {
+export class WebWorkerManager<WebWorkerFunctions, WebWorkerFunctionsExtended = WebWorkerFunctions> {
   protected __webWorker: Worker;
 
   protected __callbacksMap: Map<number, WebWorkerCallback> = new Map();
@@ -20,25 +20,27 @@ export class WebWorkerManager<ThreadInterface extends ObjectInterface> {
 
   constructor(
     webWorker: string | URL,
-    webWorkerFunctions: ThreadInterface,
-    name?: string
+    webWorkerFunctions: WebWorkerFunctions,
+    postfix?: string,
+    name?: string,
   ) {
     const webWorkerName = name || this.constructor.name;
 
-    this.__webWorker = new Worker(webWorker, {
-      name: webWorkerName,
-      type: "module",
-    });
+    
+    this.__webWorker = new Worker(webWorker, { name: webWorkerName, type: "module", });
     this.__webWorker.onmessage = (event) => this.processResult(event);
-
-    for (const key of Object.getOwnPropertyNames(webWorkerFunctions)) {
-      (this[key as keyof this] as WebWorkerManagerFunctionGeneric) = (
+    
+    const functionsMap = WebWorkerManagerInterfaceCreateMapping(postfix || "", webWorkerFunctions);
+    for (const key of Object.getOwnPropertyNames(functionsMap)) {
+      const wrapperName = key;
+      const workerName = functionsMap[key];
+      (this[wrapperName as keyof this] as WebWorkerManagerFunctionGeneric) = (
         resolve: WebWorkerResolveGeneric,
         onerror: WebWorkerError,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ...args: any[]
       ) => {
-        this.callFunction(key as keyof ThreadInterface, args, resolve, onerror ? onerror : (error)=> console.error(error));
+        this.callFunction(workerName as keyof WebWorkerFunctionsExtended, args, resolve, onerror ? onerror : (error)=> console.error(error));
       };
     }
   }
@@ -77,7 +79,7 @@ export class WebWorkerManager<ThreadInterface extends ObjectInterface> {
    * Don't call it directly. Make wrapers for each function to test args types and avoid using IDs
    */
   protected callFunction(
-    funcID: keyof ThreadInterface,
+    funcID: keyof WebWorkerFunctionsExtended,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     args: any[],
     resolve: WebWorkerResolveGeneric,
@@ -87,7 +89,7 @@ export class WebWorkerManager<ThreadInterface extends ObjectInterface> {
     const callback: WebWorkerCallback = { resolve, onerror };
     const callbackID = this.addCallback(callback);
 
-    const payload: WebWorkerPayload<ThreadInterface> = {
+    const payload: WebWorkerPayload<WebWorkerFunctionsExtended> = {
       callbackID,
       funcID,
       args,

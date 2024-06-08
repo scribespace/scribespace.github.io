@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ObjectInterface } from "@utils";
+import { Func } from "@utils";
 
 export type WebWorkerResolveGeneric = (...args: any[]) => void;
 export type WebWorkerResolve<Args extends unknown[]> = (...args: Args) => void;
@@ -23,13 +23,23 @@ export type WebWorkerManagerFunction<Packed> =
       ) => void
     : never;
 
-export type WebWorkerManagerInterface<I extends ObjectInterface> = {
-  [N in keyof I]: (
+export type WebWorkerManagerInterface<I, Postfix extends string = ''> = {
+  [N in keyof I as I[N] extends Func ? `${string & N}${Postfix}` : never]: I[N] extends Func ? (
     resolve: (...args: Awaited<ReturnType<I[N]>>) => void,
     onerror: WebWorkerError,
     ...args: Parameters<I[N]>
-  ) => void;
+  ) => void : never;
 };
+
+export type WebWorkerFunctionsMap = {[key:string]: string};
+export function WebWorkerManagerInterfaceCreateMapping<T>( postfix: string, obj: T ): WebWorkerFunctionsMap {
+  const map: WebWorkerFunctionsMap = {};
+  for ( const key of Object.getOwnPropertyNames(obj) ) {
+    map[key+postfix] = key;
+  }
+
+  return map;
+}
 
 export interface WebWorkerPayload<ThreadInterface> {
   callbackID: number;

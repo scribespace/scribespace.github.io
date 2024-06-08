@@ -1,10 +1,10 @@
-import { isFunctionOrThrowDev } from "@utils";
+import { Func, isFunctionOrThrowDev } from "@utils";
 import { WebWorkerPayload, WebWorkerResult } from "./webWorkerShared";
 
 export class WebWorkerThread<ThreadInterface> {
   threadFunctions: ThreadInterface;
-  constructor(functoins: ThreadInterface) {
-    this.threadFunctions = functoins;
+  constructor(functions: ThreadInterface) {
+    this.threadFunctions = functions;
 
     self.onmessage = (event) => {
       const payload: WebWorkerPayload<ThreadInterface> = event.data;
@@ -14,10 +14,9 @@ export class WebWorkerThread<ThreadInterface> {
 
   protected async callFunction(payload: WebWorkerPayload<ThreadInterface>) {
     try {
-      const func = this.threadFunctions[payload.funcID];
-      isFunctionOrThrowDev(func);
+      isFunctionOrThrowDev(this.threadFunctions[payload.funcID]);
 
-      const result = await func(...payload.args);
+      const result = await (this.threadFunctions[payload.funcID] as Func)(...payload.args);
       self.postMessage({
         success: true,
         callbackID: payload.callbackID,

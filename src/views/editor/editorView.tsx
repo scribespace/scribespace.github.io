@@ -46,7 +46,7 @@ function TestPlugin({ selectedFile }: Props) {
 
   if (selectedFile != "") {
     $getFileSystem()
-      .downloadFileSync(selectedFile)
+      .downloadFile(selectedFile)
       .then((result) => {
         if (!result.file || !result.file.content) {
           throw Error("EditorView couldnt load note!");

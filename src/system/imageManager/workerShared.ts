@@ -1,7 +1,7 @@
 import { WebWorkerManagerInterface } from "@/interfaces/webWorker";
 import { ImageManagerWorkerImplementation } from "./imageManagerWorker";
 
-export type ImageManagerWorkerInterface = typeof ImageManagerWorkerImplementation;
-export type ImageManagerWorkerWrapper = WebWorkerManagerInterface<ImageManagerWorkerInterface>;
+export type ImageManagerWorkerFunctions = typeof ImageManagerWorkerImplementation;
+export type ImageManagerWorkerWrapper = WebWorkerManagerInterface<ImageManagerWorkerFunctions>;
 export { ImageManagerWorkerImplementation };
 

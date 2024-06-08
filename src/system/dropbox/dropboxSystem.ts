@@ -1,10 +1,10 @@
 import * as DropboxAPI from "dropbox";
 import { DropboxAuth } from "./dropboxAuth";
-import { DropboxFileSystem } from "./fileSystem/dropboxFileSystem";
 import { System } from "@interfaces/system/systemInterface";
 import { Authenticate } from "@/interfaces/system/authInterface";
 import { FileSystem } from "@/interfaces/system/fileSystem/fileSystemInterface";
 import { DROPBOX_APP } from "./dropboxCommon";
+import { DropboxFileSystem } from "./fileSystem/dropboxFileSystem";
 
 export class DropboxSystem implements System {
   private dbx: DropboxAPI.Dropbox = new DropboxAPI.Dropbox();

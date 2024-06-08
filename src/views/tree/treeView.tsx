@@ -60,7 +60,7 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
   function uploadTree() {
     const treeJSON = JSON.stringify(tree?.data);
     $getFileSystem()
-      .uploadFileSync(
+      .uploadFile(
         TREE_FILE,
         { content: new Blob([treeJSON]) },
         FileUploadMode.Replace
@@ -75,7 +75,7 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
   function uploadTreeStatus() {
     const treeStatusJSON = JSON.stringify([...treeOpenNodes.current]);
     $getFileSystem()
-      .uploadFileSync(
+      .uploadFile(
         TREE_STATUS_FILE,
         { content: new Blob([treeStatusJSON]) },
         FileUploadMode.Replace
@@ -124,7 +124,7 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
     const fileName =
       "scribe-space-id-" + crypto.randomUUID() + new Date().toJSON();
 
-    const result: UploadResult | undefined = await $getFileSystem().uploadFileSync(
+    const result: UploadResult | undefined = await $getFileSystem().uploadFile(
       NOTES_PATH + fileName,
       { content: new Blob([""]) },
       FileUploadMode.Add
@@ -152,7 +152,7 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
     const id = args.ids[0];
 
     const result: DeleteResults | undefined =
-      await $getFileSystem().deleteFileSync(id);
+      await $getFileSystem().deleteFile(id);
     if (!result) throw Error("onDelete note: no result");
     if (
       result.status !== FileSystemStatus.Success &&
@@ -203,7 +203,7 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
 
   useEffect(() => {
     $getFileSystem()
-      .downloadFileSync(TREE_FILE)
+      .downloadFile(TREE_FILE)
       .then((result) => {
         if (result.status === FileSystemStatus.Success) {
           result.file?.content?.text().then((treeJSON) => {

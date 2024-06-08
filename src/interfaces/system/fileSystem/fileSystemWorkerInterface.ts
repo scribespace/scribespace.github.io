@@ -1,17 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { WebWorkerManagerInterface } from "@/interfaces/webWorker";
-import { DownloadResult } from "./fileSystemShared";
+import { FileSystemBase } from "./fileSystemInterface";
 
-export const FileSystemWorkerImplementation = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  registerFileSystemWorker(api: any): void {
-    throw Error("Not implemented");
-  },
+export interface FileSystemWorkerRegister {
+  registerFileSystemWorker(api: any): void;
+}
 
-  downloadFileAsync(path: string): Promise<[result: DownloadResult]> {
-    throw Error("Not implemented");
-  },
-};
-
-export type FileSystemWorkerInterface = typeof FileSystemWorkerImplementation;
-export type FileSystemWorkerWrapper = WebWorkerManagerInterface<FileSystemWorkerInterface>;
+export interface FileSystemWorkerFunctions extends FileSystemBase {
+  registerFileSystemWorker(api: any): void;
+}
+export type FileSystemWorkerWrapper = WebWorkerManagerInterface<FileSystemBase, "Async">;

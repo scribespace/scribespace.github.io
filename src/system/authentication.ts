@@ -47,7 +47,7 @@ class Authentication {
               await appGlobals.system.getAuth().Login(accessToken, refreshToken);
               
               const dropboxFileSystem = $getFileSystem() as DropboxFileSystem;
-              dropboxFileSystem.registerFileSystemAsync($getAuth() as DropboxAuth);
+              dropboxFileSystem.registerFileSystemWorker($getAuth() as DropboxAuth);
             }
             return true;
           default:
@@ -85,7 +85,7 @@ class Authentication {
                 );
 
               const dropboxFileSystem = $getFileSystem() as DropboxFileSystem;
-              dropboxFileSystem.registerFileSystemAsync($getAuth() as DropboxAuth);
+              dropboxFileSystem.registerFileSystemWorker($getAuth() as DropboxAuth);
 
               return true;
             }
