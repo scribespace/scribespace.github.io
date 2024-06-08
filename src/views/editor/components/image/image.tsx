@@ -1,5 +1,7 @@
+import { File, FileUploadMode, UploadResult } from "@/interfaces/system/fileSystem/fileSystemShared";
 import { useMainThemeContext } from "@/mainThemeContext";
-import { $getImageManager, appGlobals } from "@/system/appGlobals";
+import { $getFileSystem, $getImageManager, $getSystem } from "@/system/appGlobals";
+import { $getImageName, IMAGES_PATH } from "@/system/imageManager";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 import {
@@ -8,6 +10,8 @@ import {
   notNullOrThrowDev,
   separateValueAndUnit,
   valueValidOrThrowDev,
+  variableExists,
+  variableExistsOrThrowDev,
 } from "@utils";
 import {
   $getNodeByKey,
@@ -19,9 +23,8 @@ import {
   CSSProperties,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
-  useState,
+  useState
 } from "react";
 
 interface ImageControlsStyles {
@@ -55,6 +58,13 @@ enum ResizeDirection {
 }
 
 const MISSING_IMAGE = "/images/no-image.png" as const;
+
+enum ImageState {
+  None,
+  Loading,
+  Ready,
+  Missing,
+}
 
 interface ImageProps {
   src?: string;
@@ -467,50 +477,81 @@ export function Image({
     setupControls();
   }, [setupControls, width, height]);
 
-  const [isProcessed, setIsProcessed] = useState<boolean>(false);
+  const [imageState, setImageState] = useState<ImageState>(ImageState.None);
   const [currentSrc, setCurrentSrc] = useState<string>(src || MISSING_IMAGE);
 
-  // const onImageLoad = useCallback(
-  //   () => {
-  //       if (  )
-  //   },
-  //   []
-  // );
+  const imageLoadFailed = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (error: any) => {
+      setImageState(ImageState.Missing); 
+      setCurrentSrc(MISSING_IMAGE);
+      setSrc(MISSING_IMAGE); 
+      throw Error( error );
+    },
+    [setSrc]
+  );
 
-//   useEffect(() => {
-//     if (isProcessed == false && src && src != "" && src != MISSING_IMAGE) {
-//       if (src.startsWith(appGlobals.system!.getSystemDomain())) {
-//         appGlobals.imageManager.preloadImageUrl(
-//           () => {
-//             setCurrentSrc(src);
-//             setIsProcessed(true);
-//           },
-//           undefined,
-//           src
-//         );
-//       } else {
-//         setCurrentSrc(src);
-//         setIsProcessed(true);
-//       }
-//     }
-//   }, [isProcessed, src]);
+  const uploadImage = useCallback(
+    (file: File) => {
+      $getFileSystem().uploadFileAsync( 
+        {
+          resolve: (result: UploadResult) => {
+            editor.update( 
+              () => {
+                variableExistsOrThrowDev(result.fileInfo, "Missing fileinfo");
+                setSrc(result.fileInfo.name);
+                setImageState( ImageState.Ready );
+              } );
+          },
+        onerror: (error) => { 
+          editor.update( 
+            () => {
+              imageLoadFailed(error);
+            }); 
+          }
+      }, IMAGES_PATH + $getImageName(), file, FileUploadMode.Add
+       );
+    },
+    [editor, imageLoadFailed, setSrc]
+  );
 
   useEffect(() => {
-    if ((src == "" || src == MISSING_IMAGE) && blob) {
-      setIsProcessed(false);
+    if ( imageState == ImageState.None ) {
       setCurrentSrc(MISSING_IMAGE);
-      $getImageManager().blobsToUrlObjs(
-        (urlsObjs) => {
-            setCurrentSrc(urlsObjs[0]);
 
-            //upload
-            //setSrc to display
-        },
-        undefined,
-        [blob]
-      );
+      if ( (src == "") && blob ) {
+        setImageState(ImageState.Loading);
+
+        $getImageManager().blobsToUrlObjs(
+          {
+            resolve: (urlsObjs) => {
+              setCurrentSrc(urlsObjs[0]);
+
+              uploadImage({content: blob});
+            },
+            onerror: (error) => { 
+              editor.update( 
+                () => {
+                  imageLoadFailed(error);
+                });
+            },
+          },
+          [blob]
+        );
+
+        return;
+      }   
+
+      if ( variableExists(src) ) {
+        if ( !src.startsWith($getSystem().getSystemDomain()) ) {
+         // $getImageManager().saveImage( ()=>{}, undefined, src );
+        }
+        
+        setCurrentSrc( src );
+        setImageState(ImageState.Ready);
+      }
     }
-  }, [blob, editor, imageKey, setSrc, src]);
+  }, [blob, editor, imageLoadFailed, imageState, setSrc, src, uploadImage]);
 
   useEffect(() => {
     return editor.registerCommand(
@@ -542,7 +583,7 @@ export function Image({
       >
         <img
           ref={imageRef}
-          className={imageTheme.element + (isProcessed ? "" : " " + pulsing)}
+          className={imageTheme.element + (imageState == ImageState.Loading ? " " + pulsing : "")}
           style={{ display: "block" }}
           src={currentSrc}
           alt={`No image ${currentSrc}`}

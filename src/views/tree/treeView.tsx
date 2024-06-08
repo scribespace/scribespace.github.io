@@ -15,7 +15,6 @@ import "./css/treeView.css";
 
 import useBoundingRect from "@/hooks/useBoundingRect";
 import {
-  DeleteResults,
   DownloadResult,
   FileSystemStatus,
   FileUploadMode,
@@ -59,15 +58,11 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
 
   function uploadTree() {
     const treeJSON = JSON.stringify(tree?.data);
+    const treeBlob = new Blob([treeJSON]);
     $getFileSystem().uploadFileAsync( 
-      (result: UploadResult) => {
-        if (!result) throw Error("UploadTree: no result");
-        if (result.status !== FileSystemStatus.Success)
-          throw Error("Couldnt upload tree, status: " + result.status);
-      },
-      undefined,
+      {},
       TREE_FILE,
-      { content: new Blob([treeJSON]) },
+      { content: treeBlob },
       FileUploadMode.Replace
     );
   }
@@ -75,12 +70,7 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
   function uploadTreeStatus() {
     const treeStatusJSON = JSON.stringify([...treeOpenNodes.current]);
     $getFileSystem().uploadFileAsync( 
-      (result: UploadResult) => {
-        if (!result) throw Error("UploadTreeStatus: no result");
-        if (result.status !== FileSystemStatus.Success)
-          throw Error("Couldnt upload tree status, status: " + result.status);
-      },
-      undefined,
+      {},
       TREE_STATUS_FILE,
       { content: new Blob([treeStatusJSON]) },
       FileUploadMode.Replace
@@ -151,18 +141,12 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
     if (args.ids.length > 1) throw Error("onDelete: Too many files selected!");
     const id = args.ids[0];
 
-    await $getFileSystem().deleteFileAsync(
-      (result: DeleteResults) => {
-        if (!result) throw Error("onDelete note: no result");
-        if (
-          result.status !== FileSystemStatus.Success &&
-          result.status !== FileSystemStatus.NotFound
-        )
-          throw Error("Couldnt delete note, status: " + result.status);
-
+    await $getFileSystem().deleteFileAsync( {
+        resolve: () => {
         tree?.drop({ id });
         updateDataVersion();
-      }, undefined, id);
+      }
+    }, id);
   };
 
   const onSelect = (nodes: TreeNodeApi[]) => {
@@ -186,8 +170,8 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
   };
 
   function downloadAndSetTreeStatus() {
-    $getFileSystem().downloadFileAsync(
-        (result: DownloadResult) => {
+    $getFileSystem().downloadFileAsync( {
+          resolve: (result: DownloadResult) => {
         if (result.status === FileSystemStatus.Success) {
           result.file?.content?.text().then((treeStatusJSON) => {
             const treeStatusArray = JSON.parse(treeStatusJSON);
@@ -199,12 +183,12 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
             onToggleEnabled.current = true;
           });
         }
-      }, undefined, TREE_STATUS_FILE);
+      }}, TREE_STATUS_FILE);
   }
 
   useEffect(() => {
-    $getFileSystem().downloadFileAsync(
-      (result: DownloadResult) => {
+    $getFileSystem().downloadFileAsync( {
+        resolve: (result: DownloadResult) => {
         if (result.status === FileSystemStatus.Success) {
           result.file?.content?.text().then((treeJSON) => {
             setTree(new SimpleTree<TreeNodeData>(JSON.parse(treeJSON)));
@@ -213,8 +197,7 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
         } else {
           setTree(new SimpleTree<TreeNodeData>([]));
         }
-      },
-      undefined, TREE_FILE
+      }}, TREE_FILE
     );
   }, []);
 

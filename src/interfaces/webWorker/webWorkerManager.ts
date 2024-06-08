@@ -5,6 +5,7 @@ import {
 import {
   WebWorkerCallback,
   WebWorkerError,
+  WebWorkerFunctionAttributes,
   WebWorkerManagerFunctionGeneric,
   WebWorkerManagerInterfaceCreateMapping,
   WebWorkerPayload,
@@ -12,7 +13,7 @@ import {
   WebWorkerResult
 } from "./webWorkerShared";
 
-export class WebWorkerManager<WebWorkerFunctions, WebWorkerFunctionsExtended = WebWorkerFunctions> {
+export class WebWorkerManager<WebWorkerFunctionsPublic, WebWorkerFunctionsExtended = WebWorkerFunctionsPublic> {
   protected __webWorker: Worker;
 
   protected __callbacksMap: Map<number, WebWorkerCallback> = new Map();
@@ -20,7 +21,7 @@ export class WebWorkerManager<WebWorkerFunctions, WebWorkerFunctionsExtended = W
 
   constructor(
     webWorker: string | URL,
-    webWorkerFunctions: WebWorkerFunctions,
+    webWorkerFunctionsPublic: WebWorkerFunctionsPublic,
     postfix?: string,
     name?: string,
   ) {
@@ -30,17 +31,21 @@ export class WebWorkerManager<WebWorkerFunctions, WebWorkerFunctionsExtended = W
     this.__webWorker = new Worker(webWorker, { name: webWorkerName, type: "module", });
     this.__webWorker.onmessage = (event) => this.processResult(event);
     
-    const functionsMap = WebWorkerManagerInterfaceCreateMapping(postfix || "", webWorkerFunctions);
+    const functionsMap = WebWorkerManagerInterfaceCreateMapping(postfix || "", webWorkerFunctionsPublic);
     for (const key of Object.getOwnPropertyNames(functionsMap)) {
       const wrapperName = key;
       const workerName = functionsMap[key];
       (this[wrapperName as keyof this] as WebWorkerManagerFunctionGeneric) = (
-        resolve: WebWorkerResolveGeneric,
-        onerror: WebWorkerError,
+        attributes: {
+          resolve?: WebWorkerResolveGeneric,
+          onerror?: WebWorkerError,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          transfer?: any[],
+        },
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ...args: any[]
       ) => {
-        this.callFunction(workerName as keyof WebWorkerFunctionsExtended, args, resolve, onerror ? onerror : (error)=> console.error(error));
+        this.callFunction(workerName as keyof WebWorkerFunctionsExtended, args, attributes);
       };
     }
   }
@@ -75,6 +80,9 @@ export class WebWorkerManager<WebWorkerFunctions, WebWorkerFunctionsExtended = W
     this.__webWorker.terminate();
   }
 
+  private static defaultResolveFunction() {}
+  private static defualtOnErrorFunction(error: unknown) {console.error(error);}
+
   /**
    * Don't call it directly. Make wrapers for each function to test args types and avoid using IDs
    */
@@ -82,11 +90,13 @@ export class WebWorkerManager<WebWorkerFunctions, WebWorkerFunctionsExtended = W
     funcID: keyof WebWorkerFunctionsExtended,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     args: any[],
-    resolve: WebWorkerResolveGeneric,
-    onerror: WebWorkerError
+    attributes: WebWorkerFunctionAttributes
   ) {
     isKeyOrThrowDev(funcID, this);
-    const callback: WebWorkerCallback = { resolve, onerror };
+    const callback: WebWorkerCallback = { 
+      resolve: attributes.resolve ? attributes.resolve : WebWorkerManager.defaultResolveFunction, 
+      onerror: attributes.onerror ? attributes.onerror : WebWorkerManager.defualtOnErrorFunction,
+    };
     const callbackID = this.addCallback(callback);
 
     const payload: WebWorkerPayload<WebWorkerFunctionsExtended> = {
@@ -94,7 +104,10 @@ export class WebWorkerManager<WebWorkerFunctions, WebWorkerFunctionsExtended = W
       funcID,
       args,
     };
-    this.__webWorker.postMessage(payload);
+    if ( attributes.transfer )
+      this.__webWorker.postMessage(payload, attributes.transfer );
+    else 
+      this.__webWorker.postMessage(payload );
   }
 
   protected processResult(event: MessageEvent) {

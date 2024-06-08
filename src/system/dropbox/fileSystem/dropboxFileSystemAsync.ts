@@ -3,15 +3,15 @@ import { FileSystemWorkerRegister, FileSystemWorkerWrapper } from "@/interfaces/
 import { WebWorkerManager } from "@/interfaces/webWorker";
 import * as DropboxAPI from "dropbox";
 import { DropboxAuth } from "../dropboxAuth";
-import { DropboxFileSystemWorkerImplementation, DropboxFileSystemWorkerImplementationExtended } from "./dropboxFileSystemWorkerImplementation";
 import workerURL from "./dropboxFileSystemWorkerImplementation?worker&url";
+import { DropboxFileSystemWorkerImplementationExtended, DropboxFileSystemWorkerPublic } from "./dropboxFileSystemWorkerImplementation";
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface DropboxFileSystemAsync extends FileSystemWorkerWrapper{}
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class DropboxFileSystemAsync extends WebWorkerManager<FileSystemBase, DropboxFileSystemWorkerImplementationExtended> implements FileSystemWorkerRegister {
     constructor() {
-        super(workerURL, DropboxFileSystemWorkerImplementation.prototype, "Async");
+        super(workerURL, DropboxFileSystemWorkerPublic.prototype, "Async");
       }
 
       registerFileSystemWorker(auth: DropboxAuth) {
@@ -23,6 +23,6 @@ export class DropboxFileSystemAsync extends WebWorkerManager<FileSystemBase, Dro
           clientId: dbxAuth.getClientId(),
         };
         
-        this.callFunction("registerFileSystemWorker", [authOptions], ()=>{}, (error) => console.error(error) );
+        this.callFunction("registerFileSystemWorker", [authOptions], {} );
       }
 }

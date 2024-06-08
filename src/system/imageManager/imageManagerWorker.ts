@@ -1,6 +1,6 @@
 import { WebWorkerThread } from "@/interfaces/webWorker";
 
-export const ImageManagerWorkerImplementation = {
+export const ImageManagerWorkerPublic = {
   blobsToUrlObjs(blobs: Blob[]): [urlObjs: string[]] {
     const urlObjs: string[] = [];
 
@@ -10,5 +10,10 @@ export const ImageManagerWorkerImplementation = {
 
     return [urlObjs];
   },
+  
+};
+
+export const ImageManagerWorkerImplementation = {
+  ...ImageManagerWorkerPublic,
 };
 new WebWorkerThread(ImageManagerWorkerImplementation);

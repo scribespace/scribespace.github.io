@@ -17,7 +17,7 @@ export interface File {
 
 export interface FileInfo {
   hash: string | undefined;
-  name: string | undefined;
+  name: string;
 }
 
 export interface FileResult {

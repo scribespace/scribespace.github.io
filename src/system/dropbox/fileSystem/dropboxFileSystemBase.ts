@@ -38,7 +38,6 @@ import { HandleDeleteError, HandleDownloadError, HandleGetMetadataError, HandleU
 export function GetExtendedFileSystemBase<TExtend extends Constructor>(extend: TExtend) {
   return class DropboxFileSystemBase extends extend implements FileSystemBase {
     protected dbx: DropboxAPI.Dropbox;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(...args: any[]) {
       const [dbx] = args;
       super();

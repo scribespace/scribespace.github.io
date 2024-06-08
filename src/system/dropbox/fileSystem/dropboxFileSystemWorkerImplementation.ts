@@ -4,9 +4,9 @@ import { EmptyClass } from "@/utils";
 import { FileSystemWorkerRegister } from "@/interfaces/system/fileSystem/fileSystemInterface";
 import * as DropboxAPI from "dropbox";
 
-export const DropboxFileSystemWorkerImplementation = GetExtendedFileSystemBase(EmptyClass);
+export const DropboxFileSystemWorkerPublic = GetExtendedFileSystemBase(EmptyClass);
 
-export class DropboxFileSystemWorkerImplementationExtended extends DropboxFileSystemWorkerImplementation implements FileSystemWorkerRegister {
+export class DropboxFileSystemWorkerImplementationExtended extends DropboxFileSystemWorkerPublic implements FileSystemWorkerRegister {
   
   constructor() {
     //@ts-expect-error Class defined in mixin needs this argument
