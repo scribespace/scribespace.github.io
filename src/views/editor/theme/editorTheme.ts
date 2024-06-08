@@ -40,6 +40,7 @@ import {
 import { IMAGE_THEME_DEFAULT, ImageTheme } from "../components/image/theme";
 
 import "./css/editorInputTheme.css";
+import { LIST_THEME_DEFAULT, ListTheme } from "../components/list/theme/listTheme";
 
 export interface EditorInputTheme extends EditorThemeClasses {
   defaultFontSize: EditorThemeClassName;
@@ -66,6 +67,7 @@ export interface EditorTheme {
   alignTheme: AlignMenuTheme;
   colorTheme: ColorMenuTheme;
   imageTheme: ImageTheme;
+  listTheme: ListTheme;
 
   toolbarTheme: ToolbarTheme;
   contextMenuTheme: ContextMenuTheme;
@@ -115,6 +117,7 @@ export const EDITOR_THEME_DEFAULT: EditorTheme = {
   alignTheme: ALIGN_MENU_THEME_DEFAULT,
   colorTheme: COLOR_MENU_THEME_DEFAULT,
   imageTheme: IMAGE_THEME_DEFAULT,
+  listTheme: LIST_THEME_DEFAULT,
 
   toolbarTheme: TOOLBAR_THEME_DEFAULT,
   contextMenuTheme: CONTEXT_MENU_THEME_DEFAULT,

@@ -3,7 +3,6 @@ import { MainTheme } from "@/theme";
 import { openURL, validateUrl } from "@utils";
 import { useEffect, useMemo, useRef } from "react";
 import { IconBaseProps } from "react-icons";
-import "./css/link.css";
 
 interface LinkEditorProps {
   text?: string;

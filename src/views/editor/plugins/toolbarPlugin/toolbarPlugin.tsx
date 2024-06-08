@@ -17,6 +17,7 @@ import { LayoutCreateToolbar } from "../../components/tableLayout/layout";
 import { TableCreateToolbar } from "../../components/tableLayout/table/toolbar/tableCreateToolbar";
 import { TOOLBAR_CONTEX_DEFAULT, ToolbarContextData } from "./context";
 import "./css/toolbarPlugin.css";
+import { ListToolbar } from "../../components/list/listToolbar";
 
 const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
   const {
@@ -53,6 +54,8 @@ const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
         <SeparatorVertical />
         <LayoutCreateToolbar />
         <TableCreateToolbar />
+        <SeparatorVertical />
+        <ListToolbar/>
       </div>
     </MenuRoot>
   );

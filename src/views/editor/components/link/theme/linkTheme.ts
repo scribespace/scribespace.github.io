@@ -3,6 +3,7 @@ import { EditorThemeClassName } from "lexical";
 import { IconType } from "react-icons";
 import { HiExternalLink } from "react-icons/hi";
 import { MdEdit, MdLink } from "react-icons/md";
+import "./css/link.css";
 
 export interface LinkTheme {
   editor: EditorThemeClassName;
