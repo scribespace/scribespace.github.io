@@ -1,6 +1,6 @@
 import { File, FileUploadMode, UploadResult } from "@/interfaces/system/fileSystem/fileSystemShared";
 import { useMainThemeContext } from "@/mainThemeContext";
-import { $getFileSystem, $getImageManager, $getSystem } from "@/system/appGlobals";
+import { $getFileSystem, $getImageManager } from "@/system/appGlobals";
 import { $getImageName, IMAGES_PATH } from "@/system/imageManager";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
@@ -62,6 +62,7 @@ const MISSING_IMAGE = "/images/no-image.png" as const;
 enum ImageState {
   None,
   Loading,
+  LoadingFinal,
   Ready,
   Missing,
 }
@@ -493,6 +494,7 @@ export function Image({
 
   const uploadImage = useCallback(
     (file: File) => {
+      setImageState(ImageState.LoadingFinal);
       $getFileSystem().uploadFileAsync( 
         {
           resolve: (result: UploadResult) => {
@@ -500,7 +502,6 @@ export function Image({
               () => {
                 variableExistsOrThrowDev(result.fileInfo, "Missing fileinfo");
                 setSrc(result.fileInfo.name);
-                setImageState( ImageState.Ready );
               } );
           },
         onerror: (error) => { 
@@ -515,18 +516,35 @@ export function Image({
     [editor, imageLoadFailed, setSrc]
   );
 
+  const onLoad = useCallback(
+    () => {
+      if (imageState == ImageState.LoadingFinal) {
+        setImageState(ImageState.Ready);
+      }
+    },
+    [imageState]
+  );
+
+  const onError = useCallback(
+    () => {
+        setImageState(ImageState.Missing);
+        setCurrentSrc(MISSING_IMAGE);
+    },
+    []
+  );
+
+
   useEffect(() => {
     if ( imageState == ImageState.None ) {
-      setCurrentSrc(MISSING_IMAGE);
+       setCurrentSrc(MISSING_IMAGE);
 
-      if ( (src == "") && blob ) {
+       if ( (src == "") && blob ) {
         setImageState(ImageState.Loading);
 
         $getImageManager().blobsToUrlObjs(
           {
             resolve: (urlsObjs) => {
               setCurrentSrc(urlsObjs[0]);
-
               uploadImage({content: blob});
             },
             onerror: (error) => { 
@@ -539,17 +557,24 @@ export function Image({
           [blob]
         );
 
-        return;
-      }   
+         return;
+       }   
 
-      if ( variableExists(src) ) {
-        if ( !src.startsWith($getSystem().getSystemDomain()) ) {
-         // $getImageManager().saveImage( ()=>{}, undefined, src );
-        }
-        
-        setCurrentSrc( src );
-        setImageState(ImageState.Ready);
+       if ( variableExists(src) ) {
+          setImageState(ImageState.Loading);
+          $getImageManager().preloadImage(
+            {
+              resolve: () => {
+                setCurrentSrc( src );
+                setImageState(ImageState.LoadingFinal);
+              }
+            },
+            src
+          );
+          return;
       }
+
+      setImageState(ImageState.Missing);
     }
   }, [blob, editor, imageLoadFailed, imageState, setSrc, src, uploadImage]);
 
@@ -583,10 +608,12 @@ export function Image({
       >
         <img
           ref={imageRef}
-          className={imageTheme.element + (imageState == ImageState.Loading ? " " + pulsing : "")}
+          className={imageTheme.element + ((imageState == ImageState.Loading || imageState == ImageState.LoadingFinal) ? " " + pulsing : "")}
           style={{ display: "block" }}
           src={currentSrc}
           alt={`No image ${currentSrc}`}
+          onLoad={onLoad}
+          onError={onError}
         />
       </div>
 

@@ -8,9 +8,7 @@ export function useEditorEditable() {
     [appGlobals.editorObject]
   );
 
-  const [isEditable, setIsEditable] = useState(
-    editor ? editor.isEditable() : false
-  );
+  const [isEditable, setIsEditable] = useState( editor ? editor.isEditable() : false );
 
   useEffect(() => {
     if (!editor) return;
