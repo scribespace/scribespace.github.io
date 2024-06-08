@@ -79,6 +79,23 @@ export const EDITOR_INPUT_THEME_DEFAULT: EditorInputTheme = {
   placeholder: "editor-placeholder",
   paragraph: "editor-paragraph",
   link: "link",
+  list: {
+    checklist: 'editor-checklist',
+    listitem: 'editor-listItem',
+    listitemChecked: 'editor-listItemChecked',
+    listitemUnchecked: 'editor-listItemUnchecked',
+    nested: {
+      listitem: 'editor-nestedListItem',
+    },
+    olDepth: [
+      'editor-ol1',
+      'editor-ol2',
+      'editor-ol3',
+      'editor-ol4',
+      'editor-ol5',
+    ],
+    ul: 'editor-ul',
+  },
   text: {
     base: "editor-text",
     bold: "editor-text-bold",
