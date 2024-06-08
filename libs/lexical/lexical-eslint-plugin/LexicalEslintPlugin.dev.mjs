@@ -524,7 +524,7 @@ rulesOfLexical$1.rulesOfLexical = {
     const pushIgnoredNode = ( /** @type {Node} */node) => ignoreSet.add(node);
     const popIgnoredNode = ( /** @type {Node} */node) => ignoreSet.delete(node);
     const pushFunction = ( /** @type {Node} */node) => {
-      const name = getFunctionNameIdentifier(getLexicalFunctionName(node));
+      const name = getFunctionNameIdentifier( /** @type {Node | undefined} */getLexicalFunctionName(node));
       funStack.push({
         name,
         node

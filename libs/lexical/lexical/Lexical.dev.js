@@ -560,7 +560,7 @@ function isSelectionCapturedInDecoratorInput(anchorDOM) {
   }
   const nodeName = activeElement.nodeName;
   return $isDecoratorNode($getNearestNodeFromDOMNode(anchorDOM)) && (nodeName === 'INPUT' || nodeName === 'TEXTAREA' || activeElement.contentEditable === 'true' &&
-  // @ts-ignore iternal field
+  // @ts-ignore internal field
   activeElement.__lexicalEditor == null);
 }
 function isSelectionWithinEditor(editor, anchorDOM, focusDOM) {
@@ -6270,8 +6270,8 @@ class RangeSelection {
       if (startOffset === endOffset) {
         return;
       }
-      // The entire node is selected, so just format it
-      if (startOffset === 0 && endOffset === firstNode.getTextContentSize()) {
+      // The entire node is selected or it is token, so just format it
+      if ($isTokenOrSegmented(firstNode) || startOffset === 0 && endOffset === firstNode.getTextContentSize()) {
         firstNode.setFormat(firstNextFormat);
       } else {
         // Node is partially selected, so split it into two nodes
@@ -6293,7 +6293,7 @@ class RangeSelection {
     }
     // Multiple nodes selected
     // The entire first node isn't selected, so split it
-    if (startOffset !== 0) {
+    if (startOffset !== 0 && !$isTokenOrSegmented(firstNode)) {
       [, firstNode] = firstNode.splitText(startOffset);
       startOffset = 0;
     }
@@ -6302,7 +6302,7 @@ class RangeSelection {
     // If the offset is 0, it means no actual characters are selected,
     // so we skip formatting the last node altogether.
     if (endOffset > 0) {
-      if (endOffset !== lastNode.getTextContentSize()) {
+      if (endOffset !== lastNode.getTextContentSize() && !$isTokenOrSegmented(lastNode)) {
         [lastNode] = lastNode.splitText(endOffset);
       }
       lastNode.setFormat(lastNextFormat);
@@ -6311,10 +6311,8 @@ class RangeSelection {
     // Process all text nodes in between
     for (let i = firstIndex + 1; i < lastIndex; i++) {
       const textNode = selectedTextNodes[i];
-      if (!textNode.isToken()) {
-        const nextFormat = textNode.getFormatFlags(formatType, lastNextFormat);
-        textNode.setFormat(nextFormat);
-      }
+      const nextFormat = textNode.getFormatFlags(formatType, lastNextFormat);
+      textNode.setFormat(nextFormat);
     }
 
     // Update selection only if starts/ends on text node
@@ -9174,13 +9172,15 @@ function createEditor(editorConfig) {
       }
       // Ensure custom nodes implement required methods and replaceWithKlass is instance of base klass.
       {
+        // ArtificialNode__DO_NOT_USE can get renamed, so we use the type
+        const nodeType = Object.prototype.hasOwnProperty.call(klass, 'getType') && klass.getType();
         const name = klass.name;
         if (replaceWithKlass) {
           if (!(replaceWithKlass.prototype instanceof klass)) {
             throw Error(`${replaceWithKlass.name} doesn't extend the ${name}`);
           }
         }
-        if (name !== 'RootNode' && name !== 'ArtificialNode__DO_NOT_USE') {
+        if (name !== 'RootNode' && nodeType !== 'root' && nodeType !== 'artificial') {
           const proto = klass.prototype;
           ['getType', 'clone'].forEach(method => {
             // eslint-disable-next-line no-prototype-builtins

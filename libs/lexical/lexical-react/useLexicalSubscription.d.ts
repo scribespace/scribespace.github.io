@@ -12,6 +12,7 @@ export type LexicalSubscription<T> = {
 };
 /**
  * Shortcut to Lexical subscriptions when values are used for render.
+ * @param subscription - The function to create the {@link LexicalSubscription}. This function's identity must be stable (e.g. defined at module scope or with useCallback).
  */
 export declare function useLexicalSubscription<T>(subscription: (editor: LexicalEditor) => LexicalSubscription<T>): T;
 /** @deprecated use the named export {@link useLexicalSubscription} */

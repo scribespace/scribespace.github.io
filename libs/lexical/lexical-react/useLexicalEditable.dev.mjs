@@ -27,6 +27,10 @@ const CAN_USE_DOM = typeof window !== 'undefined' && typeof window.document !== 
  *
  */
 
+
+// This workaround is no longer necessary in React 19,
+// but we currently support React >=17.x
+// https://github.com/facebook/react/pull/26395
 const useLayoutEffectImpl = CAN_USE_DOM ? useLayoutEffect : useEffect;
 
 /**
@@ -39,6 +43,7 @@ const useLayoutEffectImpl = CAN_USE_DOM ? useLayoutEffect : useEffect;
 
 /**
  * Shortcut to Lexical subscriptions when values are used for render.
+ * @param subscription - The function to create the {@link LexicalSubscription}. This function's identity must be stable (e.g. defined at module scope or with useCallback).
  */
 function useLexicalSubscription(subscription) {
   const [editor] = useLexicalComposerContext();
@@ -79,6 +84,15 @@ function subscription(editor) {
     }
   };
 }
+
+/**
+ * Get the current value for {@link LexicalEditor.isEditable}
+ * using {@link useLexicalSubscription}.
+ * You should prefer this over manually observing the value with
+ * {@link LexicalEditor.registerEditableListener},
+ * which is a bit tricky to do correctly, particularly when using
+ * React StrictMode (the default for development) or concurrency.
+ */
 function useLexicalEditable() {
   return useLexicalSubscription(subscription);
 }

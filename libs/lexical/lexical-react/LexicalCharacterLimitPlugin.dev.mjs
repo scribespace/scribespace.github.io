@@ -68,7 +68,6 @@ function useCharacterLimit(editor, maxCharacters, optional = Object.freeze({})) 
   }, [editor, maxCharacters, remainingCharacters, strlen]);
 }
 function findOffset(text, maxCharacters, strlen) {
-  // @ts-ignore This is due to be added in a later version of TS
   const Segmenter = Intl.Segmenter;
   let offsetUtf16 = 0;
   let offset = 0;

@@ -5,8 +5,8 @@ declare namespace all {
     };
     export { rules_1 as rules };
 }
-declare const name: any;
-declare const version: any;
+import { name } from "../package.json";
+import { version } from "../package.json";
 export namespace configs {
     export { all };
     export { all as recommended };
@@ -16,6 +16,6 @@ export namespace meta {
     export { version };
 }
 export let rules: {
-    'rules-of-lexical': any;
+    'rules-of-lexical': import("eslint").Rule.RuleModule;
 };
 export {};

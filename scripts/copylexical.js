@@ -6,8 +6,8 @@ const __filename = fileURLToPath(import.meta.url);
 
 // Get the directory name from the file path
 const topDir = dirname(__filename);
-const srcDir = path.join(topDir, "..", "lexical", "packages");
-const dstDir = path.join(topDir, "libs", "lexical");
+const srcDir = path.join(topDir, "..", "..", "lexical", "packages");
+const dstDir = path.join(topDir, "..", "libs", "lexical");
 fse.emptyDirSync(dstDir);
 
 const excludeList = [

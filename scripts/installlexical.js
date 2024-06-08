@@ -3,7 +3,7 @@ import path from "path";
 // Convert the module URL to a file path
 
 // Get the directory name from the file path
-const packagesDir = path.join("libs", "lexical");
+const packagesDir = path.join("..", "libs", "lexical");
 
 import * as child_process from "child_process";
 
