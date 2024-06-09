@@ -17,9 +17,10 @@ import {
   $isLayoutBodyNode,
   LayoutBodyNode,
 } from "./layoutBodyNode";
+import { Metric } from "@/utils/types";
 
 export class LayoutNode extends ExtendedTableNode {
-  constructor(columnsWidths?: number[], key?: NodeKey) {
+  constructor(columnsWidths?: Metric[], key?: NodeKey) {
     super(columnsWidths, key);
   }
 
