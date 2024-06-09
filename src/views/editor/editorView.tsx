@@ -9,6 +9,7 @@ import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
+import {TabIndentationPlugin} from '@lexical/react/LexicalTabIndentationPlugin';
 import { $getFileSystem } from "@system/appGlobals";
 import LinkPlugin from "./plugins/linkPlugin";
 
@@ -134,6 +135,7 @@ export function EditorView({ selectedFile }: Props) {
       <DragDropPlugin />
       <ImagePlugin />
       <ListPlugin/>
+      <TabIndentationPlugin/>
     </LexicalComposer>
   );
 }
