@@ -497,12 +497,26 @@ export default function TablePlugin() {
       event.stopPropagation();
     };
 
+    const onWheel = (event: WheelEvent) => {
+      const rootElement = editor.getRootElement();
+      if ( !rootElement ) return;
+
+      rootElement.scrollBy(event.deltaX, event.deltaY);
+    };
+
     document.addEventListener("mousemove", onMouseMove);
     document.addEventListener("mouseup", onMouseUp);
+
+    const resizerElement = resizerRef.current;
+    if ( resizerElement ) 
+      resizerElement.addEventListener("wheel", onWheel);
 
     return () => {
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
+
+      if ( resizerElement ) 
+        resizerElement.removeEventListener("wheel", onWheel);
     };
   }, [dragDirection, activeCell, editor, updateColumnWidth, updateRowHeight]);
 
