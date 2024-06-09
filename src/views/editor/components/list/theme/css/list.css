@@ -33,7 +33,7 @@
     list-style-position: outside;
   }
   .editor-listItem {
-    margin: 0 32px;
+    margin: 0 0 0 24px;
   }
   .editor-listItemChecked,
   .editor-listItemUnchecked {
