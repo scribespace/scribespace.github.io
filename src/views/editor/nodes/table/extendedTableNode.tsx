@@ -1,3 +1,4 @@
+import { assert } from "@/utils";
 import { Metric } from "@/utils/types";
 import {
   $getTableNodeFromLexicalNodeOrThrow,
@@ -17,6 +18,7 @@ import {
   SerializedElementNode,
   Spread,
 } from "lexical";
+import { isCurrentlyReadOnlyMode } from "lexical";
 import {
   $createTableBodyNodeWithDimensions,
   $isTableBodyNode,
@@ -54,7 +56,11 @@ export class ExtendedTableNode extends ElementNode {
     return this.getLatest().__columnsWidths;
   }
   setColumnsWidths(columns: Metric[]) {
-    this.getWritable().__columnsWidths = structuredClone(columns);
+    const self = this.getWritable();
+    self.__columnsWidths.length = 0;
+    for ( const width of columns ) {
+      self.__columnsWidths.push( width.clone() );
+      }
   }
 
   initColGroup(columnsCount: number) {
@@ -184,15 +190,28 @@ export class ExtendedTableNode extends ElementNode {
     return this.createDOMWithCSS(config.theme.table);
   }
 
+  fixColumns( dom: HTMLTableElement ) {
+    const self = this.getWritable();
+    const {width} = dom.getBoundingClientRect();
+    for ( const column of self.__columnsWidths ) {
+      if ( column.unit == "%" ) {
+        column.setUnit( "px" );
+        column.setValue( width * column.value / 100 );
+      }
+    }
+  }
+
   updateDOM(_prevNode?: unknown, dom?: HTMLElement) {
-    const self = this.getLatest();
+    const isReadOnly = isCurrentlyReadOnlyMode();
+    const self = isReadOnly ? this.getLatest() : this.getWritable();
     if (dom) {
       if (!(dom instanceof HTMLTableElement))
         throw Error("expected HTMLTableColElement");
 
-      const colgroupElement = dom.getElementsByTagName(
-        "colgroup",
-      )[0] as HTMLTableColElement;
+      if ( !isReadOnly )
+        this.fixColumns(dom);
+
+      const colgroupElement = dom.getElementsByTagName( "colgroup" )[0] as HTMLTableColElement;
       if (!(colgroupElement instanceof HTMLTableColElement))
         throw Error("expected HTMLTableColElement");
 
@@ -200,6 +219,7 @@ export class ExtendedTableNode extends ElementNode {
         const children = colgroupElement.children;
         while (colgroupElement.childElementCount > 0) {
           const child = children.item(0) as Element;
+          assert(child instanceof HTMLTableColElement, `wrong child for colgroup: ${child.tagName}` );
           colgroupElement.removeChild(child);
         }
 
@@ -209,19 +229,15 @@ export class ExtendedTableNode extends ElementNode {
         }
       }
 
-      const colsElements = colgroupElement.getElementsByTagName("col");
+      const colsElements = colgroupElement.children;
       const colsCount = colsElements.length;
+
       for (let c = 0; c < colsCount; ++c) {
         const colElement = colsElements[c] as HTMLTableColElement;
-        const colElementWidthMatch = colElement.style.width.match(/\d+/);
-        const colElementWidth = colElementWidthMatch
-          ? Number(colElementWidthMatch[0])
-          : -1;
-
+        const colElementWidth = Metric.fromString(colElement.style.width);
         const colNodeWidth = self.__columnsWidths[c];
-
-        if (colElementWidth != colNodeWidth.value) {
-          colElement.style.cssText = `width: ${colNodeWidth.value}px`;
+        if (!colElementWidth.cmp( colNodeWidth )) {
+          colElement.style.cssText = `width: ${colNodeWidth}`;
         }
       }
     }
@@ -286,21 +302,22 @@ export function $getExtendedTableNodeFromLexicalNodeOrThrow(node: LexicalNode) {
   ).getParentOrThrow<ExtendedTableNode>();
 }
 
-export function $convertColElements(
-  tableNode: ExtendedTableNode,
-  domNode: Element,
-) {
-  const colElements = domNode.getElementsByTagName("col");
+export function $convertColElements( tableNode: ExtendedTableNode, domNode: Element ) {
+      const colgroupElement = domNode.getElementsByTagName( "colgroup" )[0] as HTMLTableColElement;
+      const colElements = colgroupElement.children;
 
-  tableNode.__columnsWidths = [];
+    tableNode.__columnsWidths = [];
 
-  for (const colElement of colElements) {
-    let colMetric = Metric.fromString(colElement.style.width);
-    if (!colMetric.isValid()) {
-      colMetric = Metric.fromString(colElement.width);
+    for (const element of colElements) {
+      assert( element instanceof HTMLTableColElement, `wrong child for colgroup: ${element.tagName}` );
+      const colElement = element as HTMLTableColElement;
+
+      let colMetric = Metric.fromString(colElement.style.width);
+      if (!colMetric.isValid()) {
+        colMetric = Metric.fromString(colElement.width);
+      }
+      tableNode.__columnsWidths.push(colMetric);
     }
-    tableNode.__columnsWidths.push(colMetric);
-  }
 }
 
 export function $convertExtendedTableElement(
@@ -309,7 +326,7 @@ export function $convertExtendedTableElement(
   const tableNode = $createExtendedTableNode();
   if (!(domNode instanceof Element)) throw Error("Expected Element");
 
-  $convertColElements(tableNode, domNode);
+  $convertColElements(tableNode.getWritable(), domNode);
 
   return { node: tableNode };
 }

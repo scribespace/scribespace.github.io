@@ -83,6 +83,10 @@ export class Metric {
     return `${this.__value}${this.__unit}`;
   }
 
+  cmp( other: Metric ) {
+    return this.__value == other.value && this.__unit == other.unit;
+  }
+
   static fromString(str: string) {
     const regex = /^(-?\d+\.?\d*)([a-zA-Z%]*)$/;
     const match = str.match(regex);
