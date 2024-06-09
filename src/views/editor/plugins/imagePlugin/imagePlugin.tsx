@@ -13,6 +13,7 @@ import {
 import { useCallback, useEffect } from "react";
 import { DRAG_DROP_ADD_TYPES_LISTENER_COMMAND } from "../dragDropPlugin";
 import { INSERT_IMAGES_COMMAND } from "./imageCommands";
+import { IMAGE_SUPPORTED_FORMATS } from "@/system/imageManager";
 
 export function ImagePlugin() {
   const [editor] = useLexicalComposerContext();
@@ -37,13 +38,6 @@ export function ImagePlugin() {
   useEffect(() => {
     assert(editor.hasNode(ImageNode), "ImageNode not registered");
 
-    const supportedFormat: string[] = [
-      "image/bmp",
-      "image/jpeg",
-      "image/png",
-      "image/webp",
-    ];
-
     function insertImages(images: File[]) {
       const imageNodes: ImageNode[] = [];
 
@@ -65,7 +59,7 @@ export function ImagePlugin() {
     }
 
     editor.dispatchCommand(DRAG_DROP_ADD_TYPES_LISTENER_COMMAND, {
-      types: supportedFormat,
+      types: Object.getOwnPropertyNames(IMAGE_SUPPORTED_FORMATS),
       listener: dragDropListener,
     });
 

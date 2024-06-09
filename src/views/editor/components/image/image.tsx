@@ -1,7 +1,7 @@
 import { File, FileUploadMode, UploadResult } from "@/interfaces/system/fileSystem/fileSystemShared";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { $getFileSystem, $getImageManager } from "@/system/appGlobals";
-import { $getImageName, IMAGES_PATH } from "@/system/imageManager";
+import { $getImageName } from "@/system/imageManager";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 import {
@@ -510,7 +510,7 @@ export function Image({
               imageLoadFailed(error);
             }); 
           }
-      }, IMAGES_PATH + $getImageName(), file, FileUploadMode.Add
+      }, $getImageName(file.content!.type), file, FileUploadMode.Add
        );
     },
     [editor, imageLoadFailed, setSrc]
