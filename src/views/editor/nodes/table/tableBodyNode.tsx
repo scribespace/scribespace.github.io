@@ -147,6 +147,24 @@ export class TableBodyNode extends TableNode {
     return resolvedTable;
   }
 
+  getCellColumnID( cell: TableCellNode ): number {
+    const resolvedTable = this.getResolvedTable();
+
+    const columnCount = resolvedTable[0].cells.length;
+    const rowsCount = resolvedTable.length;
+
+    for ( let c = 0; c < columnCount; ++c ) {
+      for( let r = 0; r < rowsCount; ++r ) {
+        const tableCell = resolvedTable[r].cells[c];
+        if ( tableCell.cellNode == cell ) {
+          return c;
+        }
+      }
+    }
+
+    throw Error("Column not found");
+  }
+
   mergeCells(
     editor: LexicalEditor,
     startCell: TableCellNode,

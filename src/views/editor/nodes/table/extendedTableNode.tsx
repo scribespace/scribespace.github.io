@@ -18,7 +18,6 @@ import {
   SerializedElementNode,
   Spread,
 } from "lexical";
-import { isCurrentlyReadOnlyMode } from "lexical";
 import {
   $createTableBodyNodeWithDimensions,
   $isTableBodyNode,
@@ -190,26 +189,27 @@ export class ExtendedTableNode extends ElementNode {
     return this.createDOMWithCSS(config.theme.table);
   }
 
-  fixColumns( dom: HTMLTableElement ) {
+  fixColumns( width: number ) {
     const self = this.getWritable();
-    const {width} = dom.getBoundingClientRect();
+
+    const normalWidth = (width - self.__columnsWidths.length) / self.__columnsWidths.length;
+
     for ( const column of self.__columnsWidths ) {
       if ( column.unit == "%" ) {
         column.setUnit( "px" );
         column.setValue( width * column.value / 100 );
+      } else if ( isNaN(column.value) ) {
+        column.setUnit( "px" );
+        column.setValue( normalWidth );
       }
     }
   }
 
   updateDOM(_prevNode?: unknown, dom?: HTMLElement) {
-    const isReadOnly = isCurrentlyReadOnlyMode();
-    const self = isReadOnly ? this.getLatest() : this.getWritable();
+    const self = this.getLatest();
     if (dom) {
       if (!(dom instanceof HTMLTableElement))
         throw Error("expected HTMLTableColElement");
-
-      if ( !isReadOnly )
-        this.fixColumns(dom);
 
       const colgroupElement = dom.getElementsByTagName( "colgroup" )[0] as HTMLTableColElement;
       if (!(colgroupElement instanceof HTMLTableColElement))
@@ -279,6 +279,10 @@ export class ExtendedTableNode extends ElementNode {
   }
 
   extractWithChild(): true {
+    return true;
+  }
+
+  isShadowRoot(): true {
     return true;
   }
 }

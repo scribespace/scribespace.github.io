@@ -15,20 +15,22 @@
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: scroll;
+  scrollbar-width: 10px;
+  padding: 15px 10px;
 }
 
 .editor-input {
-  min-height: 150px;
   resize: none;
   caret-color: rgb(5, 5, 5);
   position: relative;
   tab-size: 1;
   outline: 0;
-  padding: 15px 10px;
+  padding: 0;
   height: 100%;
+  width: 100%;
   box-sizing: border-box;
-  overflow: auto;
 }
 
 .editor-input .disabled {
