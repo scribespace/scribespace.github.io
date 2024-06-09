@@ -3,7 +3,6 @@ import { WebWorkerManager } from "@/interfaces/webWorker";
 import { ImageManagerWorkerPublic } from "./imageManagerWorker";
 import workerURL from "./imageManagerWorker?worker&url";
 import { ImageManagerWorkerFunctions, ImageManagerWorkerFunctionsExtended, ImageManagerWorkerWrapper } from "./workerShared";
-import { File } from "@/interfaces/system/fileSystem/fileSystemShared";
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface ImageManager extends ImageManagerWorkerWrapper {}

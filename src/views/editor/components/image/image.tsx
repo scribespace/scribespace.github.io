@@ -495,23 +495,22 @@ export function Image({
   const uploadImage = useCallback(
     (file: File) => {
       setImageState(ImageState.LoadingFinal);
-      $getFileSystem().uploadFileAsync( 
-        {
-          resolve: (result: UploadResult) => {
+      $getFileSystem()
+      .uploadFileAsync($getImageName(file.content!.type), file, FileUploadMode.Add)
+      .then((result: UploadResult) => {
             editor.update( 
               () => {
                 variableExistsOrThrowDev(result.fileInfo, "Missing fileinfo");
                 setSrc(result.fileInfo.name);
               } );
-          },
-        onerror: (error) => { 
+          })
+      .catch((error) => { 
           editor.update( 
             () => {
               imageLoadFailed(error);
             }); 
           }
-      }, $getImageName(file.content!.type), file, FileUploadMode.Add
-       );
+      );
     },
     [editor, imageLoadFailed, setSrc]
   );
@@ -541,35 +540,28 @@ export function Image({
        if ( (src == "") && blob ) {
         setImageState(ImageState.Loading);
 
-        $getImageManager().blobsToUrlObjs(
-          {
-            resolve: (urlsObjs) => {
-              setCurrentSrc(urlsObjs[0]);
-              uploadImage({content: blob});
-            },
-            onerror: (error) => { 
-              editor.update( 
-                () => {
-                  imageLoadFailed(error);
-                });
-            },
-          },
-          [blob]
-        );
+        $getImageManager().blobsToUrlObjs([blob])
+        .then( (urlsObjs) => {
+            setCurrentSrc(urlsObjs[0]);
+            uploadImage({content: blob});
+          })
+          .catch( (error) => { 
+            editor.update( 
+              () => {
+                imageLoadFailed(error);
+              });
+          });
 
          return;
        }   
 
        if ( variableExists(src) ) {
           setImageState(ImageState.Loading);
-          $getImageManager().preloadImage(
-            {
-              resolve: () => {
-                setCurrentSrc( src );
-                setImageState(ImageState.LoadingFinal);
-              }
-            },
-            src
+          $getImageManager().preloadImage(src)
+          .then(() => {
+              setCurrentSrc( src );
+              setImageState(ImageState.LoadingFinal);
+            }
           );
           return;
       }

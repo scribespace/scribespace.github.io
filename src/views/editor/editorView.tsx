@@ -48,31 +48,28 @@ function TestPlugin({ selectedFile }: Props) {
   const [editor] = useLexicalComposerContext();
 
   if (selectedFile != "") {
-    $getFileSystem().downloadFileAsync(
-      {
-        resolve: (result: DownloadResult) => {
-          if (!result.file || !result.file.content) {
-            throw Error("EditorView couldnt load note!");
-          }
-
-          result.file.content.text().then((noteText) => {
-            editor.update(() => {
-              const parser = new DOMParser();
-              const dom = parser.parseFromString(noteText, "text/html");
-              // Once you have the DOM instance it's easy to generate LexicalNodes.
-              const nodes = $generateNodesFromDOM(editor, dom);
-              // Select the root
-              $getRoot().select();
-              $getRoot().clear();
-              // Insert them at a selection.
-              $insertNodes(nodes);
-
-              editor.setEditable(true);
-            });
-          });
+    $getFileSystem().downloadFileAsync(selectedFile)
+    .then((result: DownloadResult) => {
+        if (!result.file || !result.file.content) {
+          throw Error("EditorView couldnt load note!");
         }
-      }, selectedFile
-    );
+
+        result.file.content.text().then((noteText) => {
+          editor.update(() => {
+            const parser = new DOMParser();
+            const dom = parser.parseFromString(noteText, "text/html");
+            // Once you have the DOM instance it's easy to generate LexicalNodes.
+            const nodes = $generateNodesFromDOM(editor, dom);
+            // Select the root
+            $getRoot().select();
+            $getRoot().clear();
+            // Insert them at a selection.
+            $insertNodes(nodes);
+
+            editor.setEditable(true);
+          });
+        });
+      });
   }
   return null;
 }

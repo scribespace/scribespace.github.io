@@ -59,22 +59,12 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
   function uploadTree() {
     const treeJSON = JSON.stringify(tree?.data);
     const treeBlob = new Blob([treeJSON]);
-    $getFileSystem().uploadFileAsync( 
-      {},
-      TREE_FILE,
-      { content: treeBlob },
-      FileUploadMode.Replace
-    );
+    $getFileSystem().uploadFileAsync( TREE_FILE, { content: treeBlob }, FileUploadMode.Replace );
   }
 
   function uploadTreeStatus() {
     const treeStatusJSON = JSON.stringify([...treeOpenNodes.current]);
-    $getFileSystem().uploadFileAsync( 
-      {},
-      TREE_STATUS_FILE,
-      { content: new Blob([treeStatusJSON]) },
-      FileUploadMode.Replace
-    );
+    $getFileSystem().uploadFileAsync( TREE_STATUS_FILE, { content: new Blob([treeStatusJSON]) }, FileUploadMode.Replace );
   }
 
   const OnAddElement = () => {
@@ -141,12 +131,11 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
     if (args.ids.length > 1) throw Error("onDelete: Too many files selected!");
     const id = args.ids[0];
 
-    await $getFileSystem().deleteFileAsync( {
-        resolve: () => {
-        tree?.drop({ id });
-        updateDataVersion();
-      }
-    }, id);
+    await $getFileSystem().deleteFileAsync(id)
+    .then(() => {
+      tree?.drop({ id });
+      updateDataVersion();
+    });
   };
 
   const onSelect = (nodes: TreeNodeApi[]) => {
@@ -170,35 +159,34 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
   };
 
   function downloadAndSetTreeStatus() {
-    $getFileSystem().downloadFileAsync( {
-          resolve: (result: DownloadResult) => {
-        if (result.status === FileSystemStatus.Success) {
-          result.file?.content?.text().then((treeStatusJSON) => {
-            const treeStatusArray = JSON.parse(treeStatusJSON);
-            onToggleEnabled.current = false;
-            for (const node of treeStatusArray) {
-              treeOpenNodes.current.add(node);
-              treeElement.current?.close(node);
-            }
-            onToggleEnabled.current = true;
-          });
-        }
-      }}, TREE_STATUS_FILE);
+    $getFileSystem().downloadFileAsync(TREE_STATUS_FILE)
+    .then((result: DownloadResult) => {
+      if (result.status === FileSystemStatus.Success) {
+        result.file?.content?.text().then((treeStatusJSON) => {
+          const treeStatusArray = JSON.parse(treeStatusJSON);
+          onToggleEnabled.current = false;
+          for (const node of treeStatusArray) {
+            treeOpenNodes.current.add(node);
+            treeElement.current?.close(node);
+          }
+          onToggleEnabled.current = true;
+        });
+      }
+    });
   }
 
   useEffect(() => {
-    $getFileSystem().downloadFileAsync( {
-        resolve: (result: DownloadResult) => {
-        if (result.status === FileSystemStatus.Success) {
-          result.file?.content?.text().then((treeJSON) => {
-            setTree(new SimpleTree<TreeNodeData>(JSON.parse(treeJSON)));
-            downloadAndSetTreeStatus();
-          });
-        } else {
-          setTree(new SimpleTree<TreeNodeData>([]));
-        }
-      }}, TREE_FILE
-    );
+    $getFileSystem().downloadFileAsync(TREE_FILE)
+    .then((result: DownloadResult) => {
+      if (result.status === FileSystemStatus.Success) {
+        result.file?.content?.text().then((treeJSON) => {
+          setTree(new SimpleTree<TreeNodeData>(JSON.parse(treeJSON)));
+          downloadAndSetTreeStatus();
+        });
+      } else {
+        setTree(new SimpleTree<TreeNodeData>([]));
+      }
+    });
   }, []);
 
   function AddIcon(props: IconBaseProps) {
