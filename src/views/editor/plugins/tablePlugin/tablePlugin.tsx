@@ -24,29 +24,24 @@ import {
   $getSelection,
   $isParagraphNode,
   $isRangeSelection,
-  $isRootNode,
   COMMAND_PRIORITY_LOW,
-  EditorState,
   LexicalEditor,
   LexicalNode,
-  NodeKey,
-  NodeMutation,
   RangeSelection,
-  SELECTION_CHANGE_COMMAND,
+  SELECTION_CHANGE_COMMAND
 } from "lexical";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
+import { MousePosition, assert } from "@/utils";
+import { Metric } from "@/utils/types";
 import {
   $getExtendedTableNodeFromLexicalNodeOrThrow,
-  $isExtendedTableNode,
   ExtendedTableNode,
-  TableBodyNode,
+  TableBodyNode
 } from "@editor/nodes/table";
-import { MousePosition, assert, notNullOrThrowDev } from "@/utils";
-import { Metric } from "@/utils/types";
 
 const DRAG_NONE = 0 as const;
 const DRAG_HORIZONTAL = 1 as const;
@@ -533,54 +528,26 @@ export default function TablePlugin() {
 
     return mergeRegister(
       editor.registerNodeTransform(ExtendedTableNode, (node) => {
-        editor.update(()=>{
-          const parentNode = node.getParentOrThrow();
-          const parentElement = editor.getElementByKey(parentNode.getKey());
-          let width = 0;
-          if ( parentElement != null ) {
-            const {width: parentWidth} = parentElement.getBoundingClientRect();
-            width = parentWidth;
-          } else {
-            assert( $isTableCellNode(parentNode), "expected table as parent" );
-            const tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(parentNode);
-            const columnID = tableNode.getTableBodyNode().getCellColumnID(parentNode as TableCellNode);
-            for ( let c = columnID ; c < columnID + (parentNode as TableCellNode).getColSpan(); ++c ) {
-              width += tableNode.getColumnWidth(c).value;
-            }
-          }
-          node.fixColumns(width);
-        });
-      }),
+        if ( node.columnsWidthsValid()) return;
 
-    //   editor.registerMutationListener(ExtendedTableNode, (nodes: Map<NodeKey, NodeMutation>, payload: {
-    //     updateTags: Set<string>;
-    //     dirtyLeaves: Set<string>;
-    //     prevEditorState: EditorState;
-    // })=> {
-    //     if ( payload.updateTags.has("paste") ) {
-    //       const nodesArray =  Array.from( nodes ).reverse();
-    //       editor.update( () => {
-    //         for ( const [nodeKey, nodeMutation] of nodesArray ) {
-    //           if ( nodeMutation == "created") {
-    //             const node = (() => {
-    //               const node = $getNodeByKey(nodeKey);
-    //               assert( $isExtendedTableNode(node), "Expected extended table node" );
-    //               return node as ExtendedTableNode;
-    //             })();
-    //             const nodeElement = editor.getElementByKey(nodeKey);
-    //             notNullOrThrowDev(nodeElement);
-    //             const nodeParent = nodeElement.parentElement;
-    //             notNullOrThrowDev(nodeParent);
-                
-    //             const {width} = nodeParent.getBoundingClientRect();
-    //             node.fixColumns(width);              
-    //           }
-    //         }
-    //     }, {tag: 'history-merge'});
-    //     }
-    //   }),
+        const parentNode = node.getParentOrThrow();
+        const parentElement = editor.getElementByKey(parentNode.getKey());
+        let width = 0;
+        if ( parentElement != null ) {
+          const {width: parentWidth} = parentElement.getBoundingClientRect();
+          width = parentWidth;
+        } else {
+          assert( $isTableCellNode(parentNode), "expected table as parent" );
+          const tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(parentNode);
+          const columnID = tableNode.getTableBodyNode().getCellColumnID(parentNode as TableCellNode);
+          for ( let c = columnID ; c < columnID + (parentNode as TableCellNode).getColSpan(); ++c ) {
+            width += tableNode.getColumnWidth(c).value;
+          }
+        }
+        node.fixColumns(width);
+      }),
       editor.registerMutationListener(TableRowNode, (keys) => {
-        editor.update(() => {
+        editor.getEditorState().read(() => {
           for (const key of keys) {
             const node = $getNodeByKey(key[0]) as TableRowNode;
             if (node && node.getChildrenSize() == 0) {
@@ -610,7 +577,7 @@ export default function TablePlugin() {
             const parents = nodes[0].getParents();
             for (const parent of parents) {
               if ($isTableNode(parent)) {
-                tableNode = parent;
+                tableNode = parent; 
                 break;
               }
             }

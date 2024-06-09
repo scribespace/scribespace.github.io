@@ -33,6 +33,7 @@ export type SerializedExtendedTableNode = Spread<
 
 export class ExtendedTableNode extends ElementNode {
   __columnsWidths: Metric[] = [];
+  __columnsWidthsValid: boolean = false;
 
   constructor(columnsWidths?: Metric[], key?: NodeKey) {
     super(key);
@@ -189,8 +190,13 @@ export class ExtendedTableNode extends ElementNode {
     return this.createDOMWithCSS(config.theme.table);
   }
 
+  columnsWidthsValid() {
+    return this.__columnsWidthsValid;
+  }
+
   fixColumns( width: number ) {
     const self = this.getWritable();
+    if ( self.__columnsWidthsValid ) return;
 
     const normalWidth = (width - self.__columnsWidths.length) / self.__columnsWidths.length;
 
@@ -203,6 +209,8 @@ export class ExtendedTableNode extends ElementNode {
         column.setValue( normalWidth );
       }
     }
+
+    self.__columnsWidthsValid = true;
   }
 
   updateDOM(_prevNode?: unknown, dom?: HTMLElement) {
