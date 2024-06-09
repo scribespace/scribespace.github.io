@@ -435,7 +435,7 @@ export default function TablePlugin() {
             new Metric( nextColumnWidth - widthOffset, "px" ),
           );
         },
-        { tag: "history-merge" },
+        { tag: "history-merge" }
       );
     },
     [activeCell, editor],

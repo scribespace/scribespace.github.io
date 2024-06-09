@@ -2,18 +2,16 @@ import { Image } from "@editor/components/image";
 import { EditorInputTheme } from "@editor/theme/editorTheme";
 import { addClassNamesToElement } from "@lexical/utils";
 import {
-  $applyNodeReplacement,
   DOMConversionMap,
-  DOMConversionOutput,
   DOMExportOutput,
   DecoratorNode,
   EditorConfig,
-  LexicalNode,
   NodeKey,
   SerializedLexicalNode,
   Spread,
 } from "lexical";
 import { ReactElement } from "react";
+import { $createImageNode, $convertImageElement } from "./imageNodeHelpers";
 
 export type SerializedImageNode = Spread<
   {
@@ -63,6 +61,7 @@ export class ImageNode extends DecoratorNode<ReactElement> {
 
   setSrc(src: string) {
     const self = this.getWritable();
+    console.log(src);
     self.__src = src;
   }
 
@@ -136,9 +135,6 @@ export class ImageNode extends DecoratorNode<ReactElement> {
         height={this.__height}
         blob={this.__blob}
         imageKey={this.getKey()}
-        setSrc={(src: string) => {
-          this.setSrc(src);
-        }}
         setWidthHeight={(width: number, height: number) => {
           this.setWidthHeight(width, height);
         }}
@@ -147,28 +143,4 @@ export class ImageNode extends DecoratorNode<ReactElement> {
   }
 }
 
-export function $createImageNode(
-  src?: string,
-  width?: number,
-  height?: number,
-  blob?: Blob
-): ImageNode {
-  return $applyNodeReplacement(new ImageNode(src, width, height, blob));
-}
 
-export function $isImageNode(
-  node: LexicalNode | null | undefined
-): node is ImageNode {
-  return node instanceof ImageNode;
-}
-
-function $convertImageElement(domNode: Node): null | DOMConversionOutput {
-  const img = domNode as HTMLImageElement;
-  const { src, width, height } = img;
-  if (src.startsWith("file:///")) {
-    return null;
-  }
-
-  const node = $createImageNode(src, width, height);
-  return { node };
-}

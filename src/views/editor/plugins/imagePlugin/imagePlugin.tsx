@@ -1,5 +1,4 @@
 import { assert } from "@utils";
-import { $createImageNode, $isImageNode, ImageNode } from "@editor/nodes/image";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import {
@@ -14,6 +13,8 @@ import { useCallback, useEffect } from "react";
 import { DRAG_DROP_ADD_TYPES_LISTENER_COMMAND } from "../dragDropPlugin";
 import { INSERT_IMAGES_COMMAND } from "./imageCommands";
 import { IMAGE_SUPPORTED_FORMATS } from "@/system/imageManager";
+import { ImageNode } from "../../nodes/image";
+import { $isImageNode, $createImageNode } from "../../nodes/image/imageNodeHelpers";
 
 export function ImagePlugin() {
   const [editor] = useLexicalComposerContext();

@@ -20,6 +20,7 @@ import {
   useRef,
   useState
 } from "react";
+import { $getImageNodeByKey, $isImageNode } from "../../nodes/image/imageNodeHelpers";
 
 interface ImageControlsStyles {
   topControl: CSSProperties;
@@ -67,8 +68,6 @@ interface ImageProps {
   height?: number;
   blob?: Blob;
   imageKey: NodeKey;
-  setSrc: (src: string) => void;
-  setWidthHeight: (width: number, height: number) => void;
 }
 
 export function Image({
@@ -77,8 +76,6 @@ export function Image({
   height,
   blob,
   imageKey,
-  setSrc,
-  setWidthHeight,
 }: ImageProps) {
   const [editor] = useLexicalComposerContext();
 
@@ -280,12 +277,12 @@ export function Image({
           imageRef.current.getBoundingClientRect();
         imageSizeRef.current = { x, y, width, height };
 
-        editor.update(() => {
+        editor.getEditorState().read(() => {
           const imageNode = $getNodeByKey(imageKey);
-          assert(imageNode != null, "Wrong key for ImageNode");
+          notNullOrThrowDev(imageNode);
 
           const rootElement = editor.getElementByKey(
-            imageNode!.getTopLevelElementOrThrow().getParentOrThrow().getKey()
+            imageNode.getTopLevelElementOrThrow().getParentOrThrow().getKey()
           );
           notNullOrThrowDev(rootElement);
 
@@ -438,7 +435,10 @@ export function Image({
         const height = Metric.fromString(
           markerStyle.height.toString()
         ).value;
-        setWidthHeight(width, height);
+
+        const node = $getImageNodeByKey(imageKey);
+        if ( node )
+          node.setWidthHeight(width, height);
       });
     };
 
@@ -459,14 +459,7 @@ export function Image({
       document.removeEventListener("keydown", onKeyChanged);
       document.removeEventListener("keyup", onKeyChanged);
     };
-  }, [
-    editor,
-    markerStyle.height,
-    markerStyle.width,
-    processResize,
-    resizeDirection,
-    setWidthHeight,
-  ]);
+  }, [editor, imageKey, markerStyle.height, markerStyle.width, processResize, resizeDirection]);
 
   useEffect(() => {
     setupControls();
@@ -480,10 +473,15 @@ export function Image({
     (error: any) => {
       setImageState(ImageState.Missing); 
       setCurrentSrc(MISSING_IMAGE);
-      setSrc(MISSING_IMAGE); 
+
+      editor.update( () => {
+        const node = $getNodeByKey(imageKey);
+        if ( $isImageNode(node) )
+          node.setSrc(MISSING_IMAGE); 
+      });
       throw Error( error );
     },
-    [setSrc]
+    [editor, imageKey]
   );
 
   const uploadImage = useCallback(
@@ -491,22 +489,22 @@ export function Image({
       setImageState(ImageState.LoadingFinal);
       $getFileSystem()
       .uploadFileAsync($getImageName(file.content!.type), file, FileUploadMode.Add)
-      .then((result: UploadResult) => {
-            editor.update( 
-              () => {
-                variableExistsOrThrowDev(result.fileInfo, "Missing fileinfo");
-                setSrc(result.fileInfo.name);
-              } );
+      .then((result: UploadResult) => {         
+              variableExistsOrThrowDev(result.fileInfo, "Missing fileinfo");
+              const fileInfo = result.fileInfo;
+              editor.update( () => {
+                const node = $getNodeByKey(imageKey);
+                if ( $isImageNode(node) )
+                  node.setSrc(fileInfo.name);
+              },
+              { tag: "history-merge" });             
           })
       .catch((error) => { 
-          editor.update( 
-            () => {
-              imageLoadFailed(error);
-            }); 
+            imageLoadFailed(error);
           }
       );
     },
-    [editor, imageLoadFailed, setSrc]
+    [editor, imageKey, imageLoadFailed]
   );
 
   const onLoad = useCallback(
@@ -515,12 +513,15 @@ export function Image({
         setImageState(ImageState.Ready);
         editor.update(
           () => {
-            setWidthHeight( imageRef.current!.naturalWidth, imageRef.current!.naturalHeight ); 
-          }
+            const node = $getNodeByKey(imageKey);
+            if ( $isImageNode(node) )
+              node.setWidthHeight( imageRef.current!.naturalWidth, imageRef.current!.naturalHeight ); 
+          },
+          { tag: "history-merge" }
         );
       }
     },
-    [editor, imageState, setWidthHeight]
+    [editor, imageKey, imageState]
   );
 
   const onError = useCallback(
@@ -545,10 +546,7 @@ export function Image({
             uploadImage({content: blob});
           })
           .catch( (error) => { 
-            editor.update( 
-              () => {
-                imageLoadFailed(error);
-              });
+              imageLoadFailed(error);
           });
 
          return;
@@ -567,7 +565,7 @@ export function Image({
 
       setImageState(ImageState.Missing);
     }
-  }, [blob, editor, imageLoadFailed, imageState, setSrc, src, uploadImage]);
+  }, [blob, editor, imageLoadFailed, imageState, src, uploadImage]);
 
   useEffect(() => {
     return editor.registerCommand(
