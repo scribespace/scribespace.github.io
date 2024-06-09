@@ -1,8 +1,7 @@
-import { File, FileUploadMode, UploadResult } from "@/interfaces/system/fileSystem/fileSystemShared";
+import { File } from "@/interfaces/system/fileSystem/fileSystemShared";
 import { useMainThemeContext } from "@/mainThemeContext";
-import { $getFileSystem, $getImageManager } from "@/system/appGlobals";
-import { $getImageName } from "@/system/imageManager";
-import { MousePosition, notNullOrThrowDev, assert, valueValidOrThrowDev, variableExistsOrThrowDev, variableExists } from "@/utils";
+import { $getImageManager } from "@/system/appGlobals";
+import { MousePosition, notNullOrThrowDev, valueValidOrThrowDev, variableExists } from "@/utils";
 import { Metric } from "@/utils/types";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
@@ -487,18 +486,16 @@ export function Image({
   const uploadImage = useCallback(
     (file: File) => {
       setImageState(ImageState.LoadingFinal);
-      $getFileSystem()
-      .uploadFileAsync($getImageName(file.content!.type), file, FileUploadMode.Add)
-      .then((result: UploadResult) => {         
-              variableExistsOrThrowDev(result.fileInfo, "Missing fileinfo");
-              const fileInfo = result.fileInfo;
-              editor.update( () => {
-                const node = $getNodeByKey(imageKey);
-                if ( $isImageNode(node) )
-                  node.setSrc(fileInfo.name);
-              },
-              { tag: "history-merge" });             
-          })
+      $getImageManager().imageUpload(file).then(
+        (url: string) => {
+          editor.update( () => {
+          const node = $getImageNodeByKey(imageKey);
+          if (node)
+            node.setSrc(url);
+        },
+        { tag: "history-merge" }); 
+        }
+      )
       .catch((error) => { 
             imageLoadFailed(error);
           }

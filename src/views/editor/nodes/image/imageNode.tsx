@@ -61,7 +61,6 @@ export class ImageNode extends DecoratorNode<ReactElement> {
 
   setSrc(src: string) {
     const self = this.getWritable();
-    console.log(src);
     self.__src = src;
   }
 

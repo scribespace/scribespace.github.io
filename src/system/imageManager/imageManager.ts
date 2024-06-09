@@ -1,5 +1,8 @@
 import { WebWorkerManager } from "@/interfaces/webWorker";
 
+import { File, FileUploadMode, UploadResult } from "@/interfaces/system/fileSystem/fileSystemShared";
+import { notNullOrThrowDev, variableExistsOrThrowDev } from "@/utils";
+import { $getFileSystem } from "../appGlobals";
 import { ImageManagerWorkerPublic } from "./imageManagerWorker";
 import workerURL from "./imageManagerWorker?worker&url";
 import { ImageManagerWorkerFunctions, ImageManagerWorkerFunctionsExtended, ImageManagerWorkerWrapper } from "./workerShared";
@@ -10,6 +13,18 @@ export interface ImageManager extends ImageManagerWorkerWrapper {}
 export class ImageManager extends WebWorkerManager<ImageManagerWorkerFunctions, ImageManagerWorkerFunctionsExtended> {
   constructor() {
     super(workerURL, ImageManagerWorkerPublic);
+  }
+
+  imageUpload(file: File): Promise<string> {
+    notNullOrThrowDev(file.content);
+    return $getFileSystem()
+    .uploadFileAsync($getImageName(file.content.type), file, FileUploadMode.Add)
+    .then(
+      (result: UploadResult) => {
+        variableExistsOrThrowDev( result.fileInfo, "Missing fileInfo" );
+        return $getFileSystem().getFileURLAsync(result.fileInfo.name);
+      }
+    );
   }
 }
 export const IMAGES_PATH = '/images/';
