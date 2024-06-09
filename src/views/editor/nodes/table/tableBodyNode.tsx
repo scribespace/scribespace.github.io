@@ -1,3 +1,4 @@
+import { Metric } from "@/utils/types";
 import {
   $createTableCellNodeWithParagraph,
   $getTableColumnIndexFromTableCellNode,
@@ -40,7 +41,7 @@ export class TableBodyNode extends TableNode {
   }
 
   static addColumnsGroupBefore(
-    columnsWidths: number[],
+    columnsWidths: Metric[],
     columnID: number,
     columnsToAdd: number,
   ) {
@@ -48,19 +49,19 @@ export class TableBodyNode extends TableNode {
       columnsWidths.length / (columnsWidths.length + columnsToAdd);
 
     for (let c = 0; c < columnsWidths.length; ++c) {
-      if (columnsWidths[c] > -1) {
-        columnsWidths[c] *= sizeScale;
+      if (columnsWidths[c].isValid()) {
+        columnsWidths[c].mulValue( sizeScale );
       }
     }
 
-    const newColumns: number[] = [];
-    for (let c = 0; c < columnsToAdd; ++c) newColumns[c] = -1;
+    const newColumns: Metric[] = [];
+    for (let c = 0; c < columnsToAdd; ++c) newColumns[c] = new Metric();
 
     columnsWidths.splice(columnID, 0, ...newColumns);
   }
 
   static addColumnsGroupAfter(
-    columnsWidths: number[],
+    columnsWidths: Metric[],
     columnID: number,
     columnsToAdd: number,
   ) {
@@ -68,19 +69,19 @@ export class TableBodyNode extends TableNode {
       columnsWidths.length / (columnsWidths.length + columnsToAdd);
 
     for (let c = 0; c < columnsWidths.length; ++c) {
-      if (columnsWidths[c] > -1) {
-        columnsWidths[c] *= sizeScale;
+      if (columnsWidths[c].isValid()) {
+        columnsWidths[c].mulValue( sizeScale );
       }
     }
 
-    const newColumns: number[] = [];
-    for (let c = 0; c < columnsToAdd; ++c) newColumns[c] = -1;
+    const newColumns: Metric[] = [];
+    for (let c = 0; c < columnsToAdd; ++c) newColumns[c] = new Metric();
 
     columnsWidths.splice(columnID + 1, 0, ...newColumns);
   }
 
   static removeColumnsGroup(
-    columnsWidths: number[],
+    columnsWidths: Metric[],
     columnID: number,
     columnsToRemove: number,
   ) {
@@ -90,8 +91,8 @@ export class TableBodyNode extends TableNode {
     columnsWidths.splice(columnID, columnsToRemove);
 
     for (let c = 0; c < columnsWidths.length; ++c) {
-      if (columnsWidths[c] > -1) {
-        columnsWidths[c] *= sizeScale;
+      if (columnsWidths[c].isValid()) {
+        columnsWidths[c].mulValue( sizeScale );
       }
     }
   }
@@ -423,7 +424,7 @@ export class TableBodyNode extends TableNode {
   addColumnsBefore(
     cellNode: TableCellNode,
     columnsToAdd: number,
-    columnsWidths: number[],
+    columnsWidths: Metric[],
   ) {
     const self = this.getWritable();
     const resolvedTable = self.getResolvedTable();
@@ -460,7 +461,7 @@ export class TableBodyNode extends TableNode {
   addColumnsAfter(
     cellNode: TableCellNode,
     columnsCount: number,
-    columnsWidths: number[],
+    columnsWidths: Metric[],
   ) {
     const self = this.getWritable();
     const resolvedTable = self.getResolvedTable();
@@ -498,7 +499,7 @@ export class TableBodyNode extends TableNode {
   removeColumns(
     cellNode: TableCellNode,
     columnsToRemove: number,
-    columnsWidths: number[],
+    columnsWidths: Metric[],
   ) {
     const self = this.getWritable();
     const resolvedTable = self.getResolvedTable();

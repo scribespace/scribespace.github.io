@@ -40,7 +40,8 @@ import {
   ExtendedTableNode,
   TableBodyNode,
 } from "@editor/nodes/table";
-import { MousePosition, assert } from "@utils";
+import { MousePosition, assert } from "@/utils";
+import { Metric } from "@/utils/types";
 
 const DRAG_NONE = 0 as const;
 const DRAG_HORIZONTAL = 1 as const;
@@ -247,13 +248,13 @@ export default function TablePlugin() {
     [activeCell, editor],
   );
 
-  function GetColumnWidthWithPosition(
+  function getColumnWidthWithPosition(
     tableNode: ExtendedTableNode,
     columnID: number,
     cellLUT: (TableCellNode | null)[][],
   ): { width: number; position: number } {
     const columnsCount = cellLUT[0].length;
-    let columnWidth = tableNode.getColumnWidth(columnID);
+    const columnWidth = tableNode.getColumnWidth(columnID);
 
     // Find node if first is a miss
     let cellNode: TableCellNode | null = cellLUT[0][columnID];
@@ -278,7 +279,7 @@ export default function TablePlugin() {
     const { width: rectWidth, right: rectRight } =
       cellElement.getBoundingClientRect();
     const columnPosition = rectRight;
-    if (columnWidth == -1) {
+    if (isNaN(columnWidth.value)) {
       const cellWidth = rectWidth;
 
       let knownWidth = 0;
@@ -288,18 +289,18 @@ export default function TablePlugin() {
       for (let s = 0; s < span; ++s) {
         const columnIDToCheck = columnID - s;
         const checkColumnWidth = tableNode.getColumnWidth(columnIDToCheck);
-        if (checkColumnWidth != -1) {
-          knownWidth += checkColumnWidth;
+        if (!isNaN(checkColumnWidth.value)) {
+          knownWidth += checkColumnWidth.value;
           setColumns += 1;
         }
       }
 
       const remainingCell = span - setColumns;
       const remainingWidth = cellWidth - knownWidth;
-      columnWidth = remainingWidth / remainingCell;
+      columnWidth.setValue( remainingWidth / remainingCell );
     }
 
-    return { width: columnWidth, position: columnPosition };
+    return { width: columnWidth.value, position: columnPosition };
   }
 
   const updateColumnsWidths = () => {
@@ -385,12 +386,12 @@ export default function TablePlugin() {
       }
 
       const { width: columnWidth, position: columnPosition } =
-        GetColumnWidthWithPosition(
+        getColumnWidthWithPosition(
           tableNode,
           columnID,
           cellLUT as (TableCellNode | null)[][],
         );
-      const nextColumnWidth = GetColumnWidthWithPosition(
+      const nextColumnWidth = getColumnWidthWithPosition(
         tableNode,
         columnID + 1,
         cellLUT as (TableCellNode | null)[][],
@@ -415,8 +416,7 @@ export default function TablePlugin() {
             throw new Error("updateColumnWidth: Table cell node not found.");
           }
 
-          const tableNode =
-            $getExtendedTableNodeFromLexicalNodeOrThrow(tableCellNode);
+          const tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(tableCellNode);
 
           const columnWidth = columnWidthsRef.current.low;
           const nextColumnWidth = columnWidthsRef.current.hight;
@@ -428,11 +428,11 @@ export default function TablePlugin() {
 
           tableNode.setColumnWidth(
             columnIDRef.current,
-            columnWidth + widthOffset,
+            new Metric( columnWidth + widthOffset, "px" ),
           );
           tableNode.setColumnWidth(
             columnIDRef.current + 1,
-            nextColumnWidth - widthOffset,
+            new Metric( nextColumnWidth - widthOffset, "px" ),
           );
         },
         { tag: "history-merge" },

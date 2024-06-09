@@ -1,9 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export interface ValueUnit {
-  value: number;
-  unit?: string;
-}
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface Font {
   name: string;
   alt: string;

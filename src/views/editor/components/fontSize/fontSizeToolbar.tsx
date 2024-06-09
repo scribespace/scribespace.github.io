@@ -1,6 +1,5 @@
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { separateValueAndUnit } from "@/utils/common";
 import {
   DECREASE_FONT_SIZE_COMMAND,
   FONT_SIZE_CHANGED_COMMAND,
@@ -20,6 +19,7 @@ import { useEffect, useState } from "react";
 import NumberInput from "../numberInput";
 import { MenuItem } from "@/components/menu";
 import { useEditorEditable } from "@/hooks/useEditorEditable";
+import { Metric } from "@/utils/types";
 
 export default function FontSizeToolbar() {
   const [editor] = useLexicalComposerContext();
@@ -73,11 +73,11 @@ export default function FontSizeToolbar() {
   };
 
   const onInputAccepted = (target: HTMLInputElement) => {
-    const valueUnit = separateValueAndUnit(target.value);
-    valueUnit.unit = valueUnit.unit == "" ? "pt" : valueUnit.unit;
+    const metric = Metric.fromString(target.value);
+    metric.setUnit( metric.getUnit() == "" ? "pt" : metric.getUnit() );
     editor.dispatchCommand(
       SET_FONT_SIZE_COMMAND,
-      `${valueUnit.value}${valueUnit.unit}`
+      metric.toString()
     );
   };
 

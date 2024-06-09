@@ -1,4 +1,4 @@
-import { Font } from "./types";
+import { Font } from "./types/types";
 
 import { assert } from "./dev";
 

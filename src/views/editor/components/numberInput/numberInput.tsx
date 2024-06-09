@@ -1,4 +1,3 @@
-import { ValueUnit, separateValueAndUnit, variableExists } from "@utils";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { IconBaseProps } from "react-icons";
 
@@ -6,6 +5,8 @@ import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { SeparatorVertical } from "@/components/separators";
 import { NumberInputTheme } from "./theme";
+import { variableExists } from "@/utils";
+import { Metric } from "@/utils/types";
 
 interface NumberInputProps {
   type: "text" | "number";
@@ -55,13 +56,9 @@ export default function NumberInput({
     [max, min]
   );
 
-  const validateValue = useCallback(
-    (valueUnit: ValueUnit): valueUnit is { value: number; unit: string } => {
-      if (!variableExists(valueUnit.value)) {
-        return false;
-      }
-
-      if (variableExists(valueUnit.unit) && !units.includes(valueUnit.unit)) {
+  const validateMetric = useCallback(
+    (metric: Metric): boolean => {
+      if (!metric.isValid() || !units.includes(metric.getUnit())) {
         return false;
       }
 
@@ -70,13 +67,14 @@ export default function NumberInput({
     [units]
   );
 
-  function processValue(valueUnit: ValueUnit): string {
-    if (!validateValue(valueUnit)) {
+  function processValue(metric: Metric): string {
+    if (!validateMetric(metric)) {
       return currentValueRef.current;
     }
 
-    const correctedValue = correctValue(valueUnit.value);
-    return `${correctedValue}${valueUnit.unit}`;
+    const correctedValue = correctValue(metric.getValue());
+    metric.setValue(correctedValue);
+    return metric.toString();
   }
 
   const changeValue = useCallback(
@@ -90,15 +88,16 @@ export default function NumberInput({
         return;
       }
 
-      const valueUnit = separateValueAndUnit(valueStr);
-      if (!validateValue(valueUnit)) {
+      const metric = Metric.fromString(valueStr);
+      if (!validateMetric(metric)) {
         inputRef.current.value = currentValueRef.current;
         return;
       }
 
-      valueUnit.value += change;
-      const correctedValue = correctValue(valueUnit.value);
-      const newValueStr = `${correctedValue}${valueUnit.unit}`;
+      metric.addValue(change);
+      const correctedValue = correctValue(metric.value);
+
+      const newValueStr = `${correctedValue}${metric.unit}`;
 
       inputRef.current.value = newValueStr;
       if (newValueStr != currentValueRef.current) {
@@ -106,7 +105,7 @@ export default function NumberInput({
         if (onInputChanged) onInputChanged(inputRef.current, change);
       }
     },
-    [correctValue, disabled, onInputChanged, validateValue]
+    [correctValue, disabled, onInputChanged, validateMetric]
   );
 
   function onAccept() {
@@ -114,8 +113,8 @@ export default function NumberInput({
     if (!inputRef.current) return;
 
     const valueStr = inputRef.current.value;
-    const valueUnit = separateValueAndUnit(valueStr);
-    const newValueStr = processValue(valueUnit);
+    const metric = Metric.fromString(valueStr);
+    const newValueStr = processValue(metric);
     inputRef.current.value = newValueStr;
 
     currentValueRef.current = newValueStr;
@@ -134,8 +133,8 @@ export default function NumberInput({
     if (!inputRef.current) return;
 
     const valueStr = inputRef.current.value;
-    const valueUnit = separateValueAndUnit(valueStr);
-    const newValueStr = processValue(valueUnit);
+    const metric = Metric.fromString(valueStr);
+    const newValueStr = processValue(metric);
     inputRef.current.value = newValueStr;
     currentValueRef.current = newValueStr;
   }

@@ -1,4 +1,4 @@
-import { Func, ValueUnit } from "./types";
+import { Func } from "./types/types";
 
 export function variableExists<T>(variable: T | undefined): variable is T {
   return typeof variable !== "undefined";
@@ -33,19 +33,6 @@ export function isFunction(func: unknown): func is Func {
 
 export function isFunctionOrThrow(func: unknown): asserts func is Func {
   if (!isFunction(func)) throw Error(`${func} not a function`);
-}
-
-export function separateValueAndUnit(valueUnit: string): ValueUnit {
-  const regex = /^(-?\d+\.?\d*)([a-zA-Z%]*)$/;
-  const match = valueUnit.match(regex);
-  if (match) {
-    return {
-      value: parseFloat(match[1]),
-      unit: match[2] || "",
-    };
-  }
-
-  return { value: NaN };
 }
 
 export function isObject(item: unknown): item is Record<string, unknown> {

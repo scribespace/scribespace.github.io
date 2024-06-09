@@ -1,4 +1,4 @@
-import { separateValueAndUnit, variableExists } from "@/utils";
+import { Metric } from "@/utils/types";
 import {
   $getTableNodeFromLexicalNodeOrThrow,
   TableCellNode,
@@ -25,17 +25,21 @@ import {
 
 export type SerializedExtendedTableNode = Spread<
   {
-    columnsWidths: number[];
+    columnsWidths: Metric[];
   },
   SerializedElementNode
 >;
 
 export class ExtendedTableNode extends ElementNode {
-  __columnsWidths: number[] = [];
+  __columnsWidths: Metric[] = [];
 
-  constructor(columnsWidths?: number[], key?: NodeKey) {
+  constructor(columnsWidths?: Metric[], key?: NodeKey) {
     super(key);
-    this.__columnsWidths = columnsWidths ? structuredClone(columnsWidths) : [];
+    if ( columnsWidths ) {
+      for ( const width of columnsWidths ) {
+        this.__columnsWidths.push( width.clone() );
+      }
+    }
   }
 
   static getType(): string {
@@ -49,23 +53,23 @@ export class ExtendedTableNode extends ElementNode {
   getColumnsWidths() {
     return this.getLatest().__columnsWidths;
   }
-  setColumnsWidths(columns: number[]) {
+  setColumnsWidths(columns: Metric[]) {
     this.getWritable().__columnsWidths = structuredClone(columns);
   }
 
   initColGroup(columnsCount: number) {
     const self = this.getWritable();
 
-    const columnsWidths: number[] = [];
+    const columnsWidths: Metric[] = [];
 
     for (let c = 0; c < columnsCount; ++c) {
-      columnsWidths.push(-1);
+      columnsWidths.push(new Metric());
     }
 
     self.__columnsWidths = columnsWidths;
   }
 
-  setColumnWidth(columnID: number, width: number) {
+  setColumnWidth(columnID: number, value: Metric) {
     const self = this.getWritable();
     if (columnID < 0 || columnID >= self.__columnsWidths.length) {
       throw Error(
@@ -73,10 +77,10 @@ export class ExtendedTableNode extends ElementNode {
       );
     }
 
-    self.__columnsWidths[columnID] = width;
+    self.__columnsWidths[columnID] = value;
   }
 
-  getColumnWidth(columnID: number): number {
+  getColumnWidth(columnID: number): Metric {
     const self = this.getLatest();
     if (columnID < 0 || columnID >= self.__columnsWidths.length) {
       throw Error(
@@ -166,7 +170,7 @@ export class ExtendedTableNode extends ElementNode {
     const colgroup = document.createElement("colgroup");
     for (const columnWidth of self.__columnsWidths) {
       const colElement = document.createElement("col");
-      if (columnWidth != -1)
+      if (columnWidth.isValid())
         colElement.style.cssText = `width: ${columnWidth}px`;
       colgroup.append(colElement);
     }
@@ -216,8 +220,8 @@ export class ExtendedTableNode extends ElementNode {
 
         const colNodeWidth = self.__columnsWidths[c];
 
-        if (colElementWidth != colNodeWidth) {
-          colElement.style.cssText = `width: ${colNodeWidth}px`;
+        if (colElementWidth != colNodeWidth.value) {
+          colElement.style.cssText = `width: ${colNodeWidth.value}px`;
         }
       }
     }
@@ -291,17 +295,11 @@ export function $convertColElements(
   tableNode.__columnsWidths = [];
 
   for (const colElement of colElements) {
-    const colElementStyleWidth = separateValueAndUnit(colElement.style.width);
-    let width = variableExists(colElementStyleWidth.value)
-      ? colElementStyleWidth.value
-      : -1;
-    if (width == -1) {
-      const colElementWidth = separateValueAndUnit(colElement.width);
-      width = variableExists(colElementWidth.value)
-        ? colElementWidth.value
-        : -1;
+    let colMetric = Metric.fromString(colElement.style.width);
+    if (!colMetric.isValid()) {
+      colMetric = Metric.fromString(colElement.width);
     }
-    tableNode.__columnsWidths.push(width);
+    tableNode.__columnsWidths.push(colMetric);
   }
 }
 

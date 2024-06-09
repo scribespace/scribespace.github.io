@@ -2,17 +2,11 @@ import { File, FileUploadMode, UploadResult } from "@/interfaces/system/fileSyst
 import { useMainThemeContext } from "@/mainThemeContext";
 import { $getFileSystem, $getImageManager } from "@/system/appGlobals";
 import { $getImageName } from "@/system/imageManager";
+import { MousePosition, notNullOrThrowDev, assert, valueValidOrThrowDev, variableExistsOrThrowDev, variableExists } from "@/utils";
+import { Metric } from "@/utils/types";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
-import {
-  MousePosition,
-  assert,
-  notNullOrThrowDev,
-  separateValueAndUnit,
-  valueValidOrThrowDev,
-  variableExists,
-  variableExistsOrThrowDev,
-} from "@utils";
+
 import {
   $getNodeByKey,
   CLICK_COMMAND,
@@ -299,16 +293,16 @@ export function Image({
           const rootStyle = getComputedStyle(rootElement);
 
           const paddingLeft = rootStyle.paddingLeft
-            ? separateValueAndUnit(rootStyle.paddingLeft).value
+            ? Metric.fromString(rootStyle.paddingLeft).value
             : 0;
           const paddingTop = rootStyle.paddingTop
-            ? separateValueAndUnit(rootStyle.paddingTop).value
+            ? Metric.fromString(rootStyle.paddingTop).value
             : 0;
           const paddingRight = rootStyle.paddingRight
-            ? separateValueAndUnit(rootStyle.paddingRight).value
+            ? Metric.fromString(rootStyle.paddingRight).value
             : 0;
           const paddingBottom = rootStyle.paddingBottom
-            ? separateValueAndUnit(rootStyle.paddingBottom).value
+            ? Metric.fromString(rootStyle.paddingBottom).value
             : 0;
 
           containerSizeRef.current.x += paddingLeft;
@@ -440,8 +434,8 @@ export function Image({
         valueValidOrThrowDev(markerStyle.width);
         valueValidOrThrowDev(markerStyle.height);
 
-        const width = separateValueAndUnit(markerStyle.width.toString()).value;
-        const height = separateValueAndUnit(
+        const width = Metric.fromString(markerStyle.width.toString()).value;
+        const height = Metric.fromString(
           markerStyle.height.toString()
         ).value;
         setWidthHeight(width, height);

@@ -3,7 +3,7 @@ import {
   isKeyOrThrow,
   variableExistsOrThrow,
 } from "./common";
-import { Func } from "./types";
+import { Func } from "./types/types";
 
 export function devOnly(dev: () => void) {
   const func = import.meta.env.DEV ? dev : () => {};
