@@ -519,9 +519,14 @@ export function Image({
     () => {
       if (imageState == ImageState.LoadingFinal) {
         setImageState(ImageState.Ready);
+        editor.update(
+          () => {
+            setWidthHeight( imageRef.current!.naturalWidth, imageRef.current!.naturalHeight ); 
+          }
+        );
       }
     },
-    [imageState]
+    [editor, imageState, setWidthHeight]
   );
 
   const onError = useCallback(
