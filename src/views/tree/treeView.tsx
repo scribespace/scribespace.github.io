@@ -22,7 +22,6 @@ import {
 } from "@/interfaces/system/fileSystem/fileSystemShared";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { $getFileSystem } from "@system/appGlobals";
 import { IconBaseProps } from "react-icons";
 import {
   NOTES_PATH,
@@ -31,6 +30,7 @@ import {
   TreeNodeApi,
   TreeNodeData,
 } from "./common";
+import { $getFileSystem } from "@coreSystems";
 
 interface TreeViewProps {
   setSelectedFile: (file: string) => void;

@@ -1,3 +1,4 @@
+import { variableExists } from "../common";
 import { assert } from "../dev";
 
 
@@ -6,7 +7,7 @@ export class Metric {
   private __unit: string;
 
   constructor(value?: number, unit?: string) {
-    this.__value = value || NaN;
+    this.__value = variableExists( value ) ? value : NaN;
     this.__unit = unit || "";
   }
 

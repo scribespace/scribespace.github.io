@@ -18,7 +18,7 @@ import {
 import { useEffect, useState } from "react";
 import NumberInput from "../numberInput";
 import { MenuItem } from "@/components/menu";
-import { useEditorEditable } from "@/hooks/useEditorEditable";
+import { useEditorEditable } from "@/views/editor/hooks/useEditorEditable";
 import { Metric } from "@/utils/types";
 
 export default function FontSizeToolbar() {

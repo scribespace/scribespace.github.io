@@ -13,12 +13,13 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': '/src/',
-      '@interfaces': '/src/interfaces',
-      '@system': '/src/system',
-      '@utils': '/src/utils',
       '@editor': '/src/views/editor',
       '@tree': '/src/views/tree',
+      '@coreSystems': '/src/interfaces/system',
+      '@systems': '/src/system',
+      '@interfaces': '/src/interfaces',
+      '@utils': '/src/utils',
+      '@': '/src/',
     }
   },
   build: {

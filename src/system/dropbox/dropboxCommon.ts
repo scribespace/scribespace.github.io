@@ -6,7 +6,7 @@ import {
   sharing,
 } from "dropbox";
 
-export const DROPBOX_APP = "dropbox";
+export const DROPBOX_APP = "dropbox" as const;
 
 export interface DropboxSystemError<T> {
   system: "Dropbox";

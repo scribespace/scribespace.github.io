@@ -1,4 +1,4 @@
-import { useEditorEditable } from "@/hooks/useEditorEditable";
+import { useEditorEditable } from "@/views/editor/hooks/useEditorEditable";
 import { variableExists } from "@/utils";
 import { assert } from "@/utils/dev";
 import { EditorThemeClassName } from "lexical";

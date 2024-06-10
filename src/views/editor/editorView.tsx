@@ -10,7 +10,6 @@ import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import {TabIndentationPlugin} from '@lexical/react/LexicalTabIndentationPlugin';
-import { $getFileSystem } from "@system/appGlobals";
 import LinkPlugin from "./plugins/linkPlugin";
 
 import ToolbarPlugin from "./plugins/toolbarPlugin/toolbarPlugin";
@@ -33,6 +32,7 @@ import { FontPlugin } from "./plugins/fontPlugin";
 import { ImagePlugin } from "./plugins/imagePlugin";
 import { LayoutPlugin } from "./plugins/layoutPlugin";
 import TablePlugin from "./plugins/tablePlugin";
+import { $getFileSystem } from "@coreSystems";
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will

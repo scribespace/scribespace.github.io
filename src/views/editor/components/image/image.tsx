@@ -1,6 +1,5 @@
 import { File } from "@/interfaces/system/fileSystem/fileSystemShared";
 import { useMainThemeContext } from "@/mainThemeContext";
-import { $getImageManager } from "@/system/appGlobals";
 import { MousePosition, notNullOrThrowDev, valueValidOrThrowDev, variableExists } from "@/utils";
 import { Metric } from "@/utils/types";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -20,6 +19,7 @@ import {
   useState
 } from "react";
 import { $getImageNodeByKey, $isImageNode } from "../../nodes/image/imageNodeHelpers";
+import { $getImageManager } from "@systems/imageManager";
 
 interface ImageControlsStyles {
   topControl: CSSProperties;
@@ -288,18 +288,10 @@ export function Image({
           containerSizeRef.current = rootElement.getBoundingClientRect();
           const rootStyle = getComputedStyle(rootElement);
 
-          const paddingLeft = rootStyle.paddingLeft
-            ? Metric.fromString(rootStyle.paddingLeft).value
-            : 0;
-          const paddingTop = rootStyle.paddingTop
-            ? Metric.fromString(rootStyle.paddingTop).value
-            : 0;
-          const paddingRight = rootStyle.paddingRight
-            ? Metric.fromString(rootStyle.paddingRight).value
-            : 0;
-          const paddingBottom = rootStyle.paddingBottom
-            ? Metric.fromString(rootStyle.paddingBottom).value
-            : 0;
+          const paddingLeft = rootStyle.paddingLeft ? Metric.fromString(rootStyle.paddingLeft).value : 0;
+          const paddingTop = rootStyle.paddingTop ? Metric.fromString(rootStyle.paddingTop).value : 0;
+          const paddingRight = rootStyle.paddingRight ? Metric.fromString(rootStyle.paddingRight).value : 0;
+          const paddingBottom = rootStyle.paddingBottom ? Metric.fromString(rootStyle.paddingBottom).value : 0;
 
           containerSizeRef.current.x += paddingLeft;
           containerSizeRef.current.y += paddingTop;
@@ -431,10 +423,7 @@ export function Image({
         valueValidOrThrowDev(markerStyle.height);
 
         const width = Metric.fromString(markerStyle.width.toString()).value;
-        const height = Metric.fromString(
-          markerStyle.height.toString()
-        ).value;
-
+        const height = Metric.fromString(markerStyle.height.toString()).value;
         const node = $getImageNodeByKey(imageKey);
         if ( node )
           node.setWidthHeight(width, height);
@@ -485,13 +474,14 @@ export function Image({
 
   const uploadImage = useCallback(
     (file: File) => {
-      setImageState(ImageState.LoadingFinal);
       $getImageManager().imageUpload(file).then(
         (url: string) => {
           editor.update( () => {
-          const node = $getImageNodeByKey(imageKey);
-          if (node)
-            node.setSrc(url);
+            setImageState(ImageState.LoadingFinal);
+            setCurrentSrc(url);
+            const node = $getImageNodeByKey(imageKey);
+            if (node)
+              node.setSrc(url);
         },
         { tag: "history-merge" }); 
         }
@@ -508,17 +498,19 @@ export function Image({
     () => {
       if (imageState == ImageState.LoadingFinal) {
         setImageState(ImageState.Ready);
-        editor.update(
-          () => {
-            const node = $getNodeByKey(imageKey);
-            if ( $isImageNode(node) )
-              node.setWidthHeight( imageRef.current!.naturalWidth, imageRef.current!.naturalHeight ); 
-          },
-          { tag: "history-merge" }
-        );
+        if ( !variableExists(width) || !variableExists(height) ) {
+          editor.update(
+            () => {
+              const node = $getNodeByKey(imageKey);
+              if ( $isImageNode(node) )
+                node.setWidthHeight( imageRef.current!.naturalWidth, imageRef.current!.naturalHeight ); 
+            },
+            { tag: "history-merge" }
+          );
+        }
       }
     },
-    [editor, imageKey, imageState]
+    [editor, height, imageKey, imageState, width]
   );
 
   const onError = useCallback(

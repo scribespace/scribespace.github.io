@@ -134,9 +134,6 @@ export class ImageNode extends DecoratorNode<ReactElement> {
         height={this.__height}
         blob={this.__blob}
         imageKey={this.getKey()}
-        setWidthHeight={(width: number, height: number) => {
-          this.setWidthHeight(width, height);
-        }}
       />
     );
   }

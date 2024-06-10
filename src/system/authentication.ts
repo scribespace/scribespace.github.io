@@ -1,9 +1,9 @@
 import { DROPBOX_APP } from "./dropbox/dropboxCommon";
 import { DropboxSystem } from "./dropbox/dropboxSystem";
 
-import { $getAuth, $getFileSystem, appGlobals } from "./appGlobals";
 import { DropboxFileSystem } from "./dropbox/fileSystem/dropboxFileSystem";
 import { DropboxAuth } from "./dropbox";
+import { $getAuthentication, $getFileSystem, $setSystem, $systemSet } from "@coreSystems";
 
 export const SYSTEM_NAME = "auth_system";
 const ACCESS_TOKEN = "auth_access_token";
@@ -27,7 +27,7 @@ class Authentication {
   }
 
   async logout(): Promise<void> {
-    await $getAuth().Logout();
+    await $getAuthentication().Logout();
     window.localStorage.removeItem(SYSTEM_NAME);
     window.localStorage.removeItem(ACCESS_TOKEN);
     window.localStorage.removeItem(REFRESH_TOKEN);
@@ -41,13 +41,13 @@ class Authentication {
       if (!!accessToken && !!refreshToken) {
         switch (systemName) {
           case DROPBOX_APP:{
-            if (appGlobals.system == null)
-              appGlobals.system = new DropboxSystem();
+            if (!$systemSet())
+                $setSystem( new DropboxSystem() );
 
-              await appGlobals.system.getAuth().Login(accessToken, refreshToken);
+              await $getAuthentication().Login(accessToken, refreshToken);
               
               const dropboxFileSystem = $getFileSystem() as DropboxFileSystem;
-              dropboxFileSystem.registerFileSystemWorker($getAuth() as DropboxAuth);
+              dropboxFileSystem.registerFileSystemWorker($getAuthentication() as DropboxAuth);
             }
             return true;
           default:
@@ -63,12 +63,10 @@ class Authentication {
         if (oauth_code) {
           switch (state) {
             case DROPBOX_APP: {
-              if (appGlobals.system == null)
-                appGlobals.system = new DropboxSystem();
+              if (!$systemSet())
+                $setSystem( new DropboxSystem() );
 
-              const tokens = await appGlobals.system
-                .getAuth()
-                .GetOAuthAccessToken(oauth_code);
+              const tokens = await $getAuthentication().GetOAuthAccessToken(oauth_code);
               window.localStorage.setItem(
                 ACCESS_TOKEN,
                 tokens.access_token as string
@@ -77,15 +75,13 @@ class Authentication {
                 REFRESH_TOKEN,
                 tokens.refresh_token as string
               );
-              await appGlobals.system
-                .getAuth()
-                .Login(
+              await $getAuthentication().Login(
                   tokens.access_token as string,
                   tokens.refresh_token as string
                 );
 
               const dropboxFileSystem = $getFileSystem() as DropboxFileSystem;
-              dropboxFileSystem.registerFileSystemWorker($getAuth() as DropboxAuth);
+              dropboxFileSystem.registerFileSystemWorker($getAuthentication() as DropboxAuth);
 
               return true;
             }

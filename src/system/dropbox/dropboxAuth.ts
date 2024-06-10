@@ -21,8 +21,9 @@ export class DropboxAuth implements Authenticate {
     this.dbx = dbx;
   }
 
-  async RequestLogin() {
-    const authUrl = await this.dbxAuth.getAuthenticationUrl(
+  static async RequestLogin() {
+    const dbxAuth = new DropboxAPI.DropboxAuth({ clientId: CLIENT_ID});
+    const authUrl = await dbxAuth.getAuthenticationUrl(
       REDIRECT_URI, // redirectUri - A URL to redirect the user to after authenticating. This must be added to your app through the admin interface.
       DROPBOX_APP, // state - State that will be returned in the redirect URL to help prevent cross site scripting attacks.
       "code", // authType - auth type, defaults to 'token', other option is 'code'
@@ -51,7 +52,7 @@ export class DropboxAuth implements Authenticate {
     window.sessionStorage.clear();
     window.sessionStorage.setItem(
       "codeVerifier",
-      this.dbxAuth.getCodeVerifier()
+      dbxAuth.getCodeVerifier()
     );
     window.location.href = String(authUrl);
   }

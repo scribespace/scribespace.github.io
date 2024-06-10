@@ -1,7 +1,6 @@
 import { $applyNodeReplacement, $getNodeByKey, DOMConversionOutput, LexicalNode, NodeKey } from "lexical";
 import { ImageNode } from "./imageNode";
 
-
 export function $createImageNode(
   src?: string,
   width?: number,

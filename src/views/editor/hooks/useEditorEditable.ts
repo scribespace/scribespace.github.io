@@ -1,13 +1,9 @@
-import { $getMainEditor, appGlobals } from "@/system/appGlobals";
-import { useEffect, useMemo, useState } from "react";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useEffect, useState } from "react";
 
 export function useEditorEditable() {
-  const editor = useMemo(
-    () => $getMainEditor(),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [appGlobals.editorObject]
-  );
-
+  const [editor] = useLexicalComposerContext();
+  
   const [isEditable, setIsEditable] = useState( editor ? editor.isEditable() : false );
 
   useEffect(() => {

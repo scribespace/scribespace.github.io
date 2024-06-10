@@ -1,5 +1,5 @@
 import { isIcon } from "@/components";
-import { useEditorEditable } from "@/hooks/useEditorEditable";
+import { useEditorEditable } from "@/views/editor/hooks/useEditorEditable";
 import { variableExists } from "@utils";
 import { EditorThemeClassName } from "lexical";
 import {

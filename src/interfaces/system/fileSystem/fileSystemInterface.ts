@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { WebWorkerManagerInterface } from "@/interfaces/webWorker";
+import { assert, notNullOrThrowDev } from "@/utils";
 import { DeleteResults, DownloadResult, File, FileUploadMode, UploadResult } from "./fileSystemShared";
 
 export interface FileSystemBase{
@@ -21,4 +22,15 @@ export interface FileSystemAsync extends FileSystemWorkerWrapper, FileSystemWork
 }
 
 export interface FileSystem extends FileSystemAsync, FileSystemBase {
+}
+
+let fileSystem: FileSystem | null = null;
+export function $setFileSystem( fs: FileSystem | null ) {
+  assert( fs == null || fileSystem == null, "File system already set" );
+  fileSystem = fs;
+}
+
+export function $getFileSystem() {
+  notNullOrThrowDev(fileSystem);
+  return fileSystem;
 }

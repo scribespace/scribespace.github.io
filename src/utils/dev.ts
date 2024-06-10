@@ -26,6 +26,16 @@ export function notNullOrThrowDev<T>(value: T | null): asserts value is T {
   });
 }
 
+export function nullOrThrow<T>(value: T | null): asserts value is null {
+  if (value != null) throw Error("Value is not null");
+}
+
+export function nullOrThrowDev<T>(value: T | null): asserts value is null {
+  devOnly(() => {
+    nullOrThrow(value);
+  });
+}
+
 export function valueValidOrThrowDev<T>(
   value: T | null | undefined
 ): asserts value is T {
