@@ -15,7 +15,7 @@ type Props = {
 export const LogInView: FunctionComponent<Props> = ({ isLogInDisabled }) => {
   function DropboxLogIn() {
     window.localStorage.setItem(SYSTEM_NAME, DROPBOX_APP);
-    DropboxAuth.RequestLogin();
+    DropboxAuth.requestLogin();
   }
 
   return (

@@ -27,7 +27,7 @@ class Authentication {
   }
 
   async logout(): Promise<void> {
-    await $getAuthentication().Logout();
+    await $getAuthentication().logout();
     window.localStorage.removeItem(SYSTEM_NAME);
     window.localStorage.removeItem(ACCESS_TOKEN);
     window.localStorage.removeItem(REFRESH_TOKEN);
@@ -44,7 +44,7 @@ class Authentication {
             if (!$systemSet())
                 $setSystem( new DropboxSystem() );
 
-              await $getAuthentication().Login(accessToken, refreshToken);
+              await $getAuthentication().login(accessToken, refreshToken);
               
               const dropboxFileSystem = $getFileSystem() as DropboxFileSystem;
               dropboxFileSystem.registerFileSystemWorker($getAuthentication() as DropboxAuth);
@@ -66,7 +66,7 @@ class Authentication {
               if (!$systemSet())
                 $setSystem( new DropboxSystem() );
 
-              const tokens = await $getAuthentication().GetOAuthAccessToken(oauth_code);
+              const tokens = await $getAuthentication().getOAuthAccessToken(oauth_code);
               window.localStorage.setItem(
                 ACCESS_TOKEN,
                 tokens.access_token as string
@@ -75,7 +75,7 @@ class Authentication {
                 REFRESH_TOKEN,
                 tokens.refresh_token as string
               );
-              await $getAuthentication().Login(
+              await $getAuthentication().login(
                   tokens.access_token as string,
                   tokens.refresh_token as string
                 );

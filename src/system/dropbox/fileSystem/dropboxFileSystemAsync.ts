@@ -15,7 +15,7 @@ export class DropboxFileSystemAsync extends WebWorkerManager<FileSystemBase, Dro
       }
 
       registerFileSystemWorker(auth: DropboxAuth) {
-        const dbxAuth = auth.GetDropboxAuth();
+        const dbxAuth = auth.getDropboxAuth();
         const authOptions: DropboxAPI.DropboxOptions = {
           accessToken: dbxAuth.getAccessToken(),
           accessTokenExpiresAt: dbxAuth.getAccessTokenExpiresAt(),

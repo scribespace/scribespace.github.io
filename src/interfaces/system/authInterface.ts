@@ -6,9 +6,9 @@ export class AuthData {
 }
 
 export interface Authenticate {
-  GetOAuthAccessToken(oauth_code: string): Promise<AuthData>;
-  Login(access_token: string, refresh_token: string): Promise<void>;
-  Logout(): Promise<void>;
+  getOAuthAccessToken(oauth_code: string): Promise<AuthData>;
+  login(access_token: string, refresh_token: string): Promise<void>;
+  logout(): Promise<void>;
 }
 
 let auth: Authenticate | null = null;

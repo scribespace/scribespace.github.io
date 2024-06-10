@@ -14,14 +14,14 @@ export class DropboxAuth implements Authenticate {
     });
   }
 
-  GetDropboxAuth(): DropboxAPI.DropboxAuth {
+  getDropboxAuth(): DropboxAPI.DropboxAuth {
     return this.dbxAuth;
   }
-  SetDropbox(dbx: DropboxAPI.Dropbox) {
+  setDropbox(dbx: DropboxAPI.Dropbox) {
     this.dbx = dbx;
   }
 
-  static async RequestLogin() {
+  static async requestLogin() {
     const dbxAuth = new DropboxAPI.DropboxAuth({ clientId: CLIENT_ID});
     const authUrl = await dbxAuth.getAuthenticationUrl(
       REDIRECT_URI, // redirectUri - A URL to redirect the user to after authenticating. This must be added to your app through the admin interface.
@@ -57,7 +57,7 @@ export class DropboxAuth implements Authenticate {
     window.location.href = String(authUrl);
   }
 
-  async GetOAuthAccessToken(oauth_code: string): Promise<AuthData> {
+  async getOAuthAccessToken(oauth_code: string): Promise<AuthData> {
     const sessionCode = window.sessionStorage.getItem("codeVerifier");
     if (!sessionCode) {
       ThrowDropboxError("There is no codeVerifier. Call RequestLogin() first");
@@ -70,7 +70,7 @@ export class DropboxAuth implements Authenticate {
     return login;
   }
 
-  async Login(access_token: string, refresh_token: string): Promise<void> {
+  async login(access_token: string, refresh_token: string): Promise<void> {
     this.dbxAuth.setAccessToken(access_token);
     this.dbxAuth.setRefreshToken(refresh_token);
     this.dbxAuth.setClientId(CLIENT_ID);
@@ -85,7 +85,7 @@ export class DropboxAuth implements Authenticate {
     }
   }
 
-  async Logout(): Promise<void> {
+  async logout(): Promise<void> {
     if (!this.dbx) {
       ThrowDropboxError("Logout: no Dropbox object!");
     }

@@ -11,8 +11,8 @@ export class DropboxSystem implements System {
 
   constructor() {
     const auth = new DropboxAuth();
-    this.dbx = new DropboxAPI.Dropbox({ auth: auth.GetDropboxAuth() });
-    auth.SetDropbox(this.dbx);
+    this.dbx = new DropboxAPI.Dropbox({ auth: auth.getDropboxAuth() });
+    auth.setDropbox(this.dbx);
     $setAuthentication(auth);
     $setFileSystem( new DropboxFileSystem(this.dbx) );
   }
