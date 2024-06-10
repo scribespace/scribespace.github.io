@@ -18,7 +18,7 @@ import {
   useRef,
   useState
 } from "react";
-import { $getImageNodeByKey, $isImageNode } from "../../nodes/image/imageNodeHelpers";
+import { $getImageNodeByKey, $isImageNode } from "@editor/nodes/image/imageNode";
 import { $getImageManager } from "@systems/imageManager";
 
 interface ImageControlsStyles {

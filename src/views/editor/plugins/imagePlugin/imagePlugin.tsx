@@ -14,7 +14,7 @@ import { DRAG_DROP_ADD_TYPES_LISTENER_COMMAND } from "../dragDropPlugin";
 import { INSERT_IMAGES_COMMAND } from "./imageCommands";
 import { IMAGE_SUPPORTED_FORMATS } from "@/system/imageManager";
 import { ImageNode } from "../../nodes/image";
-import { $isImageNode, $createImageNode } from "../../nodes/image/imageNodeHelpers";
+import { $isImageNode, $createImageNode } from "@editor/nodes/image/imageNode";
 
 export function ImagePlugin() {
   const [editor] = useLexicalComposerContext();
