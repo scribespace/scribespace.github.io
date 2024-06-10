@@ -515,7 +515,11 @@ function $patchStyleText(selection, patch) {
         // the entire first node isn't selected, so split it
         firstNode = firstNode.splitText(startOffset)[1];
         startOffset = 0;
-        anchor.set(firstNode.getKey(), startOffset, 'text');
+        if (isBefore) {
+          anchor.set(firstNode.getKey(), startOffset, 'text');
+        } else {
+          focus.set(firstNode.getKey(), startOffset, 'text');
+        }
       }
       $patchStyle(firstNode, patch);
     }

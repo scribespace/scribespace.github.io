@@ -7,7 +7,8 @@
  */
 /// <reference types="react" />
 import type { LexicalEditor } from 'lexical';
-export declare function TreeView({ treeTypeButtonClassName, timeTravelButtonClassName, timeTravelPanelSliderClassName, timeTravelPanelButtonClassName, viewClassName, timeTravelPanelClassName, editor, }: {
+import { CustomPrintNodeFn } from '@lexical/devtools-core';
+export declare function TreeView({ treeTypeButtonClassName, timeTravelButtonClassName, timeTravelPanelSliderClassName, timeTravelPanelButtonClassName, viewClassName, timeTravelPanelClassName, editor, customPrintNode, }: {
     editor: LexicalEditor;
     treeTypeButtonClassName: string;
     timeTravelButtonClassName: string;
@@ -15,4 +16,5 @@ export declare function TreeView({ treeTypeButtonClassName, timeTravelButtonClas
     timeTravelPanelClassName: string;
     timeTravelPanelSliderClassName: string;
     viewClassName: string;
+    customPrintNode?: CustomPrintNodeFn;
 }): JSX.Element;

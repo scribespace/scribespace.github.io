@@ -7,4 +7,7 @@
  */
 import type { Transformer } from '@lexical/markdown';
 import { ElementNode } from 'lexical';
+/**
+ * Renders markdown from a string. The selection is moved to the start after the operation.
+ */
 export declare function createMarkdownImport(transformers: Array<Transformer>, shouldPreserveNewLines?: boolean): (markdownString: string, node?: ElementNode) => void;

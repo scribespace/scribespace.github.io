@@ -31,7 +31,7 @@ var keywords = [
 	"lexical",
 	"editor"
 ];
-var version$1 = "0.15.0";
+var version$1 = "0.16.0";
 var license = "MIT";
 var repository = {
 	type: "git",

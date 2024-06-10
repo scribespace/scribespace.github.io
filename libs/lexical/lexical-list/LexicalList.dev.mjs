@@ -627,7 +627,7 @@ class ListItemNode extends ElementNode {
   }
   static importDOM() {
     return {
-      li: node => ({
+      li: () => ({
         conversion: $convertListItemElement,
         priority: 0
       })
@@ -912,7 +912,28 @@ function updateListItemChecked(dom, listItemNode, prevListItemNode, listNode) {
   }
 }
 function $convertListItemElement(domNode) {
-  const checked = isHTMLElement(domNode) && domNode.getAttribute('aria-checked') === 'true';
+  const isGitHubCheckList = domNode.classList.contains('task-list-item');
+  if (isGitHubCheckList) {
+    for (const child of domNode.children) {
+      if (child.tagName === 'INPUT') {
+        return $convertCheckboxInput(child);
+      }
+    }
+  }
+  const ariaCheckedAttr = domNode.getAttribute('aria-checked');
+  const checked = ariaCheckedAttr === 'true' ? true : ariaCheckedAttr === 'false' ? false : undefined;
+  return {
+    node: $createListItemNode(checked)
+  };
+}
+function $convertCheckboxInput(domNode) {
+  const isCheckboxInput = domNode.getAttribute('type') === 'checkbox';
+  if (!isCheckboxInput) {
+    return {
+      node: null
+    };
+  }
+  const checked = domNode.hasAttribute('checked');
   return {
     node: $createListItemNode(checked)
   };
@@ -1012,11 +1033,11 @@ class ListNode extends ElementNode {
   }
   static importDOM() {
     return {
-      ol: node => ({
+      ol: () => ({
         conversion: $convertListNode,
         priority: 0
       }),
-      ul: node => ({
+      ul: () => ({
         conversion: $convertListNode,
         priority: 0
       })
@@ -1157,6 +1178,20 @@ function $normalizeChildren(nodes) {
   }
   return normalizedListItems;
 }
+function isDomChecklist(domNode) {
+  if (domNode.getAttribute('__lexicallisttype') === 'check' ||
+  // is github checklist
+  domNode.classList.contains('contains-task-list')) {
+    return true;
+  }
+  // if children are checklist items, the node is a checklist ul. Applicable for googledoc checklist pasting.
+  for (const child of domNode.childNodes) {
+    if (isHTMLElement(child) && child.hasAttribute('aria-checked')) {
+      return true;
+    }
+  }
+  return false;
+}
 function $convertListNode(domNode) {
   const nodeName = domNode.nodeName.toLowerCase();
   let node = null;
@@ -1165,7 +1200,7 @@ function $convertListNode(domNode) {
     const start = domNode.start;
     node = $createListNode('number', start);
   } else if (nodeName === 'ul') {
-    if (isHTMLElement(domNode) && domNode.getAttribute('__lexicallisttype') === 'check') {
+    if (isDomChecklist(domNode)) {
       node = $createListNode('check');
     } else {
       node = $createListNode('bullet');

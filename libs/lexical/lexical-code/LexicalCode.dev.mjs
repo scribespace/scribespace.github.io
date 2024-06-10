@@ -136,11 +136,11 @@ class CodeNode extends ElementNode {
           priority: 1
         } : null;
       },
-      div: node => ({
+      div: () => ({
         conversion: $convertDivElement,
         priority: 1
       }),
-      pre: node => ({
+      pre: () => ({
         conversion: $convertPreElement,
         priority: 0
       }),
@@ -295,10 +295,7 @@ function $isCodeNode(node) {
   return node instanceof CodeNode;
 }
 function $convertPreElement(domNode) {
-  let language;
-  if (isHTMLElement(domNode)) {
-    language = domNode.getAttribute(LANGUAGE_DATA_ATTRIBUTE);
-  }
+  const language = domNode.getAttribute(LANGUAGE_DATA_ATTRIBUTE);
   return {
     node: $createCodeNode(language)
   };

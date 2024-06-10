@@ -41,7 +41,8 @@ function TreeView({
   timeTravelPanelButtonClassName,
   viewClassName,
   timeTravelPanelClassName,
-  editor
+  editor,
+  customPrintNode
 }) {
   const treeElementRef = /*#__PURE__*/React__namespace.createRef();
   const [editorCurrentState, setEditorCurrentState] = React.useState(editor.getEditorState());
@@ -84,7 +85,7 @@ function TreeView({
     editorState: editorCurrentState,
     setEditorState: state => editor.setEditorState(state),
     generateContent: async function (exportDOM) {
-      return devtoolsCore.generateContent(editor, commandsLog, exportDOM);
+      return devtoolsCore.generateContent(editor, commandsLog, exportDOM, customPrintNode);
     },
     ref: treeElementRef
   });

@@ -6,3 +6,4 @@
  *
  */
 export declare const PIXEL_VALUE_REG_EXP: RegExp;
+export declare const COLUMN_WIDTH = 75;

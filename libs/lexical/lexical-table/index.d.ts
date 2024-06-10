@@ -15,7 +15,7 @@ export type { TableDOMCell } from './LexicalTableObserver';
 export { TableObserver } from './LexicalTableObserver';
 export type { SerializedTableRowNode } from './LexicalTableRowNode';
 export { $createTableRowNode, $isTableRowNode, TableRowNode, } from './LexicalTableRowNode';
-export type { TableSelection, TableSelectionShape, } from './LexicalTableSelection';
+export type { TableMapType, TableMapValueType, TableSelection, TableSelectionShape, } from './LexicalTableSelection';
 export { $createTableSelection, $isTableSelection, } from './LexicalTableSelection';
 export type { HTMLTableElementWithWithTableSelectionState } from './LexicalTableSelectionHelpers';
 export { $findCellNode, $findTableNode, applyTableHandlers, getDOMCellFromTarget, getTableObserverFromTableElement, } from './LexicalTableSelectionHelpers';

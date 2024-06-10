@@ -33,7 +33,7 @@ var keywords = [
 	"lexical",
 	"editor"
 ];
-var version$1 = "0.15.0";
+var version$1 = "0.16.0";
 var license = "MIT";
 var repository = {
 	type: "git",
@@ -696,4 +696,4 @@ var plugin$1 = /*#__PURE__*/_mergeNamespaces({
  *
  */
 
-exports.default = plugin$1;
+module.exports = plugin$1;

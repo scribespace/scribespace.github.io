@@ -209,13 +209,6 @@ function registerPlainText(editor) {
       event.preventDefault();
     }
     return editor.dispatchCommand(lexical.INSERT_LINE_BREAK_COMMAND, false);
-  }, lexical.COMMAND_PRIORITY_EDITOR), editor.registerCommand(lexical.KEY_ESCAPE_COMMAND, () => {
-    const selection = lexical.$getSelection();
-    if (!lexical.$isRangeSelection(selection)) {
-      return false;
-    }
-    editor.blur();
-    return true;
   }, lexical.COMMAND_PRIORITY_EDITOR), editor.registerCommand(lexical.SELECT_ALL_COMMAND, () => {
     lexical.$selectAll();
     return true;

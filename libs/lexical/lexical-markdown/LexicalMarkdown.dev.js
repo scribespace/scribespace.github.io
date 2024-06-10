@@ -61,6 +61,10 @@ function isEmptyParagraph(node) {
  *
  */
 
+
+/**
+ * Renders string from markdown. The selection is moved to the start after the operation.
+ */
 function createMarkdownExport(transformers, shouldPreserveNewLines = false) {
   const byType = transformersByType(transformers);
   const isNewlineDelimited = !shouldPreserveNewLines;
@@ -228,6 +232,9 @@ const IS_APPLE_WEBKIT = CAN_USE_DOM && /AppleWebKit\/[\d.]+/.test(navigator.user
  */
 
 const CODE_BLOCK_REG_EXP = /^[ \t]*```(\w{1,10})?\s?$/;
+/**
+ * Renders markdown from a string. The selection is moved to the start after the operation.
+ */
 function createMarkdownImport(transformers, shouldPreserveNewLines = false) {
   const byType = transformersByType(transformers);
   const textFormatTransformersIndex = createTextFormatTransformersIndex(byType.textFormat);
@@ -260,7 +267,7 @@ function createMarkdownImport(transformers, shouldPreserveNewLines = false) {
       }
     }
     if (lexical.$getSelection() !== null) {
-      root.selectEnd();
+      root.selectStart();
     }
   };
 }
@@ -1016,10 +1023,18 @@ const ELEMENT_TRANSFORMERS = [HEADING, QUOTE, CODE, UNORDERED_LIST, ORDERED_LIST
 const TEXT_FORMAT_TRANSFORMERS = [INLINE_CODE, BOLD_ITALIC_STAR, BOLD_ITALIC_UNDERSCORE, BOLD_STAR, BOLD_UNDERSCORE, HIGHLIGHT, ITALIC_STAR, ITALIC_UNDERSCORE, STRIKETHROUGH];
 const TEXT_MATCH_TRANSFORMERS = [LINK];
 const TRANSFORMERS = [...ELEMENT_TRANSFORMERS, ...TEXT_FORMAT_TRANSFORMERS, ...TEXT_MATCH_TRANSFORMERS];
+
+/**
+ * Renders markdown from a string. The selection is moved to the start after the operation.
+ */
 function $convertFromMarkdownString(markdown, transformers = TRANSFORMERS, node, shouldPreserveNewLines = false) {
   const importMarkdown = createMarkdownImport(transformers, shouldPreserveNewLines);
   return importMarkdown(markdown, node);
 }
+
+/**
+ * Renders string from markdown. The selection is moved to the start after the operation.
+ */
 function $convertToMarkdownString(transformers = TRANSFORMERS, node, shouldPreserveNewLines = false) {
   const exportMarkdown = createMarkdownExport(transformers, shouldPreserveNewLines);
   return exportMarkdown(node);

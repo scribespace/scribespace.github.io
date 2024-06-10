@@ -3164,29 +3164,28 @@ function addRootElementEvents(rootElement, editor) {
         return;
       }
       stopLexicalPropagation(event);
-      if (editor.isEditable()) {
-        switch (eventName) {
-          case 'cut':
-            return dispatchCommand(editor, CUT_COMMAND, event);
-          case 'copy':
-            return dispatchCommand(editor, COPY_COMMAND, event);
-          case 'paste':
-            return dispatchCommand(editor, PASTE_COMMAND, event);
-          case 'dragstart':
-            return dispatchCommand(editor, DRAGSTART_COMMAND, event);
-          case 'dragover':
-            return dispatchCommand(editor, DRAGOVER_COMMAND, event);
-          case 'dragend':
-            return dispatchCommand(editor, DRAGEND_COMMAND, event);
-          case 'focus':
-            return dispatchCommand(editor, FOCUS_COMMAND, event);
-          case 'blur':
-            {
-              return dispatchCommand(editor, BLUR_COMMAND, event);
-            }
-          case 'drop':
-            return dispatchCommand(editor, DROP_COMMAND, event);
-        }
+      const isEditable = editor.isEditable();
+      switch (eventName) {
+        case 'cut':
+          return isEditable && dispatchCommand(editor, CUT_COMMAND, event);
+        case 'copy':
+          return dispatchCommand(editor, COPY_COMMAND, event);
+        case 'paste':
+          return isEditable && dispatchCommand(editor, PASTE_COMMAND, event);
+        case 'dragstart':
+          return isEditable && dispatchCommand(editor, DRAGSTART_COMMAND, event);
+        case 'dragover':
+          return isEditable && dispatchCommand(editor, DRAGOVER_COMMAND, event);
+        case 'dragend':
+          return isEditable && dispatchCommand(editor, DRAGEND_COMMAND, event);
+        case 'focus':
+          return isEditable && dispatchCommand(editor, FOCUS_COMMAND, event);
+        case 'blur':
+          {
+            return isEditable && dispatchCommand(editor, BLUR_COMMAND, event);
+          }
+        case 'drop':
+          return isEditable && dispatchCommand(editor, DROP_COMMAND, event);
       }
     };
     rootElement.addEventListener(eventName, eventHandler);
@@ -5981,6 +5980,7 @@ class RangeSelection {
       if (!$isTextNode(nextSibling) || !nextSibling.canInsertTextBefore() || $isTokenOrSegmented(nextSibling)) {
         nextSibling = $createTextNode();
         nextSibling.setFormat(format);
+        nextSibling.setStyle(style);
         if (!firstNodeParent.canInsertTextAfter()) {
           firstNodeParent.insertAfter(nextSibling);
         } else {
@@ -6730,9 +6730,14 @@ class RangeSelection {
    */
   deleteLine(isBackward) {
     if (this.isCollapsed()) {
-      if (this.anchor.type === 'text') {
-        this.modify('extend', isBackward, 'lineboundary');
+      // Since `domSelection.modify('extend', ..., 'lineboundary')` works well for text selections
+      // but doesn't properly handle selections which end on elements, a space character is added
+      // for such selections transforming their anchor's type to 'text'
+      const anchorIsElement = this.anchor.type === 'element';
+      if (anchorIsElement) {
+        this.insertText(' ');
       }
+      this.modify('extend', isBackward, 'lineboundary');
 
       // If selection is extended to cover text edge then extend it one character more
       // to delete its parent element. Otherwise text content will be deleted but empty
@@ -6740,6 +6745,12 @@ class RangeSelection {
       const endPoint = isBackward ? this.focus : this.anchor;
       if (endPoint.offset === 0) {
         this.modify('extend', isBackward, 'character');
+      }
+
+      // Adjusts selection to include an extra character added for element anchors to remove it
+      if (anchorIsElement) {
+        const startPoint = isBackward ? this.anchor : this.focus;
+        startPoint.set(startPoint.key, startPoint.offset + 1, startPoint.type);
       }
     }
     this.removeText();
@@ -8164,43 +8175,6 @@ function updateEditor(editor, updateFn, options) {
  *
  */
 
-
-/** @noInheritDoc */
-class DecoratorNode extends LexicalNode {
-  constructor(key) {
-    super(key);
-  }
-
-  /**
-   * The returned value is added to the LexicalEditor._decorators
-   */
-  decorate(editor, config) {
-    {
-      throw Error(`decorate: base method not extended`);
-    }
-  }
-  isIsolated() {
-    return false;
-  }
-  isInline() {
-    return true;
-  }
-  isKeyboardSelectable() {
-    return true;
-  }
-}
-function $isDecoratorNode(node) {
-  return node instanceof DecoratorNode;
-}
-
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
 /** @noInheritDoc */
 class ElementNode extends LexicalNode {
   /** @internal */
@@ -8670,6 +8644,43 @@ function isPointRemoved(point, nodesToRemoveKeySet, nodesToInsertKeySet) {
     node = node.getParent();
   }
   return false;
+}
+
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+
+/** @noInheritDoc */
+class DecoratorNode extends LexicalNode {
+  constructor(key) {
+    super(key);
+  }
+
+  /**
+   * The returned value is added to the LexicalEditor._decorators
+   */
+  decorate(editor, config) {
+    {
+      throw Error(`decorate: base method not extended`);
+    }
+  }
+  isIsolated() {
+    return false;
+  }
+  isInline() {
+    return true;
+  }
+  isKeyboardSelectable() {
+    return true;
+  }
+}
+function $isDecoratorNode(node) {
+  return node instanceof DecoratorNode;
 }
 
 /**

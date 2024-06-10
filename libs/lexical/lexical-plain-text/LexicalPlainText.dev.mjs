@@ -9,7 +9,7 @@
 import { $insertDataTransferForPlainText, $getHtmlContent } from '@lexical/clipboard';
 import { $shouldOverrideDefaultCharacterSelection, $moveCharacter } from '@lexical/selection';
 import { mergeRegister, objectKlassEquals } from '@lexical/utils';
-import { DELETE_CHARACTER_COMMAND, $getSelection, $isRangeSelection, COMMAND_PRIORITY_EDITOR, DELETE_WORD_COMMAND, DELETE_LINE_COMMAND, CONTROLLED_TEXT_INSERTION_COMMAND, REMOVE_TEXT_COMMAND, INSERT_LINE_BREAK_COMMAND, INSERT_PARAGRAPH_COMMAND, KEY_ARROW_LEFT_COMMAND, KEY_ARROW_RIGHT_COMMAND, KEY_BACKSPACE_COMMAND, KEY_DELETE_COMMAND, KEY_ENTER_COMMAND, KEY_ESCAPE_COMMAND, SELECT_ALL_COMMAND, $selectAll, COPY_COMMAND, CUT_COMMAND, PASTE_COMMAND, DROP_COMMAND, DRAGSTART_COMMAND } from 'lexical';
+import { DELETE_CHARACTER_COMMAND, $getSelection, $isRangeSelection, COMMAND_PRIORITY_EDITOR, DELETE_WORD_COMMAND, DELETE_LINE_COMMAND, CONTROLLED_TEXT_INSERTION_COMMAND, REMOVE_TEXT_COMMAND, INSERT_LINE_BREAK_COMMAND, INSERT_PARAGRAPH_COMMAND, KEY_ARROW_LEFT_COMMAND, KEY_ARROW_RIGHT_COMMAND, KEY_BACKSPACE_COMMAND, KEY_DELETE_COMMAND, KEY_ENTER_COMMAND, SELECT_ALL_COMMAND, $selectAll, COPY_COMMAND, CUT_COMMAND, PASTE_COMMAND, DROP_COMMAND, DRAGSTART_COMMAND } from 'lexical';
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -207,13 +207,6 @@ function registerPlainText(editor) {
       event.preventDefault();
     }
     return editor.dispatchCommand(INSERT_LINE_BREAK_COMMAND, false);
-  }, COMMAND_PRIORITY_EDITOR), editor.registerCommand(KEY_ESCAPE_COMMAND, () => {
-    const selection = $getSelection();
-    if (!$isRangeSelection(selection)) {
-      return false;
-    }
-    editor.blur();
-    return true;
   }, COMMAND_PRIORITY_EDITOR), editor.registerCommand(SELECT_ALL_COMMAND, () => {
     $selectAll();
     return true;

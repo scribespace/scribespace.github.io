@@ -8,7 +8,7 @@
 
 import { CLEAR_HISTORY_COMMAND } from 'lexical';
 
-var version = "0.15.0";
+var version = "0.16.0";
 
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
