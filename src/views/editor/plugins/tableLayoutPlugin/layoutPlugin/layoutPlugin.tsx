@@ -1,11 +1,8 @@
 import { assert } from "@/utils";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useEffect } from "react";
-import {
-  $isLayoutBodyNode,
-  LayoutBodyNode,
-  LayoutNode,
-} from "../../nodes/layout";
+
+import { $isLayoutBodyNode, LayoutBodyNode, LayoutNode } from "@editor/nodes/layout";
 import {
   HTMLTableElementWithWithTableSelectionState,
   TableObserver,

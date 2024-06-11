@@ -53,7 +53,7 @@ export class ExtendedTableNode extends ElementNode {
   }
 
   getColumnsWidths() {
-    return this.getLatest().__columnsWidths;
+    return this.__columnsWidths;
   }
   setColumnsWidths(columns: Metric[]) {
     const self = this.getWritable();
@@ -98,7 +98,7 @@ export class ExtendedTableNode extends ElementNode {
   }
 
   getTableBodyNode() {
-    const tableBody = this.getLatest().getChildAtIndex(0);
+    const tableBody = this.getChildAtIndex(0);
     if (!$isTableBodyNode(tableBody))
       throw Error("Expected TableBodyNode under child 0");
     return tableBody;
@@ -110,7 +110,7 @@ export class ExtendedTableNode extends ElementNode {
     rowsCount: number,
     columnsCount: number,
   ) {
-    this.getTableBodyNode().mergeCells(
+    this.getWritable().getTableBodyNode().mergeCells(
       editor,
       startCell,
       rowsCount,
@@ -119,51 +119,55 @@ export class ExtendedTableNode extends ElementNode {
   }
 
   splitCell(editor: LexicalEditor, cell: TableCellNode) {
-    this.getTableBodyNode().splitCell(editor, cell);
+    this.getWritable().getTableBodyNode().splitCell(editor, cell);
   }
 
   removeRows(cellNode: TableCellNode, rowsCount: number) {
-    if (rowsCount == this.getTableBodyNode().getChildrenSize()) {
+    const self = this.getWritable();
+    if (rowsCount == self.getTableBodyNode().getChildrenSize()) {
       this.remove();
       return;
     }
 
-    this.getTableBodyNode().removeRows(cellNode, rowsCount);
+    self.getTableBodyNode().removeRows(cellNode, rowsCount);
   }
 
   addRowsBefore(cellNode: TableCellNode, rowsToAdd: number) {
-    this.getTableBodyNode().addRowsBefore(cellNode, rowsToAdd);
+    this.getWritable().getTableBodyNode().addRowsBefore(cellNode, rowsToAdd);
   }
 
   addRowsAfter(cellNode: TableCellNode, rowsToAdd: number) {
-    this.getTableBodyNode().addRowsAfter(cellNode, rowsToAdd);
+    this.getWritable().getTableBodyNode().addRowsAfter(cellNode, rowsToAdd);
   }
 
   addColumnsBefore(cellNode: TableCellNode, columnsToAdd: number) {
-    this.getTableBodyNode().addColumnsBefore(
+    const self = this.getWritable();
+    self.getTableBodyNode().addColumnsBefore(
       cellNode,
       columnsToAdd,
-      this.getWritable().__columnsWidths,
+      self.__columnsWidths,
     );
   }
 
   addColumnsAfter(cellNode: TableCellNode, columnsToAdd: number) {
-    this.getTableBodyNode().addColumnsAfter(
+    const self = this.getWritable();
+    self.getTableBodyNode().addColumnsAfter(
       cellNode,
       columnsToAdd,
-      this.getWritable().__columnsWidths,
+      self.__columnsWidths,
     );
   }
 
   removeColumns(cellNode: TableCellNode, columnsCount: number) {
-    if (columnsCount == this.getWritable().getColumnsWidths().length) {
-      this.remove();
+    const self = this.getWritable();
+    if (columnsCount == self.getColumnsWidths().length) {
+      self.remove();
       return;
     }
-    this.getTableBodyNode().removeColumns(
+    self.getTableBodyNode().removeColumns(
       cellNode,
       columnsCount,
-      this.getWritable().__columnsWidths,
+      self.__columnsWidths,
     );
   }
 

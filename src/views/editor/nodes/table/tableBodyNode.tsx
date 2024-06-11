@@ -4,7 +4,7 @@ import {
   $getTableColumnIndexFromTableCellNode,
   ResolvedCell,
   ResolvedRow,
-} from "@editor/plugins/tablePlugin/utils";
+} from "@editor/plugins/tableLayoutPlugin";
 import {
   $createTableCellNode,
   $createTableNodeWithDimensions,
@@ -98,11 +98,9 @@ export class TableBodyNode extends TableNode {
   }
 
   getResolvedTable(): ResolvedRow[] {
-    const self = this.getLatest();
-
     const resolvedTable: ResolvedRow[] = [];
 
-    let row = self.getChildren().find((node) => $isTableRowNode(node)) as
+    let row = this.getChildren().find((node) => $isTableRowNode(node)) as
       | TableRowNode
       | undefined
       | null;
@@ -148,7 +146,8 @@ export class TableBodyNode extends TableNode {
   }
 
   getCellColumnID( cell: TableCellNode ): number {
-    const resolvedTable = this.getResolvedTable();
+    const self = this.getLatest();
+    const resolvedTable = self.getResolvedTable();
 
     const columnCount = resolvedTable[0].cells.length;
     const rowsCount = resolvedTable.length;
@@ -401,8 +400,7 @@ export class TableBodyNode extends TableNode {
     const self = this.getWritable();
     const resolvedTable = self.getResolvedTable();
 
-    const rowID =
-      $getTableRowIndexFromTableCellNode(cellNode) + cellNode.getRowSpan() - 1;
+    const rowID = $getTableRowIndexFromTableCellNode(cellNode) + cellNode.getRowSpan() - 1;
     const resolvedRow = resolvedTable[rowID];
     const columnsCount = resolvedRow.cells.length;
     const rowsCount = resolvedTable.length;
@@ -484,10 +482,7 @@ export class TableBodyNode extends TableNode {
     const self = this.getWritable();
     const resolvedTable = self.getResolvedTable();
 
-    const columnID =
-      $getTableColumnIndexFromTableCellNode(cellNode, resolvedTable) +
-      cellNode.getColSpan() -
-      1;
+    const columnID = $getTableColumnIndexFromTableCellNode(cellNode, resolvedTable) + cellNode.getColSpan() - 1;
 
     for (let r = 0; r < resolvedTable.length; ) {
       const resolvedRow = resolvedTable[r];

@@ -1,7 +1,7 @@
 import { MenuItem } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { CAN_INSERT_PAGE_BREAK, INSERT_PAGE_BREAK } from "@editor/plugins/pageBreakPlugin/pageBreakCommands";
+import { CAN_INSERT_PAGE_BREAK_COMMAND, INSERT_PAGE_BREAK_COMMAND } from "@editor/plugins/pageBreakPlugin/pageBreakCommands";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import { COMMAND_PRIORITY_LOW } from "lexical";
@@ -14,7 +14,7 @@ export function PageBreakToolbar() {
 
    const onClick = useCallback(
         () => {
-            editor.dispatchCommand( INSERT_PAGE_BREAK, undefined );
+            editor.dispatchCommand( INSERT_PAGE_BREAK_COMMAND, undefined );
         },
         [editor]
     );
@@ -23,7 +23,7 @@ export function PageBreakToolbar() {
       () => {
         return mergeRegister(
           editor.registerCommand( 
-            CAN_INSERT_PAGE_BREAK,
+            CAN_INSERT_PAGE_BREAK_COMMAND,
             (value: boolean) => {
               setCanInsert( value );
               return true;

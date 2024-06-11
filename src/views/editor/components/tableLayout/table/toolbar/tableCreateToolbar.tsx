@@ -1,15 +1,15 @@
+import { MenuItem, Submenu } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
-import { $createExtendedTableNodeWithDimensions } from "@editor/nodes/table";
 import {
   $closeToolbarMenu,
   TOOLBAR_CLOSE_MENU_COMMAND,
 } from "@editor/plugins/toolbarPlugin/common";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
-import { $insertNodes, COMMAND_PRIORITY_LOW } from "lexical";
+import { COMMAND_PRIORITY_LOW } from "lexical";
 import { useEffect, useState } from "react";
 import { TableCreator } from "../tableCreator";
-import { Submenu, MenuItem } from "@/components/menu";
+import { TABLE_INSERT_COMMAND } from "@editor/plugins/tableLayoutPlugin";
 
 export function TableCreateToolbar() {
   const [editor] = useLexicalComposerContext();
@@ -24,14 +24,8 @@ export function TableCreateToolbar() {
   const [showSubmenu, setShowSubmenu] = useState<boolean>(false);
 
   function onClick(rowsCount: number, columnsCount: number) {
-    editor.update(() => {
-      const tableNode = $createExtendedTableNodeWithDimensions(
-        rowsCount,
-        columnsCount,
-      );
-      $insertNodes([tableNode]);
+      editor.dispatchCommand( TABLE_INSERT_COMMAND, {rows: rowsCount, columns: columnsCount} );
       $closeToolbarMenu(editor);
-    });
   }
 
   useEffect(() => {

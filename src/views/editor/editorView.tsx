@@ -1,28 +1,26 @@
-import { $getRoot, $insertNodes, TextNode } from "lexical";
 import { $generateNodesFromDOM } from "@lexical/html";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $getRoot, $insertNodes, CLEAR_HISTORY_COMMAND, TextNode } from "lexical";
 
-import { CodeNode, CodeHighlightNode } from "@lexical/code";
+import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
-import {HorizontalRuleNode} from '@lexical/react/LexicalHorizontalRuleNode';
+import { HorizontalRuleNode } from '@lexical/react/LexicalHorizontalRuleNode';
 
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { HorizontalRulePlugin } from '@lexical/react/LexicalHorizontalRulePlugin';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
-import {TabIndentationPlugin} from '@lexical/react/LexicalTabIndentationPlugin';
-import {HorizontalRulePlugin} from '@lexical/react/LexicalHorizontalRulePlugin';
+import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin';
 
-import LinkPlugin from "./plugins/linkPlugin";
-import ToolbarPlugin from "./plugins/toolbarPlugin";
 import { ColorPlugin } from "./plugins/colorPlugin";
 import ContextMenuPlugin from "./plugins/contextMenuPlugin";
 import { DragDropPlugin } from "./plugins/dragDropPlugin";
 import { FontPlugin } from "./plugins/fontPlugin";
 import { ImagePlugin } from "./plugins/imagePlugin";
-import { LayoutPlugin } from "./plugins/layoutPlugin";
-import TablePlugin from "./plugins/tablePlugin";
+import LinkPlugin from "./plugins/linkPlugin";
+import ToolbarPlugin from "./plugins/toolbarPlugin";
 
 import { ImageNode } from "./nodes/image";
 import { LayoutBodyNode, LayoutNode } from "./nodes/layout";
@@ -34,12 +32,13 @@ import useBoundingRect from "@/hooks/useBoundingRect";
 import { DownloadResult } from "@/interfaces/system/fileSystem/fileSystemShared";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
+import { $getFileSystem } from "@coreSystems";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import { useRef } from "react";
 import { EditorInput } from "./components/editorInput/editorInput";
-import { $getFileSystem } from "@coreSystems";
-import PageBreakPlugin from "./plugins/pageBreakPlugin/pageBreakPlugin";
 import { PageBreakNode } from "./nodes/pageBreak/pageBreakNode";
+import PageBreakPlugin from "./plugins/pageBreakPlugin/pageBreakPlugin";
+import { TableLayoutPlugin } from "./plugins/tableLayoutPlugin/tableLayoutPlugin";
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
@@ -77,6 +76,7 @@ function TestPlugin({ selectedFile }: Props) {
             editor.setEditable(true);
           });
         });
+        editor.dispatchCommand(CLEAR_HISTORY_COMMAND, undefined);
       });
   }
   return null;
@@ -138,8 +138,7 @@ export function EditorView({ selectedFile }: Props) {
       <FontPlugin />
       <ColorPlugin />
       <LinkPlugin />
-      <TablePlugin />
-      <LayoutPlugin />
+      <TableLayoutPlugin />
       <ContextMenuPlugin />
       <DragDropPlugin />
       <ImagePlugin />

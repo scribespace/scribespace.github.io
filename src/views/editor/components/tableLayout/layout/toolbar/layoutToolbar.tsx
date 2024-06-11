@@ -1,16 +1,16 @@
-import { $createLayoutNodeWithColumns } from "@/views/editor/nodes/layout";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $insertNodes, COMMAND_PRIORITY_LOW } from "lexical";
-import { useCallback, useEffect, useState } from "react";
+import { MenuItem, Submenu } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
 import {
   $closeToolbarMenu,
   TOOLBAR_CLOSE_MENU_COMMAND,
 } from "@/views/editor/plugins/toolbarPlugin/common";
-import { mergeRegister } from "@lexical/utils";
-import NumberInput from "../../../numberInput";
 import { useToolbarContext } from "@/views/editor/plugins/toolbarPlugin/context";
-import { Submenu, MenuItem } from "@/components/menu";
+import { LAYOUT_INSERT_COMMAND } from "@editor/plugins/tableLayoutPlugin";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { mergeRegister } from "@lexical/utils";
+import { COMMAND_PRIORITY_LOW } from "lexical";
+import { useCallback, useEffect, useState } from "react";
+import NumberInput from "../../../numberInput";
 
 export function LayoutCreateToolbar() {
   const [editor] = useLexicalComposerContext();
@@ -28,12 +28,9 @@ export function LayoutCreateToolbar() {
 
   const onInputAccept = useCallback(
     (input: HTMLInputElement) => {
-      editor.update(() => {
         const cols = input.valueAsNumber;
-        const layoutNode = $createLayoutNodeWithColumns(cols);
-        $insertNodes([layoutNode]);
+        editor.dispatchCommand( LAYOUT_INSERT_COMMAND, cols );
         $closeToolbarMenu(editor);
-      });
     },
     [editor],
   );

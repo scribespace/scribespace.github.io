@@ -1,27 +1,10 @@
+import { MenuItem, Submenu } from "@/components/menu";
+import SubmenuIcon from "@/components/menu/submenuIcon";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
-import {
-  $getExtendedTableNodeFromLexicalNodeOrThrow,
-  ExtendedTableNode,
-  TableBodyNode,
-} from "@editor/nodes/table";
+import { TABLE_ROW_ADD_AFTER_COMMAND } from "@editor/plugins/tableLayoutPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import {
-  $getTableCellNodeFromLexicalNode,
-  $getTableNodeFromLexicalNodeOrThrow,
-  $getTableRowIndexFromTableCellNode,
-  $isTableCellNode,
-  $isTableSelection,
-  TableCellNode,
-} from "@lexical/table";
-import {
-  $getNodeByKeyOrThrow,
-  $getSelection,
-  $isRangeSelection,
-} from "lexical";
 import { NumberInputContextMenu } from "./numberInputContextMenu";
-import { Submenu, MenuItem } from "@/components/menu";
-import SubmenuIcon from "@/components/menu/submenuIcon";
 
 export function TableRowAddAfterContextMenu() {
   const [editor] = useLexicalComposerContext();
@@ -35,45 +18,7 @@ export function TableRowAddAfterContextMenu() {
 
   const onInputAccepted = (input: HTMLInputElement) => {
     const value = input.valueAsNumber;
-
-    editor.update(
-      () => {
-        const selection = $getSelection();
-
-        let tableNode: ExtendedTableNode | null = null;
-        let cellNode: TableCellNode | null = null;
-        if ($isRangeSelection(selection)) {
-          cellNode = $getTableCellNodeFromLexicalNode(selection.getNodes()[0]);
-          if (!cellNode) throw Error("AddRowAfter: couldn't find node");
-          tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(cellNode);
-        }
-
-        if ($isTableSelection(selection)) {
-          const tableBodyNode = $getNodeByKeyOrThrow<TableBodyNode>(
-            selection.tableKey,
-          );
-          tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>();
-          const rowID = -1;
-          for (const node of selection.getNodes()) {
-            if ($isTableCellNode(node)) {
-              const cellsTableNode = $getTableNodeFromLexicalNodeOrThrow(node);
-              if (cellsTableNode == tableBodyNode) {
-                const nodesRowID = $getTableRowIndexFromTableCellNode(node);
-                if (nodesRowID > rowID) {
-                  rowID == nodesRowID;
-                  cellNode = node;
-                }
-              }
-            }
-          }
-        }
-
-        if (!cellNode) throw Error("AddRowAfter: node not found");
-        tableNode?.addRowsAfter(cellNode, value);
-      },
-      { tag: "table-add-row-after" },
-    );
-
+    editor.dispatchCommand(TABLE_ROW_ADD_AFTER_COMMAND, value);
     $closeContextMenu(editor);
   };
 

@@ -33,7 +33,7 @@ export class LayoutNode extends ExtendedTableNode {
   }
 
   getTableBodyNode() {
-    const tableBody = this.getLatest().getChildAtIndex(0);
+    const tableBody = this.getChildAtIndex(0);
     if (!$isLayoutBodyNode(tableBody))
       throw Error("Expected LayoutBodyNode under child 0");
     return tableBody;

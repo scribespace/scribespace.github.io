@@ -13,11 +13,12 @@ import {
     $getRoot,
     $getSelection,
     $isRangeSelection,
+    $isRootNode,
     COMMAND_PRIORITY_LOW,
     SELECTION_CHANGE_COMMAND
 } from 'lexical';
 import { useEffect, useRef } from 'react';
-import { CAN_INSERT_PAGE_BREAK, INSERT_PAGE_BREAK } from './pageBreakCommands';
+import { CAN_INSERT_PAGE_BREAK_COMMAND, INSERT_PAGE_BREAK_COMMAND } from './pageBreakCommands';
 
 
 export default function PageBreakPlugin(): JSX.Element | null {
@@ -33,7 +34,7 @@ export default function PageBreakPlugin(): JSX.Element | null {
 
     return mergeRegister(
       editor.registerCommand(
-        INSERT_PAGE_BREAK,
+        INSERT_PAGE_BREAK_COMMAND,
         () => {
           const selection = $getSelection();
 
@@ -62,13 +63,13 @@ export default function PageBreakPlugin(): JSX.Element | null {
             
             if ( $isRangeSelection(selection) ) {
                 for ( const node of selection.getNodes() ) {
-                    canInsertPageBreak = canInsertPageBreak && !( $isTableNode(node) || node.getTopLevelElementOrThrow().getParent() != $getRoot() );
+                    canInsertPageBreak = canInsertPageBreak && ( $isRootNode(node) || !($isTableNode(node) || node.getTopLevelElementOrThrow().getParent() != $getRoot()));
                 }
             }
             
             if ( canInsertPageBreak != canInsertPageBreakRef.current ){
                 canInsertPageBreakRef.current = canInsertPageBreak;
-                editor.dispatchCommand(CAN_INSERT_PAGE_BREAK, canInsertPageBreak);
+                editor.dispatchCommand(CAN_INSERT_PAGE_BREAK_COMMAND, canInsertPageBreak);
             }
             return true;
         },

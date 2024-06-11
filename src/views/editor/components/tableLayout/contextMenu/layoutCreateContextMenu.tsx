@@ -1,11 +1,10 @@
-import { useMainThemeContext } from "@/mainThemeContext";
-import { $createLayoutNodeWithColumns } from "@/views/editor/nodes/layout";
-import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $insertNodes } from "lexical";
-import { NumberInputContextMenu } from "./numberInputContextMenu";
-import { Submenu, MenuItem } from "@/components/menu";
+import { MenuItem, Submenu } from "@/components/menu";
 import SubmenuIcon from "@/components/menu/submenuIcon";
+import { useMainThemeContext } from "@/mainThemeContext";
+import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
+import { LAYOUT_INSERT_COMMAND } from "@editor/plugins/tableLayoutPlugin";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { NumberInputContextMenu } from "./numberInputContextMenu";
 
 export function LayoutCreateContextMenu() {
   const [editor] = useLexicalComposerContext();
@@ -19,12 +18,7 @@ export function LayoutCreateContextMenu() {
 
   const onInputAccepted = (input: HTMLInputElement) => {
     const cols = input.valueAsNumber;
-
-    editor.update(() => {
-      const layoutNode = $createLayoutNodeWithColumns(cols);
-      $insertNodes([layoutNode]);
-    });
-
+    editor.dispatchCommand( LAYOUT_INSERT_COMMAND, cols );
     $closeContextMenu(editor);
   };
 

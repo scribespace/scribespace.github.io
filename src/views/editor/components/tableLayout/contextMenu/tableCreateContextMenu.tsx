@@ -1,11 +1,10 @@
+import { MenuItem, Submenu } from "@/components/menu";
+import SubmenuIcon from "@/components/menu/submenuIcon";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
-import { $createExtendedTableNodeWithDimensions } from "@editor/nodes/table";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $insertNodes } from "lexical";
 import { TableCreator } from "../table/tableCreator";
-import { Submenu, MenuItem } from "@/components/menu";
-import SubmenuIcon from "@/components/menu/submenuIcon";
+import { TABLE_INSERT_COMMAND } from "@editor/plugins/tableLayoutPlugin";
 
 export function TableCreateContextMenu() {
   const [editor] = useLexicalComposerContext();
@@ -18,14 +17,7 @@ export function TableCreateContextMenu() {
   } = useMainThemeContext();
 
   function onClick(rowsCount: number, columnsCount: number) {
-    editor.update(() => {
-      const tableNode = $createExtendedTableNodeWithDimensions(
-        rowsCount,
-        columnsCount,
-      );
-      $insertNodes([tableNode]);
-    });
-
+    editor.dispatchCommand( TABLE_INSERT_COMMAND, {rows: rowsCount, columns: columnsCount} );
     $closeContextMenu(editor);
   }
 
