@@ -1,7 +1,7 @@
 import { MenuItem } from "@/components/menu";
 import { $menuItemParent } from "@/components/menu/theme";
 import { useMainThemeContext } from "@/mainThemeContext";
-import { LINK_CONVERT_SELECTED_COMMAND } from "@editor/plugins/linkPlugin";
+import { LINK_CONVERT_SELECTED_COMMAND } from "@editor/plugins/linkPlugin/linkCommands";
 import { $isLinkNode } from "@lexical/link";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
