@@ -1,6 +1,6 @@
 import { IconType } from 'react-icons';
 import { Icon } from '@/components';
-import { TbSpacingVertical } from 'react-icons/tb';
+import { LuSplitSquareVertical } from "react-icons/lu";
 
 import './css/horizontalBreak.css';
 
@@ -9,5 +9,5 @@ export interface HorizontalBreakTheme {
 }
 
 export const HORIZONTAL_BREAK_THEME_DEFAULT: HorizontalBreakTheme = {
-    HorizontalBreakIcon: Icon( TbSpacingVertical ),
+    HorizontalBreakIcon: Icon( LuSplitSquareVertical ),
 };

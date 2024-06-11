@@ -38,6 +38,8 @@ import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import { useRef } from "react";
 import { EditorInput } from "./components/editorInput/editorInput";
 import { $getFileSystem } from "@coreSystems";
+import PageBreakPlugin from "./plugins/pageBreakPlugin/pageBreakPlugin";
+import { PageBreakNode } from "./nodes/pageBreak/pageBreakNode";
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
@@ -115,6 +117,7 @@ export function EditorView({ selectedFile }: Props) {
       CodeNode,
       CodeHighlightNode,
       HorizontalRuleNode,
+      PageBreakNode,
     ],
   };
 
@@ -143,6 +146,7 @@ export function EditorView({ selectedFile }: Props) {
       <ListPlugin/>
       <TabIndentationPlugin/>
       <HorizontalRulePlugin />
+      <PageBreakPlugin />
     </LexicalComposer>
   );
 }

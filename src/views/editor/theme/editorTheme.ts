@@ -42,6 +42,7 @@ import { IMAGE_THEME_DEFAULT, ImageTheme } from "../components/image/theme";
 import "./css/editorInputTheme.css";
 import { LIST_THEME_DEFAULT, ListTheme } from "../components/list/theme/listTheme";
 import { HORIZONTAL_BREAK_THEME_DEFAULT, HorizontalBreakTheme } from "@editor/components/horizontalBreak/theme/horizontalBreakTheme";
+import { PageBreakTheme, Page_BREAK_THEME_DEFAULT } from "@editor/components/pageBreak/theme/pageBreakTheme";
 
 export interface EditorInputTheme extends EditorThemeClasses {
   defaultFontSize: EditorThemeClassName;
@@ -70,6 +71,8 @@ export interface EditorTheme {
   imageTheme: ImageTheme;
   listTheme: ListTheme;
   horizontalBreakTheme: HorizontalBreakTheme;
+  pageBreakTheme: PageBreakTheme;
+
 
   toolbarTheme: ToolbarTheme;
   contextMenuTheme: ContextMenuTheme;
@@ -172,6 +175,7 @@ export const EDITOR_THEME_DEFAULT: EditorTheme = {
   imageTheme: IMAGE_THEME_DEFAULT,
   listTheme: LIST_THEME_DEFAULT,
   horizontalBreakTheme: HORIZONTAL_BREAK_THEME_DEFAULT,
+  pageBreakTheme: Page_BREAK_THEME_DEFAULT,
 
   toolbarTheme: TOOLBAR_THEME_DEFAULT,
   contextMenuTheme: CONTEXT_MENU_THEME_DEFAULT,
