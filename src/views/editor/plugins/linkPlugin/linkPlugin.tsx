@@ -25,6 +25,7 @@ import { LinkEditor } from "@editor/components/link";
 import { urlRegExp, validateUrl, openURL } from "@utils";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
+import { LINK_CONVERT_SELECTED_COMMAND } from "./linkCommands";
 
 export default function LinkPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -199,6 +200,50 @@ export default function LinkPlugin() {
           return false;
         },
         COMMAND_PRIORITY_LOW,
+      ),
+      editor.registerCommand(
+        LINK_CONVERT_SELECTED_COMMAND,
+        () => {
+          const selection = $getSelection();
+          if ($isRangeSelection(selection)) {
+            const nodes = selection.getNodes();
+    
+            let allText = true;
+            let allLinkNode = true;
+            const nodeParent = nodes[0].getParent();
+            const isParentLinkNode = $isLinkNode(nodeParent);
+            for (const node of nodes) {
+              allText = allText && $isTextNode(node);
+              allLinkNode = allLinkNode && isParentLinkNode && node.getParent() == nodeParent;
+            }
+    
+            if (allLinkNode) {
+              const linkNodes = nodeParent!.getChildren();
+              for (const node of linkNodes) {
+                nodeParent!.insertBefore(node);
+              }
+              nodeParent!.remove();
+            } else {
+              const startEnd = selection.getStartEndPoints();
+              if (startEnd) {
+                if (allText && !startEnd[0].is(startEnd[1])) {
+                  const newNodes = selection.extract();
+                  let nodesText = "";
+                  for (const node of newNodes) {
+                    nodesText += node.getTextContent();
+                  }
+                  const linkNode = $createLinkNode(
+                    validateUrl(nodesText) ? nodesText : "",
+                  );
+                  newNodes[0].insertBefore(linkNode);
+                  linkNode.append(...newNodes);
+                }
+              }
+            }
+          }
+          return true;
+        },
+        COMMAND_PRIORITY_LOW
       ),
     );
   }, [editor]);

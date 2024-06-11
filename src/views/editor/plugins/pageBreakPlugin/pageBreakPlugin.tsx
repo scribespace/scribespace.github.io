@@ -18,7 +18,7 @@ import {
     SELECTION_CHANGE_COMMAND
 } from 'lexical';
 import { useEffect, useRef } from 'react';
-import { CAN_INSERT_PAGE_BREAK_COMMAND, INSERT_PAGE_BREAK_COMMAND } from './pageBreakCommands';
+import { PAGE_BREAK_CAN_INSERT_COMMAND, PAGE_BREAK_INSERT_COMMAND } from './pageBreakCommands';
 
 
 export default function PageBreakPlugin(): JSX.Element | null {
@@ -34,7 +34,7 @@ export default function PageBreakPlugin(): JSX.Element | null {
 
     return mergeRegister(
       editor.registerCommand(
-        INSERT_PAGE_BREAK_COMMAND,
+        PAGE_BREAK_INSERT_COMMAND,
         () => {
           const selection = $getSelection();
 
@@ -69,7 +69,7 @@ export default function PageBreakPlugin(): JSX.Element | null {
             
             if ( canInsertPageBreak != canInsertPageBreakRef.current ){
                 canInsertPageBreakRef.current = canInsertPageBreak;
-                editor.dispatchCommand(CAN_INSERT_PAGE_BREAK_COMMAND, canInsertPageBreak);
+                editor.dispatchCommand(PAGE_BREAK_CAN_INSERT_COMMAND, canInsertPageBreak);
             }
             return true;
         },
