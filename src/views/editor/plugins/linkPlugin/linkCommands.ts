@@ -1,3 +1,3 @@
 import { LexicalCommand, createCommand } from "lexical";
 
-export const LINK_CONVERT_SELECTED_COMMAND: LexicalCommand<void> = createCommand();
+export const LINK_CONVERT_SELECTED_COMMAND: LexicalCommand<void> = createCommand("LINK_CONVERT_SELECTED_COMMAND");

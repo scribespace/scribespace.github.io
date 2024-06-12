@@ -6,4 +6,4 @@ export interface DragDropAddTypesListenerPayload {
   types: string[];
   listener: DragDropListener;
 }
-export const DRAG_DROP_ADD_TYPES_LISTENER_COMMAND: LexicalCommand<DragDropAddTypesListenerPayload> = createCommand();
+export const DRAG_DROP_ADD_TYPES_LISTENER_COMMAND: LexicalCommand<DragDropAddTypesListenerPayload> = createCommand("DRAG_DROP_ADD_TYPES_LISTENER_COMMAND");
