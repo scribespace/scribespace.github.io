@@ -11,6 +11,7 @@ const dstDir = path.join(topDir, "..", "libs", "lexical");
 fse.emptyDirSync(dstDir);
 
 const excludeList = [
+  "lexical-dragon",
   "lexical-devtools",
   "lexical-playground",
   "lexical-website",

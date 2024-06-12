@@ -18,8 +18,7 @@
   },
   "dependencies": {
     "@lexical/clipboard": "file:libs/lexical/lexical-clipboard",
-    "@lexical/code": "file:libs/lexical/lexical-code",    
-    "@lexical/dragon": "file:libs/lexical/lexical-dragon",
+    "@lexical/code": "file:libs/lexical/lexical-code",
     "@lexical/eslint-plugin": "file:libs/lexical/lexical-eslint-plugin",
     "@lexical/file": "file:libs/lexical/lexical-file",
     "@lexical/hashtag": "file:libs/lexical/lexical-hashtag",
