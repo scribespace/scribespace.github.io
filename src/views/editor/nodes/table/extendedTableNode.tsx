@@ -310,8 +310,11 @@ export class ExtendedTableNode extends ElementNode {
     return true;
   }
 
-  isShadowRoot(): true {
-    return true;
+  isShadowRoot(): boolean {
+    return false;
+  }
+  canBeEmpty(): false {
+    return false;
   }
 }
 

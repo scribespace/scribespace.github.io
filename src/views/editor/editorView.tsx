@@ -85,7 +85,7 @@ function TestPlugin({ selectedFile }: Props) {
   return null;
 }
 
-const USE_DEBUG_TREE = isDev() && false;
+const USE_DEBUG_TREE = isDev() && true;
 
 export function EditorView({ selectedFile }: Props) {
   const { editorTheme }: MainTheme = useMainThemeContext();
