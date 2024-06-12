@@ -176,12 +176,20 @@ export class ExtendedTableNode extends ElementNode {
   createDOMWithCSS(css: EditorThemeClassName | undefined): HTMLElement {
     const tableElement = document.createElement("table");
     addClassNamesToElement(tableElement, css);
+    tableElement.style.width = "100%";  
+
+    const width = this.__columnsWidths.reduce(
+      (prevValue, currentValue) => {
+        return prevValue.add(currentValue);
+      },
+      new Metric(0, "px")
+    );
 
     const colgroup = document.createElement("colgroup");
     for (const columnWidth of this.__columnsWidths) {
       const colElement = document.createElement("col");
       if (columnWidth.isValid())
-        colElement.style.cssText = `width: ${columnWidth}px`;
+        colElement.style.cssText = `width: ${!isNaN(width.value) ? (100 * columnWidth.value / width.value) : columnWidth.value}${!isNaN(width.value) ? '%' : 'px'}`;
       colgroup.append(colElement);
     }
 
@@ -245,12 +253,19 @@ export class ExtendedTableNode extends ElementNode {
       const colsElements = colgroupElement.children;
       const colsCount = colsElements.length;
 
+      const width = this.__columnsWidths.reduce(
+        (prevValue, currentValue) => {
+          return prevValue.add(currentValue);
+        },
+        new Metric(0, "px")
+      );
+
       for (let c = 0; c < colsCount; ++c) {
         const colElement = colsElements[c] as HTMLTableColElement;
         const colElementWidth = Metric.fromString(colElement.style.width);
         const colNodeWidth = self.__columnsWidths[c];
         if (!colElementWidth.cmp( colNodeWidth )) {
-          colElement.style.cssText = `width: ${colNodeWidth}`;
+          colElement.style.cssText = `width: ${!isNaN(width.value) ? (100 * colNodeWidth.value / width.value) : colNodeWidth.value}${!isNaN(width.value) ? '%' : 'px'}`;
         }
       }
     }

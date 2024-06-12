@@ -529,7 +529,7 @@ export default function TablePlugin() {
     return mergeRegister(
       editor.registerNodeTransform(ExtendedTableNode, (node) => {
         if ( node.columnsWidthsValid()) return;
-
+        
         const parentNode = node.getParentOrThrow();
         const parentElement = editor.getElementByKey(parentNode.getKey());
         let width = 0;

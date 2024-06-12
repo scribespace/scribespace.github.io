@@ -39,6 +39,9 @@ import { EditorInput } from "./components/editorInput/editorInput";
 import { PageBreakNode } from "./nodes/pageBreak/pageBreakNode";
 import PageBreakPlugin from "./plugins/pageBreakPlugin/pageBreakPlugin";
 import { TableLayoutPlugin } from "./plugins/tableLayoutPlugin/tableLayoutPlugin";
+import { ExtendedTableCellNode } from "./nodes/table/extendedTableCellNode";
+import { isDev } from "@utils";
+import { TreeViewPlugin } from "./plugins/debugViewPlugin/debugViewPlugin";
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
@@ -82,6 +85,8 @@ function TestPlugin({ selectedFile }: Props) {
   return null;
 }
 
+const USE_DEBUG_TREE = isDev() && false;
+
 export function EditorView({ selectedFile }: Props) {
   const { editorTheme }: MainTheme = useMainThemeContext();
   const toolbarRef = useRef<HTMLDivElement>(null);
@@ -109,10 +114,15 @@ export function EditorView({ selectedFile }: Props) {
         withKlass: TableBodyNode,
         with: () => new TableBodyNode(),
       },
+      ExtendedTableCellNode,
+      {
+        replace: TableCellNode,
+        withKlass: ExtendedTableCellNode,
+        with: () => new ExtendedTableCellNode(),
+      },
       LayoutNode,
       LayoutBodyNode,
       TableRowNode,
-      TableCellNode,
       ImageNode,
       CodeNode,
       CodeHighlightNode,
@@ -127,10 +137,11 @@ export function EditorView({ selectedFile }: Props) {
         <ToolbarPlugin ref={toolbarRef} />
         <div
           className={editorTheme.editorInner}
-          style={{ height: `calc(100% - ${toolbarHeight}px)` }}
+          style={{ height: `calc(${USE_DEBUG_TREE ? '50%' : '100%'} - ${toolbarHeight}px)` }}
         >
           <EditorInput />
         </div>
+        {USE_DEBUG_TREE && <TreeViewPlugin/>}
       </div>
       <TestPlugin selectedFile={selectedFile} />
       <HistoryPlugin />

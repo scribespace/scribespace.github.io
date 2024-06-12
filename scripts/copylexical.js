@@ -12,7 +12,6 @@ fse.emptyDirSync(dstDir);
 
 const excludeList = [
   "lexical-devtools",
-  "lexical-devtools-core",
   "lexical-playground",
   "lexical-website",
   "shared",

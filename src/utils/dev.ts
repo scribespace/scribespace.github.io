@@ -5,8 +5,12 @@ import {
 } from "./common";
 import { Func } from "./types/types";
 
+export function isDev() {
+  return import.meta.env.DEV;
+}
+
 export function devOnly(dev: () => void) {
-  const func = import.meta.env.DEV ? dev : () => {};
+  const func = isDev() ? dev : () => {};
   func();
 }
 

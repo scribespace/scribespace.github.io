@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@lexical/clipboard": "file:libs/lexical/lexical-clipboard",
-    "@lexical/code": "file:libs/lexical/lexical-code",
+    "@lexical/code": "file:libs/lexical/lexical-code",    
     "@lexical/dragon": "file:libs/lexical/lexical-dragon",
     "@lexical/eslint-plugin": "file:libs/lexical/lexical-eslint-plugin",
     "@lexical/file": "file:libs/lexical/lexical-file",
@@ -50,6 +50,7 @@
     "react-icons": "^5.2.0"
   },
   "devDependencies": {
+    "@lexical/devtools-core": "file:libs/lexical/lexical-devtools-core",
     "@types/react": "^18.3.1",
     "@types/react-color": "^3.0.12",
     "@types/react-dom": "^18.3.0",

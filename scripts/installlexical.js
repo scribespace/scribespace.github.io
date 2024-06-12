@@ -3,9 +3,13 @@ import path from "path";
 // Convert the module URL to a file path
 
 // Get the directory name from the file path
-const packagesDir = path.join("..", "libs", "lexical");
+const packagesDir = path.join("..","..", "libs", "lexical");
 
 import * as child_process from "child_process";
+
+const devList = [
+  "lexical-devtools-core",
+];
 
 fse.readdir(packagesDir, { withFileTypes: true }, (err, entries) => {
   if (err) {
@@ -16,9 +20,10 @@ fse.readdir(packagesDir, { withFileTypes: true }, (err, entries) => {
   entries.forEach((entry) => {
     if (entry.isDirectory()) {
       const packagePath = path.join(packagesDir, entry.name);
+      const isDev = devList.includes(entry.name);
 
       console.log(`Installing package: ${packagePath}`);
-      child_process.execSync(`npm install ${packagePath}`, {
+      child_process.execSync(`npm install ${isDev ? '--save-dev' : '--save'} ${packagePath}`, {
         stdio: [0, 1, 2],
       });
     }
