@@ -53,7 +53,8 @@ export class ExtendedTableNode extends ElementNode {
   }
 
   getColumnsWidths() {
-    return this.__columnsWidths;
+    const self = this.getLatest();
+    return self.__columnsWidths;
   }
   setColumnsWidths(columns: Metric[]) {
     const self = this.getWritable();
@@ -98,7 +99,8 @@ export class ExtendedTableNode extends ElementNode {
   }
 
   getTableBodyNode() {
-    const tableBody = this.getChildAtIndex(0);
+    const self = this.getLatest();
+    const tableBody = self.getChildAtIndex(0);
     if (!$isTableBodyNode(tableBody))
       throw Error("Expected TableBodyNode under child 0");
     return tableBody;
@@ -125,7 +127,7 @@ export class ExtendedTableNode extends ElementNode {
   removeRows(cellNode: TableCellNode, rowsCount: number) {
     const self = this.getWritable();
     if (rowsCount == self.getTableBodyNode().getChildrenSize()) {
-      this.remove();
+      self.remove();
       return;
     }
 
@@ -172,13 +174,11 @@ export class ExtendedTableNode extends ElementNode {
   }
 
   createDOMWithCSS(css: EditorThemeClassName | undefined): HTMLElement {
-    const self = this.getLatest();
-
     const tableElement = document.createElement("table");
     addClassNamesToElement(tableElement, css);
 
     const colgroup = document.createElement("colgroup");
-    for (const columnWidth of self.__columnsWidths) {
+    for (const columnWidth of this.__columnsWidths) {
       const colElement = document.createElement("col");
       if (columnWidth.isValid())
         colElement.style.cssText = `width: ${columnWidth}px`;
@@ -191,11 +191,12 @@ export class ExtendedTableNode extends ElementNode {
   }
 
   createDOM(config: EditorConfig): HTMLElement {
-    return this.createDOMWithCSS(config.theme.table);
+    return this.getLatest().createDOMWithCSS(config.theme.table);
   }
 
   columnsWidthsValid() {
-    return this.__columnsWidthsValid;
+    const self = this.getLatest();
+    return self.__columnsWidthsValid;
   }
 
   fixColumns( width: number ) {
