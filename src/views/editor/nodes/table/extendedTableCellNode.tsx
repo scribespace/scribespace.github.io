@@ -31,17 +31,16 @@ export class ExtendedTableCellNode extends TableCellNode {
           const element_ = element as HTMLTableCellElement;
           element_.style.width = this.getWidth()  ? `${this.getWidth()}px` : "";
       }
-
       return {
           element,
       };
     }
 
     exportJSON() {
-    return {
-        ...super.exportJSON(),
-        type: ExtendedTableCellNode.getType(),
-    };
+      return {
+          ...super.exportJSON(),
+          type: ExtendedTableCellNode.getType(),
+      };
     }
 
     static importJSON(serializedNode: SerializedTableCellNode): TableCellNode {

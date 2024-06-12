@@ -118,7 +118,7 @@ export function EditorView({ selectedFile }: Props) {
       {
         replace: TableCellNode,
         withKlass: ExtendedTableCellNode,
-        with: () => new ExtendedTableCellNode(),
+        with: (node: TableCellNode) => new ExtendedTableCellNode(node.__colSpan, node.__width),
       },
       LayoutNode,
       LayoutBodyNode,
