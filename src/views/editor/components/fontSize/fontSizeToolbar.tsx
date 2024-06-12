@@ -1,5 +1,8 @@
+import { MenuItem } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
+import { Metric } from "@/utils/types";
+import { useEditorEditable } from "@/views/editor/hooks/useEditorEditable";
 import {
   DECREASE_FONT_SIZE_COMMAND,
   FONT_SIZE_CHANGED_COMMAND,
@@ -7,19 +10,12 @@ import {
   SET_FONT_SIZE_COMMAND,
 } from "@/views/editor/plugins/fontPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getSelectionStyleValueForProperty } from "@lexical/selection";
 import { mergeRegister } from "@lexical/utils";
 import {
-  $getSelection,
-  $isRangeSelection,
-  COMMAND_PRIORITY_LOW,
-  SELECTION_CHANGE_COMMAND,
+  COMMAND_PRIORITY_LOW
 } from "lexical";
 import { useEffect, useState } from "react";
 import NumberInput from "../numberInput";
-import { MenuItem } from "@/components/menu";
-import { useEditorEditable } from "@/views/editor/hooks/useEditorEditable";
-import { Metric } from "@/utils/types";
 
 export default function FontSizeToolbar() {
   const [editor] = useLexicalComposerContext();
@@ -32,31 +28,11 @@ export default function FontSizeToolbar() {
   const isEditorEditable = useEditorEditable();
 
   useEffect(() => {
-    function updateStates() {
-      const selection = $getSelection();
-      if ($isRangeSelection(selection))
-        setFontSize(
-          $getSelectionStyleValueForProperty(
-            selection,
-            "font-size",
-            defaultFontSize
-          )
-        );
-    }
-
     return mergeRegister(
       editor.registerCommand(
-        SELECTION_CHANGE_COMMAND,
-        () => {
-          updateStates();
-          return false;
-        },
-        COMMAND_PRIORITY_LOW
-      ),
-      editor.registerCommand(
         FONT_SIZE_CHANGED_COMMAND,
-        () => {
-          updateStates();
+        (currentFontSize: string) => {
+          setFontSize(currentFontSize);
           return false;
         },
         COMMAND_PRIORITY_LOW
@@ -75,10 +51,7 @@ export default function FontSizeToolbar() {
   const onInputAccepted = (target: HTMLInputElement) => {
     const metric = Metric.fromString(target.value);
     metric.setUnit( metric.getUnit() == "" ? "pt" : metric.getUnit() );
-    editor.dispatchCommand(
-      SET_FONT_SIZE_COMMAND,
-      metric.toString()
-    );
+    editor.dispatchCommand( SET_FONT_SIZE_COMMAND, metric.toString() );
   };
 
   return (

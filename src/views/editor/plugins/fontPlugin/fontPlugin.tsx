@@ -1,6 +1,9 @@
+import { useMainThemeContext } from "@/mainThemeContext";
+import { MainTheme } from "@/theme";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $isDecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode";
 import { $isHeadingNode, $isQuoteNode } from "@lexical/rich-text";
+import { $getSelectionStyleValueForProperty, $patchStyleText } from "@lexical/selection";
 import {
   $getNearestBlockElementAncestorOrThrow,
   mergeRegister,
@@ -11,9 +14,10 @@ import {
   $isRangeSelection,
   $isTextNode,
   COMMAND_PRIORITY_LOW,
+  SELECTION_CHANGE_COMMAND,
   TextNode,
 } from "lexical";
-import { useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import {
   CLEAR_FONT_STYLE_COMMAND,
   DECREASE_FONT_SIZE_COMMAND,
@@ -23,9 +27,7 @@ import {
   SET_FONT_FAMILY_COMMAND,
   SET_FONT_SIZE_COMMAND,
 } from "./fontCommands";
-import { $patchStyleText } from "@lexical/selection";
-import { useMainThemeContext } from "@/mainThemeContext";
-import { MainTheme } from "@/theme";
+import { Font, fontFromStyle } from "@utils";
 
 export function FontPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -37,9 +39,39 @@ export function FontPlugin() {
       editorInputTheme: { defaultFontFamily },
     },
   }: MainTheme = useMainThemeContext();
+  const fontSizeRef = useRef<string>(defaultFontSize);
+  const fontFamilyRef = useRef<Font>(defaultFontFamily);
+
+  const updateCurrentFont = useCallback(
+    () => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        const currnetFontSize = $getSelectionStyleValueForProperty( selection, "font-size", defaultFontSize );
+        if ( fontSizeRef.current != currnetFontSize) {
+          fontSizeRef.current = currnetFontSize;
+          editor.dispatchCommand(FONT_SIZE_CHANGED_COMMAND, currnetFontSize);
+        }
+        const cssFontFamily = $getSelectionStyleValueForProperty( selection, "font-family", defaultFontFamily.name );
+        const font = cssFontFamily == "" ? defaultFontFamily : fontFromStyle(cssFontFamily);
+        if ( font.name != fontFamilyRef.current.name ) {
+          fontFamilyRef.current = font;
+          editor.dispatchCommand(FONT_FAMILY_CHANGED_COMMAND, font);
+        }
+      }
+    },
+    [defaultFontFamily, defaultFontSize, editor]
+  );
 
   useEffect(() => {
     return mergeRegister(
+      editor.registerCommand(
+        SELECTION_CHANGE_COMMAND,
+        () => {
+          updateCurrentFont();
+          return false;
+        },
+        COMMAND_PRIORITY_LOW
+      ),
       editor.registerCommand(
         CLEAR_FONT_STYLE_COMMAND,
         () => {
@@ -77,13 +109,15 @@ export function FontPlugin() {
                 node.setFormat("");
               }
             });
+
+            updateCurrentFont();
           }
           return false; // propagation
         },
         COMMAND_PRIORITY_LOW,
       ),
     );
-  }, [editor]);
+  }, [editor, updateCurrentFont]);
 
   useEffect(() => {
     return mergeRegister(
@@ -107,7 +141,7 @@ export function FontPlugin() {
               },
             });
 
-            editor.dispatchCommand(FONT_SIZE_CHANGED_COMMAND, undefined);
+            updateCurrentFont();
           }
 
           return false;
@@ -134,7 +168,7 @@ export function FontPlugin() {
                 return size + (unit ? unit[0] : "");
               },
             });
-            editor.dispatchCommand(FONT_SIZE_CHANGED_COMMAND, undefined);
+            updateCurrentFont();
           }
 
           return false;
@@ -148,7 +182,7 @@ export function FontPlugin() {
           const selection = $getSelection();
           if ($isRangeSelection(selection)) {
             $patchStyleText(selection, { "font-size": fontSize });
-            editor.dispatchCommand(FONT_SIZE_CHANGED_COMMAND, undefined);
+            updateCurrentFont();
           }
 
           return false;
@@ -156,7 +190,7 @@ export function FontPlugin() {
         COMMAND_PRIORITY_LOW,
       ),
     );
-  }, [defaultFontSize, editor]);
+  }, [defaultFontSize, editor, updateCurrentFont]);
 
   useEffect(() => {
     return mergeRegister(
@@ -166,7 +200,7 @@ export function FontPlugin() {
           const selection = $getSelection();
           if ($isRangeSelection(selection)) {
             $patchStyleText(selection, { "font-family": fontFamily });
-            editor.dispatchCommand(FONT_FAMILY_CHANGED_COMMAND, fontFamily);
+            updateCurrentFont();
           }
 
           return false;
@@ -174,6 +208,6 @@ export function FontPlugin() {
         COMMAND_PRIORITY_LOW,
       ),
     );
-  }, [defaultFontFamily, editor]);
+  }, [defaultFontFamily, editor, updateCurrentFont]);
   return null;
 }

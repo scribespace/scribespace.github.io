@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { SET_FONT_FAMILY_COMMAND } from "@/views/editor/plugins/fontPlugin";
+import { FONT_FAMILY_CHANGED_COMMAND, SET_FONT_FAMILY_COMMAND } from "@/views/editor/plugins/fontPlugin";
 import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Font, fontFromStyle, fontToStyle } from "@utils";
@@ -54,35 +54,15 @@ export default function FontFamilyToolbar() {
   }, [selectedFamily]);
 
   useEffect(() => {
-    const updateStates = () => {
-      const selection = $getSelection();
-      if ($isRangeSelection(selection)) {
-        if (toolRef.current) {
-          const cssFontFamily = $getSelectionStyleValueForProperty(
-            selection,
-            "font-family",
-            defaultFontFamily.name
-          );
-          const font = fontFromStyle(cssFontFamily);
-          setSelectedFamily(font.name);
-        }
-      }
-    };
-
     return mergeRegister(
-      editor.registerCommand(
-        SELECTION_CHANGE_COMMAND,
-        () => {
-          updateStates();
+      editor.registerCommand( 
+        FONT_FAMILY_CHANGED_COMMAND,
+        (font: Font) => {
+          setSelectedFamily(font.name);
           return false;
         },
         COMMAND_PRIORITY_LOW
-      ),
-      editor.registerUpdateListener(({ editorState }) => {
-        editorState.read(() => {
-          updateStates();
-        });
-      })
+      )
     );
   }, [defaultFontFamily, editor]);
 
