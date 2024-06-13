@@ -1,20 +1,16 @@
-import { $getSelectionStyleValueForProperty } from "@lexical/selection";
 import { mergeRegister } from "@lexical/utils";
 import {
-  $getSelection,
-  $isRangeSelection,
-  COMMAND_PRIORITY_LOW,
-  SELECTION_CHANGE_COMMAND,
+  COMMAND_PRIORITY_LOW
 } from "lexical";
 import { useEffect, useRef, useState } from "react";
 
+import { MenuItem, Submenu } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { FONT_FAMILY_CHANGED_COMMAND, SET_FONT_FAMILY_COMMAND } from "@/views/editor/plugins/fontPlugin";
 import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { Font, fontFromStyle, fontToStyle } from "@utils";
-import { Submenu, MenuItem } from "@/components/menu";
+import { Font, fontToStyle } from "@utils";
 
 const fontFamilies: Font[] = [
   { name: "Arial", alt: "sans-serif" },
