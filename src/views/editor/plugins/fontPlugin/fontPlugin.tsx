@@ -10,14 +10,17 @@ import {
 } from "@lexical/utils";
 import {
   $createParagraphNode,
+  $getNodeByKey,
+  $getNodeByKeyOrThrow,
   $getSelection,
   $isRangeSelection,
   $isTextNode,
   COMMAND_PRIORITY_LOW,
+  NodeKey,
   SELECTION_CHANGE_COMMAND,
   TextNode,
 } from "lexical";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   CLEAR_FONT_STYLE_COMMAND,
   DECREASE_FONT_SIZE_COMMAND,
@@ -27,7 +30,7 @@ import {
   SET_FONT_FAMILY_COMMAND,
   SET_FONT_SIZE_COMMAND,
 } from "./fontCommands";
-import { Font, fontFromStyle } from "@utils";
+import { Font, fontFromStyle, fontToStyle } from "@utils";
 
 export function FontPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -46,21 +49,23 @@ export function FontPlugin() {
     () => {
       const selection = $getSelection();
       if ($isRangeSelection(selection)) {
-        const currnetFontSize = $getSelectionStyleValueForProperty( selection, "font-size", defaultFontSize );
+        const currnetFontSize = $getSelectionStyleValueForProperty( selection, "font-size", fontSizeRef.current );
         if ( fontSizeRef.current != currnetFontSize) {
           fontSizeRef.current = currnetFontSize;
           editor.dispatchCommand(FONT_SIZE_CHANGED_COMMAND, currnetFontSize);
         }
-        const cssFontFamily = $getSelectionStyleValueForProperty( selection, "font-family", defaultFontFamily.name );
-        const font = cssFontFamily == "" ? defaultFontFamily : fontFromStyle(cssFontFamily);
+        const cssFontFamily = $getSelectionStyleValueForProperty( selection, "font-family", fontFamilyRef.current.name );
+        const font = cssFontFamily == "" ? fontFamilyRef.current : fontFromStyle(cssFontFamily);
         if ( font.name != fontFamilyRef.current.name ) {
           fontFamilyRef.current = font;
           editor.dispatchCommand(FONT_FAMILY_CHANGED_COMMAND, font);
         }
       }
     },
-    [defaultFontFamily, defaultFontSize, editor]
+    [editor]
   );
+
+  const getStyle = useCallback( ( fontSize: string, fontFamily: Font ) => { return `font-size: ${fontSize}; font-family: ${fontToStyle(fontFamily)}`; }, [] );
 
   useEffect(() => {
     return mergeRegister(
@@ -100,7 +105,7 @@ export function FontPlugin() {
                 }
 
                 if ((node as TextNode).__style !== "") {
-                  (node as TextNode).setStyle("");
+                  (node as TextNode).setStyle(getStyle(defaultFontSize, defaultFontFamily));
                 }
                 if ((node as TextNode).__format !== 0) {
                   (node as TextNode).setFormat(0);
@@ -120,7 +125,7 @@ export function FontPlugin() {
         COMMAND_PRIORITY_LOW,
       ),
     );
-  }, [editor, updateCurrentFont]);
+  }, [defaultFontFamily, defaultFontSize, editor, getStyle, updateCurrentFont]);
 
   useEffect(() => {
     return mergeRegister(
@@ -212,5 +217,51 @@ export function FontPlugin() {
       ),
     );
   }, [defaultFontFamily, editor, updateCurrentFont]);
+
+  useEffect( 
+    () => {
+      return editor.registerMutationListener( 
+        TextNode,
+        (nodes) => {
+          const newNodes: NodeKey[] = [];
+
+          editor.getEditorState().read( 
+            () => {
+              for ( const [key, mutation] of nodes ) {
+                if ( mutation == "created" ) {
+                  const node = $getNodeByKeyOrThrow<TextNode>(key);
+
+                  if ( !node.getStyle().includes('font-size') || !node.getStyle().includes('font-family') )
+                    newNodes.push(key);
+                }
+              }
+            });
+
+          if ( newNodes.length == 0) return;
+
+          editor.update(
+            () => {
+              for ( const key of newNodes ) {
+                const node = $getNodeByKeyOrThrow<TextNode>(key);
+                const style = node.getStyle();
+                let newStyle = "";
+                if ( !style.includes('font-size')) {
+                  newStyle += `font-size: ${fontSizeRef.current};`;
+                }
+
+                if ( !style.includes('font-family')) {
+                  newStyle += `font-family: ${fontToStyle(fontFamilyRef.current)};`;
+                }
+
+                node.setStyle( newStyle + style );
+              }
+            }
+          );
+        }
+       );
+    },
+    [editor]
+  );
+
   return null;
 }
