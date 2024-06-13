@@ -85,15 +85,18 @@ export function FontPlugin() {
               return false;
             }
 
+            const start = anchor.isBefore( focus ) ? anchor : focus;
+            const end = anchor.isBefore( focus ) ? focus : anchor;
+
             nodes.forEach((node, idx) => {
               // We split the first and last node by the selection
               // So that we don't format unselected text inside those nodes
               if ($isTextNode(node)) {
-                if (idx === 0 && anchor.offset !== 0) {
-                  node = node.splitText(anchor.offset)[1] || node;
+                if (idx === 0 && start.offset !== 0) {
+                  node = node.splitText(start.offset)[1] || node;
                 }
                 if (idx === nodes.length - 1) {
-                  node = (node as TextNode).splitText(focus.offset)[0] || node;
+                  node = (node as TextNode).splitText(end.offset)[0] || node;
                 }
 
                 if ((node as TextNode).__style !== "") {
