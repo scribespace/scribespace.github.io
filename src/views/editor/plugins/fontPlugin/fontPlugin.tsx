@@ -1,26 +1,25 @@
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $isDecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode";
-import { $isHeadingNode, $isQuoteNode } from "@lexical/rich-text";
 import { $getSelectionStyleValueForProperty, $patchStyleText } from "@lexical/selection";
+import { $isTableSelection } from "@lexical/table";
 import {
-  $getNearestBlockElementAncestorOrThrow,
-  mergeRegister,
+  mergeRegister
 } from "@lexical/utils";
+import { Font, fontFromStyle, fontToStyle } from "@utils";
 import {
-  $createParagraphNode,
-  $getNodeByKey,
+  $createRangeSelection,
   $getNodeByKeyOrThrow,
   $getSelection,
   $isRangeSelection,
   $isTextNode,
+  $setSelection,
   COMMAND_PRIORITY_LOW,
   NodeKey,
   SELECTION_CHANGE_COMMAND,
-  TextNode,
+  TextNode
 } from "lexical";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import {
   CLEAR_FONT_STYLE_COMMAND,
   DECREASE_FONT_SIZE_COMMAND,
@@ -30,7 +29,7 @@ import {
   SET_FONT_FAMILY_COMMAND,
   SET_FONT_SIZE_COMMAND,
 } from "./fontCommands";
-import { Font, fontFromStyle, fontToStyle } from "@utils";
+import { $clearFormat } from "./fontHelpers";
 
 export function FontPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -82,43 +81,60 @@ export function FontPlugin() {
         () => {
           const selection = $getSelection();
           if ($isRangeSelection(selection)) {
-            const anchor = selection.anchor;
-            const focus = selection.focus;
-            const nodes = selection.getNodes();
 
-            if (anchor.key === focus.key && anchor.offset === focus.offset) {
+            if (selection.isCollapsed()) {
+              editor.dispatchCommand(SET_FONT_SIZE_COMMAND, defaultFontSize);
+              editor.dispatchCommand(SET_FONT_FAMILY_COMMAND, fontToStyle(defaultFontFamily));
               return false;
             }
 
-            const start = anchor.isBefore( focus ) ? anchor : focus;
-            const end = anchor.isBefore( focus ) ? focus : anchor;
+            const anchor = selection.anchor;
+            const focus = selection.focus;
 
-            nodes.forEach((node, idx) => {
-              // We split the first and last node by the selection
-              // So that we don't format unselected text inside those nodes
-              if ($isTextNode(node)) {
-                if (idx === 0 && start.offset !== 0) {
-                  node = node.splitText(start.offset)[1] || node;
-                }
-                if (idx === nodes.length - 1) {
-                  node = (node as TextNode).splitText(end.offset)[0] || node;
-                }
+            const start = selection.isBackward() ? focus : anchor;
+            const startOffset = start.offset;
+            let startNode = start.getNode();
+            const end = selection.isBackward() ? anchor : focus;
+            const endOffset = end.offset;
+            let endNode = end.getNode();
 
-                if ((node as TextNode).__style !== "") {
-                  (node as TextNode).setStyle(getStyle(defaultFontSize, defaultFontFamily));
-                }
-                if ((node as TextNode).__format !== 0) {
-                  (node as TextNode).setFormat(0);
-                  $getNearestBlockElementAncestorOrThrow(node).setFormat("");
-                }
-              } else if ($isHeadingNode(node) || $isQuoteNode(node)) {
-                node.replace($createParagraphNode(), true);
-              } else if ($isDecoratorBlockNode(node)) {
-                node.setFormat("");
+            if ( startNode.is(endNode) ) {
+              if ( $isTextNode(startNode) && $isTextNode(endNode) ) {
+                startNode = startNode.splitText(startOffset)[1] || startNode;
+                endNode = startNode.splitText( endOffset - startOffset )[0] || endNode;
               }
-            });
+            } else {
+              if ( $isTextNode(startNode) ) {
+                startNode = startNode.splitText( startOffset )[1] || startNode;
+              }
+              if( $isTextNode( endNode ) ) {
+                endNode = endNode.splitText(endOffset)[0] || endNode;
+              }
+            }
 
-            updateCurrentFont();
+            $clearFormat(startNode, getStyle(defaultFontSize, defaultFontFamily), startNode, endNode);
+            $clearFormat(endNode, getStyle(defaultFontSize, defaultFontFamily), startNode, endNode);
+
+            const nodes = selection.getNodes();
+            for ( let n = 1; n < nodes.length - 1; ++n ) {
+              const node = nodes[n];
+              $clearFormat(node, getStyle(defaultFontSize, defaultFontFamily), startNode, endNode);
+            }
+
+            const newAnchorNode = selection.isBackward() ? endNode : startNode;
+            const newAnchorOffset = selection.isBackward() ? ( endNode.is(startNode) ? (endOffset - startOffset) : endOffset ) : 0;
+            const newFocusNode = selection.isBackward() ? startNode : endNode;
+            const newFocusOffset = selection.isBackward() ? 0 : (endNode.is(startNode) ? (endOffset - startOffset) : endOffset );
+
+            const newSelection = $createRangeSelection();
+            newSelection.anchor.set( newAnchorNode.getKey(), newAnchorOffset, anchor.type );
+            newSelection.focus.set( newFocusNode.getKey(), newFocusOffset, focus.type );
+
+            $setSelection(newSelection);
+          } else if ( $isTableSelection(selection)) {
+            for ( const node of selection.getNodes() ) {
+              $clearFormat(node, getStyle(defaultFontSize, defaultFontFamily), null, null);
+            }
           }
           return false; // propagation
         },

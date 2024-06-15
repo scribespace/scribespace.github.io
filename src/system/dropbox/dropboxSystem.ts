@@ -1,9 +1,8 @@
 import { $setAuthentication } from "@/interfaces/system/authInterface";
-import { $setFileSystem } from "@/interfaces/system/fileSystem/fileSystemInterface";
 import * as DropboxAPI from "dropbox";
 import { DropboxAuth } from "./dropboxAuth";
 import { DropboxFileSystem } from "./fileSystem/dropboxFileSystem";
-import { System } from "@coreSystems";
+import { $setFileSystem, System } from "@coreSystems";
 import { DROPBOX_APP } from "./dropboxCommon";
 
 export class DropboxSystem implements System {
