@@ -13,6 +13,8 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
+      '@editorHelpers': '/src/views/editor/helpers',
+      'shared': '/src/views/editor/helpers',
       '@editor': '/src/views/editor',
       '@tree': '/src/views/tree',
       '@coreSystems': '/src/interfaces/system',
