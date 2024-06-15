@@ -1,17 +1,12 @@
-import {
-  CAN_REDO_COMMAND,
-  CAN_UNDO_COMMAND,
-  COMMAND_PRIORITY_LOW,
-  REDO_COMMAND,
-  UNDO_COMMAND,
-} from "lexical";
 import { useEffect, useMemo, useState } from "react";
 
+import { MenuItem } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
+import { CAN_REDO_CMD, CAN_UNDO_CMD, REDO_CMD, UNDO_CMD } from "@editor/plugins/commandsPlugin/commands";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
-import { MenuItem } from "@/components/menu";
+import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
 
 export default function UndoRedoToolbar() {
   const [editor] = useLexicalComposerContext();
@@ -30,32 +25,30 @@ export default function UndoRedoToolbar() {
   useEffect(() => {
     if (editor) {
       return mergeRegister(
-        editor.registerCommand(
-          CAN_UNDO_COMMAND,
+        $registerCommandListener(
+          CAN_UNDO_CMD,
           (payload) => {
             setCanUndo(payload);
             return false;
-          },
-          COMMAND_PRIORITY_LOW,
+          }
         ),
-        editor.registerCommand(
-          CAN_REDO_COMMAND,
+        $registerCommandListener(
+          CAN_REDO_CMD,
           (payload) => {
             setCanRedo(payload);
             return false;
-          },
-          COMMAND_PRIORITY_LOW,
+          }
         ),
       );
     }
   }, [editor]);
 
   const onClickUndo = () => {
-    editor.dispatchCommand(UNDO_COMMAND, undefined);
+    $callCommand(UNDO_CMD, undefined);
   };
 
   const onClickRedo = () => {
-    editor.dispatchCommand(REDO_COMMAND, undefined);
+    $callCommand(REDO_CMD, undefined);
   };
 
   return (

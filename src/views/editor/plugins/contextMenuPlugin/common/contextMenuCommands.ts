@@ -1,3 +1,3 @@
-import { LexicalCommand, createCommand } from "lexical";
+import { $registerCommand } from "@systems/commandsManager/commandsManager";
 
-export const CONTEXT_MENU_CLOSE_MENU_COMMAND: LexicalCommand<void> = createCommand("CONTEXT_MENU_CLOSE_MENU_COMMAND");
+export const CONTEXT_MENU_CLOSE_MENU_CMD = $registerCommand<void>("CONTEXT_MENU_CLOSE_MENU_CMD");

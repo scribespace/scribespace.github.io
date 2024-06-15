@@ -3,10 +3,11 @@ import { $createExtendedTableNodeWithDimensions, $getExtendedTableNodeFromLexica
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $findCellNode, $findTableNode, $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $getTableRowIndexFromTableCellNode, $isTableCellNode, $isTableNode, $isTableRowNode, $isTableSelection, TableCellNode, TableRowNode } from "@lexical/table";
 import { mergeRegister } from "@lexical/utils";
-import { $getNodeByKey, $getNodeByKeyOrThrow, $getSelection, $insertNodes, $isRangeSelection, $setSelection, COMMAND_PRIORITY_LOW } from "lexical";
+import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
+import { $getNodeByKey, $getNodeByKeyOrThrow, $getSelection, $insertNodes, $isRangeSelection, $setSelection } from "lexical";
 import { useEffect } from "react";
-import { TABLE_LAYOUT_COLUMN_ADD_AFTER_COMMAND, TABLE_LAYOUT_COLUMN_ADD_BEFORE_COMMAND, TABLE_LAYOUT_COLUMN_REMOVE_COMMAND, TABLE_INSERT_COMMAND, LAYOUT_INSERT_COMMAND, InsertTablePayload, TABLE_LAYOUT_MERGE_CELLS_COMMAND, TABLE_LAYOUT_REMOVE_SELECTED_COMMAND, TABLE_ROW_ADD_AFTER_COMMAND, TABLE_ROW_ADD_BEFORE_COMMAND, TABLE_ROW_REMOVE_COMMAND, TABLE_LAYOUT_SPLIT_CELLS_COMMAND } from "./tableLayoutCommands";
 import { $getTableColumnIndexFromTableCellNode } from "..";
+import { InsertTablePayload, LAYOUT_INSERT_CMD, TABLE_INSERT_CMD, TABLE_LAYOUT_COLUMN_ADD_AFTER_CMD, TABLE_LAYOUT_COLUMN_ADD_BEFORE_CMD, TABLE_LAYOUT_COLUMN_REMOVE_CMD, TABLE_LAYOUT_MERGE_CELLS_CMD, TABLE_LAYOUT_REMOVE_SELECTED_CMD, TABLE_LAYOUT_SPLIT_CELLS_CMD, TABLE_ROW_ADD_AFTER_CMD, TABLE_ROW_ADD_BEFORE_CMD, TABLE_ROW_REMOVE_CMD } from "./tableLayoutCommands";
 
 export function TableLayoutCommandsPlugin() {
     const [editor] = useLexicalComposerContext();
@@ -14,8 +15,8 @@ export function TableLayoutCommandsPlugin() {
     useEffect(
         () => {
             return mergeRegister(
-                editor.registerCommand(
-                    TABLE_INSERT_COMMAND,
+                $registerCommandListener(
+                    TABLE_INSERT_CMD,
                     (payload: InsertTablePayload) => {
                         const tableNode = $createExtendedTableNodeWithDimensions(
                           payload.rows,
@@ -24,19 +25,17 @@ export function TableLayoutCommandsPlugin() {
                         $insertNodes([tableNode]);
                         return true;
                     },
-                    COMMAND_PRIORITY_LOW
                 ),
-                editor.registerCommand(
-                    LAYOUT_INSERT_COMMAND,
+                $registerCommandListener(
+                    LAYOUT_INSERT_CMD,
                     (payload: number) => {
                         const layoutNode = $createLayoutNodeWithColumns(payload);
                         $insertNodes([layoutNode]);
                         return true;
                     },
-                    COMMAND_PRIORITY_LOW
                 ),
-                editor.registerCommand(
-                    TABLE_LAYOUT_REMOVE_SELECTED_COMMAND,
+                $registerCommandListener(
+                    TABLE_LAYOUT_REMOVE_SELECTED_CMD,
                     () => {
                         let tableNode: ExtendedTableNode | null = null;
 
@@ -57,10 +56,9 @@ export function TableLayoutCommandsPlugin() {
                         }
                         return false;
                     },
-                    COMMAND_PRIORITY_LOW
                 ),
-                editor.registerCommand(
-                    TABLE_LAYOUT_MERGE_CELLS_COMMAND,
+                $registerCommandListener(
+                    TABLE_LAYOUT_MERGE_CELLS_CMD,
                     () => {
                             const selection = $getSelection();
                             if ($isTableSelection(selection)) {
@@ -129,13 +127,12 @@ export function TableLayoutCommandsPlugin() {
                               $setSelection(null);
                               return true;
                             }
-                        
-                        return false;
+
+                            return false;
                     },
-                    COMMAND_PRIORITY_LOW
                 ),
-                editor.registerCommand(
-                    TABLE_LAYOUT_SPLIT_CELLS_COMMAND,
+                $registerCommandListener(
+                    TABLE_LAYOUT_SPLIT_CELLS_CMD,
                     () => {
                         const selection = $getSelection();
                         let tableNode: ExtendedTableNode | null = null;
@@ -168,13 +165,12 @@ export function TableLayoutCommandsPlugin() {
                             $setSelection(null);
                             return true;
                         }
-                        
+
                         return false;
                     },
-                    COMMAND_PRIORITY_LOW
                 ),
-                editor.registerCommand(
-                    TABLE_ROW_REMOVE_COMMAND,
+                $registerCommandListener(
+                    TABLE_ROW_REMOVE_CMD,
                     ()=>{
                         let tableNode: ExtendedTableNode | null = null;
                         let cellNode: TableCellNode | null = null;
@@ -218,10 +214,9 @@ export function TableLayoutCommandsPlugin() {
                         $setSelection(null);
                         return true;
                     },
-                    COMMAND_PRIORITY_LOW
                 ),
-                editor.registerCommand(
-                    TABLE_ROW_ADD_BEFORE_COMMAND,
+                $registerCommandListener(
+                    TABLE_ROW_ADD_BEFORE_CMD,
                     (rows: number) => {
                         const selection = $getSelection();
 
@@ -252,10 +247,9 @@ export function TableLayoutCommandsPlugin() {
                         $setSelection(null);
                         return true;
                     },
-                    COMMAND_PRIORITY_LOW
                 ),
-                editor.registerCommand(
-                    TABLE_ROW_ADD_AFTER_COMMAND,
+                $registerCommandListener(
+                    TABLE_ROW_ADD_AFTER_CMD,
                     (rows: number)=>{
                         const selection = $getSelection();
 
@@ -291,10 +285,9 @@ export function TableLayoutCommandsPlugin() {
                         tableNode!.addRowsAfter(cellNode, rows);
                         return true;
                     },
-                    COMMAND_PRIORITY_LOW
                 ),
-                editor.registerCommand(
-                    TABLE_LAYOUT_COLUMN_REMOVE_COMMAND,
+                $registerCommandListener(
+                    TABLE_LAYOUT_COLUMN_REMOVE_CMD,
                     ()=>{
                         let tableNode: ExtendedTableNode | null = null;
                         let cellNode: TableCellNode | null = null;
@@ -340,10 +333,9 @@ export function TableLayoutCommandsPlugin() {
                         $setSelection(null);
                         return true;
                     },
-                    COMMAND_PRIORITY_LOW
                 ),
-                editor.registerCommand(
-                    TABLE_LAYOUT_COLUMN_ADD_BEFORE_COMMAND,
+                $registerCommandListener(
+                    TABLE_LAYOUT_COLUMN_ADD_BEFORE_CMD,
                     (columns: number)=>{
                         const selection = $getSelection();
 
@@ -380,10 +372,9 @@ export function TableLayoutCommandsPlugin() {
                         tableNode!.addColumnsBefore(cellNode, columns);
                         return true;
                     },
-                    COMMAND_PRIORITY_LOW
                 ),
-                editor.registerCommand(
-                    TABLE_LAYOUT_COLUMN_ADD_AFTER_COMMAND,
+                $registerCommandListener(
+                    TABLE_LAYOUT_COLUMN_ADD_AFTER_CMD,
                     (columns: number)=>{
                         const selection = $getSelection();
 
@@ -420,7 +411,6 @@ export function TableLayoutCommandsPlugin() {
                         tableNode?.addColumnsAfter(cellNode, columns);
                         return true;
                     },
-                    COMMAND_PRIORITY_LOW
                 ),
             );
         },

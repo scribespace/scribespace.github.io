@@ -1,6 +1,6 @@
-import { LexicalCommand, createCommand } from "lexical";
+import { $registerEditorCommand } from "../commandsPlugin/commands";
 
-export const SET_FONT_COLOR_COMMAND: LexicalCommand<string> = createCommand("SET_FONT_COLOR_COMMAND");
-export const SET_BACKGROUND_COLOR_COMMAND: LexicalCommand<string> = createCommand("SET_BACKGROUND_COLOR_COMMAND");
-export const FONT_COLOR_CHANGE_COMMAND: LexicalCommand<void> = createCommand("FONT_COLOR_CHANGE_COMMAND");
-export const BACKGROUND_COLOR_CHANGE_COMMAND: LexicalCommand<void> = createCommand("BACKGROUND_COLOR_CHANGE_COMMAND");
+export const SET_FONT_COLOR_CMD = $registerEditorCommand<string>("SET_FONT_COLOR_CMD");
+export const SET_BACKGROUND_COLOR_CMD = $registerEditorCommand<string>("SET_BACKGROUND_COLOR_CMD");
+export const FONT_COLOR_CHANGE_CMD = $registerEditorCommand<void>("FONT_COLOR_CHANGE_CMD");
+export const BACKGROUND_COLOR_CHANGE_CMD = $registerEditorCommand<void>("BACKGROUND_COLOR_CHANGE_CMD");

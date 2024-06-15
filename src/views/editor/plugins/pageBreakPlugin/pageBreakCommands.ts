@@ -1,5 +1,5 @@
-import { LexicalCommand, createCommand } from "lexical";
+import { $registerEditorCommand } from "../commandsPlugin/commands";
 
 
-export const PAGE_BREAK_INSERT_COMMAND: LexicalCommand<undefined> = createCommand("PAGE_BREAK_INSERT_COMMAND");
-export const PAGE_BREAK_CAN_INSERT_COMMAND: LexicalCommand<boolean> = createCommand("PAGE_BREAK_CAN_INSERT_COMMAND");
+export const PAGE_BREAK_INSERT_CMD = $registerEditorCommand<void>("PAGE_BREAK_INSERT_CMD");
+export const PAGE_BREAK_CAN_INSERT_CMD = $registerEditorCommand<boolean>("PAGE_BREAK_CAN_INSERT_CMD");

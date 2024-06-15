@@ -2,15 +2,14 @@ import { MenuItem } from "@/components/menu";
 import { $menuItemParent } from "@/components/menu/theme";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { CLEAR_FONT_STYLE_COMMAND } from "@/views/editor/plugins/fontPlugin";
+import { CLEAR_FONT_STYLE_CMD } from "@/views/editor/plugins/fontPlugin";
+import { FORMAT_TEXT_CMD, SELECTION_CHANGE_CMD } from "@editor/plugins/commandsPlugin/commands";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
+import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import {
   $getSelection,
   $isRangeSelection,
-  COMMAND_PRIORITY_LOW,
-  FORMAT_TEXT_COMMAND,
-  SELECTION_CHANGE_COMMAND,
 } from "lexical";
 import { useCallback, useEffect, useState } from "react";
 
@@ -43,13 +42,12 @@ export default function FontStyleToolbar() {
   useEffect(() => {
     if (editor) {
       return mergeRegister(
-        editor.registerCommand(
-          SELECTION_CHANGE_COMMAND,
+        $registerCommandListener(
+          SELECTION_CHANGE_CMD,
           () => {
             updateStates();
             return false;
-          },
-          COMMAND_PRIORITY_LOW,
+          }
         ),
         editor.registerUpdateListener(({ editorState }) => {
           editorState.read(() => {
@@ -61,23 +59,23 @@ export default function FontStyleToolbar() {
   }, [editor, updateStates]);
 
   const onClickBold = () => {
-    editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
+    $callCommand( FORMAT_TEXT_CMD, "bold" );
   };
 
   const onClickItalic = () => {
-    editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
+    $callCommand(FORMAT_TEXT_CMD, "italic");
   };
 
   const onClickUnderline = () => {
-    editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
+    $callCommand(FORMAT_TEXT_CMD, "underline");
   };
 
   const onClickStrikethrough = () => {
-    editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough");
+    $callCommand(FORMAT_TEXT_CMD, "strikethrough");
   };
 
   const onClickClearFormatting = () => {
-    editor.dispatchCommand(CLEAR_FONT_STYLE_COMMAND, undefined);
+    $callCommand(CLEAR_FONT_STYLE_CMD, undefined);
   };
 
   return (

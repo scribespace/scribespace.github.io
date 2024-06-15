@@ -1,11 +1,10 @@
 import { MenuItem } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
-import { TABLE_LAYOUT_COLUMN_REMOVE_COMMAND } from "@editor/plugins/tableLayoutPlugin";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { TABLE_LAYOUT_COLUMN_REMOVE_CMD } from "@editor/plugins/tableLayoutPlugin";
+import { $callCommand } from "@systems/commandsManager/commandsManager";
 
 export function ColumnRemoveContextMenu() {
-  const [editor] = useLexicalComposerContext();
   const {
     editorTheme: {
       tableLayoutTheme: {
@@ -15,8 +14,8 @@ export function ColumnRemoveContextMenu() {
   } = useMainThemeContext();
 
   const onClick = () => {
-      editor.dispatchCommand(TABLE_LAYOUT_COLUMN_REMOVE_COMMAND, undefined);
-      $closeContextMenu(editor);
+      $callCommand(TABLE_LAYOUT_COLUMN_REMOVE_CMD, undefined);
+      $closeContextMenu();
   };
 
   return (

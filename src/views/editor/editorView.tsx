@@ -1,6 +1,6 @@
 import { $generateNodesFromDOM } from "@lexical/html";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getRoot, $insertNodes, CLEAR_HISTORY_COMMAND, TextNode } from "lexical";
+import { $getRoot, $insertNodes, TextNode } from "lexical";
 
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { LinkNode } from "@lexical/link";
@@ -34,14 +34,17 @@ import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { $getFileSystem } from "@coreSystems";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
+import { $callCommand } from "@systems/commandsManager/commandsManager";
+import { isDev } from "@utils";
 import { useRef } from "react";
 import { EditorInput } from "./components/editorInput/editorInput";
 import { PageBreakNode } from "./nodes/pageBreak/pageBreakNode";
+import { ExtendedTableCellNode } from "./nodes/table/extendedTableCellNode";
+import { CommandsPlugin } from "./plugins/commandsPlugin/commandsPlugin";
+import { TreeViewPlugin } from "./plugins/debugViewPlugin/debugViewPlugin";
 import PageBreakPlugin from "./plugins/pageBreakPlugin/pageBreakPlugin";
 import { TableLayoutPlugin } from "./plugins/tableLayoutPlugin/tableLayoutPlugin";
-import { ExtendedTableCellNode } from "./nodes/table/extendedTableCellNode";
-import { isDev } from "@utils";
-import { TreeViewPlugin } from "./plugins/debugViewPlugin/debugViewPlugin";
+import { CLEAR_HISTORY_CMD } from "./plugins/commandsPlugin/commands";
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
@@ -79,7 +82,7 @@ function TestPlugin({ selectedFile }: Props) {
             editor.setEditable(true);
           });
         });
-        editor.dispatchCommand(CLEAR_HISTORY_COMMAND, undefined);
+        $callCommand(CLEAR_HISTORY_CMD, undefined);
       });
   }
   return null;
@@ -133,6 +136,7 @@ export function EditorView({ selectedFile }: Props) {
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
+      <CommandsPlugin />
       <div className={editorTheme.editorContainer}>
         <ToolbarPlugin ref={toolbarRef} />
         <div

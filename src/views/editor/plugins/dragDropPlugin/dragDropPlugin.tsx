@@ -1,13 +1,13 @@
+import { assert } from "@/utils";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { DRAG_DROP_PASTE } from "@lexical/rich-text";
 import { mergeRegister } from "@lexical/utils";
-import { COMMAND_PRIORITY_LOW } from "lexical";
+import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import { useEffect } from "react";
+import { DRAG_DROP_PASTE_CMD } from "../commandsPlugin/commands";
 import {
-  DRAG_DROP_ADD_TYPES_LISTENER_COMMAND,
+  DRAG_DROP_ADD_TYPES_LISTENER_CMD,
   DragDropListener,
 } from "./dragDropCommands";
-import { assert } from "@/utils";
 
 export function DragDropPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -16,8 +16,8 @@ export function DragDropPlugin() {
     const dragDropListeners = new Map<string, DragDropListener>();
 
     const registeredCommands = mergeRegister(
-      editor.registerCommand(
-        DRAG_DROP_ADD_TYPES_LISTENER_COMMAND,
+      $registerCommandListener(
+        DRAG_DROP_ADD_TYPES_LISTENER_CMD,
         (payloud) => {
           for (const fileType of payloud.types) {
             assert(
@@ -28,11 +28,10 @@ export function DragDropPlugin() {
           }
           return true;
         },
-        COMMAND_PRIORITY_LOW,
       ),
 
-      editor.registerCommand(
-        DRAG_DROP_PASTE,
+      $registerCommandListener(
+        DRAG_DROP_PASTE_CMD,
         (payloads) => {
           const listenersPayloads = new Map<DragDropListener, File[]>();
           for (const payload of payloads) {
@@ -51,7 +50,6 @@ export function DragDropPlugin() {
 
           return true;
         },
-        COMMAND_PRIORITY_LOW,
       ),
     );
 

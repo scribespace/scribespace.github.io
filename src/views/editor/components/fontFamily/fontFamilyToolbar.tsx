@@ -1,15 +1,13 @@
 import { mergeRegister } from "@lexical/utils";
-import {
-  COMMAND_PRIORITY_LOW
-} from "lexical";
 import { useEffect, useRef, useState } from "react";
 
 import { MenuItem, Submenu } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { FONT_FAMILY_CHANGED_COMMAND, SET_FONT_FAMILY_COMMAND } from "@/views/editor/plugins/fontPlugin";
+import { FONT_FAMILY_CHANGED_CMD, SET_FONT_FAMILY_CMD } from "@/views/editor/plugins/fontPlugin";
 import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import { Font, fontToStyle } from "@utils";
 
 const fontFamilies: Font[] = [
@@ -41,7 +39,7 @@ export default function FontFamilyToolbar() {
 
   function onSelect(selectedFontFamily: Font) {
     const cssFontFamily = fontToStyle(selectedFontFamily);
-    editor.dispatchCommand(SET_FONT_FAMILY_COMMAND, cssFontFamily);
+    $callCommand(SET_FONT_FAMILY_CMD, cssFontFamily);
   }
 
   useEffect(() => {
@@ -51,13 +49,12 @@ export default function FontFamilyToolbar() {
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerCommand( 
-        FONT_FAMILY_CHANGED_COMMAND,
+      $registerCommandListener( 
+        FONT_FAMILY_CHANGED_CMD,
         (font: Font) => {
           setSelectedFamily(font.name);
           return false;
-        },
-        COMMAND_PRIORITY_LOW
+        }
       )
     );
   }, [defaultFontFamily, editor]);

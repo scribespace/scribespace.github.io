@@ -6,6 +6,7 @@ import { $isTableSelection } from "@lexical/table";
 import {
   mergeRegister
 } from "@lexical/utils";
+import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import { Font, fontFromStyle, fontToStyle } from "@utils";
 import {
   $createRangeSelection,
@@ -14,22 +15,21 @@ import {
   $isRangeSelection,
   $isTextNode,
   $setSelection,
-  COMMAND_PRIORITY_LOW,
   NodeKey,
-  SELECTION_CHANGE_COMMAND,
   TextNode
 } from "lexical";
 import { useCallback, useEffect, useRef } from "react";
 import {
-  CLEAR_FONT_STYLE_COMMAND,
-  DECREASE_FONT_SIZE_COMMAND,
-  FONT_FAMILY_CHANGED_COMMAND,
-  FONT_SIZE_CHANGED_COMMAND,
-  INCREASE_FONT_SIZE_COMMAND,
-  SET_FONT_FAMILY_COMMAND,
-  SET_FONT_SIZE_COMMAND,
+  CLEAR_FONT_STYLE_CMD,
+  DECREASE_FONT_SIZE_CMD,
+  FONT_FAMILY_CHANGED_CMD,
+  FONT_SIZE_CHANGED_CMD,
+  INCREASE_FONT_SIZE_CMD,
+  SET_FONT_FAMILY_CMD,
+  SET_FONT_SIZE_CMD,
 } from "./fontCommands";
 import { $clearFormat } from "./fontHelpers";
+import { SELECTION_CHANGE_CMD } from "../commandsPlugin/commands";
 
 export function FontPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -51,40 +51,39 @@ export function FontPlugin() {
         const currnetFontSize = $getSelectionStyleValueForProperty( selection, "font-size", fontSizeRef.current );
         if ( fontSizeRef.current != currnetFontSize) {
           fontSizeRef.current = currnetFontSize;
-          editor.dispatchCommand(FONT_SIZE_CHANGED_COMMAND, currnetFontSize);
+          $callCommand(FONT_SIZE_CHANGED_CMD, currnetFontSize);
         }
         const cssFontFamily = $getSelectionStyleValueForProperty( selection, "font-family", fontFamilyRef.current.name );
         const font = cssFontFamily == "" ? fontFamilyRef.current : fontFromStyle(cssFontFamily);
         if ( font.name != fontFamilyRef.current.name ) {
           fontFamilyRef.current = font;
-          editor.dispatchCommand(FONT_FAMILY_CHANGED_COMMAND, font);
+          $callCommand(FONT_FAMILY_CHANGED_CMD, font);
         }
       }
     },
-    [editor]
+    []
   );
 
   const getStyle = useCallback( ( fontSize: string, fontFamily: Font ) => { return `font-size: ${fontSize}; font-family: ${fontToStyle(fontFamily)}`; }, [] );
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerCommand(
-        SELECTION_CHANGE_COMMAND,
+      $registerCommandListener(
+        SELECTION_CHANGE_CMD,
         () => {
           updateCurrentFont();
           return false;
         },
-        COMMAND_PRIORITY_LOW
       ),
-      editor.registerCommand(
-        CLEAR_FONT_STYLE_COMMAND,
+      $registerCommandListener(
+        CLEAR_FONT_STYLE_CMD,
         () => {
           const selection = $getSelection();
           if ($isRangeSelection(selection)) {
 
             if (selection.isCollapsed()) {
-              editor.dispatchCommand(SET_FONT_SIZE_COMMAND, defaultFontSize);
-              editor.dispatchCommand(SET_FONT_FAMILY_COMMAND, fontToStyle(defaultFontFamily));
+              $callCommand(SET_FONT_SIZE_CMD, defaultFontSize);
+              $callCommand(SET_FONT_FAMILY_CMD, fontToStyle(defaultFontFamily));
               return false;
             }
 
@@ -136,17 +135,15 @@ export function FontPlugin() {
               $clearFormat(node, getStyle(defaultFontSize, defaultFontFamily), null, null);
             }
           }
-          return false; // propagation
         },
-        COMMAND_PRIORITY_LOW,
       ),
     );
   }, [defaultFontFamily, defaultFontSize, editor, getStyle, updateCurrentFont]);
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerCommand(
-        INCREASE_FONT_SIZE_COMMAND,
+      $registerCommandListener(
+        INCREASE_FONT_SIZE_CMD,
         () => {
           const selection = $getSelection();
           if ($isRangeSelection(selection)) {
@@ -170,11 +167,10 @@ export function FontPlugin() {
 
           return false;
         },
-        COMMAND_PRIORITY_LOW,
       ),
 
-      editor.registerCommand(
-        DECREASE_FONT_SIZE_COMMAND,
+      $registerCommandListener(
+        DECREASE_FONT_SIZE_CMD,
         () => {
           const selection = $getSelection();
           if ($isRangeSelection(selection)) {
@@ -197,11 +193,10 @@ export function FontPlugin() {
 
           return false;
         },
-        COMMAND_PRIORITY_LOW,
       ),
 
-      editor.registerCommand(
-        SET_FONT_SIZE_COMMAND,
+      $registerCommandListener(
+        SET_FONT_SIZE_CMD,
         (fontSize: string) => {
           const selection = $getSelection();
           if ($isRangeSelection(selection)) {
@@ -211,15 +206,14 @@ export function FontPlugin() {
 
           return false;
         },
-        COMMAND_PRIORITY_LOW,
       ),
     );
   }, [defaultFontSize, editor, updateCurrentFont]);
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerCommand(
-        SET_FONT_FAMILY_COMMAND,
+      $registerCommandListener(
+        SET_FONT_FAMILY_CMD,
         (fontFamily: string) => {
           const selection = $getSelection();
           if ($isRangeSelection(selection)) {
@@ -229,7 +223,6 @@ export function FontPlugin() {
 
           return false;
         },
-        COMMAND_PRIORITY_LOW,
       ),
     );
   }, [defaultFontFamily, editor, updateCurrentFont]);

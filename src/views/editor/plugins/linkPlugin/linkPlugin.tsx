@@ -1,5 +1,5 @@
+import { $createLinkNode, $isLinkNode, LinkNode } from "@lexical/link";
 import { LinkPlugin as LexicalLinkPlugin } from "@lexical/react/LexicalLinkPlugin";
-import { LinkNode, $isLinkNode, $createLinkNode } from "@lexical/link";
 import { NodeEventPlugin } from "@lexical/react/LexicalNodeEventPlugin";
 import {
   $getNodeByKey,
@@ -7,25 +7,23 @@ import {
   $getSelection,
   $isRangeSelection,
   $isTextNode,
-  COMMAND_PRIORITY_LOW,
-  KEY_ENTER_COMMAND,
-  KEY_SPACE_COMMAND,
   LexicalEditor,
   LexicalNode,
   NodeKey,
-  SELECTION_CHANGE_COMMAND,
-  TextNode,
+  TextNode
 } from "lexical";
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { LinkEditor } from "@editor/components/link";
-import { urlRegExp, validateUrl, openURL } from "@utils";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { LINK_CONVERT_SELECTED_COMMAND } from "./linkCommands";
+import { LinkEditor } from "@editor/components/link";
+import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
+import { openURL, urlRegExp, validateUrl } from "@utils";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { KEY_ENTER_CMD, KEY_SPACE_CMD, SELECTION_CHANGE_CMD } from "../commandsPlugin/commands";
+import { LINK_CONVERT_SELECTED_CMD } from "./linkCommands";
 
 export default function LinkPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -139,8 +137,8 @@ export default function LinkPlugin() {
     }
 
     return mergeRegister(
-      editor.registerCommand(
-        SELECTION_CHANGE_COMMAND,
+      $registerCommandListener(
+        SELECTION_CHANGE_CMD,
         () => {
           linkNodeRef.current = null;
           let currentLinkURL = "";
@@ -162,11 +160,10 @@ export default function LinkPlugin() {
           setLinkText(currentLinkText);
           return false;
         },
-        COMMAND_PRIORITY_LOW,
       ),
 
-      editor.registerCommand(
-        KEY_SPACE_COMMAND,
+      $registerCommandListener(
+        KEY_SPACE_CMD,
         () => {
           editor.update(() => {
             const selection = $getSelection();
@@ -180,11 +177,10 @@ export default function LinkPlugin() {
           });
           return false;
         },
-        COMMAND_PRIORITY_LOW,
       ),
 
-      editor.registerCommand(
-        KEY_ENTER_COMMAND,
+      $registerCommandListener(
+        KEY_ENTER_CMD,
         () => {
           editor.update(() => {
             const selection = $getPreviousSelection();
@@ -199,10 +195,9 @@ export default function LinkPlugin() {
           });
           return false;
         },
-        COMMAND_PRIORITY_LOW,
       ),
-      editor.registerCommand(
-        LINK_CONVERT_SELECTED_COMMAND,
+      $registerCommandListener(
+        LINK_CONVERT_SELECTED_CMD,
         () => {
           const selection = $getSelection();
           if ($isRangeSelection(selection)) {
@@ -243,7 +238,6 @@ export default function LinkPlugin() {
           }
           return true;
         },
-        COMMAND_PRIORITY_LOW
       ),
     );
   }, [editor]);

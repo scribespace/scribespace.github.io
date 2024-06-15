@@ -5,12 +5,11 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 
 import { $getImageNodeByKey, $isImageNode } from "@editor/nodes/image/imageNode";
+import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import { $getImageManager } from "@systems/imageManager";
 import {
   $getNodeByKey,
-  CLICK_COMMAND,
-  COMMAND_PRIORITY_LOW,
-  NodeKey,
+  NodeKey
 } from "lexical";
 import {
   useCallback,
@@ -19,6 +18,7 @@ import {
   useState
 } from "react";
 import { ImageControl } from "./imageControl";
+import { CLICK_CMD } from "@editor/plugins/commandsPlugin/commands";
 
 const MISSING_IMAGE = "/images/no-image.png" as const;
 
@@ -160,18 +160,17 @@ export function Image({
   }, [blob, editor, imageLoadFailed, imageState, src, uploadImage]);
 
   useEffect(() => {
-    return editor.registerCommand(
-      CLICK_COMMAND,
+    return $registerCommandListener(
+      CLICK_CMD,
       (event: MouseEvent) => {
         if (event.target == imageRef.current) {
           clearSelection();
           setSelected(true);
           return true;
         }
-
+        
         return false;
-      },
-      COMMAND_PRIORITY_LOW
+      }
     );
   }, [clearSelection, editor, setSelected]);
 

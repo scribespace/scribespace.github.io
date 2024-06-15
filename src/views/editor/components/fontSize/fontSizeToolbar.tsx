@@ -4,16 +4,14 @@ import { MainTheme } from "@/theme";
 import { Metric } from "@/utils/types";
 import { useEditorEditable } from "@/views/editor/hooks/useEditorEditable";
 import {
-  DECREASE_FONT_SIZE_COMMAND,
-  FONT_SIZE_CHANGED_COMMAND,
-  INCREASE_FONT_SIZE_COMMAND,
-  SET_FONT_SIZE_COMMAND,
+  DECREASE_FONT_SIZE_CMD,
+  FONT_SIZE_CHANGED_CMD,
+  INCREASE_FONT_SIZE_CMD,
+  SET_FONT_SIZE_CMD,
 } from "@/views/editor/plugins/fontPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
-import {
-  COMMAND_PRIORITY_LOW
-} from "lexical";
+import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import { useEffect, useState } from "react";
 import NumberInput from "../numberInput";
 
@@ -29,29 +27,28 @@ export default function FontSizeToolbar() {
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerCommand(
-        FONT_SIZE_CHANGED_COMMAND,
+      $registerCommandListener(
+        FONT_SIZE_CHANGED_CMD,
         (currentFontSize: string) => {
           setFontSize(currentFontSize);
           return false;
-        },
-        COMMAND_PRIORITY_LOW
+        }
       )
     );
   }, [defaultFontSize, editor]);
 
   const onChange = (_: HTMLInputElement, change: number) => {
     if (change == -1) {
-      editor.dispatchCommand(DECREASE_FONT_SIZE_COMMAND, undefined);
+      $callCommand(DECREASE_FONT_SIZE_CMD, undefined);
     } else {
-      editor.dispatchCommand(INCREASE_FONT_SIZE_COMMAND, undefined);
+      $callCommand(INCREASE_FONT_SIZE_CMD, undefined);
     }
   };
 
   const onInputAccepted = (target: HTMLInputElement) => {
     const metric = Metric.fromString(target.value);
     metric.setUnit( metric.getUnit() == "" ? "pt" : metric.getUnit() );
-    editor.dispatchCommand( SET_FONT_SIZE_COMMAND, metric.toString() );
+    $callCommand( SET_FONT_SIZE_CMD, metric.toString() );
   };
 
   return (

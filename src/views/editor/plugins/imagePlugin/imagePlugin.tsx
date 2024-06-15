@@ -1,20 +1,19 @@
-import { assert } from "@utils";
+import { IMAGE_SUPPORTED_FORMATS } from "@/system/imageManager";
+import { $createImageNode, $isImageNode } from "@editor/nodes/image/imageNode";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
+import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
+import { assert } from "@utils";
 import {
   $getSelection,
   $insertNodes,
   $isNodeSelection,
-  COMMAND_PRIORITY_LOW,
-  KEY_BACKSPACE_COMMAND,
-  KEY_DELETE_COMMAND,
 } from "lexical";
 import { useCallback, useEffect } from "react";
-import { DRAG_DROP_ADD_TYPES_LISTENER_COMMAND } from "../dragDropPlugin";
-import { INSERT_IMAGES_COMMAND } from "./imageCommands";
-import { IMAGE_SUPPORTED_FORMATS } from "@/system/imageManager";
 import { ImageNode } from "../../nodes/image";
-import { $isImageNode, $createImageNode } from "@editor/nodes/image/imageNode";
+import { DRAG_DROP_ADD_TYPES_LISTENER_CMD } from "../dragDropPlugin";
+import { INSERT_IMAGES_CMD } from "./imageCommands";
+import { KEY_DELETE_CMD, KEY_BACKSPACE_CMD } from "../commandsPlugin/commands";
 
 export function ImagePlugin() {
   const [editor] = useLexicalComposerContext();
@@ -59,29 +58,26 @@ export function ImagePlugin() {
       insertImages(images);
     }
 
-    editor.dispatchCommand(DRAG_DROP_ADD_TYPES_LISTENER_COMMAND, {
+    $callCommand(DRAG_DROP_ADD_TYPES_LISTENER_CMD, {
       types: Object.getOwnPropertyNames(IMAGE_SUPPORTED_FORMATS),
       listener: dragDropListener,
     });
 
     return mergeRegister(
-      editor.registerCommand(
-        INSERT_IMAGES_COMMAND,
+      $registerCommandListener(
+        INSERT_IMAGES_CMD,
         (images: File[]) => {
           insertImages(images);
           return true;
         },
-        COMMAND_PRIORITY_LOW,
       ),
-      editor.registerCommand(
-        KEY_DELETE_COMMAND,
+      $registerCommandListener(
+        KEY_DELETE_CMD,
         onDelete,
-        COMMAND_PRIORITY_LOW,
       ),
-      editor.registerCommand(
-        KEY_BACKSPACE_COMMAND,
+      $registerCommandListener(
+        KEY_BACKSPACE_CMD,
         onDelete,
-        COMMAND_PRIORITY_LOW,
       ),
     );
   }, [editor, onDelete]);

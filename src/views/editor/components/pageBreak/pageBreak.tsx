@@ -1,11 +1,13 @@
 import { useMainThemeContext } from '@/mainThemeContext';
 import { MainTheme } from '@/theme';
 import { $isPageBreakNode } from '@editor/nodes/pageBreak/pageBreakNode';
+import { CLICK_CMD, KEY_BACKSPACE_CMD, KEY_DELETE_CMD } from '@editor/plugins/commandsPlugin/commands';
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 import { mergeRegister } from "@lexical/utils";
-import { $getNodeByKey, $getSelection, $isNodeSelection, CLICK_COMMAND, COMMAND_PRIORITY_LOW, KEY_BACKSPACE_COMMAND, KEY_DELETE_COMMAND, NodeKey } from "lexical";
+import { $registerCommandListener } from '@systems/commandsManager/commandsManager';
+import { $getNodeByKey, $getSelection, $isNodeSelection, NodeKey } from "lexical";
 import { useCallback, useEffect } from "react";
 
 export function PageBreak({ nodeKey }: { nodeKey: NodeKey; }) {
@@ -30,8 +32,8 @@ export function PageBreak({ nodeKey }: { nodeKey: NodeKey; }) {
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerCommand(
-        CLICK_COMMAND,
+      $registerCommandListener(
+        CLICK_CMD,
         (event: MouseEvent) => {
           const pbElem = editor.getElementByKey(nodeKey);
 
@@ -42,20 +44,17 @@ export function PageBreak({ nodeKey }: { nodeKey: NodeKey; }) {
             setSelected(!isSelected);
             return true;
           }
-
+          
           return false;
-        },
-        COMMAND_PRIORITY_LOW
+        }
       ),
-      editor.registerCommand(
-        KEY_DELETE_COMMAND,
+      $registerCommandListener(
+        KEY_DELETE_CMD,
         $onDelete,
-        COMMAND_PRIORITY_LOW
       ),
-      editor.registerCommand(
-        KEY_BACKSPACE_COMMAND,
+      $registerCommandListener(
+        KEY_BACKSPACE_CMD,
         $onDelete,
-        COMMAND_PRIORITY_LOW
       )
     );
   }, [clearSelection, editor, isSelected, nodeKey, $onDelete, setSelected]);

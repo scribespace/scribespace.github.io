@@ -1,7 +1,7 @@
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { useEditorEditable } from "@/views/editor/hooks/useEditorEditable";
-import { useDecorators } from "@editorHelpers/useDecorators";
+import { useDecorators } from "@editor/lexicalHelpers/useDecorators";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { registerRichText } from "@lexical/rich-text";

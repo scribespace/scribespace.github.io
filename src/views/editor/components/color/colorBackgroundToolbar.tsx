@@ -1,16 +1,16 @@
+import { MenuItem, Submenu } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
-import { SET_BACKGROUND_COLOR_COMMAND } from "@editor/plugins/colorPlugin";
+import { SET_BACKGROUND_COLOR_CMD } from "@editor/plugins/colorPlugin";
 import {
   $closeToolbarMenu,
-  TOOLBAR_CLOSE_MENU_COMMAND,
+  TOOLBAR_CLOSE_MENU_CMD,
 } from "@editor/plugins/toolbarPlugin/common";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
-import { COMMAND_PRIORITY_LOW } from "lexical";
+import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import { useEffect, useState } from "react";
 import { ColorResult } from "react-color";
 import ColorPicker from "./colorPicker";
-import { Submenu, MenuItem } from "@/components/menu";
 
 export default function ColorBackgroundToolbar() {
   const [editor] = useLexicalComposerContext();
@@ -21,21 +21,20 @@ export default function ColorBackgroundToolbar() {
   } = useMainThemeContext();
 
   const onChange = (color: ColorResult) => {
-    editor.dispatchCommand(SET_BACKGROUND_COLOR_COMMAND, color.hex);
-    $closeToolbarMenu(editor);
+    $callCommand(SET_BACKGROUND_COLOR_CMD, color.hex);
+    $closeToolbarMenu();
   };
 
   const [showSubmenu, setShowSubmenu] = useState<boolean>(false);
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerCommand(
-        TOOLBAR_CLOSE_MENU_COMMAND,
+      $registerCommandListener(
+        TOOLBAR_CLOSE_MENU_CMD,
         () => {
           setShowSubmenu(false);
           return false;
-        },
-        COMMAND_PRIORITY_LOW,
+        }
       ),
     );
   }, [editor, showSubmenu, setShowSubmenu]);

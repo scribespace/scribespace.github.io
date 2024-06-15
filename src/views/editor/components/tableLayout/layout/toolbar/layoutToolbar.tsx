@@ -2,13 +2,13 @@ import { MenuItem, Submenu } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
 import {
   $closeToolbarMenu,
-  TOOLBAR_CLOSE_MENU_COMMAND,
+  TOOLBAR_CLOSE_MENU_CMD,
 } from "@/views/editor/plugins/toolbarPlugin/common";
 import { useToolbarContext } from "@/views/editor/plugins/toolbarPlugin/context";
-import { LAYOUT_INSERT_COMMAND } from "@editor/plugins/tableLayoutPlugin";
+import { LAYOUT_INSERT_CMD } from "@editor/plugins/tableLayoutPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
-import { COMMAND_PRIORITY_LOW } from "lexical";
+import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import { useCallback, useEffect, useState } from "react";
 import NumberInput from "../../../numberInput";
 
@@ -29,21 +29,20 @@ export function LayoutCreateToolbar() {
   const onInputAccept = useCallback(
     (input: HTMLInputElement) => {
         const cols = input.valueAsNumber;
-        editor.dispatchCommand( LAYOUT_INSERT_COMMAND, cols );
-        $closeToolbarMenu(editor);
+        $callCommand( LAYOUT_INSERT_CMD, cols );
+        $closeToolbarMenu();
     },
-    [editor],
+    [],
   );
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerCommand(
-        TOOLBAR_CLOSE_MENU_COMMAND,
+      $registerCommandListener(
+        TOOLBAR_CLOSE_MENU_CMD,
         () => {
           setShowSubmenu(false);
           return false;
-        },
-        COMMAND_PRIORITY_LOW,
+        }
       ),
     );
   }, [editor, showSubmenu, setShowSubmenu]);

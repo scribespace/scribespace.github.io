@@ -1,3 +1,3 @@
-import { LexicalCommand, createCommand } from "lexical";
+import { $registerEditorCommand } from "../commandsPlugin/commands";
 
-export const INSERT_IMAGES_COMMAND: LexicalCommand<File[]> = createCommand("INSERT_IMAGES_COMMAND");
+export const INSERT_IMAGES_CMD = $registerEditorCommand<File[]>("INSERT_IMAGES_CMD");

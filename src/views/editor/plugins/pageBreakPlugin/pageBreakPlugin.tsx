@@ -9,16 +9,16 @@ import { $createPageBreakNode, PageBreakNode } from '@editor/nodes/pageBreak/pag
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { $isTableNode, $isTableSelection } from '@lexical/table';
 import { $insertNodeToNearestRoot, mergeRegister } from '@lexical/utils';
+import { $callCommand, $registerCommandListener } from '@systems/commandsManager/commandsManager';
 import {
-    $getRoot,
-    $getSelection,
-    $isRangeSelection,
-    $isRootNode,
-    COMMAND_PRIORITY_LOW,
-    SELECTION_CHANGE_COMMAND
+  $getRoot,
+  $getSelection,
+  $isRangeSelection,
+  $isRootNode
 } from 'lexical';
 import { useEffect, useRef } from 'react';
-import { PAGE_BREAK_CAN_INSERT_COMMAND, PAGE_BREAK_INSERT_COMMAND } from './pageBreakCommands';
+import { SELECTION_CHANGE_CMD } from '../commandsPlugin/commands';
+import { PAGE_BREAK_CAN_INSERT_CMD, PAGE_BREAK_INSERT_CMD } from './pageBreakCommands';
 
 
 export default function PageBreakPlugin(): JSX.Element | null {
@@ -33,8 +33,8 @@ export default function PageBreakPlugin(): JSX.Element | null {
     }
 
     return mergeRegister(
-      editor.registerCommand(
-        PAGE_BREAK_INSERT_COMMAND,
+      $registerCommandListener(
+        PAGE_BREAK_INSERT_CMD,
         () => {
           const selection = $getSelection();
 
@@ -50,10 +50,9 @@ export default function PageBreakPlugin(): JSX.Element | null {
 
           return true;
         },
-        COMMAND_PRIORITY_LOW
       ),
-      editor.registerCommand(
-        SELECTION_CHANGE_COMMAND,
+      $registerCommandListener(
+        SELECTION_CHANGE_CMD,
         () => {
             const selection = $getSelection();
             let canInsertPageBreak = true;
@@ -69,11 +68,10 @@ export default function PageBreakPlugin(): JSX.Element | null {
             
             if ( canInsertPageBreak != canInsertPageBreakRef.current ){
                 canInsertPageBreakRef.current = canInsertPageBreak;
-                editor.dispatchCommand(PAGE_BREAK_CAN_INSERT_COMMAND, canInsertPageBreak);
+                $callCommand(PAGE_BREAK_CAN_INSERT_CMD, canInsertPageBreak);
             }
             return true;
         },
-        COMMAND_PRIORITY_LOW
       )
     );
   }, [editor]);

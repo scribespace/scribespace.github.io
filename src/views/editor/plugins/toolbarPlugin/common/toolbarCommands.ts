@@ -1,3 +1,3 @@
-import { LexicalCommand, createCommand } from "lexical";
+import { $registerEditorCommand } from "@editor/plugins/commandsPlugin/commands";
 
-export const TOOLBAR_CLOSE_MENU_COMMAND: LexicalCommand<void> = createCommand("TOOLBAR_CLOSE_MENU_COMMAND");
+export const TOOLBAR_CLOSE_MENU_CMD = $registerEditorCommand<void>("TOOLBAR_CLOSE_MENU_CMD");

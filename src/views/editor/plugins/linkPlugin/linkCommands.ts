@@ -1,3 +1,3 @@
-import { LexicalCommand, createCommand } from "lexical";
+import { $registerEditorCommand } from "../commandsPlugin/commands";
 
-export const LINK_CONVERT_SELECTED_COMMAND: LexicalCommand<void> = createCommand("LINK_CONVERT_SELECTED_COMMAND");
+export const LINK_CONVERT_SELECTED_CMD = $registerEditorCommand<void>("LINK_CONVERT_SELECTED_CMD");

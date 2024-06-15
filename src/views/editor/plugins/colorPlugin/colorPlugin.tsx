@@ -1,18 +1,18 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $patchStyleText } from "@lexical/selection";
-import { $isTableSelection, $isTableCellNode } from "@lexical/table";
+import { $isTableCellNode, $isTableSelection } from "@lexical/table";
 import { mergeRegister } from "@lexical/utils";
+import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import {
   $getSelection,
-  $isRangeSelection,
-  COMMAND_PRIORITY_LOW,
+  $isRangeSelection
 } from "lexical";
 import { useEffect } from "react";
 import {
-  SET_FONT_COLOR_COMMAND,
-  FONT_COLOR_CHANGE_COMMAND,
-  SET_BACKGROUND_COLOR_COMMAND,
-  BACKGROUND_COLOR_CHANGE_COMMAND,
+  BACKGROUND_COLOR_CHANGE_CMD,
+  FONT_COLOR_CHANGE_CMD,
+  SET_BACKGROUND_COLOR_CMD,
+  SET_FONT_COLOR_CMD,
 } from "./colorCommands";
 
 export function ColorPlugin() {
@@ -20,26 +20,23 @@ export function ColorPlugin() {
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerCommand(
-        SET_FONT_COLOR_COMMAND,
+      $registerCommandListener(
+        SET_FONT_COLOR_CMD,
         (color: string) => {
           const selection = $getSelection();
           if ($isRangeSelection(selection)) {
             $patchStyleText(selection, { color: color });
-            editor.dispatchCommand(FONT_COLOR_CHANGE_COMMAND, undefined);
+            $callCommand(FONT_COLOR_CHANGE_CMD, undefined);
           }
-
-          return false;
         },
-        COMMAND_PRIORITY_LOW,
       ),
-      editor.registerCommand(
-        SET_BACKGROUND_COLOR_COMMAND,
+      $registerCommandListener(
+        SET_BACKGROUND_COLOR_CMD,
         (color: string) => {
           const selection = $getSelection();
           if ($isRangeSelection(selection)) {
             $patchStyleText(selection, { "background-color": color });
-            editor.dispatchCommand(BACKGROUND_COLOR_CHANGE_COMMAND, undefined);
+            $callCommand(BACKGROUND_COLOR_CHANGE_CMD, undefined);
           } else if ($isTableSelection(selection)) {
             selection.getNodes().forEach((cellNode) => {
               if ($isTableCellNode(cellNode)) {
@@ -47,10 +44,7 @@ export function ColorPlugin() {
               }
             });
           }
-
-          return false;
         },
-        COMMAND_PRIORITY_LOW,
       ),
     );
   }, [editor]);

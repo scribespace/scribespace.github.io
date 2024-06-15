@@ -1,10 +1,10 @@
 import { MenuItem } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { PAGE_BREAK_CAN_INSERT_COMMAND, PAGE_BREAK_INSERT_COMMAND } from "@editor/plugins/pageBreakPlugin/pageBreakCommands";
+import { PAGE_BREAK_CAN_INSERT_CMD, PAGE_BREAK_INSERT_CMD } from "@editor/plugins/pageBreakPlugin/pageBreakCommands";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
-import { COMMAND_PRIORITY_LOW } from "lexical";
+import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import { useCallback, useEffect, useState } from "react";
 
 export function PageBreakToolbar() {
@@ -14,21 +14,20 @@ export function PageBreakToolbar() {
 
    const onClick = useCallback(
         () => {
-            editor.dispatchCommand( PAGE_BREAK_INSERT_COMMAND, undefined );
+            $callCommand( PAGE_BREAK_INSERT_CMD, undefined );
         },
-        [editor]
+        []
     );
 
     useEffect( 
       () => {
         return mergeRegister(
-          editor.registerCommand( 
-            PAGE_BREAK_CAN_INSERT_COMMAND,
+          $registerCommandListener( 
+            PAGE_BREAK_CAN_INSERT_CMD,
             (value: boolean) => {
               setCanInsert( value );
               return true;
-            },
-            COMMAND_PRIORITY_LOW
+            }
           )
         );
       },

@@ -1,14 +1,14 @@
+import { Menu, MenuRoot } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
-import { COMMAND_PRIORITY_LOW } from "lexical";
+import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import { useEffect, useState } from "react";
-import { CONTEXT_MENU_CLOSE_MENU_COMMAND } from "./common/contextMenuCommands";
+import { TableLayoutContextOptions } from "../../components/tableLayout/tableLayoutContextOptions";
+import { CONTEXT_MENU_CLOSE_MENU_CMD } from "./common/contextMenuCommands";
 import { CONTEXT_MENU_CONTEX_DEFAULT, ContextMenuContextData } from "./context";
 import "./css/contextMenuPlugin.css";
-import { TableLayoutContextOptions } from "../../components/tableLayout/tableLayoutContextOptions";
-import { MenuRoot, Menu } from "@/components/menu";
 
 export default function ContextMenuPlugin() {
   const { editorTheme }: MainTheme = useMainThemeContext();
@@ -55,13 +55,12 @@ export default function ContextMenuPlugin() {
         }
       }),
 
-      editor.registerCommand(
-        CONTEXT_MENU_CLOSE_MENU_COMMAND,
+      $registerCommandListener(
+        CONTEXT_MENU_CLOSE_MENU_CMD,
         () => {
           closeContextMenu();
           return false;
         },
-        COMMAND_PRIORITY_LOW,
       ),
     );
   }, [editor]);

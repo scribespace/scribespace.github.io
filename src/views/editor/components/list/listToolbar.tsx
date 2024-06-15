@@ -1,26 +1,25 @@
 import { MenuItem } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from "@lexical/list";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { INSERT_ORDERED_LIST_CMD, INSERT_UNORDERED_LIST_CMD } from "@editor/plugins/commandsPlugin/commands";
+import { $callCommand } from "@systems/commandsManager/commandsManager";
 import { useCallback } from "react";
 
 export function ListToolbar() {
-  const [editor] = useLexicalComposerContext();
   const { editorTheme: {listTheme: {ListBulletIcon, ListNumberIcon}} }: MainTheme = useMainThemeContext();
 
     const onClickBullet = useCallback(
         () => {
-            editor.dispatchCommand( INSERT_UNORDERED_LIST_COMMAND, undefined );
+            $callCommand( INSERT_UNORDERED_LIST_CMD, undefined );
         },
-        [editor]
+        []
     );
 
     const onClickNumbers = useCallback(
         () => {
-            editor.dispatchCommand( INSERT_ORDERED_LIST_COMMAND, undefined );
+            $callCommand( INSERT_ORDERED_LIST_CMD, undefined );
         },
-        [editor]
+        []
     );
 
     return (
@@ -34,3 +33,4 @@ export function ListToolbar() {
         </>
       );
 }
+

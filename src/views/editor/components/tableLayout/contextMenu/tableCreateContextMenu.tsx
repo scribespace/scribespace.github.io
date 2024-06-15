@@ -2,12 +2,11 @@ import { MenuItem, Submenu } from "@/components/menu";
 import SubmenuIcon from "@/components/menu/submenuIcon";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { TableCreator } from "../table/tableCreator";
-import { TABLE_INSERT_COMMAND } from "@editor/plugins/tableLayoutPlugin";
+import { TABLE_INSERT_CMD } from "@editor/plugins/tableLayoutPlugin";
+import { $callCommand } from "@systems/commandsManager/commandsManager";
 
 export function TableCreateContextMenu() {
-  const [editor] = useLexicalComposerContext();
   const {
     editorTheme: {
       tableLayoutTheme: {
@@ -17,8 +16,8 @@ export function TableCreateContextMenu() {
   } = useMainThemeContext();
 
   function onClick(rowsCount: number, columnsCount: number) {
-    editor.dispatchCommand( TABLE_INSERT_COMMAND, {rows: rowsCount, columns: columnsCount} );
-    $closeContextMenu(editor);
+    $callCommand( TABLE_INSERT_CMD, {rows: rowsCount, columns: columnsCount} );
+    $closeContextMenu();
   }
 
   return (

@@ -1,20 +1,19 @@
+import { MenuItem, Submenu } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
+import { FORMAT_ELEMENT_CMD, SELECTION_CHANGE_CMD } from "@editor/plugins/commandsPlugin/commands";
 import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";
+import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import {
   $getSelection,
   $isElementNode,
   $isNodeSelection,
   $isRangeSelection,
-  COMMAND_PRIORITY_LOW,
   ElementFormatType,
-  ElementNode,
-  FORMAT_ELEMENT_COMMAND,
-  SELECTION_CHANGE_COMMAND,
+  ElementNode
 } from "lexical";
 import { useEffect, useMemo, useState } from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { MenuItem, Submenu } from "@/components/menu";
 
 export default function AlignToolbar() {
   const [editor] = useLexicalComposerContext();
@@ -36,19 +35,19 @@ export default function AlignToolbar() {
     useState<ElementFormatType>("left");
 
   const onClickLeft = () => {
-    editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left");
+    $callCommand(FORMAT_ELEMENT_CMD, "left");
   };
 
   const onClickCenter = () => {
-    editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center");
+    $callCommand(FORMAT_ELEMENT_CMD, "center");
   };
 
   const onClickRight = () => {
-    editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right");
+    $callCommand(FORMAT_ELEMENT_CMD, "right");
   };
 
   const onClickJustify = () => {
-    editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "justify");
+    $callCommand(FORMAT_ELEMENT_CMD, "justify");
   };
 
   useEffect(() => {
@@ -80,13 +79,12 @@ export default function AlignToolbar() {
       };
 
       return mergeRegister(
-        editor.registerCommand(
-          SELECTION_CHANGE_COMMAND,
+        $registerCommandListener(
+          SELECTION_CHANGE_CMD,
           () => {
             updateStates();
             return false;
           },
-          COMMAND_PRIORITY_LOW,
         ),
         editor.registerUpdateListener(({ editorState }) => {
           editorState.read(() => {

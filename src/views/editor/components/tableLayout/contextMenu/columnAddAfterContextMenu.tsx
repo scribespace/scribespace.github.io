@@ -2,12 +2,11 @@ import { MenuItem, Submenu } from "@/components/menu";
 import SubmenuIcon from "@/components/menu/submenuIcon";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { $closeContextMenu } from "@/views/editor/plugins/contextMenuPlugin/common";
-import { TABLE_LAYOUT_COLUMN_ADD_AFTER_COMMAND } from "@editor/plugins/tableLayoutPlugin";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { TABLE_LAYOUT_COLUMN_ADD_AFTER_CMD } from "@editor/plugins/tableLayoutPlugin";
 import { NumberInputContextMenu } from "./numberInputContextMenu";
+import { $callCommand } from "@systems/commandsManager/commandsManager";
 
 export function ColumnAddAfterContextMenu() {
-  const [editor] = useLexicalComposerContext();
   const {
     editorTheme: {
       tableLayoutTheme: {
@@ -18,8 +17,8 @@ export function ColumnAddAfterContextMenu() {
 
   const onInputAccepted = (input: HTMLInputElement) => {
     const value = input.valueAsNumber;
-    editor.dispatchCommand(TABLE_LAYOUT_COLUMN_ADD_AFTER_COMMAND, value);
-    $closeContextMenu(editor);
+    $callCommand(TABLE_LAYOUT_COLUMN_ADD_AFTER_CMD, value);
+    $closeContextMenu();
   };
 
   return (

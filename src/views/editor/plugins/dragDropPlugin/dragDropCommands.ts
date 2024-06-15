@@ -1,4 +1,4 @@
-import { LexicalCommand, createCommand } from "lexical";
+import { $registerCommand } from "@systems/commandsManager/commandsManager";
 
 export type DragDropListener = (files: File[]) => void;
 
@@ -6,4 +6,4 @@ export interface DragDropAddTypesListenerPayload {
   types: string[];
   listener: DragDropListener;
 }
-export const DRAG_DROP_ADD_TYPES_LISTENER_COMMAND: LexicalCommand<DragDropAddTypesListenerPayload> = createCommand("DRAG_DROP_ADD_TYPES_LISTENER_COMMAND");
+export const DRAG_DROP_ADD_TYPES_LISTENER_CMD = $registerCommand<DragDropAddTypesListenerPayload>("DRAG_DROP_ADD_TYPES_LISTENER_CMD");

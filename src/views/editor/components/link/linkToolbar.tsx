@@ -1,14 +1,14 @@
 import { MenuItem } from "@/components/menu";
 import { $menuItemParent } from "@/components/menu/theme";
 import { useMainThemeContext } from "@/mainThemeContext";
-import { LINK_CONVERT_SELECTED_COMMAND } from "@editor/plugins/linkPlugin/linkCommands";
+import { SELECTION_CHANGE_CMD } from "@editor/plugins/commandsPlugin/commands";
+import { LINK_CONVERT_SELECTED_CMD } from "@editor/plugins/linkPlugin/linkCommands";
 import { $isLinkNode } from "@lexical/link";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import {
   $getSelection,
-  $isRangeSelection,
-  COMMAND_PRIORITY_LOW,
-  SELECTION_CHANGE_COMMAND
+  $isRangeSelection
 } from "lexical";
 import { useEffect, useState } from "react";
 import { useToolbarContext } from "../../plugins/toolbarPlugin/context";
@@ -26,7 +26,7 @@ export function LinkToolbar() {
   const [isLinkSelected, setIsLinkSelected] = useState<boolean>(false);
 
   function onClick(e: React.MouseEvent) {
-    editor.dispatchCommand(LINK_CONVERT_SELECTED_COMMAND, undefined);
+    $callCommand(LINK_CONVERT_SELECTED_CMD, undefined);
     e.preventDefault();
   }
 
@@ -50,13 +50,12 @@ export function LinkToolbar() {
       });
     }
 
-    return editor.registerCommand(
-      SELECTION_CHANGE_COMMAND,
+    return $registerCommandListener(
+      SELECTION_CHANGE_CMD,
       () => {
         updateState();
         return false;
-      },
-      COMMAND_PRIORITY_LOW,
+      }
     );
   }, [editor]);
 

@@ -1,15 +1,15 @@
 import { MenuItem, Submenu } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
+import { TABLE_INSERT_CMD } from "@editor/plugins/tableLayoutPlugin";
 import {
   $closeToolbarMenu,
-  TOOLBAR_CLOSE_MENU_COMMAND,
+  TOOLBAR_CLOSE_MENU_CMD,
 } from "@editor/plugins/toolbarPlugin/common";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
-import { COMMAND_PRIORITY_LOW } from "lexical";
+import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import { useEffect, useState } from "react";
 import { TableCreator } from "../tableCreator";
-import { TABLE_INSERT_COMMAND } from "@editor/plugins/tableLayoutPlugin";
 
 export function TableCreateToolbar() {
   const [editor] = useLexicalComposerContext();
@@ -24,19 +24,18 @@ export function TableCreateToolbar() {
   const [showSubmenu, setShowSubmenu] = useState<boolean>(false);
 
   function onClick(rowsCount: number, columnsCount: number) {
-      editor.dispatchCommand( TABLE_INSERT_COMMAND, {rows: rowsCount, columns: columnsCount} );
-      $closeToolbarMenu(editor);
+      $callCommand( TABLE_INSERT_CMD, {rows: rowsCount, columns: columnsCount} );
+      $closeToolbarMenu();
   }
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerCommand(
-        TOOLBAR_CLOSE_MENU_COMMAND,
+      $registerCommandListener(
+        TOOLBAR_CLOSE_MENU_CMD,
         () => {
           setShowSubmenu(false);
           return false;
-        },
-        COMMAND_PRIORITY_LOW,
+        }
       ),
     );
   }, [editor, showSubmenu, setShowSubmenu]);

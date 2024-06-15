@@ -24,11 +24,9 @@ import {
   $getSelection,
   $isParagraphNode,
   $isRangeSelection,
-  COMMAND_PRIORITY_LOW,
   LexicalEditor,
   LexicalNode,
   RangeSelection,
-  SELECTION_CHANGE_COMMAND
 } from "lexical";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -42,6 +40,8 @@ import {
   ExtendedTableNode,
   TableBodyNode
 } from "@editor/nodes/table";
+import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
+import { SELECTION_CHANGE_CMD } from "@editor/plugins/commandsPlugin/commands";
 
 const DRAG_NONE = 0 as const;
 const DRAG_HORIZONTAL = 1 as const;
@@ -567,8 +567,8 @@ export default function TablePlugin() {
           }
         });
       }),
-      editor.registerCommand(
-        SELECTION_CHANGE_COMMAND,
+      $registerCommandListener(
+        SELECTION_CHANGE_CMD,
         () => {
           const selection = $getSelection();
           const nodes = selection?.getNodes();
@@ -611,7 +611,6 @@ export default function TablePlugin() {
 
           return false;
         },
-        COMMAND_PRIORITY_LOW,
       ),
     );
   }, [editor]);
