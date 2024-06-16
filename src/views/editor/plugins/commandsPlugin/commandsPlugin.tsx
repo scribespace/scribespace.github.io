@@ -1,13 +1,12 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
-import { $packShortcut, $shortcutFromKeyboardEvent } from "@systems/commandsManager/shortcut";
+import { $packShortcut, $shortcutFromKeyboardEvent, INVALID_SHORTCUT } from "@systems/commandsManager/shortcut";
 import { Func, assert, variableExists } from "@utils";
 import { COMMAND_PRIORITY_NORMAL } from "lexical";
 import { useEffect, useRef } from "react";
+import { $getEditorShortcutsMap, LEXICAL_DELETE_NATIVE_CMD, LEXICAL_DISPATCH_NATIVE_CMD, LEXICAL_REGISTER_NATIVE_CMD, LISTENERS_TO_CALL_CMD, LexicalCommandPayload } from "./editorCommandManager";
 import { KEY_DOWN_CMD } from "./editorCommands";
-import { $getEditorShortcutsMap, LEXICAL_DELETE_NATIVE_CMD, LEXICAL_DISPATCH_NATIVE_CMD, LEXICAL_REGISTER_NATIVE_CMD, LISTENERS_TO_CALL_CMD } from "./editorCommandManager";
-import { LexicalCommandPayload } from "./editorCommandManager";
 
 export function CommandsPlugin(){
     const [editor] = useLexicalComposerContext();
@@ -60,6 +59,9 @@ export function CommandsPlugin(){
                         const shortcutsMap = $getEditorShortcutsMap();
                         const shortcut = $shortcutFromKeyboardEvent(event);
                         const packedShortcut = $packShortcut(shortcut);
+                        if ( packedShortcut === INVALID_SHORTCUT ) {
+                            return false;
+                        }
                         const cmd = shortcutsMap.get(packedShortcut);
                         if ( variableExists(cmd) ) {
                             $callCommand(cmd, cmd.defaultPayload);

@@ -2,6 +2,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { TablePlugin as LexicalTablePlugin } from "@lexical/react/LexicalTablePlugin";
 import {
   $computeTableMap,
+  $getTableCellNodeFromLexicalNode,
   $getTableNodeFromLexicalNodeOrThrow,
   $getTableRowIndexFromTableCellNode,
   $isTableCellNode,
@@ -21,9 +22,11 @@ import {
   $createTextNode,
   $getNearestNodeFromDOMNode,
   $getNodeByKey,
+  $getNodeByKeyOrThrow,
   $getSelection,
   $isParagraphNode,
   $isRangeSelection,
+  $setSelection,
   LexicalEditor,
   LexicalNode,
   RangeSelection,
@@ -42,6 +45,8 @@ import {
 } from "@editor/nodes/table";
 import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import { SELECTION_CHANGE_CMD } from "@editor/plugins/commandsPlugin/editorCommands";
+import { $getExtendedTableNodeFromLexicalNode } from "@editor/nodes/table/extendedTableNode";
+import { TABLE_ROW_REMOVE_CMD, TABLE_ROW_ADD_BEFORE_CMD, TABLE_ROW_ADD_AFTER_CMD } from "../tableLayoutCommandsPlugin/tableLayoutCommands";
 
 const DRAG_NONE = 0 as const;
 const DRAG_HORIZONTAL = 1 as const;
@@ -612,6 +617,129 @@ export default function TablePlugin() {
           return false;
         },
       ),
+      $registerCommandListener(
+        TABLE_ROW_REMOVE_CMD,
+        ()=>{
+            let tableNode: ExtendedTableNode | null = null;
+            let cellNode: TableCellNode | null = null;
+            let rowsCount = 0;
+
+            const selection = $getSelection();
+            if ($isRangeSelection(selection)) {
+                cellNode = $getTableCellNodeFromLexicalNode( selection.anchor.getNode() );
+                if (!$isTableCellNode(cellNode))
+                    return false;
+                tableNode = $getExtendedTableNodeFromLexicalNode(cellNode);
+                if ( !tableNode )
+                  return false;
+                rowsCount = 1;
+            }
+
+            if ($isTableSelection(selection)) {
+                if (selection.anchor.isBefore(selection.focus)) {
+                    cellNode = selection.anchor.getNode() as TableCellNode;
+                } else {
+                    cellNode = selection.focus.getNode() as TableCellNode;
+                }
+                const tableBodyNode = $getTableNodeFromLexicalNodeOrThrow( cellNode ) as TableBodyNode;
+                tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>();
+
+                const rowID = $getTableRowIndexFromTableCellNode(cellNode);
+                for (const node of selection.getNodes()) {
+                    if ($isTableCellNode(node)) {
+                        if (tableBodyNode == $getTableNodeFromLexicalNodeOrThrow(node)) {
+                            const testRowID = $getTableRowIndexFromTableCellNode(node);
+
+                            rowsCount = Math.max(rowsCount, testRowID - rowID);
+                        }
+                    }
+                }
+                ++rowsCount;
+            }
+
+            if (!cellNode || !tableNode) 
+                return false;
+
+            tableNode.removeRows(cellNode, rowsCount);
+            $setSelection(null);
+            return true;
+        },
+    ),
+    $registerCommandListener(
+        TABLE_ROW_ADD_BEFORE_CMD,
+        (rows: number) => {
+            const selection = $getSelection();
+
+            let tableNode: ExtendedTableNode | null = null;
+            let cellNode: TableCellNode | null = null;
+            if ($isRangeSelection(selection)) {
+                cellNode = $getTableCellNodeFromLexicalNode(selection.getNodes()[0]);
+
+                if (!cellNode) 
+                    return false;
+
+                tableNode = $getExtendedTableNodeFromLexicalNode(cellNode);
+                if (!tableNode)
+                  return false;
+            }
+
+            if ($isTableSelection(selection)) {
+                const tableBodyNode = $getNodeByKeyOrThrow<TableBodyNode>( selection.tableKey );
+                tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>();
+                if (selection.anchor.isBefore(selection.focus)) {
+                    cellNode = selection.anchor.getNode() as TableCellNode;
+                } else {
+                    cellNode = selection.focus.getNode() as TableCellNode;
+                }
+            }
+
+            if (!cellNode) return false;
+            tableNode!.addRowsBefore(cellNode, rows);
+
+            $setSelection(null);
+            return true;
+        },
+    ),
+    $registerCommandListener(
+        TABLE_ROW_ADD_AFTER_CMD,
+        (rows: number)=>{
+            const selection = $getSelection();
+
+            let tableNode: ExtendedTableNode | null = null;
+            let cellNode: TableCellNode | null = null;
+            if ($isRangeSelection(selection)) {
+              cellNode = $getTableCellNodeFromLexicalNode(selection.getNodes()[0]);
+              if (!cellNode) 
+                return false;
+              tableNode = $getExtendedTableNodeFromLexicalNode(cellNode);
+              if ( !tableNode )
+                return false;
+            }
+    
+            if ($isTableSelection(selection)) {
+              const tableBodyNode = $getNodeByKeyOrThrow<TableBodyNode>(selection.tableKey);
+              tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>();
+              const rowID = -1;
+              for (const node of selection.getNodes()) {
+                if ($isTableCellNode(node)) {
+                  const cellsTableNode = $getTableNodeFromLexicalNodeOrThrow(node);
+                  if (cellsTableNode == tableBodyNode) {
+                    const nodesRowID = $getTableRowIndexFromTableCellNode(node);
+                    if (nodesRowID > rowID) {
+                      rowID == nodesRowID;
+                      cellNode = node;
+                    }
+                  }
+                }
+              }
+            }
+    
+            if (!cellNode) 
+                return false;
+            tableNode!.addRowsAfter(cellNode, rows);
+            return true;
+        },
+    ),
     );
   }, [editor]);
 

@@ -7,11 +7,10 @@
  */
 import { $createPageBreakNode, PageBreakNode } from '@editor/nodes/pageBreak/pageBreakNode';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { $isTableNode, $isTableSelection } from '@lexical/table';
+import { $isTableSelection } from '@lexical/table';
 import { $insertNodeToNearestRoot, mergeRegister } from '@lexical/utils';
 import { $callCommand, $registerCommandListener } from '@systems/commandsManager/commandsManager';
 import {
-  $getRoot,
   $getSelection,
   $isRangeSelection,
   $isRootNode

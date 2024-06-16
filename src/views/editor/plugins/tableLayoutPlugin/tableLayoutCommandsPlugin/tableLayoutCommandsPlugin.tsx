@@ -1,13 +1,13 @@
 import { $createLayoutNodeWithColumns } from "@editor/nodes/layout";
 import { $createExtendedTableNodeWithDimensions, $getExtendedTableNodeFromLexicalNodeOrThrow, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $findCellNode, $findTableNode, $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $getTableRowIndexFromTableCellNode, $isTableCellNode, $isTableNode, $isTableRowNode, $isTableSelection, TableCellNode, TableRowNode } from "@lexical/table";
+import { $findCellNode, $findTableNode, $getTableCellNodeFromLexicalNode, $getTableNodeFromLexicalNodeOrThrow, $isTableCellNode, $isTableNode, $isTableRowNode, $isTableSelection, TableCellNode, TableRowNode } from "@lexical/table";
 import { mergeRegister } from "@lexical/utils";
 import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import { $getNodeByKey, $getNodeByKeyOrThrow, $getSelection, $insertNodes, $isRangeSelection, $setSelection } from "lexical";
 import { useEffect } from "react";
 import { $getTableColumnIndexFromTableCellNode } from "..";
-import { InsertTablePayload, LAYOUT_INSERT_CMD, TABLE_INSERT_CMD, TABLE_LAYOUT_COLUMN_ADD_AFTER_CMD, TABLE_LAYOUT_COLUMN_ADD_BEFORE_CMD, TABLE_LAYOUT_COLUMN_REMOVE_CMD, TABLE_LAYOUT_MERGE_CELLS_CMD, TABLE_LAYOUT_REMOVE_SELECTED_CMD, TABLE_LAYOUT_SPLIT_CELLS_CMD, TABLE_ROW_ADD_AFTER_CMD, TABLE_ROW_ADD_BEFORE_CMD, TABLE_ROW_REMOVE_CMD } from "./tableLayoutCommands";
+import { InsertTablePayload, LAYOUT_INSERT_CMD, TABLE_INSERT_CMD, TABLE_LAYOUT_COLUMN_ADD_AFTER_CMD, TABLE_LAYOUT_COLUMN_ADD_BEFORE_CMD, TABLE_LAYOUT_COLUMN_REMOVE_CMD, TABLE_LAYOUT_MERGE_CELLS_CMD, TABLE_LAYOUT_REMOVE_SELECTED_CMD, TABLE_LAYOUT_SPLIT_CELLS_CMD } from "./tableLayoutCommands";
 
 export function TableLayoutCommandsPlugin() {
     const [editor] = useLexicalComposerContext();
@@ -168,124 +168,7 @@ export function TableLayoutCommandsPlugin() {
 
                         return false;
                     },
-                ),
-                $registerCommandListener(
-                    TABLE_ROW_REMOVE_CMD,
-                    ()=>{
-                        let tableNode: ExtendedTableNode | null = null;
-                        let cellNode: TableCellNode | null = null;
-                        let rowsCount = 0;
-
-                        const selection = $getSelection();
-                        if ($isRangeSelection(selection)) {
-                            cellNode = $getTableCellNodeFromLexicalNode( selection.anchor.getNode() );
-                            if (!$isTableCellNode(cellNode))
-                                return false;
-                            tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(cellNode);
-                            rowsCount = 1;
-                        }
-
-                        if ($isTableSelection(selection)) {
-                            if (selection.anchor.isBefore(selection.focus)) {
-                                cellNode = selection.anchor.getNode() as TableCellNode;
-                            } else {
-                                cellNode = selection.focus.getNode() as TableCellNode;
-                            }
-                            const tableBodyNode = $getTableNodeFromLexicalNodeOrThrow( cellNode ) as TableBodyNode;
-                            tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>();
-
-                            const rowID = $getTableRowIndexFromTableCellNode(cellNode);
-                            for (const node of selection.getNodes()) {
-                                if ($isTableCellNode(node)) {
-                                    if (tableBodyNode == $getTableNodeFromLexicalNodeOrThrow(node)) {
-                                        const testRowID = $getTableRowIndexFromTableCellNode(node);
-
-                                        rowsCount = Math.max(rowsCount, testRowID - rowID);
-                                    }
-                                }
-                            }
-                            ++rowsCount;
-                        }
-
-                        if (!cellNode || !tableNode) 
-                            return false;
-
-                        tableNode.removeRows(cellNode, rowsCount);
-                        $setSelection(null);
-                        return true;
-                    },
-                ),
-                $registerCommandListener(
-                    TABLE_ROW_ADD_BEFORE_CMD,
-                    (rows: number) => {
-                        const selection = $getSelection();
-
-                        let tableNode: ExtendedTableNode | null = null;
-                        let cellNode: TableCellNode | null = null;
-                        if ($isRangeSelection(selection)) {
-                            cellNode = $getTableCellNodeFromLexicalNode(selection.getNodes()[0]);
-
-                            if (!cellNode) 
-                                return false;
-
-                            tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(cellNode);
-                        }
-
-                        if ($isTableSelection(selection)) {
-                            const tableBodyNode = $getNodeByKeyOrThrow<TableBodyNode>( selection.tableKey );
-                            tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>();
-                            if (selection.anchor.isBefore(selection.focus)) {
-                                cellNode = selection.anchor.getNode() as TableCellNode;
-                            } else {
-                                cellNode = selection.focus.getNode() as TableCellNode;
-                            }
-                        }
-
-                        if (!cellNode) return false;
-                        tableNode!.addRowsBefore(cellNode, rows);
-
-                        $setSelection(null);
-                        return true;
-                    },
-                ),
-                $registerCommandListener(
-                    TABLE_ROW_ADD_AFTER_CMD,
-                    (rows: number)=>{
-                        const selection = $getSelection();
-
-                        let tableNode: ExtendedTableNode | null = null;
-                        let cellNode: TableCellNode | null = null;
-                        if ($isRangeSelection(selection)) {
-                          cellNode = $getTableCellNodeFromLexicalNode(selection.getNodes()[0]);
-                          if (!cellNode) 
-                            return false;
-                          tableNode = $getExtendedTableNodeFromLexicalNodeOrThrow(cellNode);
-                        }
-                
-                        if ($isTableSelection(selection)) {
-                          const tableBodyNode = $getNodeByKeyOrThrow<TableBodyNode>(selection.tableKey);
-                          tableNode = tableBodyNode.getParentOrThrow<ExtendedTableNode>();
-                          const rowID = -1;
-                          for (const node of selection.getNodes()) {
-                            if ($isTableCellNode(node)) {
-                              const cellsTableNode = $getTableNodeFromLexicalNodeOrThrow(node);
-                              if (cellsTableNode == tableBodyNode) {
-                                const nodesRowID = $getTableRowIndexFromTableCellNode(node);
-                                if (nodesRowID > rowID) {
-                                  rowID == nodesRowID;
-                                  cellNode = node;
-                                }
-                              }
-                            }
-                          }
-                        }
-                
-                        if (!cellNode) 
-                            return false;
-                        tableNode!.addRowsAfter(cellNode, rows);
-                        return true;
-                    },
-                ),
+                ),                
                 $registerCommandListener(
                     TABLE_LAYOUT_COLUMN_REMOVE_CMD,
                     ()=>{

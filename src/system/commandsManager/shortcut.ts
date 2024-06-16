@@ -1,3 +1,5 @@
+import { assert, devOnly, variableExists } from "@utils";
+
 export enum SpecialKey {
     None = 0,
     Shift = 1 << 0,
@@ -13,29 +15,69 @@ export interface Shortcut {
     specialKeys: SpecialKey;
 }
 
-export const KEY_ENTER = "Enter" as const;
-export const KEY_BACKSPACE = "Backspace" as const;
-export const KEY_ESCAPE = "Escape" as const;
-export const KEY_DELETE = "Delete" as const;
+export const KEY_ENTER = "enter" as const;
+export const KEY_BACKSPACE = "backspace" as const;
+export const KEY_ESCAPE = "escape" as const;
+export const KEY_DELETE = "delete" as const;
+export const KEY_LEFT = 'arrowLeft' as const;
+export const KEY_RIGHT = 'arrowRight' as const;
+export const KEY_UP = 'arrowUp' as const;
+export const KEY_DOWN = 'arrowDown' as const;
+export const KEY_SHIFT = 'shift' as const;
 export const KEY_SPACE = " " as const;
-export const KEY_LEFT = 'ArrowLeft' as const;
-export const KEY_RIGHT = 'ArrowRight' as const;
-export const KEY_UP = 'ArrowUp' as const;
-export const KEY_DOWN = 'ArrowDown' as const;
+
+export const KeyToCode: Record<string, number> = {
+    enter: 0,
+    backspace: 1,
+    escape: 2,
+    delete: 3,
+    arrowLeft: 4,
+    arrowRight: 5,
+    arrowUp: 6,
+    arrowDown: 7,
+};
+
+export const CodeToKey: string[] = [
+    KEY_ENTER,
+    KEY_BACKSPACE,
+    KEY_ESCAPE,
+    KEY_DELETE,
+    KEY_LEFT,
+    KEY_RIGHT,
+    KEY_UP,
+    KEY_DOWN,
+];
+
+export const INVALID_SHORTCUT = 0;
 
 export function $packShortcut(shortcut: Shortcut): number {
-    return shortcut.key.charCodeAt(0) << SpecialKey.KeyNum | shortcut.specialKeys;
+    const supportKey = CodeToKey.includes(shortcut.key) || shortcut.key.length == 1;
+    if ( !supportKey )
+        return INVALID_SHORTCUT;
+
+    const keyCode = variableExists(KeyToCode[shortcut.key]) ? KeyToCode[shortcut.key] : shortcut.key.charCodeAt(0);
+    const packed = ( keyCode << SpecialKey.KeyNum) | shortcut.specialKeys;
+
+    devOnly(
+        () => {
+            const unpacked = $unpackShortcut(packed);
+            assert( unpacked.key == shortcut.key && unpacked.specialKeys == shortcut.specialKeys, `Packed (${packed}) and unpacked keys don't match: ${$shortcutToDebugString(shortcut)} vs ${$shortcutToDebugString(unpacked)}` );
+        }
+    );
+
+    return packed;
 }
 export function $unpackShortcut(packed: number): Shortcut {
     const specialKeys = packed & (SpecialKey.AllSet);
-    const key = String.fromCharCode((packed >> SpecialKey.KeyNum));
+    const keyCode = packed >> SpecialKey.KeyNum;
+    const key = keyCode >= CodeToKey.length ? String.fromCharCode(keyCode) : CodeToKey[keyCode];
     return { key, specialKeys };
 }
 
 export function $shortcutFromKeyboardEvent(event: KeyboardEvent): Shortcut {
     const { key, shiftKey, ctrlKey, metaKey, altKey } = event;
     return {
-        key,
+        key: key.toLowerCase(),
         specialKeys: (shiftKey ? SpecialKey.Shift : SpecialKey.None)
             | (ctrlKey ? SpecialKey.Ctrl : SpecialKey.None)
             | (metaKey ? SpecialKey.Meta : SpecialKey.None)
@@ -43,10 +85,10 @@ export function $shortcutFromKeyboardEvent(event: KeyboardEvent): Shortcut {
     };
 }
 export function $shortcutToDebugString(shortcut: Shortcut) {
-    return shortcut.key
-        + (shortcut.specialKeys & SpecialKey.Shift) ? "+ Shift" : ""
-        + (shortcut.specialKeys & SpecialKey.Ctrl) ? "+ Ctrl" : ""
-        + (shortcut.specialKeys & SpecialKey.Meta) ? "+ Meta" : ""
-        + (shortcut.specialKeys & SpecialKey.Alt) ? "+ Alt" : "";
+    return "'" + shortcut.key + "'"
+        + ((shortcut.specialKeys & SpecialKey.Shift) ? " + Shift" : "")
+        + ((shortcut.specialKeys & SpecialKey.Ctrl) ? " + Ctrl" : "")
+        + ((shortcut.specialKeys & SpecialKey.Meta) ? " + Meta" : "")
+        + ((shortcut.specialKeys & SpecialKey.Alt) ? " + Alt" : "");
 }
 export const NO_SHORTCUT: Shortcut = { key: "", specialKeys: SpecialKey.None };

@@ -331,6 +331,16 @@ export function $createExtendedTableNodeWithDimensions(
   return tableNode;
 }
 
+export function $getExtendedTableNodeFromLexicalNode(node: LexicalNode): ExtendedTableNode | null {
+  const tableBody = $getTableNodeFromLexicalNodeOrThrow(node);
+  if ( !$isTableBodyNode(tableBody) ) {
+    return null;
+  }
+
+  const parent = tableBody.getParent();
+  return $isExtendedTableNode( parent ) ? parent : null;
+}
+
 export function $getExtendedTableNodeFromLexicalNodeOrThrow(node: LexicalNode) {
   return (
     $getTableNodeFromLexicalNodeOrThrow(node) as TableBodyNode

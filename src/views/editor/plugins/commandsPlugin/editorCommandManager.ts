@@ -1,4 +1,4 @@
-import { $packShortcut, $shortcutToDebugString, NO_SHORTCUT, Shortcut } from "@systems/commandsManager/shortcut";
+import { $packShortcut, $shortcutToDebugString, INVALID_SHORTCUT, NO_SHORTCUT, Shortcut } from "@systems/commandsManager/shortcut";
 import { Func, assert, variableExists } from "@utils";
 import { LexicalCommand } from "lexical";
 import { Action } from "@systems/commandsManager/actionCommand";
@@ -82,6 +82,7 @@ export function $registerEditorActionCommand<P>(name: string, lexicalCommand?: L
   const cmd = new EditorActionCommand(name, shortcut, defaultPayload, description, lexicalCommand);
   if (variableExists(shortcut)) {
     const packedShortcut = $packShortcut(shortcut);
+    assert(packedShortcut != INVALID_SHORTCUT, `${name}: shortcut ${$shortcutToDebugString(shortcut)} not supported`);
     assert(!shortcutsMap.has(packedShortcut), `${name}: shortcut ${$shortcutToDebugString(shortcut)} taken by: ${shortcutsMap.get(packedShortcut)?.name}`);
 
     shortcutsMap.set(packedShortcut, cmd);
