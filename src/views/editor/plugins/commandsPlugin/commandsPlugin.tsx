@@ -5,7 +5,9 @@ import { $packShortcut, $shortcutFromKeyboardEvent } from "@systems/commandsMana
 import { Func, assert, variableExists } from "@utils";
 import { COMMAND_PRIORITY_NORMAL } from "lexical";
 import { useEffect, useRef } from "react";
-import { $getEditorShortcutsMap, KEY_DOWN_CMD, LEXICAL_DELETE_NATIVE_CMD, LEXICAL_DISPATCH_NATIVE_CMD, LEXICAL_REGISTER_NATIVE_CMD, LISTENERS_TO_CALL_CMD, LexicalCommandPayload } from "./commands";
+import { KEY_DOWN_CMD } from "./editorCommands";
+import { $getEditorShortcutsMap, LEXICAL_DELETE_NATIVE_CMD, LEXICAL_DISPATCH_NATIVE_CMD, LEXICAL_REGISTER_NATIVE_CMD, LISTENERS_TO_CALL_CMD } from "./editorCommandManager";
+import { LexicalCommandPayload } from "./editorCommandManager";
 
 export function CommandsPlugin(){
     const [editor] = useLexicalComposerContext();

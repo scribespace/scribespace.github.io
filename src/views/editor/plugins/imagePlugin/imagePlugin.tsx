@@ -11,9 +11,9 @@ import {
 } from "lexical";
 import { useCallback, useEffect } from "react";
 import { ImageNode } from "../../nodes/image";
-import { DRAG_DROP_ADD_TYPES_LISTENER_CMD } from "../dragDropPlugin";
+import { EDITOR_DRAG_DROP_ADD_TYPES_LISTENER_CMD } from "../dragDropPlugin";
 import { INSERT_IMAGES_CMD } from "./imageCommands";
-import { KEY_DELETE_CMD, KEY_BACKSPACE_CMD } from "../commandsPlugin/commands";
+import { KEY_DELETE_CMD, KEY_BACKSPACE_CMD } from "../commandsPlugin/editorCommands";
 
 export function ImagePlugin() {
   const [editor] = useLexicalComposerContext();
@@ -58,7 +58,7 @@ export function ImagePlugin() {
       insertImages(images);
     }
 
-    $callCommand(DRAG_DROP_ADD_TYPES_LISTENER_CMD, {
+    $callCommand(EDITOR_DRAG_DROP_ADD_TYPES_LISTENER_CMD, {
       types: Object.getOwnPropertyNames(IMAGE_SUPPORTED_FORMATS),
       listener: dragDropListener,
     });

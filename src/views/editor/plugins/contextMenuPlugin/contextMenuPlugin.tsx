@@ -6,7 +6,7 @@ import { mergeRegister } from "@lexical/utils";
 import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import { useEffect, useState } from "react";
 import { TableLayoutContextOptions } from "../../components/tableLayout/tableLayoutContextOptions";
-import { CONTEXT_MENU_CLOSE_MENU_CMD } from "./common/contextMenuCommands";
+import { EDITOR_CONTEXT_MENU_CLOSE_MENU_CMD } from "./common/contextMenuCommands";
 import { CONTEXT_MENU_CONTEX_DEFAULT, ContextMenuContextData } from "./context";
 import "./css/contextMenuPlugin.css";
 
@@ -56,7 +56,7 @@ export default function ContextMenuPlugin() {
       }),
 
       $registerCommandListener(
-        CONTEXT_MENU_CLOSE_MENU_CMD,
+        EDITOR_CONTEXT_MENU_CLOSE_MENU_CMD,
         () => {
           closeContextMenu();
           return false;

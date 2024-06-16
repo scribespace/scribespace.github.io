@@ -1,6 +1,6 @@
 import { MenuItem, Submenu } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
-import { FORMAT_ELEMENT_CMD, SELECTION_CHANGE_CMD } from "@editor/plugins/commandsPlugin/commands";
+import { FORMAT_ELEMENT_CMD, SELECTION_CHANGE_CMD } from "@editor/plugins/commandsPlugin/editorCommands";
 import { useToolbarContext } from "@editor/plugins/toolbarPlugin/context";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";

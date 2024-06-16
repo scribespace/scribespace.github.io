@@ -18,7 +18,7 @@ import {
   useState
 } from "react";
 import { ImageControl } from "./imageControl";
-import { CLICK_CMD } from "@editor/plugins/commandsPlugin/commands";
+import { CLICK_CMD } from "@editor/plugins/commandsPlugin/editorCommands";
 
 const MISSING_IMAGE = "/images/no-image.png" as const;
 

@@ -44,7 +44,7 @@ import { CommandsPlugin } from "./plugins/commandsPlugin/commandsPlugin";
 import { TreeViewPlugin } from "./plugins/debugViewPlugin/debugViewPlugin";
 import PageBreakPlugin from "./plugins/pageBreakPlugin/pageBreakPlugin";
 import { TableLayoutPlugin } from "./plugins/tableLayoutPlugin/tableLayoutPlugin";
-import { CLEAR_HISTORY_CMD } from "./plugins/commandsPlugin/commands";
+import { CLEAR_HISTORY_CMD } from "./plugins/commandsPlugin/editorCommands";
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will

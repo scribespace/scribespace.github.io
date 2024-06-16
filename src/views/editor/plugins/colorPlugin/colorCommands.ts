@@ -1,4 +1,4 @@
-import { $registerEditorCommand } from "../commandsPlugin/commands";
+import { $registerEditorCommand } from "../commandsPlugin/editorCommandManager";
 
 export const SET_FONT_COLOR_CMD = $registerEditorCommand<string>("SET_FONT_COLOR_CMD");
 export const SET_BACKGROUND_COLOR_CMD = $registerEditorCommand<string>("SET_BACKGROUND_COLOR_CMD");

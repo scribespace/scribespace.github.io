@@ -1,4 +1,4 @@
 import { SpecialKey } from "@systems/commandsManager/shortcut";
-import { $registerEditorCommand } from "../commandsPlugin/commands";
+import { $registerEditorActionCommand } from "../commandsPlugin/editorCommandManager";
 
-export const LINK_CONVERT_SELECTED_CMD = $registerEditorCommand<void>("LINK_CONVERT_SELECTED_CMD", undefined, {key:'k', specialKeys: SpecialKey.Ctrl});
+export const LINK_CONVERT_SELECTED_CMD = $registerEditorActionCommand<void>("LINK_CONVERT_SELECTED_CMD", undefined, {key:'k', specialKeys: SpecialKey.Ctrl }, undefined, "Toggle Link" );

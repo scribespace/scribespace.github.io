@@ -1,4 +1,3 @@
-import { $registerCommand } from "@systems/commandsManager/commandsManager";
-import { NO_SHORTCUT } from "@systems/commandsManager/shortcut";
+import { $registerEditorCommand } from "@editor/plugins/commandsPlugin/editorCommandManager";
 
-export const CONTEXT_MENU_CLOSE_MENU_CMD = $registerCommand<void>( NO_SHORTCUT, undefined, "CONTEXT_MENU_CLOSE_MENU_CMD");
+export const EDITOR_CONTEXT_MENU_CLOSE_MENU_CMD = $registerEditorCommand<void>( "EDITOR_CONTEXT_MENU_CLOSE_MENU_CMD" );

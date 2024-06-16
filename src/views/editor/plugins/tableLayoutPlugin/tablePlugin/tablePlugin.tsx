@@ -41,7 +41,7 @@ import {
   TableBodyNode
 } from "@editor/nodes/table";
 import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
-import { SELECTION_CHANGE_CMD } from "@editor/plugins/commandsPlugin/commands";
+import { SELECTION_CHANGE_CMD } from "@editor/plugins/commandsPlugin/editorCommands";
 
 const DRAG_NONE = 0 as const;
 const DRAG_HORIZONTAL = 1 as const;

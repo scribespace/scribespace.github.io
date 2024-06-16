@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { MenuItem } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { CAN_REDO_CMD, CAN_UNDO_CMD, REDO_CMD, UNDO_CMD } from "@editor/plugins/commandsPlugin/commands";
+import { CAN_REDO_CMD, CAN_UNDO_CMD, REDO_CMD, UNDO_CMD } from "@editor/plugins/commandsPlugin/editorCommands";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";

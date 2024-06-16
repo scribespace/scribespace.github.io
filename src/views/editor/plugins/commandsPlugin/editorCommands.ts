@@ -1,9 +1,7 @@
 import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from "@lexical/list";
 import { INSERT_HORIZONTAL_RULE_COMMAND } from "@lexical/react/LexicalHorizontalRuleNode";
 import { DRAG_DROP_PASTE } from "@lexical/rich-text";
-import { $callCommand, $registerCommand, Command, CommandListener } from "@systems/commandsManager/commandsManager";
-import { NO_SHORTCUT, Shortcut, $shortcutToDebugString, $packShortcut } from "@systems/commandsManager/shortcut";
-import { Func, assert, variableExists } from "@utils";
+import { Command } from "@systems/commandsManager/command";
 import {
   BLUR_COMMAND,
   BaseSelection,
@@ -42,7 +40,6 @@ import {
   KEY_MODIFIER_COMMAND,
   KEY_SPACE_COMMAND,
   KEY_TAB_COMMAND,
-  LexicalCommand,
   LexicalNode,
   MOVE_TO_END,
   MOVE_TO_START,
@@ -55,75 +52,9 @@ import {
   SELECTION_INSERT_CLIPBOARD_NODES_COMMAND,
   SELECT_ALL_COMMAND,
   TextFormatType,
-  UNDO_COMMAND,
+  UNDO_COMMAND
 } from "lexical";
-
-export type LexicalCommandListener<P> = (payload: P) => boolean;
-
-export interface LexicalCommandPayload {
-  cmd: LexicalCommand<unknown>;
-  listener: LexicalCommandListener<unknown>;
-}
-
-export const LISTENERS_TO_CALL_CMD = $registerCommand<()=>void>( NO_SHORTCUT, undefined, "LISTENERS_TO_CALL_CMD");
-export const LEXICAL_DISPATCH_NATIVE_CMD = $registerCommand<{cmd: LexicalCommand<unknown>, payload: unknown}>( NO_SHORTCUT, undefined, "LEXICAL_DISPATCH_NATIVE_CMD");
-export const LEXICAL_REGISTER_NATIVE_CMD = $registerCommand<LexicalCommandPayload>( NO_SHORTCUT, undefined, "LEXICAL_REGISTER_NATIVE_CMD");
-export const LEXICAL_DELETE_NATIVE_CMD = $registerCommand<LexicalCommandPayload>( NO_SHORTCUT, undefined, "LEXICAL_DELETE_NATIVE_CMD");
-
-class EditorCommand<P> extends Command<P> {
-  __lexicalCommand: LexicalCommand<P> | null;
-  get lexicalCommand() {return this.__lexicalCommand;}
-
-  constructor( shortcut: Shortcut, defaultPayload: P | undefined, name: string, lexicalCommand: LexicalCommand<P> | null ) {
-    super(shortcut, defaultPayload, name);
-    this.__lexicalCommand = lexicalCommand;
-  }
-
-  callCommand(payload: P, listeners: CommandListener<P>[]) {
-    if ( this.lexicalCommand ) {
-      $callCommand( LEXICAL_DISPATCH_NATIVE_CMD, {cmd: this.lexicalCommand, payload} );
-      return;
-    } 
-
-    const callListeners = () => {
-      for ( const listener of listeners ) {
-        listener(payload);
-      } 
-    };
-
-    $callCommand( LISTENERS_TO_CALL_CMD, callListeners );
-  }
-
-  registerExternalCommandListener( listener: LexicalCommandListener<P> ): null | Func {
-    if ( this.lexicalCommand ) {
-      const payload: LexicalCommandPayload = {cmd: this.lexicalCommand, listener: listener as LexicalCommandListener<unknown>};
-      $callCommand( LEXICAL_REGISTER_NATIVE_CMD, payload );
-      return () => {
-        $callCommand( LEXICAL_DELETE_NATIVE_CMD, payload );
-      };
-    }
-
-    return null;
-  }
-}
-
-const shortcutsMap = new Map<number, EditorCommand<unknown>>();
-
-export function $getEditorShortcutsMap(): Readonly<Map<number, EditorCommand<unknown>>> {
-  return shortcutsMap;
-}
-
-export function $registerEditorCommand<P>( name: string, lexicalCommand?: LexicalCommand<P>, shortcut?: Shortcut, defaultPayload?: P ): EditorCommand<P> {
-    const cmd = new EditorCommand( shortcut || NO_SHORTCUT, defaultPayload, name, lexicalCommand || null );
-    if ( variableExists(shortcut) ) {
-      const packedShortcut = $packShortcut(shortcut);
-      assert(!shortcutsMap.has(packedShortcut), `${name}: shortcut ${$shortcutToDebugString(shortcut)} taken by: ${shortcutsMap.get(packedShortcut)?.name}`);
-
-      shortcutsMap.set( packedShortcut, cmd );
-    }
-
-    return cmd;
-}
+import { $registerEditorCommand } from "./editorCommandManager";
 
 export const DRAG_DROP_PASTE_CMD: Command<File[]> = $registerEditorCommand("DRAG_DROP_PASTE", DRAG_DROP_PASTE);
 

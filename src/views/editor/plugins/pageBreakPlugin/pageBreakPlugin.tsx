@@ -17,7 +17,7 @@ import {
   $isRootNode
 } from 'lexical';
 import { useEffect, useRef } from 'react';
-import { SELECTION_CHANGE_CMD } from '../commandsPlugin/commands';
+import { SELECTION_CHANGE_CMD } from '../commandsPlugin/editorCommands';
 import { PAGE_BREAK_CAN_INSERT_CMD, PAGE_BREAK_INSERT_CMD } from './pageBreakCommands';
 
 

@@ -29,7 +29,7 @@ import {
   SET_FONT_SIZE_CMD,
 } from "./fontCommands";
 import { $clearFormat } from "./fontHelpers";
-import { SELECTION_CHANGE_CMD } from "../commandsPlugin/commands";
+import { SELECTION_CHANGE_CMD } from "../commandsPlugin/editorCommands";
 
 export function FontPlugin() {
   const [editor] = useLexicalComposerContext();

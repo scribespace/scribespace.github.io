@@ -1,7 +1,7 @@
 import { useMainThemeContext } from '@/mainThemeContext';
 import { MainTheme } from '@/theme';
 import { $isPageBreakNode } from '@editor/nodes/pageBreak/pageBreakNode';
-import { CLICK_CMD, KEY_BACKSPACE_CMD, KEY_DELETE_CMD } from '@editor/plugins/commandsPlugin/commands';
+import { CLICK_CMD, KEY_BACKSPACE_CMD, KEY_DELETE_CMD } from '@editor/plugins/commandsPlugin/editorCommands';
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";

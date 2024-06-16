@@ -1,7 +1,7 @@
 import { MenuItem } from "@/components/menu";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { INSERT_HORIZONTAL_RULE_CMD } from "@editor/plugins/commandsPlugin/commands";
+import { INSERT_HORIZONTAL_RULE_CMD } from "@editor/plugins/commandsPlugin/editorCommands";
 import { $callCommand } from "@systems/commandsManager/commandsManager";
 import { useCallback } from "react";
 

@@ -3,7 +3,7 @@ import { $menuItemParent } from "@/components/menu/theme";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { CLEAR_FONT_STYLE_CMD } from "@/views/editor/plugins/fontPlugin";
-import { FORMAT_TEXT_CMD, SELECTION_CHANGE_CMD } from "@editor/plugins/commandsPlugin/commands";
+import { FORMAT_TEXT_CMD, SELECTION_CHANGE_CMD } from "@editor/plugins/commandsPlugin/editorCommands";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";

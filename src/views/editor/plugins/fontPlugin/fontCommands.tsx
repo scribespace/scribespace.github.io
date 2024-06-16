@@ -1,5 +1,5 @@
 import { Font } from "@utils";
-import { $registerEditorCommand } from "../commandsPlugin/commands";
+import { $registerEditorCommand } from "../commandsPlugin/editorCommandManager";
 
 export const CLEAR_FONT_STYLE_CMD = $registerEditorCommand<void>("CLEAR_FONT_STYLE_CMD");
 

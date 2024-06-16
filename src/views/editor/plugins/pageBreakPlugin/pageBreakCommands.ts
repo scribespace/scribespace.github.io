@@ -1,4 +1,4 @@
-import { $registerEditorCommand } from "../commandsPlugin/commands";
+import { $registerEditorCommand } from "../commandsPlugin/editorCommandManager";
 
 
 export const PAGE_BREAK_INSERT_CMD = $registerEditorCommand<void>("PAGE_BREAK_INSERT_CMD");

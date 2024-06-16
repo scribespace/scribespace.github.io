@@ -1,5 +1,4 @@
-import { $registerCommand } from "@systems/commandsManager/commandsManager";
-import { NO_SHORTCUT } from "@systems/commandsManager/shortcut";
+import { $registerEditorCommand } from "../commandsPlugin/editorCommandManager";
 
 export type DragDropListener = (files: File[]) => void;
 
@@ -7,4 +6,4 @@ export interface DragDropAddTypesListenerPayload {
   types: string[];
   listener: DragDropListener;
 }
-export const DRAG_DROP_ADD_TYPES_LISTENER_CMD = $registerCommand<DragDropAddTypesListenerPayload>( NO_SHORTCUT, undefined, "DRAG_DROP_ADD_TYPES_LISTENER_CMD");
+export const EDITOR_DRAG_DROP_ADD_TYPES_LISTENER_CMD = $registerEditorCommand<DragDropAddTypesListenerPayload>( "EDITOR_DRAG_DROP_ADD_TYPES_LISTENER_CMD");

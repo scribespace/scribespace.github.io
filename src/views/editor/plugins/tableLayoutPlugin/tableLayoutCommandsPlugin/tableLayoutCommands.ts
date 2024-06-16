@@ -1,4 +1,4 @@
-import { $registerEditorCommand } from "@editor/plugins/commandsPlugin/commands";
+import { $registerEditorCommand } from "@editor/plugins/commandsPlugin/editorCommandManager";
 
 export interface InsertTablePayload {
     columns: number;
