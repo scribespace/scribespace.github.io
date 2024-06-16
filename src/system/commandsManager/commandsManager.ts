@@ -1,11 +1,17 @@
 import { Func, assert, isDev } from "@utils";
+import { Shortcut } from "./shortcut";
 
-export type CommandListener<P> = (payload: P) => void;
+export type CommandListener<P> = (payload: P) => unknown;
 export type CommandCaller<P> = (payload: P, listeners: CommandListener<P>[]) => void;
-
 export class Command<P> {
     private __name: string | undefined;
     get name() { return this.__name; }
+
+    private __shortcut: Shortcut;
+    get shortcut() {return this.__shortcut;}
+
+    private __defaultPayload?: P;
+    get defaultPayload() { return this.__defaultPayload; }
 
     callCommand(payload: P, listeners: CommandListener<P>[]) {
         for ( const listener of listeners ) {
@@ -18,15 +24,17 @@ export class Command<P> {
         return null;
     }
 
-    constructor(name?: string) {
+    constructor( shortcut: Shortcut, defaultPayload?: P, name?: string) {
+        this.__shortcut = shortcut;
+        this.__defaultPayload = defaultPayload;
         this.__name = name;
     }
 }
 
 const commandMap = new Map<Command<unknown>, CommandListener<unknown>[]>();
 
-export function $registerCommand<P>(name:string) : Command<P> {
-    return isDev() ? new Command<P>(name) : new Command<P>();
+export function $registerCommand<P>(shortcut: Shortcut, defaultPayload: P | undefined, name:string) : Command<P> {
+    return isDev() ? new Command<P>(shortcut, defaultPayload, name) : new Command<P>(shortcut, defaultPayload);
 }
 
 export function $registerCommandListener<P>( command: Command<P>, listener: CommandListener<P> ): Func {

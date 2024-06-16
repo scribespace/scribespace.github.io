@@ -2,10 +2,11 @@ import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from "@lex
 import { INSERT_HORIZONTAL_RULE_COMMAND } from "@lexical/react/LexicalHorizontalRuleNode";
 import { DRAG_DROP_PASTE } from "@lexical/rich-text";
 import { $callCommand, $registerCommand, Command, CommandListener } from "@systems/commandsManager/commandsManager";
-import { Func } from "@utils";
+import { NO_SHORTCUT, Shortcut, $shortcutToDebugString, $packShortcut } from "@systems/commandsManager/shortcut";
+import { Func, assert, variableExists } from "@utils";
 import {
-  BaseSelection,
   BLUR_COMMAND,
+  BaseSelection,
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
   CLEAR_EDITOR_COMMAND,
@@ -57,21 +58,24 @@ import {
   UNDO_COMMAND,
 } from "lexical";
 
+export type LexicalCommandListener<P> = (payload: P) => boolean;
+
 export interface LexicalCommandPayload {
   cmd: LexicalCommand<unknown>;
-  listener: CommandListener<unknown>;
+  listener: LexicalCommandListener<unknown>;
 }
-export const LISTENERS_TO_CALL_CMD = $registerCommand<()=>void>("LISTENERS_TO_CALL_CMD");
-export const LEXICAL_DISPATCH_NATIVE_CMD = $registerCommand<{cmd: LexicalCommand<unknown>, payload: unknown}>("LEXICAL_DISPATCH_NATIVE_CMD");
-export const LEXICAL_REGISTER_NATIVE_CMD = $registerCommand<LexicalCommandPayload>("LEXICAL_REGISTER_NATIVE_CMD");
-export const LEXICAL_DELETE_NATIVE_CMD = $registerCommand<LexicalCommandPayload>("LEXICAL_DELETE_NATIVE_CMD");
+
+export const LISTENERS_TO_CALL_CMD = $registerCommand<()=>void>( NO_SHORTCUT, undefined, "LISTENERS_TO_CALL_CMD");
+export const LEXICAL_DISPATCH_NATIVE_CMD = $registerCommand<{cmd: LexicalCommand<unknown>, payload: unknown}>( NO_SHORTCUT, undefined, "LEXICAL_DISPATCH_NATIVE_CMD");
+export const LEXICAL_REGISTER_NATIVE_CMD = $registerCommand<LexicalCommandPayload>( NO_SHORTCUT, undefined, "LEXICAL_REGISTER_NATIVE_CMD");
+export const LEXICAL_DELETE_NATIVE_CMD = $registerCommand<LexicalCommandPayload>( NO_SHORTCUT, undefined, "LEXICAL_DELETE_NATIVE_CMD");
 
 class EditorCommand<P> extends Command<P> {
   __lexicalCommand: LexicalCommand<P> | null;
   get lexicalCommand() {return this.__lexicalCommand;}
 
-  constructor( name: string, lexicalCommand: LexicalCommand<P> | null ) {
-    super(name);
+  constructor( shortcut: Shortcut, defaultPayload: P | undefined, name: string, lexicalCommand: LexicalCommand<P> | null ) {
+    super(shortcut, defaultPayload, name);
     this.__lexicalCommand = lexicalCommand;
   }
 
@@ -90,9 +94,9 @@ class EditorCommand<P> extends Command<P> {
     $callCommand( LISTENERS_TO_CALL_CMD, callListeners );
   }
 
-  registerExternalCommandListener( listener: CommandListener<P> ): null | Func {
+  registerExternalCommandListener( listener: LexicalCommandListener<P> ): null | Func {
     if ( this.lexicalCommand ) {
-      const payload: LexicalCommandPayload = {cmd: this.lexicalCommand, listener: listener as CommandListener<unknown>};
+      const payload: LexicalCommandPayload = {cmd: this.lexicalCommand, listener: listener as LexicalCommandListener<unknown>};
       $callCommand( LEXICAL_REGISTER_NATIVE_CMD, payload );
       return () => {
         $callCommand( LEXICAL_DELETE_NATIVE_CMD, payload );
@@ -103,8 +107,21 @@ class EditorCommand<P> extends Command<P> {
   }
 }
 
-export function $registerEditorCommand<P>( name: string, lexicalCommand?: LexicalCommand<P> ): EditorCommand<P> {
-    const cmd = new EditorCommand( name, lexicalCommand || null );
+const shortcutsMap = new Map<number, EditorCommand<unknown>>();
+
+export function $getEditorShortcutsMap(): Readonly<Map<number, EditorCommand<unknown>>> {
+  return shortcutsMap;
+}
+
+export function $registerEditorCommand<P>( name: string, lexicalCommand?: LexicalCommand<P>, shortcut?: Shortcut, defaultPayload?: P ): EditorCommand<P> {
+    const cmd = new EditorCommand( shortcut || NO_SHORTCUT, defaultPayload, name, lexicalCommand || null );
+    if ( variableExists(shortcut) ) {
+      const packedShortcut = $packShortcut(shortcut);
+      assert(!shortcutsMap.has(packedShortcut), `${name}: shortcut ${$shortcutToDebugString(shortcut)} taken by: ${shortcutsMap.get(packedShortcut)?.name}`);
+
+      shortcutsMap.set( packedShortcut, cmd );
+    }
+
     return cmd;
 }
 

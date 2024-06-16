@@ -1,10 +1,11 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
-import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
-import { Func, assert } from "@utils";
+import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
+import { $packShortcut, $shortcutFromKeyboardEvent } from "@systems/commandsManager/shortcut";
+import { Func, assert, variableExists } from "@utils";
 import { COMMAND_PRIORITY_NORMAL } from "lexical";
 import { useEffect, useRef } from "react";
-import { LEXICAL_DELETE_NATIVE_CMD, LEXICAL_DISPATCH_NATIVE_CMD, LEXICAL_REGISTER_NATIVE_CMD, LISTENERS_TO_CALL_CMD, LexicalCommandPayload } from "./commands";
+import { $getEditorShortcutsMap, KEY_DOWN_CMD, LEXICAL_DELETE_NATIVE_CMD, LEXICAL_DISPATCH_NATIVE_CMD, LEXICAL_REGISTER_NATIVE_CMD, LISTENERS_TO_CALL_CMD, LexicalCommandPayload } from "./commands";
 
 export function CommandsPlugin(){
     const [editor] = useLexicalComposerContext();
@@ -34,8 +35,7 @@ export function CommandsPlugin(){
                         const deleteRegister = editor.registerCommand(
                             payload.cmd,
                             (p) => {
-                                payload.listener(p);
-                                return false;
+                                return payload.listener(p);
                             },
                             COMMAND_PRIORITY_NORMAL
                         );
@@ -50,6 +50,23 @@ export function CommandsPlugin(){
                         const deleteRegister = nativeListeners.current.get(payload)!;
                         deleteRegister();
                         nativeListeners.current.delete(payload);
+                    }
+                ),
+                $registerCommandListener(
+                    KEY_DOWN_CMD,
+                    (event: KeyboardEvent) => {
+                        const shortcutsMap = $getEditorShortcutsMap();
+                        const shortcut = $shortcutFromKeyboardEvent(event);
+                        const packedShortcut = $packShortcut(shortcut);
+                        const cmd = shortcutsMap.get(packedShortcut);
+                        if ( variableExists(cmd) ) {
+                            $callCommand(cmd, cmd.defaultPayload);
+                            event.stopPropagation();
+                            event.preventDefault();
+                            return true;
+                        }
+
+                        return false;
                     }
                 )
             );
