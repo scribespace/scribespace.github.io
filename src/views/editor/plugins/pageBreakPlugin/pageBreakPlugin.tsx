@@ -23,7 +23,7 @@ import { PAGE_BREAK_CAN_INSERT_CMD, PAGE_BREAK_INSERT_CMD } from './pageBreakCom
 
 export default function PageBreakPlugin(): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
-    const canInsertPageBreakRef = useRef<boolean>(true);
+  const canInsertPageBreakRef = useRef<boolean>(true);
 
   useEffect(() => {
     if (!editor.hasNodes([PageBreakNode])) {
@@ -36,6 +36,9 @@ export default function PageBreakPlugin(): JSX.Element | null {
       $registerCommandListener(
         PAGE_BREAK_INSERT_CMD,
         () => {
+          if ( !canInsertPageBreakRef.current ) 
+            return;
+
           const selection = $getSelection();
 
           if (!$isRangeSelection(selection)) {
@@ -62,7 +65,7 @@ export default function PageBreakPlugin(): JSX.Element | null {
             
             if ( $isRangeSelection(selection) ) {
                 for ( const node of selection.getNodes() ) {
-                    canInsertPageBreak = canInsertPageBreak && ( $isRootNode(node) || !($isTableNode(node) || node.getTopLevelElementOrThrow().getParent() != $getRoot()));
+                    canInsertPageBreak = canInsertPageBreak && ( $isRootNode(node) || $isRootNode(node.getParentOrThrow()) );
                 }
             }
             

@@ -13,6 +13,16 @@ export interface Shortcut {
     specialKeys: SpecialKey;
 }
 
+export const KEY_ENTER = "Enter" as const;
+export const KEY_BACKSPACE = "Backspace" as const;
+export const KEY_ESCAPE = "Escape" as const;
+export const KEY_DELETE = "Delete" as const;
+export const KEY_SPACE = " " as const;
+export const KEY_LEFT = 'ArrowLeft' as const;
+export const KEY_RIGHT = 'ArrowRight' as const;
+export const KEY_UP = 'ArrowUp' as const;
+export const KEY_DOWN = 'ArrowDown' as const;
+
 export function $packShortcut(shortcut: Shortcut): number {
     return shortcut.key.charCodeAt(0) << SpecialKey.KeyNum | shortcut.specialKeys;
 }
@@ -35,8 +45,8 @@ export function $shortcutFromKeyboardEvent(event: KeyboardEvent): Shortcut {
 export function $shortcutToDebugString(shortcut: Shortcut) {
     return shortcut.key
         + (shortcut.specialKeys & SpecialKey.Shift) ? "+ Shift" : ""
-            + (shortcut.specialKeys & SpecialKey.Ctrl) ? "+ Ctrl" : ""
-                + (shortcut.specialKeys & SpecialKey.Meta) ? "+ Meta" : ""
-                    + (shortcut.specialKeys & SpecialKey.Alt) ? "+ Alt" : "";
+        + (shortcut.specialKeys & SpecialKey.Ctrl) ? "+ Ctrl" : ""
+        + (shortcut.specialKeys & SpecialKey.Meta) ? "+ Meta" : ""
+        + (shortcut.specialKeys & SpecialKey.Alt) ? "+ Alt" : "";
 }
 export const NO_SHORTCUT: Shortcut = { key: "", specialKeys: SpecialKey.None };

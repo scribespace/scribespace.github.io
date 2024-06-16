@@ -3,9 +3,9 @@
     position: relative;
     left: calc(-1 * var(--default-input-padding-x));
     width: calc(100% + 2 * var(--default-input-padding-x));
-    height: 40px;
-    background-color: rgb(243, 243, 243);
-    box-shadow: inset  0px 0px 10px -1px rgba(0, 0, 0, 0.582);
+    height: 20px;
+    background-color: rgb(224, 224, 224);
+    box-shadow: inset  0px 0px 10px 0px rgba(0, 0, 0, 0.582);
 }
 
 .editor-page-break-filler.selected {
@@ -13,10 +13,11 @@
     border-top: 2px dotted black;
     border-bottom: 2px dotted black;
     width: calc(100% + 2 * var(--default-input-padding-x) - 2px);
+    height: calc(20px - 4px);
 }
 
 @media print {
     .editor-page-break-filler {
-        height: 0;
+        visibility: hidden;
     }    
 }

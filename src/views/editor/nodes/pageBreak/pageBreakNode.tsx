@@ -56,7 +56,7 @@ export class PageBreakNode extends DecoratorNode<JSX.Element> {
 
   createDOM(): HTMLElement {
     const el = document.createElement('div');
-    el.style.pageBreakAfter = 'always';
+    el.style.breakAfter = "page";
 
     return el;
   }
