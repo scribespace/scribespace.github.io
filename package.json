@@ -10,7 +10,6 @@
     "lint:fix": "eslint . --ext ts,tsx --report-unused-disable-directives --fix",
     "validate": "npm run testcircular && npm run lint",
     "preview": "vite preview",
-    "postinstall": "node ./scripts/postinstall.js",
     "copylexical": "node ./scripts/copylexical.js",
     "installlexical": "node ./scripts/installlexical.js",
     "formatall": "prettier ./src/ --write",
