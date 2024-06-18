@@ -16,7 +16,7 @@
     "testcircular": "madge --warning --circular ./src",
     "test": "vitest run",
     "test:ui": "vitest --ui",
-    "test:watch": "vitest watch",
+    "test:watch": "vitest run -w",
     "test:bench": "vitest bench"
   },
   "dependencies": {
@@ -53,6 +53,8 @@
   },
   "devDependencies": {
     "@lexical/devtools-core": "file:libs/lexical/lexical-devtools-core",
+    "@testing-library/dom": "^10.1.0",
+    "@testing-library/react": "^16.0.0",
     "@types/react": "^18.3.1",
     "@types/react-color": "^3.0.12",
     "@types/react-dom": "^18.3.0",
@@ -64,7 +66,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
     "fs-extra": "^11.2.0",
-    "happy-dom": "^14.12.0",
+    "jsdom": "^24.1.0",
     "madge": "^7.0.0",
     "rollup-plugin-visualizer": "^5.12.0",
     "typescript": "^5.2.2",

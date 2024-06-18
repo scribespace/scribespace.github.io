@@ -65,9 +65,8 @@ export class TableBodyNode extends TableNode {
     columnID: number,
     columnsToAdd: number,
   ) {
-    const sizeScale =
-      columnsWidths.length / (columnsWidths.length + columnsToAdd);
-
+    const sizeScale = columnsWidths.length / (columnsWidths.length + columnsToAdd);
+    
     for (let c = 0; c < columnsWidths.length; ++c) {
       if (columnsWidths[c].isValid()) {
         columnsWidths[c].mulValue( sizeScale );
