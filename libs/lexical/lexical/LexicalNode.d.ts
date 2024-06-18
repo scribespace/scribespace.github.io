@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-import type { EditorConfig, LexicalEditor } from './LexicalEditor';
 import type { BaseSelection, RangeSelection } from './LexicalSelection';
 import type { KlassConstructor } from 'lexical';
 import { ElementNode } from '.';
+import { EditorConfig, LexicalEditor } from './LexicalEditor';
 export type NodeMap = Map<NodeKey, LexicalNode>;
 export type SerializedLexicalNode = {
     type: string;
@@ -150,7 +150,7 @@ export declare class LexicalNode {
      *
      * @param node - the other node to find the common ancestor of.
      */
-    getCommonAncestor<T extends ElementNode = ElementNode>(node: LexicalNode): T | null;
+    getCommonAncestor(node: LexicalNode): ElementNode | null;
     /**
      * Returns true if the provided node is the exact same one as this node, from Lexical's perspective.
      * Always use this instead of referential equality.

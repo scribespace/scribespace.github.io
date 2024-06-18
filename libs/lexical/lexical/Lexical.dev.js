@@ -534,6 +534,9 @@ function $normalizePoint(point) {
  */
 
 let keyCounter = 1;
+function resetRandomKey() {
+  keyCounter = 1;
+}
 function generateRandomKey() {
   return '' + keyCounter++;
 }
@@ -3601,19 +3604,15 @@ class LexicalNode {
     if ($isElementNode(node)) {
       b.unshift(node);
     }
-    const aLength = a.length;
-    const bLength = b.length;
-    if (aLength === 0 || bLength === 0 || a[aLength - 1] !== b[bLength - 1]) {
-      return null;
-    }
-    const bSet = new Set(b);
-    for (let i = 0; i < aLength; i++) {
-      const ancestor = a[i];
-      if (bSet.has(ancestor)) {
+    let ancestor = null;
+    const itrCount = Math.min(a.length, b.length);
+    for (let i = 1; i <= itrCount; ++i) {
+      if (a[a.length - i] !== b[b.length - i]) {
         return ancestor;
       }
+      ancestor = a[a.length - i];
     }
-    return null;
+    return ancestor;
   }
 
   /**
@@ -3644,28 +3643,45 @@ class LexicalNode {
     if (this.isParentOf(targetNode)) {
       return true;
     }
-    const commonAncestor = this.getCommonAncestor(targetNode);
-    let indexA = 0;
-    let indexB = 0;
-    let node = this;
-    while (true) {
-      const parent = node.getParentOrThrow();
-      if (parent === commonAncestor) {
-        indexA = node.getIndexWithinParent();
+    const thisParents = this.getParents();
+    const targetParents = targetNode.getParents();
+    thisParents.unshift(this);
+    targetParents.unshift(targetNode);
+    let commonAncestor = null;
+    const itrCount = Math.min(thisParents.length, targetParents.length);
+    let i = 1;
+    for (; i <= itrCount; ++i) {
+      if (thisParents[thisParents.length - i] !== targetParents[targetParents.length - i]) {
         break;
       }
-      node = parent;
+      commonAncestor = thisParents[thisParents.length - i];
     }
-    node = targetNode;
+    if (targetNode.is(commonAncestor)) {
+      return false;
+    }
+    if (this.is(commonAncestor)) {
+      return true;
+    }
+    const thisAncestor = thisParents[thisParents.length - i];
+    const targetAncestor = targetParents[targetParents.length - i];
+    let thisPrevSibling = thisAncestor.getPreviousSibling();
+    let targetPrevSibling = targetAncestor.getPreviousSibling();
     while (true) {
-      const parent = node.getParentOrThrow();
-      if (parent === commonAncestor) {
-        indexB = node.getIndexWithinParent();
-        break;
+      if (thisPrevSibling === null) {
+        return true;
       }
-      node = parent;
+      if (targetPrevSibling === null) {
+        return false;
+      }
+      if (thisAncestor.is(targetPrevSibling)) {
+        return true;
+      }
+      if (targetAncestor.is(thisPrevSibling)) {
+        return false;
+      }
+      thisPrevSibling = thisPrevSibling.getPreviousSibling();
+      targetPrevSibling = targetPrevSibling.getPreviousSibling();
     }
-    return indexA < indexB;
   }
 
   /**
@@ -3696,62 +3712,47 @@ class LexicalNode {
    * @param targetNode - the node that marks the other end of the range of nodes to be returned.
    */
   getNodesBetween(targetNode) {
+    if (this === targetNode) {
+      return [this];
+    }
     const isBefore = this.isBefore(targetNode);
-    const nodes = [];
-    const visited = new Set();
-    let node = this;
-    while (true) {
-      if (node === null) {
-        break;
+    const firstNode = isBefore ? this : targetNode;
+    const lastNode = isBefore ? targetNode : this;
+    const addedNodes = new Set();
+    const nodes = new Array();
+    let currentNode = firstNode;
+    while (!currentNode.is(lastNode)) {
+      if (!addedNodes.has(currentNode)) {
+        addedNodes.add(currentNode);
+        nodes.push(currentNode);
       }
-      const key = node.__key;
-      if (!visited.has(key)) {
-        visited.add(key);
-        nodes.push(node);
+      let nextNode = currentNode;
+      if ($isElementNode(nextNode)) {
+        const child = nextNode.getFirstChild();
+        nextNode = child === null ? nextNode.getNextSibling() : child;
+      } else {
+        nextNode = nextNode.getNextSibling();
       }
-      if (node === targetNode) {
-        break;
-      }
-      const child = $isElementNode(node) ? isBefore ? node.getFirstChild() : node.getLastChild() : null;
-      if (child !== null) {
-        node = child;
-        continue;
-      }
-      const nextSibling = isBefore ? node.getNextSibling() : node.getPreviousSibling();
-      if (nextSibling !== null) {
-        node = nextSibling;
-        continue;
-      }
-      const parent = node.getParentOrThrow();
-      if (!visited.has(parent.__key)) {
-        nodes.push(parent);
-      }
-      if (parent === targetNode) {
-        break;
-      }
-      let parentSibling = null;
-      let ancestor = parent;
-      do {
-        if (ancestor === null) {
-          {
-            throw Error(`getNodesBetween: ancestor is null`);
-          }
+      if (nextNode === null) {
+        nextNode = currentNode.getParentOrThrow();
+        if (!addedNodes.has(nextNode)) {
+          addedNodes.add(nextNode);
+          nodes.push(nextNode);
         }
-        parentSibling = isBefore ? ancestor.getNextSibling() : ancestor.getPreviousSibling();
-        ancestor = ancestor.getParent();
-        if (ancestor !== null) {
-          if (parentSibling === null && !visited.has(ancestor.__key)) {
-            nodes.push(ancestor);
+        let parentSiblingNode = nextNode.getNextSibling();
+        while (parentSiblingNode === null) {
+          nextNode = nextNode.getParentOrThrow();
+          if (!addedNodes.has(nextNode)) {
+            addedNodes.add(nextNode);
+            nodes.push(nextNode);
           }
-        } else {
-          break;
+          parentSiblingNode = nextNode.getNextSibling();
         }
-      } while (parentSibling === null);
-      node = parentSibling;
+        nextNode = parentSiblingNode;
+      }
+      currentNode = nextNode;
     }
-    if (!isBefore) {
-      nodes.reverse();
-    }
+    nodes.push(lastNode);
     return nodes;
   }
 
@@ -9914,6 +9915,15 @@ exports.INDENT_CONTENT_COMMAND = INDENT_CONTENT_COMMAND;
 exports.INSERT_LINE_BREAK_COMMAND = INSERT_LINE_BREAK_COMMAND;
 exports.INSERT_PARAGRAPH_COMMAND = INSERT_PARAGRAPH_COMMAND;
 exports.INSERT_TAB_COMMAND = INSERT_TAB_COMMAND;
+exports.IS_ALL_FORMATTING = IS_ALL_FORMATTING;
+exports.IS_BOLD = IS_BOLD;
+exports.IS_CODE = IS_CODE;
+exports.IS_HIGHLIGHT = IS_HIGHLIGHT;
+exports.IS_ITALIC = IS_ITALIC;
+exports.IS_STRIKETHROUGH = IS_STRIKETHROUGH;
+exports.IS_SUBSCRIPT = IS_SUBSCRIPT;
+exports.IS_SUPERSCRIPT = IS_SUPERSCRIPT;
+exports.IS_UNDERLINE = IS_UNDERLINE;
 exports.KEY_ARROW_DOWN_COMMAND = KEY_ARROW_DOWN_COMMAND;
 exports.KEY_ARROW_LEFT_COMMAND = KEY_ARROW_LEFT_COMMAND;
 exports.KEY_ARROW_RIGHT_COMMAND = KEY_ARROW_RIGHT_COMMAND;
@@ -9938,6 +9948,7 @@ exports.RootNode = RootNode;
 exports.SELECTION_CHANGE_COMMAND = SELECTION_CHANGE_COMMAND;
 exports.SELECTION_INSERT_CLIPBOARD_NODES_COMMAND = SELECTION_INSERT_CLIPBOARD_NODES_COMMAND;
 exports.SELECT_ALL_COMMAND = SELECT_ALL_COMMAND;
+exports.TEXT_TYPE_TO_FORMAT = TEXT_TYPE_TO_FORMAT;
 exports.TabNode = TabNode;
 exports.TextNode = TextNode;
 exports.UNDO_COMMAND = UNDO_COMMAND;
@@ -9951,3 +9962,4 @@ exports.isHTMLElement = isHTMLElement;
 exports.isInlineDomNode = isInlineDomNode;
 exports.isSelectionCapturedInDecoratorInput = isSelectionCapturedInDecoratorInput;
 exports.isSelectionWithinEditor = isSelectionWithinEditor;
+exports.resetRandomKey = resetRandomKey;
