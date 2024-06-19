@@ -3,7 +3,7 @@
 import { Metric } from "@/utils/types";
 import { $createExtendedTableNodeWithDimensions, $isExtendedTableNode, ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
 import { ExtendedTableCellNode } from "@editor/nodes/table/extendedTableCellNode";
-import { TABLE_INSERT_CMD, TABLE_LAYOUT_COLUMN_REMOVE_CMD, TABLE_LAYOUT_REMOVE_SELECTED_CMD } from "@editor/plugins/tableLayoutPlugin";
+import { TABLE_INSERT_CMD, TABLE_LAYOUT_COLUMN_REMOVE_CMD, TABLE_LAYOUT_REMOVE_SELECTED_CMD, TABLE_ROW_REMOVE_CMD } from "@editor/plugins/tableLayoutPlugin";
 import { TableLayoutCommandsPlugin } from "@editor/plugins/tableLayoutPlugin/tableLayoutCommandsPlugin/tableLayoutCommandsPlugin";
 import TablePlugin from "@editor/plugins/tableLayoutPlugin/tablePlugin";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
@@ -231,7 +231,86 @@ describe("TableNode:",
                     }
                  );
     
-                    expect(container.innerHTML).toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 100%;"></colgroup><tbody><tr><td><p><br></p></td></tr><tr><td><p><br></p></td></tr><tr><td><p><br></p></td></tr></tbody></table></div></div></div>');
+                expect(container.innerHTML).toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 100%;"></colgroup><tbody><tr><td><p><br></p></td></tr><tr><td><p><br></p></td></tr><tr><td><p><br></p></td></tr></tbody></table></div></div></div>');
+            }
+        );
+
+        test("Table Delete Row - Command",
+            async () => {
+                const editorCtx = createEditorContext();
+
+                const {container} = ReactTest.render(TableTestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
+                const {editor} = editorCtx;
+
+                await ReactTest.act( 
+                    async () => {
+                        editor.update(
+                            () => {
+                                $callCommand( TABLE_INSERT_CMD, {rows: 4, columns: 3} );
+                            }
+                        );
+                    }
+                 );
+
+               expect(container.innerHTML).toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+
+                 let tableNode: ExtendedTableNode | null = null;
+                 await ReactTest.act( 
+                    async () => {
+                        editor.update(
+                            () => {
+                                const lexicalNode = $getRoot().getFirstChild();
+                                expect($isExtendedTableNode(lexicalNode)).toBeTruthy();
+                                tableNode = lexicalNode as ExtendedTableNode;
+
+                                const tableRow = tableNode.getTableBodyNode().getChildAtIndex(2) as TableRowNode;
+                                tableRow.select();
+
+                                $callCommand(TABLE_ROW_REMOVE_CMD, undefined);
+                            }
+                        );
+                    }
+                 );
+
+               expect(container.innerHTML).toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+
+               await ReactTest.act( 
+                async () => {
+                    editor.update(
+                        () => {
+                            const lexicalNode = $getRoot().getFirstChild();
+                            expect($isExtendedTableNode(lexicalNode)).toBeTruthy();
+                            tableNode = lexicalNode as ExtendedTableNode;
+
+                            const tableRow = tableNode.getTableBodyNode().getChildAtIndex(2) as TableRowNode;
+                            tableRow.select();
+
+                            $callCommand(TABLE_ROW_REMOVE_CMD, undefined);
+                        }
+                    );
+                }
+             );
+
+                expect(container.innerHTML).toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+
+                await ReactTest.act( 
+                    async () => {
+                        editor.update(
+                            () => {
+                                const lexicalNode = $getRoot().getFirstChild();
+                                expect($isExtendedTableNode(lexicalNode)).toBeTruthy();
+                                tableNode = lexicalNode as ExtendedTableNode;
+    
+                                const tableRow = tableNode.getTableBodyNode().getChildAtIndex(0) as TableRowNode;
+                                tableRow.select();
+
+                                $callCommand(TABLE_ROW_REMOVE_CMD, undefined);
+                            }
+                        );
+                    }
+                 );
+    
+                expect(container.innerHTML).toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
             }
         );
     }
