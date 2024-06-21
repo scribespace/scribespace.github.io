@@ -361,6 +361,7 @@ export function $convertColElements( tableNode: ExtendedTableNode, domNode: Elem
       if (!colMetric.isValid()) {
         colMetric = Metric.fromString(colElement.width);
       }
+      if (colMetric.unit == "") colMetric.setUnit("px");
       tableNode.__columnsWidths.push(colMetric);
     }
 }

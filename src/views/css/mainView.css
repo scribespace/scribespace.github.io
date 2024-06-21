@@ -1,6 +1,6 @@
 .main-view {
   display: grid;
-  grid-template-columns: 0.5fr auto;
+  grid-template-columns: 0.3fr auto;
   column-gap: 1%;
   width: 100%;
 }
