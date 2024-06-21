@@ -22,18 +22,19 @@ const REQUIRED_NODES: ReadonlyArray<Klass<LexicalNode> | LexicalNodeReplacement>
     },
 ];
 
-let pluginKey = 0;
-const REQUIRED_PLUGINS: React.ReactNode = [
-    <CommandsPlugin key={pluginKey++} />,
-    <ActionsPlugin key={pluginKey++} />,
-    <HistoryPlugin key={pluginKey++} />,
-    <AutoFocusPlugin key={pluginKey++} />,
-    <FontPlugin key={pluginKey++} />,
+const getRequiredPlugins = (keyStart: number) => { 
+ return [
+    <CommandsPlugin key={keyStart++} />,
+    <ActionsPlugin key={keyStart++} />,
+    <HistoryPlugin key={keyStart++} />,
+    <AutoFocusPlugin key={keyStart++} />,
+    <FontPlugin key={keyStart++} />,
   ];
+};
 
   export const DefaultTestEditor = 
-  (nodes?: ReadonlyArray<Klass<LexicalNode> | LexicalNodeReplacement>, plugins?: React.ReactNode) => {
-    const initialConfig = {
+  (nodes?: ReadonlyArray<Klass<LexicalNode> | LexicalNodeReplacement>, plugins?: React.ReactNode[]) => {
+      const initialConfig = {
       namespace: "test",
       theme: {},
       nodes: [...REQUIRED_NODES, ...nodes || []],
@@ -45,7 +46,7 @@ const REQUIRED_PLUGINS: React.ReactNode = [
       <Actions />
       <MainThemeContext.Provider value={TEST_THEME_DEFAULT}>
         <LexicalComposer initialConfig={initialConfig}>
-          {REQUIRED_PLUGINS}
+          {getRequiredPlugins((plugins || []).length)}
           <div>
             <div>
               <EditorInput />

@@ -22,6 +22,9 @@ import {
   DECREASE_FONT_SIZE_CMD,
   FONT_FAMILY_CHANGED_CMD,
   FONT_SIZE_CHANGED_CMD,
+  FONT_STYLE_BLUE_CMD,
+  FONT_STYLE_GREEN_CMD,
+  FONT_STYLE_RED_CMD,
   INCREASE_FONT_SIZE_CMD,
   SET_FONT_FAMILY_CMD,
   SET_FONT_SIZE_CMD,
@@ -203,6 +206,51 @@ export function FontPlugin() {
 
           return false;
         },
+      ),
+      $registerCommandListener(
+        FONT_STYLE_RED_CMD,
+        () => {
+          const selection = $getSelection();
+          if ($isRangeSelection(selection)) {
+            $patchStyleText(selection, {color: "red"});
+            if ( !selection.hasFormat('bold') )
+              selection.formatText( 'bold' );
+            if ( !selection.hasFormat('underline') )
+              selection.formatText( 'underline' );
+            return true;
+          }
+          return false;
+        }
+      ),
+      $registerCommandListener(
+        FONT_STYLE_GREEN_CMD,
+        () => {
+          const selection = $getSelection();
+          if ($isRangeSelection(selection)) {
+            $patchStyleText(selection, {color: "green"});
+            if ( !selection.hasFormat('bold') )
+              selection.formatText( 'bold' );
+            if ( !selection.hasFormat('underline') )
+              selection.formatText( 'underline' );
+            return true;
+          }
+          return false;
+        }
+      ),
+      $registerCommandListener(
+        FONT_STYLE_BLUE_CMD,
+        () => {
+          const selection = $getSelection();
+          if ($isRangeSelection(selection)) {
+            $patchStyleText(selection, {color: "blue"});
+            if ( !selection.hasFormat('bold') )
+              selection.formatText( 'bold' );
+            if ( !selection.hasFormat('underline') )
+              selection.formatText( 'underline' );
+            return true;
+          }
+          return false;
+        }
       ),
     );
   }, [defaultFontSize, editor, updateCurrentFont]);

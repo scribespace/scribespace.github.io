@@ -20,7 +20,8 @@ describe("LayoutNode:",
     async () => {
         reactSetup();
 
-        const TestEditor = (nodes?: ReadonlyArray<Klass<LexicalNode> | LexicalNodeReplacement>, plugins?: React.ReactNode) => 
+        let pluginKey = 0;
+        const TestEditor = (nodes?: ReadonlyArray<Klass<LexicalNode> | LexicalNodeReplacement>, plugins?: React.ReactNode[]) => 
             DefaultTestEditor( 
             [
                 LayoutNode,
@@ -40,17 +41,17 @@ describe("LayoutNode:",
                 TableRowNode,
                 ...nodes || []
             ],
-            <>
-                <LayoutPlugin/>
-                <TableLayoutCommandsPlugin/>
-                {plugins}
-            </>
+            [
+                <LayoutPlugin key={pluginKey++}/>,
+                <TableLayoutCommandsPlugin key={pluginKey++}/>,
+                ...(plugins||[]),
+            ]
          );
 
          test( "Layout Columns Widths", 
             async () => {
                 const editorCtx = createEditorContext();
-                ReactTest.render(TestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
+                ReactTest.render(TestEditor([], [<TestPlugin key={pluginKey++} setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>]));
                 const {editor} = editorCtx;
 
                 let outColumns: Metric[] = [];
@@ -81,7 +82,7 @@ describe("LayoutNode:",
             async () => {
                 const editorCtx = createEditorContext();
 
-                const {container} = ReactTest.render(TestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
+                const {container} = ReactTest.render(TestEditor([], [<TestPlugin key={pluginKey++} setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>]));
 
                 await ReactTest.act( 
                     async () => {
@@ -104,7 +105,7 @@ describe("LayoutNode:",
             async () => {
                 const editorCtx = createEditorContext();
 
-                const {container} = ReactTest.render(TestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
+                const {container} = ReactTest.render(TestEditor([], [<TestPlugin key={pluginKey++} setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>]));
                 const {editor} = editorCtx;
 
                 await ReactTest.act( 
@@ -125,7 +126,7 @@ describe("LayoutNode:",
             async () => {
                 const editorCtx = createEditorContext();
 
-                const {container} = ReactTest.render(TestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
+                const {container} = ReactTest.render(TestEditor([], [<TestPlugin key={pluginKey++} setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>]));
                 const {editor} = editorCtx;
 
                 await ReactTest.act( 
@@ -158,7 +159,7 @@ describe("LayoutNode:",
             async () => {
                 const editorCtx = createEditorContext();
 
-                const {container} = ReactTest.render(TestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
+                const {container} = ReactTest.render(TestEditor([], [<TestPlugin key={pluginKey++} setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>]));
                 const {editor} = editorCtx;
 
                 await ReactTest.act( 

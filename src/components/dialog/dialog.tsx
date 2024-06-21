@@ -15,9 +15,11 @@ export function Dialog({command, children}: DialogProps) {
     const constStyle: React.CSSProperties = { 
         position: "fixed", 
         zIndex: 5,
+        maxHeight: "70%",
         left: "50%",
         top: "10%",
-        translate: "-50% 0%"
+        translate: "-50% 0%",
+        overflow: "auto",
     };
     const {commonTheme: {dialogTheme}} = useMainThemeContext();
     const [showDialog, setShowDialog] = useState<boolean>(false);
