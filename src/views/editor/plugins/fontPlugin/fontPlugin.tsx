@@ -81,9 +81,12 @@ export function FontPlugin() {
           const selection = $getSelection();
           if ($isRangeSelection(selection)) {
 
+            selection.format = 0;
+            selection.style = "";
             if (selection.isCollapsed()) {
               $callCommand(SET_FONT_SIZE_CMD, defaultFontSize);
               $callCommand(SET_FONT_FAMILY_CMD, fontToStyle(defaultFontFamily));
+              $callCommand(SELECTION_CHANGE_CMD, undefined);
               return false;
             }
 
@@ -111,13 +114,13 @@ export function FontPlugin() {
               }
             }
 
-            $clearFormat(startNode, getStyle(defaultFontSize, defaultFontFamily), startNode, endNode);
-            $clearFormat(endNode, getStyle(defaultFontSize, defaultFontFamily), startNode, endNode);
+            $clearFormat(startNode, startNode, endNode);
+            $clearFormat(endNode, startNode, endNode);
 
             const nodes = selection.getNodes();
             for ( let n = 1; n < nodes.length - 1; ++n ) {
               const node = nodes[n];
-              $clearFormat(node, getStyle(defaultFontSize, defaultFontFamily), startNode, endNode);
+              $clearFormat(node, startNode, endNode);
             }
 
             const newAnchorNode = selection.isBackward() ? endNode : startNode;
@@ -132,9 +135,10 @@ export function FontPlugin() {
             $setSelection(newSelection);
           } else if ( $isTableSelection(selection)) {
             for ( const node of selection.getNodes() ) {
-              $clearFormat(node, getStyle(defaultFontSize, defaultFontFamily), null, null);
+              $clearFormat(node, null, null);
             }
           }
+          $callCommand(SELECTION_CHANGE_CMD, undefined);
         },
       ),
     );

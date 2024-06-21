@@ -26,7 +26,6 @@ export interface FileSystem extends FileSystemAsync, FileSystemBase {
 
 let fileSystem: FileSystem | null = null;
 
-
 export function $setFileSystem( fs: FileSystem | null ) {
   assert( fs == null || fileSystem == null, "File system already set" );
   fileSystem = fs;
