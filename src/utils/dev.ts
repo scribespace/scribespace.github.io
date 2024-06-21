@@ -1,3 +1,4 @@
+import { DEV } from "@systems/environment";
 import {
   isFunctionOrThrow,
   isKeyOrThrow,
@@ -5,17 +6,8 @@ import {
 } from "./common";
 import { Func } from "./types/types";
 
-export function isDev() {
-  return import.meta.env.DEV;
-}
-
-export function devOnly(dev: () => void) {
-  const func = isDev() ? dev : () => {};
-  func();
-}
-
 export function assert(test: boolean, message: string) {
-  devOnly(() => {
+  DEV(() => {
     if (!test) throw Error("Assert failed: " + message);
   });
 }
@@ -25,7 +17,7 @@ export function notNullOrThrow<T>(value: T | null): asserts value is T {
 }
 
 export function notNullOrThrowDev<T>(value: T | null): asserts value is T {
-  devOnly(() => {
+  DEV(() => {
     notNullOrThrow(value);
   });
 }
@@ -35,7 +27,7 @@ export function nullOrThrow<T>(value: T | null): asserts value is null {
 }
 
 export function nullOrThrowDev<T>(value: T | null): asserts value is null {
-  devOnly(() => {
+  DEV(() => {
     nullOrThrow(value);
   });
 }
@@ -43,7 +35,7 @@ export function nullOrThrowDev<T>(value: T | null): asserts value is null {
 export function valueValidOrThrowDev<T>(
   value: T | null | undefined
 ): asserts value is T {
-  devOnly(() => {
+  DEV(() => {
     variableExistsOrThrow(value, "Variable is undefined");
     notNullOrThrow(value);
   });
@@ -58,7 +50,7 @@ export function variableExistsOrThrowDev<T>(
   variable: T | undefined,
   message: string
 ): asserts variable is T {
-  devOnly(() => {
+  DEV(() => {
     variableExistsOrThrow(variable, message);
   });
 }
@@ -68,13 +60,13 @@ export function isKeyOrThrowDev<T extends object>(
   key: keyof any,
   obj: T
 ): asserts key is keyof T {
-  devOnly(() => {
+  DEV(() => {
     isKeyOrThrow(key, obj);
   });
 }
 
 export function isFunctionOrThrowDev(func: unknown): asserts func is Func {
-  devOnly(() => {
+  DEV(() => {
     isFunctionOrThrow(func);
   });
 }

@@ -10,6 +10,8 @@ import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { Klass, LexicalNode, LexicalNodeReplacement, TextNode } from "lexical";
 import { TEST_THEME_DEFAULT } from '../helpers/testTheme';
+import { ActionsPlugin } from '@editor/plugins/actionsPlugin/actionsPlugin';
+import { Actions } from '@/components/actions/actions';
 
 const REQUIRED_NODES: ReadonlyArray<Klass<LexicalNode> | LexicalNodeReplacement> = [
     ExtendedTextNode,
@@ -20,15 +22,16 @@ const REQUIRED_NODES: ReadonlyArray<Klass<LexicalNode> | LexicalNodeReplacement>
     },
 ];
 
+let pluginKey = 0;
 const REQUIRED_PLUGINS: React.ReactNode = [
-    <CommandsPlugin />,
-    <HistoryPlugin />,
-    <AutoFocusPlugin />,
-    <FontPlugin />,
-
+    <CommandsPlugin key={pluginKey++} />,
+    <ActionsPlugin key={pluginKey++} />,
+    <HistoryPlugin key={pluginKey++} />,
+    <AutoFocusPlugin key={pluginKey++} />,
+    <FontPlugin key={pluginKey++} />,
   ];
 
-  export const TestEditor = 
+  export const DefaultTestEditor = 
   (nodes?: ReadonlyArray<Klass<LexicalNode> | LexicalNodeReplacement>, plugins?: React.ReactNode) => {
     const initialConfig = {
       namespace: "test",
@@ -38,16 +41,19 @@ const REQUIRED_PLUGINS: React.ReactNode = [
     };   
 
   return (
-    <MainThemeContext.Provider value={TEST_THEME_DEFAULT}>
-      <LexicalComposer initialConfig={initialConfig}>
-        {REQUIRED_PLUGINS}
-        <div>
+    <div id="editor-view">
+      <Actions />
+      <MainThemeContext.Provider value={TEST_THEME_DEFAULT}>
+        <LexicalComposer initialConfig={initialConfig}>
+          {REQUIRED_PLUGINS}
           <div>
-            <EditorInput />
+            <div>
+              <EditorInput />
+            </div>
           </div>
-        </div>
-        {plugins}
-      </LexicalComposer>
-    </MainThemeContext.Provider>
+          {plugins}
+        </LexicalComposer>
+      </MainThemeContext.Provider>
+    </div>
   );
 };

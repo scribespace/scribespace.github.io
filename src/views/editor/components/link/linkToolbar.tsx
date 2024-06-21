@@ -1,5 +1,4 @@
 import { MenuItem } from "@/components/menu";
-import { $menuItemParent } from "@/components/menu/theme";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { SELECTION_CHANGE_CMD } from "@editor/plugins/commandsPlugin/editorCommands";
 import { LINK_CONVERT_SELECTED_CMD } from "@editor/plugins/linkPlugin/linkCommands";
@@ -60,7 +59,7 @@ export function LinkToolbar() {
   }, [editor]);
 
   return (
-    <div className={isLinkSelected ? itemSelected : ""} style={$menuItemParent}>
+    <div className={isLinkSelected ? itemSelected : ""}>
       <MenuItem onClick={onClick}>
         <LinkIcon />
       </MenuItem>

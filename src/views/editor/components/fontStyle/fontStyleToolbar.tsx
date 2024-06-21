@@ -1,5 +1,4 @@
 import { MenuItem } from "@/components/menu";
-import { $menuItemParent } from "@/components/menu/theme";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { CLEAR_FONT_STYLE_CMD } from "@/views/editor/plugins/fontPlugin";
@@ -80,24 +79,23 @@ export default function FontStyleToolbar() {
 
   return (
     <>
-      <div className={isBold ? itemSelected : ""} style={$menuItemParent}>
+      <div className={isBold ? itemSelected : ""}>
         <MenuItem onClick={onClickBold}>
           <fontStyleTheme.BoldIcon />
         </MenuItem>
       </div>
-      <div className={isItalic ? itemSelected : ""} style={$menuItemParent}>
+      <div className={isItalic ? itemSelected : ""}>
         <MenuItem onClick={onClickItalic}>
           <fontStyleTheme.ItalicIcon />
         </MenuItem>
       </div>
-      <div className={isUnderline ? itemSelected : ""} style={$menuItemParent}>
+      <div className={isUnderline ? itemSelected : ""}>
         <MenuItem onClick={onClickUnderline}>
           <fontStyleTheme.UnderlineIcon />
         </MenuItem>
       </div>
       <div
         className={isStrikethrough ? itemSelected : ""}
-        style={$menuItemParent}
       >
         <MenuItem onClick={onClickStrikethrough}>
           <fontStyleTheme.StrikethroughIcon />

@@ -10,15 +10,13 @@ import { $callCommand, $registerCommandListener } from "@systems/commandsManager
 import { Font, fontFromStyle, fontToStyle } from "@utils";
 import {
   $createRangeSelection,
-  $getNodeByKeyOrThrow,
   $getSelection,
   $isRangeSelection,
   $isTextNode,
-  $setSelection,
-  NodeKey,
-  TextNode
+  $setSelection
 } from "lexical";
 import { useCallback, useEffect, useRef } from "react";
+import { SELECTION_CHANGE_CMD } from "../commandsPlugin/editorCommands";
 import {
   CLEAR_FONT_STYLE_CMD,
   DECREASE_FONT_SIZE_CMD,
@@ -29,7 +27,6 @@ import {
   SET_FONT_SIZE_CMD,
 } from "./fontCommands";
 import { $clearFormat } from "./fontHelpers";
-import { SELECTION_CHANGE_CMD } from "../commandsPlugin/editorCommands";
 
 export function FontPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -48,12 +45,12 @@ export function FontPlugin() {
     () => {
       const selection = $getSelection();
       if ($isRangeSelection(selection)) {
-        const currnetFontSize = $getSelectionStyleValueForProperty( selection, "font-size", fontSizeRef.current );
+        const currnetFontSize = $getSelectionStyleValueForProperty( selection, "font-size", defaultFontSize );
         if ( fontSizeRef.current != currnetFontSize) {
           fontSizeRef.current = currnetFontSize;
           $callCommand(FONT_SIZE_CHANGED_CMD, currnetFontSize);
         }
-        const cssFontFamily = $getSelectionStyleValueForProperty( selection, "font-family", fontFamilyRef.current.name );
+        const cssFontFamily = $getSelectionStyleValueForProperty( selection, "font-family", defaultFontFamily.name );
         const font = cssFontFamily == "" ? fontFamilyRef.current : fontFromStyle(cssFontFamily);
         if ( font.name != fontFamilyRef.current.name ) {
           fontFamilyRef.current = font;
@@ -61,7 +58,7 @@ export function FontPlugin() {
         }
       }
     },
-    []
+    [defaultFontFamily.name, defaultFontSize]
   );
 
   const getStyle = useCallback( ( fontSize: string, fontFamily: Font ) => { return `font-size: ${fontSize}; font-family: ${fontToStyle(fontFamily)}`; }, [] );
@@ -226,51 +223,6 @@ export function FontPlugin() {
       ),
     );
   }, [defaultFontFamily, editor, updateCurrentFont]);
-
-  useEffect( 
-    () => {
-      return editor.registerMutationListener( 
-        TextNode,
-        (nodes) => {
-          const newNodes: NodeKey[] = [];
-
-          editor.getEditorState().read( 
-            () => {
-              for ( const [key, mutation] of nodes ) {
-                if ( mutation == "created" ) {
-                  const node = $getNodeByKeyOrThrow<TextNode>(key);
-
-                  if ( !node.getStyle().includes('font-size') || !node.getStyle().includes('font-family') )
-                    newNodes.push(key);
-                }
-              }
-            });
-
-          if ( newNodes.length == 0) return;
-
-          editor.update(
-            () => {
-              for ( const key of newNodes ) {
-                const node = $getNodeByKeyOrThrow<TextNode>(key);
-                const style = node.getStyle();
-                let newStyle = "";
-                if ( !style.includes('font-size')) {
-                  newStyle += `font-size: ${fontSizeRef.current};`;
-                }
-
-                if ( !style.includes('font-family')) {
-                  newStyle += `font-family: ${fontToStyle(fontFamilyRef.current)};`;
-                }
-
-                node.setStyle( newStyle + style );
-              }
-            }
-          );
-        }
-       );
-    },
-    [editor]
-  );
 
   return null;
 }

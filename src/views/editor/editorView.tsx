@@ -35,7 +35,6 @@ import { MainTheme } from "@/theme";
 import { $getFileSystem } from "@coreSystems";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import { $callCommand } from "@systems/commandsManager/commandsManager";
-import { isDev } from "@utils";
 import { useRef } from "react";
 import { EditorInput } from "./components/editorInput/editorInput";
 import { PageBreakNode } from "./nodes/pageBreak/pageBreakNode";
@@ -45,6 +44,10 @@ import { TreeViewPlugin } from "./plugins/debugViewPlugin/debugViewPlugin";
 import PageBreakPlugin from "./plugins/pageBreakPlugin/pageBreakPlugin";
 import { TableLayoutPlugin } from "./plugins/tableLayoutPlugin/tableLayoutPlugin";
 import { CLEAR_HISTORY_CMD } from "./plugins/commandsPlugin/editorCommands";
+import { ActionsPlugin } from "./plugins/actionsPlugin/actionsPlugin";
+import { isDev } from "@systems/environment";
+import { DatePlugin } from "./plugins/datePlugin/datePlugin";
+import { DateNode } from "./nodes/date";
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
@@ -108,7 +111,7 @@ export function EditorView({ selectedFile }: Props) {
       {
         replace: TextNode,
         withKlass: ExtendedTextNode,
-        with: (node: TextNode) => new ExtendedTextNode(node.__text),
+        with: (node: TextNode) => new ExtendedTextNode(node.__text, node.__format, node.__style),
       },
       ExtendedTableNode,
       TableBodyNode,
@@ -131,36 +134,41 @@ export function EditorView({ selectedFile }: Props) {
       CodeHighlightNode,
       HorizontalRuleNode,
       PageBreakNode,
+      DateNode,
     ],
   };
 
   return (
-    <LexicalComposer initialConfig={initialConfig}>
-      <CommandsPlugin />
-      <div className={editorTheme.editorContainer}>
-        <ToolbarPlugin ref={toolbarRef} />
-        <div
-          className={editorTheme.editorInner}
-          style={{ height: `calc(${USE_DEBUG_TREE ? '50%' : '100%'} - ${toolbarHeight}px)` }}
-        >
-          <EditorInput />
-        </div>
-        {USE_DEBUG_TREE && <TreeViewPlugin/>}
+      <div id="editor-view" className="editor-view">
+        <LexicalComposer initialConfig={initialConfig}>
+          <CommandsPlugin />
+          <ActionsPlugin />
+          <div className={editorTheme.editorContainer}>
+            <ToolbarPlugin ref={toolbarRef} />
+            <div
+              className={editorTheme.editorInner}
+              style={{ height: `calc(${USE_DEBUG_TREE ? '50%' : '100%'} - ${toolbarHeight}px)` }}
+            >
+              <EditorInput />
+            </div>
+            {USE_DEBUG_TREE && <TreeViewPlugin/>}
+          </div>
+          <TestPlugin selectedFile={selectedFile} />
+          <HistoryPlugin />
+          <AutoFocusPlugin />
+          <FontPlugin />
+          <ColorPlugin />
+          <LinkPlugin />
+          <TableLayoutPlugin />
+          <ContextMenuPlugin />
+          <DragDropPlugin />
+          <ImagePlugin />
+          <ListPlugin/>
+          <TabIndentationPlugin/>
+          <HorizontalRulePlugin />
+          <PageBreakPlugin />
+          <DatePlugin />
+        </LexicalComposer>
       </div>
-      <TestPlugin selectedFile={selectedFile} />
-      <HistoryPlugin />
-      <AutoFocusPlugin />
-      <FontPlugin />
-      <ColorPlugin />
-      <LinkPlugin />
-      <TableLayoutPlugin />
-      <ContextMenuPlugin />
-      <DragDropPlugin />
-      <ImagePlugin />
-      <ListPlugin/>
-      <TabIndentationPlugin/>
-      <HorizontalRulePlugin />
-      <PageBreakPlugin />
-    </LexicalComposer>
   );
 }

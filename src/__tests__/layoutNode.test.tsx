@@ -12,7 +12,7 @@ import { $callCommand } from "@systems/commandsManager/commandsManager";
 import { $getRoot, $insertNodes, Klass, LexicalEditor, LexicalNode, LexicalNodeReplacement } from "lexical";
 import { describe, expect, test } from "vitest";
 import { createEditorContext } from "./editor/editorContext";
-import { TestEditor } from "./editor/testEditor";
+import { DefaultTestEditor } from "./editor/testEditor";
 import { TestPlugin } from "./editor/testPlugin";
 import { ReactTest, reactSetup } from "./helpers/prepareReact";
 
@@ -20,8 +20,8 @@ describe("LayoutNode:",
     async () => {
         reactSetup();
 
-        const LayoutTestEditor = (nodes?: ReadonlyArray<Klass<LexicalNode> | LexicalNodeReplacement>, plugins?: React.ReactNode) => 
-            TestEditor( 
+        const TestEditor = (nodes?: ReadonlyArray<Klass<LexicalNode> | LexicalNodeReplacement>, plugins?: React.ReactNode) => 
+            DefaultTestEditor( 
             [
                 LayoutNode,
                 LayoutBodyNode,
@@ -50,7 +50,7 @@ describe("LayoutNode:",
          test( "Layout Columns Widths", 
             async () => {
                 const editorCtx = createEditorContext();
-                ReactTest.render(LayoutTestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
+                ReactTest.render(TestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
                 const {editor} = editorCtx;
 
                 let outColumns: Metric[] = [];
@@ -81,7 +81,7 @@ describe("LayoutNode:",
             async () => {
                 const editorCtx = createEditorContext();
 
-                const {container} = ReactTest.render(LayoutTestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
+                const {container} = ReactTest.render(TestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
 
                 await ReactTest.act( 
                     async () => {
@@ -96,7 +96,7 @@ describe("LayoutNode:",
                     }
                  );
                 
-                expect(container.innerHTML).toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 25%;"><col style="width: 25%;"><col style="width: 25%;"><col style="width: 25%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table><table style="width: 100%;"><colgroup><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table><table style="width: 100%;"><colgroup><col style="width: 100%;"></colgroup><tbody><tr><td><p><br></p></td></tr></tbody></table></div></div></div>');
+                expect(container.innerHTML).toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 25%;"><col style="width: 25%;"><col style="width: 25%;"><col style="width: 25%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table><table style="width: 100%;"><colgroup><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table><table style="width: 100%;"><colgroup><col style="width: 100%;"></colgroup><tbody><tr><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
             }
         );
 
@@ -104,7 +104,7 @@ describe("LayoutNode:",
             async () => {
                 const editorCtx = createEditorContext();
 
-                const {container} = ReactTest.render(LayoutTestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
+                const {container} = ReactTest.render(TestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
                 const {editor} = editorCtx;
 
                 await ReactTest.act( 
@@ -117,7 +117,7 @@ describe("LayoutNode:",
                     }
                  );
 
-               expect(container.innerHTML).toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+               expect(container.innerHTML).toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
             }
         );
 
@@ -125,7 +125,7 @@ describe("LayoutNode:",
             async () => {
                 const editorCtx = createEditorContext();
 
-                const {container} = ReactTest.render(LayoutTestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
+                const {container} = ReactTest.render(TestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
                 const {editor} = editorCtx;
 
                 await ReactTest.act( 
@@ -138,7 +138,7 @@ describe("LayoutNode:",
                     }
                  );
 
-                 expect(container.innerHTML).toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 25%;"><col style="width: 25%;"><col style="width: 25%;"><col style="width: 25%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+                 expect(container.innerHTML).toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 25%;"><col style="width: 25%;"><col style="width: 25%;"><col style="width: 25%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
 
                  await ReactTest.act( 
                     async () => {
@@ -150,7 +150,7 @@ describe("LayoutNode:",
                     }
                  );
 
-               expect(container.innerHTML).toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"></div></div></div>');
+               expect(container.innerHTML).toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"></div></div></div></div>');
             }
         );
 
@@ -158,7 +158,7 @@ describe("LayoutNode:",
             async () => {
                 const editorCtx = createEditorContext();
 
-                const {container} = ReactTest.render(LayoutTestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
+                const {container} = ReactTest.render(TestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
                 const {editor} = editorCtx;
 
                 await ReactTest.act( 
@@ -171,7 +171,7 @@ describe("LayoutNode:",
                     }
                  );
 
-                 expect(container.innerHTML).toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 25%;"><col style="width: 25%;"><col style="width: 25%;"><col style="width: 25%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+                 expect(container.innerHTML).toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 25%;"><col style="width: 25%;"><col style="width: 25%;"><col style="width: 25%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
 
                  let layoutNode: LayoutNode | null = null;
                  await ReactTest.act( 
@@ -192,7 +192,7 @@ describe("LayoutNode:",
                     }
                  );
 
-               expect(container.innerHTML).toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 33.33333333333333%;"><col style="width: 33.33333333333333%;"><col style="width: 33.33333333333333%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+               expect(container.innerHTML).toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 33.33333333333333%;"><col style="width: 33.33333333333333%;"><col style="width: 33.33333333333333%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
 
                await ReactTest.act( 
                 async () => {
@@ -212,7 +212,7 @@ describe("LayoutNode:",
                 }
              );
 
-                expect(container.innerHTML).toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 50%;"><col style="width: 50%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+                expect(container.innerHTML).toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 50%;"><col style="width: 50%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
 
                 await ReactTest.act( 
                     async () => {
@@ -232,7 +232,7 @@ describe("LayoutNode:",
                     }
                  );
     
-                    expect(container.innerHTML).toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 100%;"></colgroup><tbody><tr><td><p><br></p></td></tr></tbody></table></div></div></div>');
+                    expect(container.innerHTML).toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 100%;"></colgroup><tbody><tr><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
             }
         );
     }

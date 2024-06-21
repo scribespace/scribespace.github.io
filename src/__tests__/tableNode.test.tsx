@@ -11,7 +11,7 @@ import { $callCommand } from "@systems/commandsManager/commandsManager";
 import { $getRoot, $insertNodes, Klass, LexicalEditor, LexicalNode, LexicalNodeReplacement } from "lexical";
 import { describe, expect, test } from "vitest";
 import { createEditorContext } from "./editor/editorContext";
-import { TestEditor } from "./editor/testEditor";
+import { DefaultTestEditor } from "./editor/testEditor";
 import { TestPlugin } from "./editor/testPlugin";
 import { ReactTest, reactSetup } from "./helpers/prepareReact";
 
@@ -19,8 +19,8 @@ describe("TableNode:",
     async () => {
         reactSetup();
 
-        const TableTestEditor = (nodes?: ReadonlyArray<Klass<LexicalNode> | LexicalNodeReplacement>, plugins?: React.ReactNode) => 
-            TestEditor( 
+        const TestEditor = (nodes?: ReadonlyArray<Klass<LexicalNode> | LexicalNodeReplacement>, plugins?: React.ReactNode) => 
+            DefaultTestEditor( 
             [
                 ExtendedTableNode,
                 TableBodyNode,
@@ -48,7 +48,7 @@ describe("TableNode:",
          test( "Table Columns Widths", 
             async () => {
                 const editorCtx = createEditorContext();
-                ReactTest.render(TableTestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
+                ReactTest.render(TestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
                 const {editor} = editorCtx;
 
                 let outColumns: Metric[] = [];
@@ -79,7 +79,7 @@ describe("TableNode:",
             async () => {
                 const editorCtx = createEditorContext();
 
-                const {container} = ReactTest.render(TableTestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
+                const {container} = ReactTest.render(TestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
 
                 await ReactTest.act( 
                     async () => {
@@ -95,7 +95,7 @@ describe("TableNode:",
                     }
                  );
                 
-                expect(container.innerHTML).toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 100%;"></colgroup><tbody><tr><td><p><br></p></td></tr></tbody></table><table style="width: 100%;"><colgroup><col style="width: 100%;"></colgroup><tbody><tr><td><p><br></p></td></tr><tr><td><p><br></p></td></tr><tr><td><p><br></p></td></tr><tr><td><p><br></p></td></tr></tbody></table><table style="width: 100%;"><colgroup><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table><table style="width: 100%;"><colgroup><col style="width: 20%;"><col style="width: 20%;"><col style="width: 20%;"><col style="width: 20%;"><col style="width: 20%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+                expect(container.innerHTML).toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 100%;"></colgroup><tbody><tr><td><p><br></p></td></tr></tbody></table><table style="width: 100%;"><colgroup><col style="width: 100%;"></colgroup><tbody><tr><td><p><br></p></td></tr><tr><td><p><br></p></td></tr><tr><td><p><br></p></td></tr><tr><td><p><br></p></td></tr></tbody></table><table style="width: 100%;"><colgroup><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table><table style="width: 100%;"><colgroup><col style="width: 20%;"><col style="width: 20%;"><col style="width: 20%;"><col style="width: 20%;"><col style="width: 20%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
             }
         );
 
@@ -103,7 +103,7 @@ describe("TableNode:",
             async () => {
                 const editorCtx = createEditorContext();
 
-                const {container} = ReactTest.render(TableTestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
+                const {container} = ReactTest.render(TestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
                 const {editor} = editorCtx;
 
                 await ReactTest.act( 
@@ -116,7 +116,7 @@ describe("TableNode:",
                     }
                  );
 
-               expect(container.innerHTML).toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+               expect(container.innerHTML).toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
             }
         );
 
@@ -124,7 +124,7 @@ describe("TableNode:",
             async () => {
                 const editorCtx = createEditorContext();
 
-                const {container} = ReactTest.render(TableTestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
+                const {container} = ReactTest.render(TestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
                 const {editor} = editorCtx;
 
                 await ReactTest.act( 
@@ -137,7 +137,7 @@ describe("TableNode:",
                     }
                  );
 
-                 expect(container.innerHTML, "Init Table").toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+                 expect(container.innerHTML, "Init Table").toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"><col style="width: 14.285714285714286%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
 
                  await ReactTest.act( 
                     async () => {
@@ -149,7 +149,7 @@ describe("TableNode:",
                     }
                  );
 
-               expect(container.innerHTML, "Table Removed").toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"></div></div></div>');
+               expect(container.innerHTML, "Table Removed").toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"></div></div></div></div>');
             }
         );
 
@@ -157,7 +157,7 @@ describe("TableNode:",
             async () => {
                 const editorCtx = createEditorContext();
 
-                const {container} = ReactTest.render(TableTestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
+                const {container} = ReactTest.render(TestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
                 const {editor} = editorCtx;
 
                 await ReactTest.act( 
@@ -170,7 +170,7 @@ describe("TableNode:",
                     }
                  );
 
-               expect(container.innerHTML, "Init Table").toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 25%;"><col style="width: 25%;"><col style="width: 25%;"><col style="width: 25%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+               expect(container.innerHTML, "Init Table").toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 25%;"><col style="width: 25%;"><col style="width: 25%;"><col style="width: 25%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
 
                  let tableNode: ExtendedTableNode | null = null;
                  await ReactTest.act( 
@@ -191,7 +191,7 @@ describe("TableNode:",
                     }
                  );
 
-               expect(container.innerHTML, "Remove Middle").toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 33.33333333333333%;"><col style="width: 33.33333333333333%;"><col style="width: 33.33333333333333%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+               expect(container.innerHTML, "Remove Middle").toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 33.33333333333333%;"><col style="width: 33.33333333333333%;"><col style="width: 33.33333333333333%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
 
                await ReactTest.act( 
                 async () => {
@@ -211,7 +211,7 @@ describe("TableNode:",
                 }
              );
 
-                expect(container.innerHTML, "Remove Last").toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 50%;"><col style="width: 50%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+                expect(container.innerHTML, "Remove Last").toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 50%;"><col style="width: 50%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
 
                 await ReactTest.act( 
                     async () => {
@@ -231,7 +231,7 @@ describe("TableNode:",
                     }
                  );
     
-                expect(container.innerHTML, "Remove First").toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 100%;"></colgroup><tbody><tr><td><p><br></p></td></tr><tr><td><p><br></p></td></tr><tr><td><p><br></p></td></tr></tbody></table></div></div></div>');
+                expect(container.innerHTML, "Remove First").toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 100%;"></colgroup><tbody><tr><td><p><br></p></td></tr><tr><td><p><br></p></td></tr><tr><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
             }
         );
 
@@ -239,7 +239,7 @@ describe("TableNode:",
             async () => {
                 const editorCtx = createEditorContext();
 
-                const {container} = ReactTest.render(TableTestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
+                const {container} = ReactTest.render(TestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
                 const {editor} = editorCtx;
 
                 await ReactTest.act( 
@@ -252,7 +252,7 @@ describe("TableNode:",
                     }
                  );
 
-               expect(container.innerHTML, "Init Table").toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+               expect(container.innerHTML, "Init Table").toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
 
                  let tableNode: ExtendedTableNode | null = null;
                  await ReactTest.act( 
@@ -272,7 +272,7 @@ describe("TableNode:",
                     }
                  );
 
-               expect(container.innerHTML, "Remove Middle").toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+               expect(container.innerHTML, "Remove Middle").toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
 
                await ReactTest.act( 
                 async () => {
@@ -291,7 +291,7 @@ describe("TableNode:",
                 }
              );
 
-                expect(container.innerHTML, "Remove Last").toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+                expect(container.innerHTML, "Remove Last").toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
 
                 await ReactTest.act( 
                     async () => {
@@ -310,7 +310,7 @@ describe("TableNode:",
                     }
                  );
     
-                expect(container.innerHTML, "Remove First").toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+                expect(container.innerHTML, "Remove First").toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"><col style="width: 33.333333333333336%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
             }
         );
 
@@ -318,7 +318,7 @@ describe("TableNode:",
             async () => {
                 const editorCtx = createEditorContext();
 
-                const {container} = ReactTest.render(TableTestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
+                const {container} = ReactTest.render(TestEditor([], <TestPlugin setContextEditor={(editor: LexicalEditor) => {editorCtx.setEditor(editor);}}/>));
                 const {editor} = editorCtx;
 
                 await ReactTest.act( 
@@ -331,7 +331,7 @@ describe("TableNode:",
                     }
                  );
 
-               expect(container.innerHTML, "Init Table").toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 100%;"></colgroup><tbody><tr><td><p><br></p></td></tr><tr><td><p><br></p></td></tr><tr><td><p><br></p></td></tr></tbody></table></div></div></div>');
+               expect(container.innerHTML, "Init Table").toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 100%;"></colgroup><tbody><tr><td><p><br></p></td></tr><tr><td><p><br></p></td></tr><tr><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
 
                  let tableNode: ExtendedTableNode | null = null;
                  await ReactTest.act( 
@@ -352,7 +352,7 @@ describe("TableNode:",
                     }
                  );
 
-               expect(container.innerHTML, "Add After (Last)").toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 33.333333333333336%;"><col style="width: 66.66666666666667%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+               expect(container.innerHTML, "Add After (Last)").toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 33.333333333333336%;"><col style="width: 66.66666666666667%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
 
                await ReactTest.act( 
                 async () => {
@@ -372,7 +372,7 @@ describe("TableNode:",
                 }
              );
 
-                expect(container.innerHTML, "Add Before (First)").toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 50%;"><col style="width: 16.666666666666664%;"><col style="width: 33.33333333333333%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+                expect(container.innerHTML, "Add Before (First)").toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 50%;"><col style="width: 16.666666666666664%;"><col style="width: 33.33333333333333%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
 
                 await ReactTest.act( 
                     async () => {
@@ -392,7 +392,7 @@ describe("TableNode:",
                     }
                  );
     
-                expect(container.innerHTML, "Add After (Middle)").toBe('<div><div><div class="editorEditable_css" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 30%;"><col style="width: 10%;"><col style="width: 40%;"><col style="width: 20%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div>');
+                expect(container.innerHTML, "Add After (Middle)").toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><table style="width: 100%;"><colgroup><col style="width: 30%;"><col style="width: 10%;"><col style="width: 40%;"><col style="width: 20%;"></colgroup><tbody><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table></div></div></div></div>');
             }
         );
     }

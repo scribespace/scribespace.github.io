@@ -1,26 +1,30 @@
 import {
-  CONTEXT_MENU_THEME_DEFAULT,
-  ContextMenuTheme,
-} from "@editor/plugins/contextMenuPlugin/theme";
-import { EditorThemeClassName, EditorThemeClasses } from "lexical";
+  SEPARATOR_THEME_DEFAULT,
+  SeparatorTheme,
+} from "@/components/separators/theme";
+import {
+  FONT_STYLE_THEME_DEFAULT,
+  FontStyleTheme,
+} from "@editor/components/fontStyle/theme";
 import { LINK_THEME_DEFAULT, LinkTheme } from "@editor/components/link/theme";
 import {
-  NumberInputTheme,
   NUMBER_INPUT_THEME_DEFAULT,
+  NumberInputTheme,
 } from "@editor/components/numberInput/theme";
-import {
-  TOOLBAR_THEME_DEFAULT,
-  ToolbarTheme,
-} from "@editor/plugins/toolbarPlugin/theme";
 import {
   UNDO_REDO_THEME_DEFAULT,
   UndoRedoTheme,
 } from "@editor/components/undoRedo/theme";
 import {
-  FONT_STYLE_THEME_DEFAULT,
-  FontStyleTheme,
-} from "@editor/components/fontStyle/theme";
+  CONTEXT_MENU_THEME_DEFAULT,
+  ContextMenuTheme,
+} from "@editor/plugins/contextMenuPlugin/theme";
+import {
+  TOOLBAR_THEME_DEFAULT,
+  ToolbarTheme,
+} from "@editor/plugins/toolbarPlugin/theme";
 import { Font } from "@utils";
+import { EditorThemeClassName, EditorThemeClasses, IS_BOLD } from "lexical";
 import {
   ALIGN_MENU_THEME_DEFAULT,
   AlignMenuTheme,
@@ -29,26 +33,23 @@ import {
   COLOR_MENU_THEME_DEFAULT,
   ColorMenuTheme,
 } from "../components/color/theme";
+import { IMAGE_THEME_DEFAULT, ImageTheme } from "../components/image/theme";
 import {
   TABLE_LAYOUT_THEME_DEFAULT,
   TableLayoutTheme,
 } from "../components/tableLayout/theme";
-import {
-  SEPARATOR_THEME_DEFAULT,
-  SeparatorTheme,
-} from "@/components/separators/theme";
-import { IMAGE_THEME_DEFAULT, ImageTheme } from "../components/image/theme";
 
-import "./css/editorInputTheme.css";
-import { LIST_THEME_DEFAULT, ListTheme } from "../components/list/theme/listTheme";
 import { HORIZONTAL_BREAK_THEME_DEFAULT, HorizontalBreakTheme } from "@editor/components/horizontalBreak/theme/horizontalBreakTheme";
-import { PageBreakTheme, Page_BREAK_THEME_DEFAULT } from "@editor/components/pageBreak/theme/pageBreakTheme";
+import { PAGE_BREAK_THEME_DEFAULT, PageBreakTheme } from "@editor/components/pageBreak/theme/pageBreakTheme";
+import { LIST_THEME_DEFAULT, ListTheme } from "../components/list/theme/listTheme";
+import "./css/editorInputTheme.css";
 
 export interface EditorInputTheme extends EditorThemeClasses {
   defaultFontSize: EditorThemeClassName;
   defaultFontFamily: Font;
 
   layout: EditorThemeClassName;
+  date: {style: string, format: number }
 }
 
 export interface EditorTheme {
@@ -72,7 +73,6 @@ export interface EditorTheme {
   listTheme: ListTheme;
   horizontalBreakTheme: HorizontalBreakTheme;
   pageBreakTheme: PageBreakTheme;
-
 
   toolbarTheme: ToolbarTheme;
   contextMenuTheme: ContextMenuTheme;
@@ -153,6 +153,7 @@ export const EDITOR_INPUT_THEME_DEFAULT: EditorInputTheme = {
   defaultFontFamily: { name: "", alt: "" },
 
   layout: "editor-layout",
+  date: { style: "fontSize: 13pt", format: IS_BOLD }
 };
 
 export const EDITOR_THEME_DEFAULT: EditorTheme = {
@@ -175,8 +176,8 @@ export const EDITOR_THEME_DEFAULT: EditorTheme = {
   imageTheme: IMAGE_THEME_DEFAULT,
   listTheme: LIST_THEME_DEFAULT,
   horizontalBreakTheme: HORIZONTAL_BREAK_THEME_DEFAULT,
-  pageBreakTheme: Page_BREAK_THEME_DEFAULT,
-
+  pageBreakTheme: PAGE_BREAK_THEME_DEFAULT,
+  
   toolbarTheme: TOOLBAR_THEME_DEFAULT,
   contextMenuTheme: CONTEXT_MENU_THEME_DEFAULT,
 };

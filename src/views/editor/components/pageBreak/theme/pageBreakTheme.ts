@@ -10,7 +10,7 @@ export interface PageBreakTheme {
     PageBreakIcon: IconType;
 }
 
-export const Page_BREAK_THEME_DEFAULT: PageBreakTheme = {
+export const PAGE_BREAK_THEME_DEFAULT: PageBreakTheme = {
     pageBreakFiller: 'editor-page-break-filler',
     PageBreakIcon: Icon( TbSpacingVertical ),
 };

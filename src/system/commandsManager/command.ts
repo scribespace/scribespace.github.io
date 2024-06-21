@@ -1,9 +1,10 @@
+import { DEV } from "@systems/environment";
 import { Func } from "@utils";
 
 export type CommandListener<P> = (payload: P) => unknown;
 export type CommandCaller<P> = (payload: P, listeners: CommandListener<P>[]) => void;
 export class Command<P> {
-    private __name: string | undefined;
+    private __name: string | undefined = undefined;
     get name() { return this.__name; }
 
     callCommand(payload: P, listeners: CommandListener<P>[]) {
@@ -18,6 +19,8 @@ export class Command<P> {
     }
 
     constructor( name?: string) {
-        this.__name = name;
+        DEV( () => {   
+            this.__name = name;
+        });
     }
 }

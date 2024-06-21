@@ -13,8 +13,10 @@ import {
 } from "lexical";
 
 export class ExtendedTextNode extends TextNode {
-  constructor(text: string, key?: NodeKey) {
+  constructor(text: string, format?: number, style?: string, key?: NodeKey) {
     super(text, key);
+    this.__format = format || 0;
+    this.__style = style || "";
   }
 
   static getType(): string {
@@ -22,7 +24,7 @@ export class ExtendedTextNode extends TextNode {
   }
 
   static clone(node: ExtendedTextNode): ExtendedTextNode {
-    return new ExtendedTextNode(node.__text, node.__key);
+    return new ExtendedTextNode(node.__text, node.__format, node.__style, node.__key);
   }
 
   static importDOM(): DOMConversionMap | null {
@@ -56,8 +58,8 @@ export class ExtendedTextNode extends TextNode {
   }
 }
 
-export function $createExtendedTextNode(text: string): ExtendedTextNode {
-  return $applyNodeReplacement(new ExtendedTextNode(text));
+export function $createExtendedTextNode(text: string, format?: number, style?: string): ExtendedTextNode {
+  return $applyNodeReplacement(new ExtendedTextNode(text, format, style));
 }
 
 export function $isExtendedTextNode(

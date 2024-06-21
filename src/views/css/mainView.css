@@ -1,6 +1,6 @@
 .main-view {
   display: grid;
-  grid-template-columns: 30% auto;
+  grid-template-columns: 0.5fr auto;
   column-gap: 1%;
   width: 100%;
 }
@@ -15,6 +15,5 @@
 }
 
 .editor-view {
-  width: 100%; /* Width matching A4 paper size in pixels */
   overflow: hidden;
 }

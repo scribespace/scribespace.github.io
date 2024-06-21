@@ -1,4 +1,4 @@
-import { $packShortcut, $shortcutFromKeyboardEvent, $unpackShortcut, CodeToKey, INVALID_SHORTCUT, KEY_SPACE, Shortcut, SpecialKey } from "@systems/commandsManager/shortcut";
+import { $packShortcut, $shortcutFromKeyboardEvent, $unpackShortcut, CodeToKey, INVALID_SHORTCUT, KEY_SPACE, Shortcut, SpecialKey } from "@systems/shortcutManager/shortcut";
 import { describe, expect, test } from "vitest";
 
 describe.concurrent("Shortcuts:",

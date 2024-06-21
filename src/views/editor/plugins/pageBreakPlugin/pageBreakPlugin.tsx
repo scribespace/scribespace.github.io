@@ -64,7 +64,7 @@ export default function PageBreakPlugin(): JSX.Element | null {
             
             if ( $isRangeSelection(selection) ) {
                 for ( const node of selection.getNodes() ) {
-                    canInsertPageBreak = canInsertPageBreak && ( $isRootNode(node) || $isRootNode(node.getParentOrThrow()) );
+                    canInsertPageBreak = canInsertPageBreak && ( $isRootNode(node) || $isRootNode(node.getParentOrThrow()) || $isRootNode(node.getTopLevelElementOrThrow().getParentOrThrow()) );
                 }
             }
             

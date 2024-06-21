@@ -1,3 +1,3 @@
-import { $registerEditorCommand } from "@editor/plugins/commandsPlugin/editorCommandManager";
+import { $createEditorCommand } from "@editor/plugins/commandsPlugin/editorCommandManager";
 
-export const TOOLBAR_CLOSE_MENU_CMD = $registerEditorCommand<void>("TOOLBAR_CLOSE_MENU_CMD");
+export const TOOLBAR_CLOSE_MENU_CMD = $createEditorCommand<void>("TOOLBAR_CLOSE_MENU_CMD");

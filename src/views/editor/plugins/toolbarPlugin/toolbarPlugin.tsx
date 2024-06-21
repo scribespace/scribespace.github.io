@@ -20,6 +20,7 @@ import "./css/toolbarPlugin.css";
 import { ListToolbar } from "../../components/list/listToolbar";
 import { HorizontalBreakToolbar } from "@editor/components/horizontalBreak/horizontalBreakToolbar";
 import { PageBreakToolbar } from "@editor/components/pageBreak/pageBreakToolbar";
+import { ShortcutsButton } from "@/components/shortcuts/shortcutsButton";
 
 const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
   const {
@@ -61,6 +62,8 @@ const ToolbarPlugin = forwardRef<HTMLDivElement>((_, ref) => {
         <SeparatorVertical />
         <HorizontalBreakToolbar />
         <PageBreakToolbar />
+        <SeparatorVertical />
+        <ShortcutsButton />
       </div>
     </MenuRoot>
   );

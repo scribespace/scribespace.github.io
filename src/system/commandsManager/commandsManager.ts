@@ -1,16 +1,11 @@
-import { Func, assert, isDev } from "@utils";
-import { Shortcut } from "./shortcut";
+import { Func, assert } from "@utils";
 import { Command, CommandListener } from "./command";
-import { ActionCommand } from "./actionCommand";
+import { isDev } from "@systems/environment";
 
 const commandMap = new Map<Command<unknown>, CommandListener<unknown>[]>();
 
-export function $registerCommand<P>(name:string) : Command<P> {
+export function $createCommand<P>(name:string) : Command<P> {
     return isDev() ? new Command<P>(name) : new Command<P>();
-}
-
-export function $registerActionCommand<P>(name:string, shortcut: Shortcut, defaultPayload?: P, description?: string) : Command<P> {
-    return isDev() ? new ActionCommand<P>(shortcut, defaultPayload, description, name) : new ActionCommand<P>(shortcut, defaultPayload, description);
 }
 
 export function $registerCommandListener<P>( command: Command<P>, listener: CommandListener<P> ): Func {

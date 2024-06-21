@@ -65,6 +65,10 @@ declare export function createCommand<T>(type?: string): LexicalCommand<T>;
  * LexicalConstnats
  */
 
+declar export var IS_NORMAL: number;
+declar export var IS_TOKEN: number;
+declar export var IS_SEGMENTED: number;
+
 declare export var IS_ALL_FORMATTING: number;
 declare export var IS_BOLD: number;
 declare export var IS_CODE: number;
@@ -822,6 +826,7 @@ declare export function $getNearestNodeFromDOMNode(
   startingDOM: Node,
 ): LexicalNode | null;
 declare export function $getNodeByKey<N: LexicalNode>(key: NodeKey): N | null;
+declare export function $getNodeByKeyOrThrow<N: LexicalNode>(key: NodeKey): N;
 declare export function $getRoot(): RootNode;
 declare export function $isLeafNode<T = mixed>(
   node: ?LexicalNode,
@@ -855,7 +860,6 @@ declare export function $copyNode(
   offset: number,
 ): [ElementNode, ElementNode];
 declare export function $getEditor(): LexicalEditor;
-export function $getNodeByKeyOrThrow<N extends LexicalNode>(key: NodeKey): N;
 
 /**
  * LexicalNormalization

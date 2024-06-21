@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const topDir = dirname(__filename);
 const srcDir = path.join(topDir, "..", "..", "lexical", "packages");
 const dstDir = path.join(topDir, "..", "libs", "lexical");
-const helpersDir = path.join(topDir, "..", "src", "views", "editor", "helpers");
+const helpersDir = path.join(topDir, "..", "src", "views", "editor", "lexicalHelpers");
 
 fse.emptyDirSync(dstDir);
 fse.emptyDirSync(helpersDir);
