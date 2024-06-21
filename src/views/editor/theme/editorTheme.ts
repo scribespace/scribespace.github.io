@@ -24,7 +24,7 @@ import {
   ToolbarTheme,
 } from "@editor/plugins/toolbarPlugin/theme";
 import { Font } from "@utils";
-import { EditorThemeClassName, EditorThemeClasses, IS_BOLD } from "lexical";
+import { EditorThemeClassName, EditorThemeClasses } from "lexical";
 import {
   ALIGN_MENU_THEME_DEFAULT,
   AlignMenuTheme,
@@ -41,6 +41,7 @@ import {
 
 import { HORIZONTAL_BREAK_THEME_DEFAULT, HorizontalBreakTheme } from "@editor/components/horizontalBreak/theme/horizontalBreakTheme";
 import { PAGE_BREAK_THEME_DEFAULT, PageBreakTheme } from "@editor/components/pageBreak/theme/pageBreakTheme";
+import { DATE_THEME_DEFAULT, DateTheme } from "@editor/nodes/date/theme/dateTheme";
 import { LIST_THEME_DEFAULT, ListTheme } from "../components/list/theme/listTheme";
 import "./css/editorInputTheme.css";
 
@@ -49,7 +50,7 @@ export interface EditorInputTheme extends EditorThemeClasses {
   defaultFontFamily: Font;
 
   layout: EditorThemeClassName;
-  date: {style: string, format: number }
+  date: DateTheme;
 }
 
 export interface EditorTheme {
@@ -153,7 +154,7 @@ export const EDITOR_INPUT_THEME_DEFAULT: EditorInputTheme = {
   defaultFontFamily: { name: "", alt: "" },
 
   layout: "editor-layout",
-  date: { style: "fontSize: 13pt", format: IS_BOLD }
+  date: DATE_THEME_DEFAULT
 };
 
 export const EDITOR_THEME_DEFAULT: EditorTheme = {

@@ -1,6 +1,9 @@
-import { $applyNodeReplacement, IS_TOKEN, LexicalNode, NodeKey, SerializedTextNode, TextNode, getActiveEditor } from "lexical";
+import { $applyNodeReplacement, EditorConfig, IS_TOKEN, LexicalEditor, LexicalNode, NodeKey, SerializedTextNode, TextNode, getActiveEditor } from "lexical";
+import { DateTheme } from "./theme/dateTheme";
+import { addClassNamesToElement } from "@lexical/utils";
 
 export class DateNode extends TextNode {
+  __dateTheme: DateTheme;
     constructor(text?: string, key?: NodeKey) {
         const dayMap = [
             "Sunday",
@@ -16,10 +19,14 @@ export class DateNode extends TextNode {
         const dateString = `(${dayMap[date.getDay()]}) ${date.getDate()}.${date.getMonth()+1}.${date.getFullYear()}`;
 
         super(text || dateString, key);
-        const dateTheme = getActiveEditor()._config.theme.date;
-        this.__style = dateTheme.style;
-        this.__format = dateTheme.format;
+        this.__dateTheme = getActiveEditor()._config.theme.date;
+        this.__style = this.__dateTheme.style;
+        this.__format = this.__dateTheme.format;
         this.__mode = IS_TOKEN;
+      }
+
+      isUnmergeable() {
+        return true;
       }
 
       static getType(): string {
@@ -28,6 +35,15 @@ export class DateNode extends TextNode {
 
       static clone(node: DateNode): DateNode {
         return new DateNode(node.__text, node.__key);
+      }
+
+      createDOM(config: EditorConfig, editor?: LexicalEditor): HTMLElement {
+        const dom = super.createDOM(config, editor);
+        const outerTag = document.createElement('p');
+        addClassNamesToElement(outerTag, this.__dateTheme.outerTagTheme);
+
+        outerTag.append(dom);
+        return outerTag;
       }
 
       exportJSON() {
