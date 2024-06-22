@@ -17,14 +17,15 @@ export interface File {
 
 export interface FileInfo {
   hash: string | undefined;
-  name: string;
+  id: string;
+  path: string;
 }
 
 export interface FileResult {
   status: FileSystemStatus;
 }
 
-export interface UploadResult extends FileResult {
+export interface InfoResult extends FileResult {
   fileInfo?: FileInfo;
 }
 export interface DownloadResult extends FileResult {
@@ -32,7 +33,3 @@ export interface DownloadResult extends FileResult {
   fileInfo?: FileInfo;
 }
 export interface DeleteResults extends FileResult { }
-
-export interface GetMetadataResults extends FileResult {
-  fileInfo?: FileInfo;
-}

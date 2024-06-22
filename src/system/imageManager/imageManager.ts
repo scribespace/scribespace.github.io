@@ -1,6 +1,6 @@
 import { WebWorkerManager } from "@/interfaces/webWorker";
 
-import { File, FileUploadMode, UploadResult } from "@/interfaces/system/fileSystem/fileSystemShared";
+import { File, FileUploadMode, InfoResult } from "@/interfaces/system/fileSystem/fileSystemShared";
 import { notNullOrThrowDev, variableExistsOrThrowDev } from "@/utils";
 import { ImageManagerWorkerPublic } from "./imageManagerWorker";
 import workerURL from "./imageManagerWorker?worker&url";
@@ -20,9 +20,9 @@ export class ImageManager extends WebWorkerManager<ImageManagerWorkerFunctions, 
     return $getFileSystem()
     .uploadFileAsync($getImageName(file.content.type), file, FileUploadMode.Add)
     .then(
-      (result: UploadResult) => {
+      (result: InfoResult) => {
         variableExistsOrThrowDev( result.fileInfo, "Missing fileInfo" );
-        return $getFileSystem().getFileURLAsync(result.fileInfo.name);
+        return $getFileSystem().getFileURLAsync(result.fileInfo.id);
       }
     );
   }

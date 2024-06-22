@@ -1,4 +1,4 @@
-import { TreeNodeApi } from "../common";
+import { TreeNodeApi } from "../../../system/treeManager/treeData";
 
 export function Input({ node }: { node: TreeNodeApi }) {
   return (

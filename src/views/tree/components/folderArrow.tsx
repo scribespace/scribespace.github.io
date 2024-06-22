@@ -1,5 +1,5 @@
 import { SlArrowDown, SlArrowRight } from "react-icons/sl";
-import { TreeNodeApi } from "../common";
+import { TreeNodeApi } from "../../../system/treeManager/treeData";
 
 export function FolderArrow({ node }: { node: TreeNodeApi }) {
   if (node.isLeaf) return <span></span>;

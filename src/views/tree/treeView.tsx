@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import TreeNode from "./components/treeNode";
 
@@ -7,30 +7,28 @@ import {
   DeleteHandler,
   MoveHandler,
   RenameHandler,
-  SimpleTree,
   Tree,
-  TreeApi,
+  TreeApi
 } from "react-arborist";
 import "./css/treeView.css";
 
 import useBoundingRect from "@/hooks/useBoundingRect";
 import {
-  DownloadResult,
   FileSystemStatus,
   FileUploadMode,
-  UploadResult
+  InfoResult
 } from "@/interfaces/system/fileSystem/fileSystemShared";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
+import { $getFileSystem } from "@coreSystems";
+import { TREE_DATA_CHANGED_CMD, treeManager } from "@systems/treeManager";
 import { IconBaseProps } from "react-icons";
 import {
   NOTES_PATH,
-  TREE_FILE,
-  TREE_STATUS_FILE,
   TreeNodeApi,
   TreeNodeData,
-} from "./common";
-import { $getFileSystem } from "@coreSystems";
+} from "../../system/treeManager/treeData";
+import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
 
 interface TreeViewProps {
   setSelectedFile: (file: string) => void;
@@ -40,47 +38,41 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
   const { treeTheme }: MainTheme = useMainThemeContext();
 
   const [, setDataVersion] = useState<number>(0);
-  const [tree, setTree] = useState<SimpleTree<TreeNodeData> | null>(null);
 
   const treeParentRef = useRef<HTMLDivElement>(null);
   const controlButtonsRef = useRef<HTMLDivElement>(null);
   const { height: treeParentHeight } = useBoundingRect(treeParentRef);
   const { height: controlButtonsHeight } = useBoundingRect(controlButtonsRef);
 
-  const treeElement = useRef<TreeApi<TreeNodeData>>(null);
+  const treeElementRef = useRef<TreeApi<TreeNodeData>>(null);
   const treeOpenNodes = useRef<Set<string>>(new Set<string>());
   const onToggleEnabled = useRef<boolean>(true);
 
-  function updateDataVersion() {
-    setDataVersion((prev) => prev + 1);
-    uploadTree();
-  }
-
-  function uploadTree() {
-    const treeJSON = JSON.stringify(tree?.data);
-    const treeBlob = new Blob([treeJSON]);
-    $getFileSystem().uploadFileAsync( TREE_FILE, { content: treeBlob }, FileUploadMode.Replace );
-  }
+  const updateDataVersion = useCallback( 
+    () => {
+      setDataVersion((prev) => prev + 1);
+    },
+    []
+  );
 
   function uploadTreeStatus() {
-    const treeStatusJSON = JSON.stringify([...treeOpenNodes.current]);
-    $getFileSystem().uploadFileAsync( TREE_STATUS_FILE, { content: new Blob([treeStatusJSON]) }, FileUploadMode.Replace );
+    treeManager.storeTreeStatus([...treeOpenNodes.current]);
   }
 
   const OnAddElement = () => {
-    if (treeElement.current == null) return;
-    treeElement.current.createInternal();
+    if (treeElementRef.current == null) return;
+    treeElementRef.current.createInternal();
   };
 
   const OnDeleteElement = () => {
-    if (treeElement.current == null) return;
-    const tree = treeElement.current;
-    const node = tree.focusedNode;
+    if (treeElementRef.current == null) return;
+    const treeElement = treeElementRef.current;
+    const node = treeElement.focusedNode;
     if (node) {
       const sib = node.nextSibling;
       const parent = node.parent;
-      tree.focus(sib || parent, { scroll: false });
-      tree.delete(node);
+      treeElement.focus(sib || parent, { scroll: false });
+      treeElement.delete(node);
     }
   };
 
@@ -89,22 +81,18 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
     parentId: null | string;
     index: number;
   }) => {
-    for (const id of args.dragIds) {
-      tree?.move({ id, parentId: args.parentId, index: args.index });
-    }
-    updateDataVersion();
+    treeManager.moveNodes(args);
   };
 
   const onRename: RenameHandler<TreeNodeData> = ({ name, id }) => {
-    tree?.update({ id, changes: { name } as TreeNodeData });
-    updateDataVersion();
+    treeManager.renameNode(id, name);
   };
 
   const onCreate: CreateHandler<TreeNodeData> = async ({ parentId, index }) => {
     const fileName =
       "scribe-space-id-" + crypto.randomUUID() + new Date().toJSON();
 
-    const result: UploadResult | undefined = await $getFileSystem().uploadFile(
+    const result: InfoResult | undefined = await $getFileSystem().uploadFile(
       NOTES_PATH + fileName,
       { content: new Blob([""]) },
       FileUploadMode.Add
@@ -115,11 +103,9 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
     if (!result.fileInfo) throw Error("onCreate note: No fileInfo");
     if (!result.fileInfo.hash) throw Error("onCreate note: No hash");
 
-    if (result.fileInfo.name) {
-      const id = result.fileInfo.name;
-      const node = { id, name: "New File", children: [] } as TreeNodeData;
-      tree?.create({ parentId, index, data: node });
-      updateDataVersion();
+    if (result.fileInfo.id) {
+      const id = result.fileInfo.id;
+      const node = treeManager.createNode(parentId, index, id, result.fileInfo.path);
       return node;
     }
     return null;
@@ -131,11 +117,7 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
     if (args.ids.length > 1) throw Error("onDelete: Too many files selected!");
     const id = args.ids[0];
 
-    await $getFileSystem().deleteFileAsync(id)
-    .then(() => {
-      tree?.drop({ id });
-      updateDataVersion();
-    });
+    await treeManager.deleteNode(id);
   };
 
   const onSelect = (nodes: TreeNodeApi[]) => {
@@ -158,36 +140,30 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
     uploadTreeStatus();
   };
 
-  function downloadAndSetTreeStatus() {
-    $getFileSystem().downloadFileAsync(TREE_STATUS_FILE)
-    .then((result: DownloadResult) => {
-      if (result.status === FileSystemStatus.Success) {
-        result.file?.content?.text().then((treeStatusJSON) => {
-          const treeStatusArray = JSON.parse(treeStatusJSON);
-          onToggleEnabled.current = false;
-          for (const node of treeStatusArray) {
-            treeOpenNodes.current.add(node);
-            treeElement.current?.close(node);
-          }
-          onToggleEnabled.current = true;
-        });
-      }
-    });
-  }
-
   useEffect(() => {
-    $getFileSystem().downloadFileAsync(TREE_FILE)
-    .then((result: DownloadResult) => {
-      if (result.status === FileSystemStatus.Success) {
-        result.file?.content?.text().then((treeJSON) => {
-          setTree(new SimpleTree<TreeNodeData>(JSON.parse(treeJSON)));
-          downloadAndSetTreeStatus();
-        });
-      } else {
-        setTree(new SimpleTree<TreeNodeData>([]));
+    treeManager.loadTreeData()
+    .then(() => {
+      const treeStatusArray = treeManager.loadTreeStatus();
+      onToggleEnabled.current = false;
+      for (const node of treeStatusArray) {
+        treeOpenNodes.current.add(node);
+        treeElementRef.current?.close(node);
       }
-    });
+      onToggleEnabled.current = true;
+  });
   }, []);
+
+  useEffect(
+    () => {
+      return $registerCommandListener( 
+        TREE_DATA_CHANGED_CMD, 
+        () => {
+          updateDataVersion();
+        }
+      );
+    },
+    [updateDataVersion]
+  );
 
   function AddIcon(props: IconBaseProps) {
     return treeTheme.AddIcon(props);
@@ -202,22 +178,21 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
       <div ref={controlButtonsRef}>
         <AddIcon
           size={"30px"}
-          onClick={tree == null ? () => {} : OnAddElement}
+          onClick={treeManager.isTreeReady() ? OnAddElement : () => {}}
         />
         <DeleteIcon
           size={"30px"}
-          onClick={tree == null ? () => {} : OnDeleteElement}
+          onClick={treeManager.isTreeReady() ? OnDeleteElement : () => {}}
         />
       </div>
       <div
         ref={treeParentRef}
-        className="tree-div"
-        style={{ height: `calc(100% - ${controlButtonsHeight}px)` }}
+        style={{ height: `calc(100% - ${controlButtonsHeight}px)`, overflow: 'visible' }}
       >
         <Tree
-          ref={treeElement}
-          disableEdit={tree == null}
-          data={tree?.data}
+          ref={treeElementRef}
+          disableEdit={!treeManager.isTreeReady()}
+          data={treeManager.data}
           width={"100%"}
           height={treeParentHeight}
           disableMultiSelection={true}

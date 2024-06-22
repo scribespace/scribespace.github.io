@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { WebWorkerManagerInterface } from "@/interfaces/webWorker";
 import { assert, notNullOrThrowDev } from "@/utils";
-import { DeleteResults, DownloadResult, File, FileUploadMode, UploadResult } from "./fileSystemShared";
+import { DeleteResults, DownloadResult, File, FileUploadMode, InfoResult } from "./fileSystemShared";
 
 export interface FileSystemBase{
   calculateFileHash(file: File): Promise<string>;
   getFileHash(path: string): Promise<string>; 
-  uploadFile( path: string, file: File, mode: FileUploadMode ): Promise<UploadResult>;
+  getFileInfo(path: string): Promise<InfoResult>; 
+  uploadFile( path: string, file: File, mode: FileUploadMode ): Promise<InfoResult>;
   downloadFile(path: string): Promise<DownloadResult>;
   deleteFile(path: string): Promise<DeleteResults>;
   getFileURL(path: string): Promise<string>;

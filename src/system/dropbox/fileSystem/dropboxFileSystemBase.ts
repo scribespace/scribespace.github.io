@@ -9,8 +9,7 @@ import {
   FileInfo,
   FileSystemStatus,
   FileUploadMode,
-  GetMetadataResults,
-  UploadResult
+  InfoResult
 } from "@/interfaces/system/fileSystem/fileSystemShared";
 import { Constructor, variableExistsOrThrow } from "@utils";
 import * as DropboxAPI from "dropbox";
@@ -34,6 +33,14 @@ import {
   isDropboxResponseErrorOrThrow,
 } from "../dropboxCommon";
 import { HandleDeleteError, HandleDownloadError, HandleGetMetadataError, HandleUploadError } from "./dropboxFileSystemShared";
+
+function metaToFileInfo(meta: DropboxFileMetadata): FileInfo {
+  return {
+    hash: meta.content_hash,
+    id: meta.id,
+    path: meta.path_lower || '',
+  };
+}
 
 export function GetExtendedFileSystemBase<TExtend extends Constructor>(extend: TExtend) {
   return class DropboxFileSystemBase extends extend implements FileSystemBase {
@@ -104,7 +111,7 @@ export function GetExtendedFileSystemBase<TExtend extends Constructor>(extend: T
       file: File,
       commit: DropboxCommitInfo,
       fileHash: Promise<string>
-    ): Promise<UploadResult> {
+    ): Promise<InfoResult> {
       if (file.content === null)
         ThrowDropboxError("uploadSmallFile: File has no content");
 
@@ -129,10 +136,7 @@ export function GetExtendedFileSystemBase<TExtend extends Constructor>(extend: T
         return HandleUploadError(path, uploadError.error);
       }
 
-      const fileInfo: FileInfo = {
-        hash: fileMeta.content_hash,
-        name: fileMeta.id,
-      };
+      const fileInfo = metaToFileInfo(fileMeta);
       return { status: FileSystemStatus.Success, fileInfo };
     }
 
@@ -141,7 +145,7 @@ export function GetExtendedFileSystemBase<TExtend extends Constructor>(extend: T
       file: File,
       commit: DropboxCommitInfo,
       fileHash: Promise<string>
-    ): Promise<UploadResult> {
+    ): Promise<InfoResult> {
       if (file.content === null)
         ThrowDropboxError("uploadBigFile: File has no content");
 
@@ -227,10 +231,7 @@ export function GetExtendedFileSystemBase<TExtend extends Constructor>(extend: T
         return HandleUploadError(path, uploadError.error);
       }
 
-      const fileInfo: FileInfo = {
-        hash: fileMeta.content_hash,
-        name: fileMeta.id,
-      };
+      const fileInfo = metaToFileInfo(fileMeta);
       return { status: FileSystemStatus.Success, fileInfo };
     }
 
@@ -238,7 +239,7 @@ export function GetExtendedFileSystemBase<TExtend extends Constructor>(extend: T
       path: string,
       file: File,
       mode: FileUploadMode
-    ): Promise<UploadResult> {
+    ): Promise<InfoResult> {
       if (file.content === null)
         ThrowDropboxError("uploadFile: File has no content");
 
@@ -315,13 +316,13 @@ export function GetExtendedFileSystemBase<TExtend extends Constructor>(extend: T
       const result: DownloadResult = {
         status: FileSystemStatus.Success,
         file: file,
-        fileInfo: { hash: fileMeta.content_hash, name: fileMeta.id },
+        fileInfo: metaToFileInfo( fileMeta ),
       };
 
       return result;
     }
 
-    async getMetadata(path: string): Promise<GetMetadataResults> {
+    async getFileInfo(path: string): Promise<InfoResult> {
       let fileMeta: DropboxFileMetadata;
       try {
         fileMeta = (await this.dbx.filesGetMetadata({ path: path }))
@@ -337,12 +338,12 @@ export function GetExtendedFileSystemBase<TExtend extends Constructor>(extend: T
 
       return {
         status: FileSystemStatus.Success,
-        fileInfo: { hash: fileMeta.content_hash, name: fileMeta.id },
+        fileInfo: metaToFileInfo( fileMeta ),
       };
     }
 
     async getFileHash(path: string): Promise<string> {
-      const fileMeta = await this.getMetadata(path);
+      const fileMeta = await this.getFileInfo(path);
 
       if (!fileMeta.fileInfo?.hash) {
         ThrowDropboxError({

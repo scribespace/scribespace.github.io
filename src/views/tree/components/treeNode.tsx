@@ -5,7 +5,7 @@ import { SlDoc } from "react-icons/sl";
 import clsx from "clsx";
 
 import "./css/treeNode.css";
-import { TreeNodeData } from "../common";
+import { TreeNodeData } from "../../../system/treeManager/treeData";
 import { FolderArrow } from "./folderArrow";
 import { Input } from "./input";
 import { useMainThemeContext } from "@/mainThemeContext";
