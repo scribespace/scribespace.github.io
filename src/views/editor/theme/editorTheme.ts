@@ -1,49 +1,24 @@
-import {
-  SEPARATOR_THEME_DEFAULT,
-  SeparatorTheme,
-} from "@/components/separators/theme";
-import {
-  FONT_STYLE_THEME_DEFAULT,
-  FontStyleTheme,
-} from "@editor/components/fontStyle/theme";
-import { LINK_THEME_DEFAULT, LinkTheme } from "@editor/components/link/theme";
-import {
-  NUMBER_INPUT_THEME_DEFAULT,
-  NumberInputTheme,
-} from "@editor/components/numberInput/theme";
-import {
-  UNDO_REDO_THEME_DEFAULT,
-  UndoRedoTheme,
-} from "@editor/components/undoRedo/theme";
-import {
-  CONTEXT_MENU_THEME_DEFAULT,
-  ContextMenuTheme,
-} from "@editor/plugins/contextMenuPlugin/theme";
-import {
-  TOOLBAR_THEME_DEFAULT,
-  ToolbarTheme,
-} from "@editor/plugins/toolbarPlugin/theme";
 import { Font } from "@utils";
+
+import "./css/editorInputTheme.css";
+
+import { SEPARATOR_THEME_DEFAULT, SeparatorTheme } from "@/components/separators/theme";
+import { FONT_STYLE_THEME_DEFAULT, FontStyleTheme } from "@editor/components/fontStyle/theme";
+import { LINK_THEME_DEFAULT, LinkTheme } from "@editor/components/link/theme";
+import { NUMBER_INPUT_THEME_DEFAULT, NumberInputTheme } from "@editor/components/numberInput/theme";
+import { UNDO_REDO_THEME_DEFAULT, UndoRedoTheme } from "@editor/components/undoRedo/theme";
+import { CONTEXT_MENU_THEME_DEFAULT, ContextMenuTheme } from "@editor/plugins/contextMenuPlugin/theme";
+import { TOOLBAR_THEME_DEFAULT, ToolbarTheme } from "@editor/plugins/toolbarPlugin/theme";
 import { EditorThemeClassName, EditorThemeClasses } from "lexical";
-import {
-  ALIGN_MENU_THEME_DEFAULT,
-  AlignMenuTheme,
-} from "../components/align/theme";
-import {
-  COLOR_MENU_THEME_DEFAULT,
-  ColorMenuTheme,
-} from "../components/color/theme";
+import { ALIGN_MENU_THEME_DEFAULT, AlignMenuTheme } from "../components/align/theme";
+import { COLOR_MENU_THEME_DEFAULT, ColorMenuTheme } from "../components/color/theme";
 import { IMAGE_THEME_DEFAULT, ImageTheme } from "../components/image/theme";
-import {
-  TABLE_LAYOUT_THEME_DEFAULT,
-  TableLayoutTheme,
-} from "../components/tableLayout/theme";
+import { TABLE_LAYOUT_THEME_DEFAULT, TableLayoutTheme } from "../components/tableLayout/theme";
 
 import { HORIZONTAL_BREAK_THEME_DEFAULT, HorizontalBreakTheme } from "@editor/components/horizontalBreak/theme/horizontalBreakTheme";
 import { PAGE_BREAK_THEME_DEFAULT, PageBreakTheme } from "@editor/components/pageBreak/theme/pageBreakTheme";
 import { DATE_THEME_DEFAULT, DateTheme } from "@editor/nodes/date/theme/dateTheme";
 import { LIST_THEME_DEFAULT, ListTheme } from "../components/list/theme/listTheme";
-import "./css/editorInputTheme.css";
 
 export interface EditorInputTheme extends EditorThemeClasses {
   defaultFontSize: EditorThemeClassName;

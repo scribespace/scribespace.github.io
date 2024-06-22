@@ -18,6 +18,6 @@
 
 @media print {
     .editor-page-break-filler {
-        visibility: hidden;
+        visibility: hidden !important;
     }    
 }

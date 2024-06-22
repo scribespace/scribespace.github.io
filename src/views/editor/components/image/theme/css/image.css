@@ -20,3 +20,18 @@
 .image-control-marker-default {
   outline: var(--default-image-control-border);
 }
+
+@media print {
+  .image-selected-default {
+    outline: 0 !important;
+  }
+  
+  .image-control-anchor-default {
+    visibility: hidden !important;
+  }
+  
+  .image-control-marker-default {
+    outline: 0 !important;
+  }
+  
+}
