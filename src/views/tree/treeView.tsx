@@ -172,39 +172,41 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
   function DeleteIcon(props: IconBaseProps) {
     return treeTheme.DeleteIcon(props);
   }
-
+  
   return (
-    <div style={{ height: "100%" }}>
-      <div ref={controlButtonsRef}>
-        <AddIcon
-          size={"30px"}
-          onClick={treeManager.isTreeReady() ? OnAddElement : () => {}}
-        />
-        <DeleteIcon
-          size={"30px"}
-          onClick={treeManager.isTreeReady() ? OnDeleteElement : () => {}}
-        />
-      </div>
-      <div
-        ref={treeParentRef}
-        style={{ height: `calc(100% - ${controlButtonsHeight}px)`, overflow: 'visible' }}
-      >
-        <Tree
-          ref={treeElementRef}
-          disableEdit={!treeManager.isTreeReady()}
-          data={treeManager.data}
-          width={"100%"}
-          height={treeParentHeight}
-          disableMultiSelection={true}
-          onMove={onMove}
-          onRename={onRename}
-          onCreate={onCreate}
-          onDelete={onDelete}
-          onSelect={onSelect}
-          onToggle={onToggle}
+    <div id="tree-view" className="tree-view">
+      <div style={{ height: "100%" }}>
+        <div ref={controlButtonsRef}>
+          <AddIcon
+            size={"30px"}
+            onClick={treeManager.isTreeReady() ? OnAddElement : () => {}}
+          />
+          <DeleteIcon
+            size={"30px"}
+            onClick={treeManager.isTreeReady() ? OnDeleteElement : () => {}}
+          />
+        </div>
+        <div
+          ref={treeParentRef}
+          style={{ height: `calc(100% - ${controlButtonsHeight}px)`, overflow: 'visible' }}
         >
-          {TreeNode}
-        </Tree>
+          <Tree
+            ref={treeElementRef}
+            disableEdit={!treeManager.isTreeReady()}
+            data={treeManager.data}
+            width={"100%"}
+            height={treeParentHeight}
+            disableMultiSelection={true}
+            onMove={onMove}
+            onRename={onRename}
+            onCreate={onCreate}
+            onDelete={onDelete}
+            onSelect={onSelect}
+            onToggle={onToggle}
+          >
+            {TreeNode}
+          </Tree>
+        </div>
       </div>
     </div>
   );

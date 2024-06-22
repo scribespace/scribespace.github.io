@@ -42,19 +42,19 @@ const getRequiredPlugins = (keyStart: number) => {
     };   
 
   return (
-    <div id="editor-view">
+    <MainThemeContext.Provider value={TEST_THEME_DEFAULT}>
       <Actions />
-      <MainThemeContext.Provider value={TEST_THEME_DEFAULT}>
-        <LexicalComposer initialConfig={initialConfig}>
-          {getRequiredPlugins((plugins || []).length)}
-          <div>
+        <div id="editor-view">
+          <LexicalComposer initialConfig={initialConfig}>
+            {getRequiredPlugins((plugins || []).length)}
             <div>
-              <EditorInput />
+              <div>
+                <EditorInput />
+              </div>
             </div>
-          </div>
-          {plugins}
-        </LexicalComposer>
+            {plugins}
+          </LexicalComposer>
+        </div>
       </MainThemeContext.Provider>
-    </div>
   );
 };

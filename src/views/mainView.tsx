@@ -34,13 +34,8 @@ export function MainView({changeAuthButtonState}: Props) {
             </button>
           </span>
         </div>
-        <div
-          style={{ height: `calc(100% - ${toolbarHeight}px)` }}
-          className="main-view"
-        >
-          <div className="tree-view">
+        <div style={{ height: `calc(100% - ${toolbarHeight}px)` }} className="main-view">
             <TreeView setSelectedFile={setSelectedFile} />
-          </div>
             <EditorView selectedFile={selectedFile} />
         </div>
       </div>
