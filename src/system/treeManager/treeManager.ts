@@ -62,7 +62,6 @@ class TreeManager {
 
     async deleteNode(id: string) {
         assert(this.isTreeReady(), 'Tree isnt ready yet');
-        await $getFileSystem().deleteFileAsync(id);
         this.tree.drop({ id });
         $callCommand(TREE_DATA_CHANGED_CMD, undefined);
         this.storeTreeData();

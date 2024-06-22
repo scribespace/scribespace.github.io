@@ -91,7 +91,7 @@ export function $getMockedFiles() {
     return [...filesMapID.values()];
 }
 
-export async function $getMockedFilesJSON(): Promise<string> {
+export function $getMockedFilesJSON(): string {
     return JSON.stringify([...filesMapID.values()]);
 }
 vi.mock('@coreSystems', 
