@@ -1,10 +1,7 @@
-import { $clearMockedFiles, $getMockedFilesJSON, $setMockedFiles, MockedFile } from "../helpers/fileSystemMock";
+import { $clearMockedFiles, $setMockedFiles, MockedFile } from "../helpers/fileSystemMock";
 
-import { afterEach, afterAll, vi, describe, beforeEach, test, expect } from "vitest";
-import { ReactTest, reactSetup } from "../helpers/prepareReact";
-import { DefaultTestTree } from "./utils/testTree";
-import { TREE_FILE } from "@systems/treeManager/treeData";
 import { treeManager } from "@systems/treeManager";
+import { afterAll, afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 
 afterEach(

@@ -1,4 +1,4 @@
-import { $clearMockedFiles, $getMockedFiles, $getMockedFilesJSON, $setMockedFiles, MockedFile } from "../helpers/fileSystemMock";
+import { $clearMockedFiles, $getMockedFilesJSON, $setMockedFiles, MockedFile } from "../helpers/fileSystemMock";
 
 import { treeManager } from "@systems/treeManager";
 import { TREE_FILE } from "@systems/treeManager/treeData";
