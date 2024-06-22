@@ -2,7 +2,7 @@ import { assert } from "@/utils";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { DRAG_DROP_PASTE_CMD } from "../commandsPlugin/editorCommands";
 import {
   EDITOR_DRAG_DROP_ADD_TYPES_LISTENER_CMD,
@@ -12,9 +12,14 @@ import {
 export function DragDropPlugin() {
   const [editor] = useLexicalComposerContext();
 
-  useEffect(() => {
-    const dragDropListeners = new Map<string, DragDropListener>();
+  const dragDropListeners = useMemo(
+    () => {
+      return new Map<string, DragDropListener>();
+    },
+    []
+  ) ;
 
+  useEffect(() => {
     const registeredCommands = mergeRegister(
       $registerCommandListener(
         EDITOR_DRAG_DROP_ADD_TYPES_LISTENER_CMD,
@@ -34,6 +39,7 @@ export function DragDropPlugin() {
         DRAG_DROP_PASTE_CMD,
         (payloads) => {
           const listenersPayloads = new Map<DragDropListener, File[]>();
+          
           for (const payload of payloads) {
             const listener = dragDropListeners.get(payload.type);
             if (listener) {
@@ -43,7 +49,6 @@ export function DragDropPlugin() {
               listenersPayloads.get(listener)!.push(payload);
             }
           }
-
           for (const listener of listenersPayloads) {
             listener[0](listener[1]);
           }
@@ -57,7 +62,7 @@ export function DragDropPlugin() {
       registeredCommands();
       dragDropListeners.clear();
     };
-  }, [editor]);
+  }, [dragDropListeners, editor]);
 
   return null;
 }
