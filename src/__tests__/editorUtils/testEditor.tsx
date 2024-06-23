@@ -9,7 +9,7 @@ import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { Klass, LexicalNode, LexicalNodeReplacement, TextNode } from "lexical";
-import { TEST_THEME_DEFAULT } from '../../helpers/testTheme';
+import { TEST_THEME_DEFAULT } from '../helpers/testTheme';
 import { ActionsPlugin } from '@editor/plugins/actionsPlugin/actionsPlugin';
 import { Actions } from '@/components/actions/actions';
 

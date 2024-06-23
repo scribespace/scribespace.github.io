@@ -1,6 +1,7 @@
 import { $getTableNodeFromLexicalNodeOrThrow } from "@lexical/table";
 import {
   $applyNodeReplacement,
+  COMMAND_PRIORITY_HIGH,
   DOMConversionMap,
   DOMConversionOutput,
   EditorConfig,
@@ -46,21 +47,30 @@ export class LayoutNode extends ExtendedTableNode {
   addRowsAfter() {}
 
   createDOM(config: EditorConfig): HTMLElement {
-    return this.createDOMWithCSS(config.theme.layout);
+    const dom = this.createDOMWithCSS(config.theme.layout);
+    dom.setAttribute('type', this.getType());
+    return dom;
   }
 
   static importDOM(): DOMConversionMap | null {
     return {
-      table: () => ({
-        conversion: $convertLayoutElement,
-        priority: 1,
-      }),
+      table: (domNode: HTMLElement) => { 
+        const tp = domNode.getAttribute('type');
+            if (tp !== this.getType()) {
+              return null;
+            }
+
+        return {
+          conversion: $convertLayoutElement,
+          priority: COMMAND_PRIORITY_HIGH,
+        };
+      },
     };
   }
 
   static importJSON(serializedNode: SerializedExtendedTableNode): LayoutNode {
     const layoutNode = $createLayoutNode();
-    layoutNode.setColumnsWidths(serializedNode.columnsWidths);
+    layoutNode.columnsWidthsFromJSON(serializedNode.columnsWidths);
 
     return layoutNode;
   }

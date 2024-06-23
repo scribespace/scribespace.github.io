@@ -9,6 +9,8 @@ import { TableLayoutContextOptions } from "../../components/tableLayout/tableLay
 import { EDITOR_CONTEXT_MENU_CLOSE_MENU_CMD } from "./common/contextMenuCommands";
 import { CONTEXT_MENU_CONTEX_DEFAULT, ContextMenuContextData } from "./context";
 import "./css/contextMenuPlugin.css";
+import { createPortal } from "react-dom";
+import { EDITOR_ELEMENT_ID } from "@systems/editorManager/editorConst";
 
 export default function ContextMenuPlugin() {
   const { editorTheme }: MainTheme = useMainThemeContext();
@@ -66,6 +68,8 @@ export default function ContextMenuPlugin() {
   }, [editor]);
 
   return (
+    <>
+    {createPortal(
     <MenuRoot value={contextMenuContextObject}>
       <div
         style={{
@@ -88,5 +92,7 @@ export default function ContextMenuPlugin() {
         </Menu>
       </div>
     </MenuRoot>
+    , document.getElementById(EDITOR_ELEMENT_ID) ?? document.body)}
+    </>
   );
 }

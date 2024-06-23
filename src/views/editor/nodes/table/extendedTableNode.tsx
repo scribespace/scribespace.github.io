@@ -1,5 +1,5 @@
 import { assert } from "@/utils";
-import { Metric } from "@/utils/types";
+import { Metric, MetricSerialized } from "@/utils/types";
 import {
   $getTableNodeFromLexicalNodeOrThrow,
   TableCellNode,
@@ -26,7 +26,7 @@ import {
 
 export type SerializedExtendedTableNode = Spread<
   {
-    columnsWidths: Metric[];
+    columnsWidths: MetricSerialized[];
   },
   SerializedElementNode
 >;
@@ -61,6 +61,13 @@ export class ExtendedTableNode extends ElementNode {
     self.__columnsWidths.length = 0;
     for ( const width of columns ) {
       self.__columnsWidths.push( width.clone() );
+      }
+  }
+  columnsWidthsFromJSON(columns: MetricSerialized[]) {
+    const self = this.getWritable();
+    self.__columnsWidths.length = 0;
+    for ( const width of columns ) {
+      self.__columnsWidths.push( new Metric(width.value, width.unit) );
       }
   }
 
@@ -292,15 +299,23 @@ export class ExtendedTableNode extends ElementNode {
     serializedNode: SerializedExtendedTableNode,
   ): ExtendedTableNode {
     const tableNode = $createExtendedTableNode();
-    tableNode.setColumnsWidths(serializedNode.columnsWidths);
+    tableNode.columnsWidthsFromJSON(serializedNode.columnsWidths);
 
     return tableNode;
+  }
+
+  columnsWidthsToJSON() {
+    const columns: MetricSerialized[] = [];
+    for ( const width of this.getColumnsWidths() ) {
+      columns.push({value: width.value, unit: width.unit});
+    }
+    return columns;
   }
 
   exportJSON(): SerializedExtendedTableNode {
     return {
       ...super.exportJSON(),
-      columnsWidths: this.getColumnsWidths(),
+      columnsWidths: this.columnsWidthsToJSON(),
       type: "extended-table",
       version: 1,
     };

@@ -10,9 +10,9 @@ import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import { $callCommand } from "@systems/commandsManager/commandsManager";
 import { $getRoot, $insertNodes, Klass, LexicalEditor, LexicalNode, LexicalNodeReplacement } from "lexical";
 import { describe, expect, test } from "vitest";
-import { createEditorContext } from "./utils/editorContext";
-import { DefaultTestEditor } from "./utils/testEditor";
-import { TestPlugin } from "./utils/testPlugin";
+import { createEditorContext } from "../editorUtils/editorContext";
+import { DefaultTestEditor } from "../editorUtils/testEditor";
+import { TestPlugin } from "../editorUtils/testPlugin";
 import { ReactTest, reactSetup } from "../helpers/prepareReact";
 
 describe("TableNode:",

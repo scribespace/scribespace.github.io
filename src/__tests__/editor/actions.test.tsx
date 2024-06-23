@@ -1,9 +1,9 @@
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { $createParagraphNode, $createTextNode, $getRoot, Klass, LexicalEditor, LexicalNode, LexicalNodeReplacement, TextNode } from "lexical";
 import { describe, expect, test } from "vitest";
-import { createEditorContext } from "./utils/editorContext";
-import { DefaultTestEditor } from "./utils/testEditor";
-import { TestPlugin } from "./utils/testPlugin";
+import { createEditorContext } from "../editorUtils/editorContext";
+import { DefaultTestEditor } from "../editorUtils/testEditor";
+import { TestPlugin } from "../editorUtils/testPlugin";
 import { ReactTest, reactSetup } from "../helpers/prepareReact";
 import { FontPlugin } from "@editor/plugins/fontPlugin";
 

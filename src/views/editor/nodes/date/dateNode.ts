@@ -1,4 +1,4 @@
-import { $applyNodeReplacement, EditorConfig, IS_TOKEN, LexicalEditor, LexicalNode, NodeKey, SerializedTextNode, TextNode, getActiveEditor } from "lexical";
+import { $applyNodeReplacement, COMMAND_PRIORITY_HIGH, DOMConversionMap, EditorConfig, IS_TOKEN, LexicalEditor, LexicalNode, NodeKey, SerializedTextNode, TextNode, getActiveEditor } from "lexical";
 import { DateTheme } from "./theme/dateTheme";
 import { addClassNamesToElement } from "@lexical/utils";
 
@@ -42,6 +42,7 @@ export class DateNode extends TextNode {
         const outerTag = document.createElement('p');
         addClassNamesToElement(outerTag, this.__dateTheme.outerTagTheme);
 
+        outerTag.setAttribute('type', this.getType());
         outerTag.append(dom);
         return outerTag;
       }
@@ -62,11 +63,30 @@ export class DateNode extends TextNode {
         node.setStyle(serializedNode.style);
         return node;
       }
+
+      static importDOM(): DOMConversionMap | null {
+        return {
+          p: (domNode: HTMLElement) => {
+            const tp = domNode.getAttribute('type');
+            if (tp !== this.getType()) {
+              return null;
+            }
+    
+            return {
+              conversion: $convertDateElement,
+              priority: COMMAND_PRIORITY_HIGH,
+            };
+          },
+        };
+      }
 }
 
-export function $createDateNode(
-    text?: string
-  ): DateNode {
+export function $convertDateElement(domNode: Node) {
+  const date = domNode.textContent;
+  return {node: $createDateNode(date ?? undefined)};
+}
+
+export function $createDateNode(text?: string): DateNode {
     return $applyNodeReplacement(new DateNode(text));
   }
   

@@ -3,9 +3,9 @@ import { CLEAR_FONT_STYLE_CMD, SET_FONT_SIZE_CMD } from "@editor/plugins/fontPlu
 import { $callCommand } from "@systems/commandsManager/commandsManager";
 import { $createRangeSelection, $getRoot, $setSelection, Klass, LexicalEditor, LexicalNode, LexicalNodeReplacement } from "lexical";
 import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
-import { createEditorContext } from "./utils/editorContext";
-import { DefaultTestEditor } from "./utils/testEditor";
-import { TestPlugin } from "./utils/testPlugin";
+import { createEditorContext } from "../editorUtils/editorContext";
+import { DefaultTestEditor } from "../editorUtils/testEditor";
+import { TestPlugin } from "../editorUtils/testPlugin";
 import { ReactTest, reactSetup } from "../helpers/prepareReact";
 
 describe("Font Style:",

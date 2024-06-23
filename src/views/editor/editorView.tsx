@@ -1,19 +1,8 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
 
-import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
-import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
-import { HorizontalRulePlugin } from '@lexical/react/LexicalHorizontalRulePlugin';
-import { ListPlugin } from '@lexical/react/LexicalListPlugin';
-import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin';
-
-import { ColorPlugin } from "./plugins/colorPlugin";
-import ContextMenuPlugin from "./plugins/contextMenuPlugin";
-import { DragDropPlugin } from "./plugins/dragDropPlugin";
-import { FontPlugin } from "./plugins/fontPlugin";
-import { ImagePlugin } from "./plugins/imagePlugin";
-import LinkPlugin from "./plugins/linkPlugin";
+import { TreeViewPlugin } from "./plugins/debugViewPlugin/debugViewPlugin";
 import ToolbarPlugin from "./plugins/toolbarPlugin";
 
 
@@ -22,18 +11,13 @@ import useBoundingRect from "@/hooks/useBoundingRect";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { $callCommand } from "@systems/commandsManager/commandsManager";
-import { EDITOR_NODES } from "@systems/editorManager";
+import { EDITOR_NODES, editorPlugins } from "@systems/editorManager";
 import { isDev } from "@systems/environment";
 import { notesManager } from "@systems/notesManager";
 import { useEffect, useRef } from "react";
 import { EditorInput } from "./components/editorInput/editorInput";
-import { ActionsPlugin } from "./plugins/actionsPlugin/actionsPlugin";
-import { CommandsPlugin } from "./plugins/commandsPlugin/commandsPlugin";
 import { CLEAR_HISTORY_CMD } from "./plugins/commandsPlugin/editorCommands";
-import { DatePlugin } from "./plugins/datePlugin/datePlugin";
-import { TreeViewPlugin } from "./plugins/debugViewPlugin/debugViewPlugin";
-import PageBreakPlugin from "./plugins/pageBreakPlugin/pageBreakPlugin";
-import { TableLayoutPlugin } from "./plugins/tableLayoutPlugin/tableLayoutPlugin";
+import { EDITOR_ELEMENT_ID } from "@systems/editorManager/editorConst";
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
@@ -89,10 +73,9 @@ export function EditorView({ selectedFile }: Props) {
   };
 
   return (
-      <div id="editor-view" className="editor-view">
+      <div id={EDITOR_ELEMENT_ID} className="editor-view">
         <LexicalComposer initialConfig={initialConfig}>
-          <CommandsPlugin />
-          <ActionsPlugin />
+          {editorPlugins()}
           <div className={editorTheme.editorContainer}>
             <ToolbarPlugin ref={toolbarRef} />
             <div
@@ -104,20 +87,6 @@ export function EditorView({ selectedFile }: Props) {
             {USE_DEBUG_TREE && <TreeViewPlugin/>}
           </div>
           <TestPlugin selectedFile={selectedFile} />
-          <HistoryPlugin />
-          <AutoFocusPlugin />
-          <FontPlugin />
-          <ColorPlugin />
-          <LinkPlugin />
-          <TableLayoutPlugin />
-          <ContextMenuPlugin />
-          <DragDropPlugin />
-          <ImagePlugin />
-          <ListPlugin/>
-          <TabIndentationPlugin/>
-          <HorizontalRulePlugin />
-          <PageBreakPlugin />
-          <DatePlugin />
         </LexicalComposer>
       </div>
   );

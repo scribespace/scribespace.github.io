@@ -1,6 +1,10 @@
 import { variableExists } from "../common";
 import { assert } from "../dev";
 
+export interface MetricSerialized {
+  value: number;
+  unit: string;
+}
 
 export class Metric {
   private __value: number;

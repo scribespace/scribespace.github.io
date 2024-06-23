@@ -1,18 +1,36 @@
 import { DateNode } from "@editor/nodes/date";
 import { ImageNode } from "@editor/nodes/image";
-import { LayoutNode, LayoutBodyNode } from "@editor/nodes/layout";
+import { LayoutBodyNode, LayoutNode } from "@editor/nodes/layout";
 import { PageBreakNode } from "@editor/nodes/pageBreak/pageBreakNode";
 import { ExtendedTableNode, TableBodyNode } from "@editor/nodes/table";
 import { ExtendedTableCellNode } from "@editor/nodes/table/extendedTableCellNode";
 import ExtendedTextNode from "@editor/nodes/text";
-import { CodeNode, CodeHighlightNode } from "@lexical/code";
+import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { $generateNodesFromDOM } from "@lexical/html";
 import { LinkNode } from "@lexical/link";
-import { ListNode, ListItemNode } from "@lexical/list";
+import { ListItemNode, ListNode } from "@lexical/list";
 import { HorizontalRuleNode } from "@lexical/react/LexicalHorizontalRuleNode";
-import { TableNode, TableCellNode, TableRowNode } from "@lexical/table";
+import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import { assert } from "@utils";
 import { $createParagraphNode, RootNode, TextNode, createEditor } from "lexical";
+
+import { ActionsPlugin } from "@editor/plugins/actionsPlugin/actionsPlugin";
+import { ColorPlugin } from "@editor/plugins/colorPlugin";
+import { CommandsPlugin } from "@editor/plugins/commandsPlugin/commandsPlugin";
+import ContextMenuPlugin from "@editor/plugins/contextMenuPlugin";
+import { DatePlugin } from "@editor/plugins/datePlugin/datePlugin";
+import { DragDropPlugin } from "@editor/plugins/dragDropPlugin";
+import { FontPlugin } from "@editor/plugins/fontPlugin";
+import { ImagePlugin } from "@editor/plugins/imagePlugin";
+import LinkPlugin from "@editor/plugins/linkPlugin";
+import PageBreakPlugin from "@editor/plugins/pageBreakPlugin/pageBreakPlugin";
+import { TableLayoutPlugin } from "@editor/plugins/tableLayoutPlugin/tableLayoutPlugin";
+import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { HorizontalRulePlugin } from '@lexical/react/LexicalHorizontalRulePlugin';
+import { ListPlugin } from '@lexical/react/LexicalListPlugin';
+import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin';
+import { MAIN_THEME_DEFAULT } from "@/theme";
 
 export const EDITOR_NODES = [
     ListNode,
@@ -48,9 +66,32 @@ export const EDITOR_NODES = [
     DateNode,
 ];
 
+export const editorPlugins = () => {
+    let key = 0;
+    return [
+        <CommandsPlugin key={key++} />,
+        <ActionsPlugin key={key++} />,
+        <HistoryPlugin key={key++} />,
+        <ContextMenuPlugin key={key++} />,
+        <AutoFocusPlugin key={key++} />,
+        <FontPlugin key={key++} />,
+        <ColorPlugin key={key++} />,
+        <LinkPlugin key={key++} />,
+        <TableLayoutPlugin key={key++} />,
+        <DragDropPlugin key={key++} />,
+        <ImagePlugin key={key++} />,
+        <ListPlugin key={key++}/>,
+        <TabIndentationPlugin key={key++}/>,
+        <HorizontalRulePlugin key={key++} />,
+        <PageBreakPlugin key={key++} />,
+        <DatePlugin key={key++} />,
+    ];
+};
+
 function createSimpleEditor() {
     return createEditor({
         namespace: '',
+        theme: MAIN_THEME_DEFAULT.editorTheme.editorInputTheme,
         nodes: [ ListNode,
             ListItemNode,
             LinkNode,
@@ -82,8 +123,8 @@ function createSimpleEditor() {
             HorizontalRuleNode,
             PageBreakNode,
             DateNode,],
-        onError: () => {
-          throw Error();
+        onError: (error) => {
+          throw error;
         }
     });
 }
