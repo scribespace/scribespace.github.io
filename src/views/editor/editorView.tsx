@@ -1,11 +1,5 @@
-import { $generateNodesFromDOM } from "@lexical/html";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getRoot, $insertNodes, TextNode } from "lexical";
 
-import { CodeHighlightNode, CodeNode } from "@lexical/code";
-import { LinkNode } from "@lexical/link";
-import { ListItemNode, ListNode } from "@lexical/list";
-import { HorizontalRuleNode } from '@lexical/react/LexicalHorizontalRuleNode';
 
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
@@ -22,32 +16,24 @@ import { ImagePlugin } from "./plugins/imagePlugin";
 import LinkPlugin from "./plugins/linkPlugin";
 import ToolbarPlugin from "./plugins/toolbarPlugin";
 
-import { ImageNode } from "./nodes/image";
-import { LayoutBodyNode, LayoutNode } from "./nodes/layout";
-import { ExtendedTableNode, TableBodyNode } from "./nodes/table";
-import ExtendedTextNode from "./nodes/text";
 
 import useBoundingRect from "@/hooks/useBoundingRect";
 
-import { DownloadResult } from "@/interfaces/system/fileSystem/fileSystemShared";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { $getFileSystem } from "@coreSystems";
-import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import { $callCommand } from "@systems/commandsManager/commandsManager";
-import { useRef } from "react";
+import { EDITOR_NODES } from "@systems/editorManager";
+import { isDev } from "@systems/environment";
+import { notesManager } from "@systems/notesManager";
+import { useEffect, useRef } from "react";
 import { EditorInput } from "./components/editorInput/editorInput";
-import { PageBreakNode } from "./nodes/pageBreak/pageBreakNode";
-import { ExtendedTableCellNode } from "./nodes/table/extendedTableCellNode";
+import { ActionsPlugin } from "./plugins/actionsPlugin/actionsPlugin";
 import { CommandsPlugin } from "./plugins/commandsPlugin/commandsPlugin";
+import { CLEAR_HISTORY_CMD } from "./plugins/commandsPlugin/editorCommands";
+import { DatePlugin } from "./plugins/datePlugin/datePlugin";
 import { TreeViewPlugin } from "./plugins/debugViewPlugin/debugViewPlugin";
 import PageBreakPlugin from "./plugins/pageBreakPlugin/pageBreakPlugin";
 import { TableLayoutPlugin } from "./plugins/tableLayoutPlugin/tableLayoutPlugin";
-import { CLEAR_HISTORY_CMD } from "./plugins/commandsPlugin/editorCommands";
-import { ActionsPlugin } from "./plugins/actionsPlugin/actionsPlugin";
-import { isDev } from "@systems/environment";
-import { DatePlugin } from "./plugins/datePlugin/datePlugin";
-import { DateNode } from "./nodes/date";
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
@@ -63,31 +49,27 @@ type Props = {
 function TestPlugin({ selectedFile }: Props) {
   const [editor] = useLexicalComposerContext();
 
-  if (selectedFile != "") {
-    $getFileSystem().downloadFileAsync(selectedFile)
-    .then((result: DownloadResult) => {
-        if (!result.file || !result.file.content) {
-          throw Error("EditorView couldnt load note!");
+  useEffect(
+    () => {
+      if ( selectedFile === '' ) return;
+
+      notesManager.loadNote(selectedFile)
+      .then(
+        (noteObject) => {
+          editor.update(
+            () => {
+              const editorState = editor.parseEditorState(noteObject.data);
+              editor.setEditorState(editorState);
+              editor.setEditable(true);
+              $callCommand(CLEAR_HISTORY_CMD, undefined);
+            }
+          );
         }
+      );
+    },
+    [editor, selectedFile]
+  );
 
-        result.file.content.text().then((noteText) => {
-          editor.update(() => {
-            const parser = new DOMParser();
-            const dom = parser.parseFromString(noteText, "text/html");
-            // Once you have the DOM instance it's easy to generate LexicalNodes.
-            const nodes = $generateNodesFromDOM(editor, dom);
-            // Select the root
-            $getRoot().select();
-            $getRoot().clear();
-            // Insert them at a selection.
-            $insertNodes(nodes);
-
-            editor.setEditable(true);
-          });
-        });
-        $callCommand(CLEAR_HISTORY_CMD, undefined);
-      });
-  }
   return null;
 }
 
@@ -103,39 +85,7 @@ export function EditorView({ selectedFile }: Props) {
     theme: editorTheme.editorInputTheme,
     onError,
     editable: false,
-    nodes: [
-      ListNode,
-      ListItemNode,
-      LinkNode,
-      ExtendedTextNode,
-      {
-        replace: TextNode,
-        withKlass: ExtendedTextNode,
-        with: (node: TextNode) => new ExtendedTextNode(node.__text, node.__format, node.__style),
-      },
-      ExtendedTableNode,
-      TableBodyNode,
-      {
-        replace: TableNode,
-        withKlass: TableBodyNode,
-        with: () => new TableBodyNode(),
-      },
-      ExtendedTableCellNode,
-      {
-        replace: TableCellNode,
-        withKlass: ExtendedTableCellNode,
-        with: (node: TableCellNode) => new ExtendedTableCellNode(node.__colSpan, node.__width),
-      },
-      LayoutNode,
-      LayoutBodyNode,
-      TableRowNode,
-      ImageNode,
-      CodeNode,
-      CodeHighlightNode,
-      HorizontalRuleNode,
-      PageBreakNode,
-      DateNode,
-    ],
+    nodes: EDITOR_NODES,
   };
 
   return (

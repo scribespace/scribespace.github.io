@@ -9,17 +9,18 @@ import { loadTreeStatus, storeTreeStatus } from "./treeStatus";
 
 class TreeManager {
     private tree: SimpleTree<TreeNodeData> = new SimpleTree<TreeNodeData>([]);
+    private treeStatus: string[] = [];
     private treeLoaded = false;
 
     get data() { return this.tree.data; }
 
     async loadTreeData() {
+        this.loadTreeStatus();
         const downloadResult = await $getFileSystem().downloadFileAsync(TREE_FILE);
         const treeJSON = downloadResult.status !== FileSystemStatus.Success ? '[]' : await downloadResult.file!.content!.text();
         const treeData = await loadTreeData(treeJSON);
         this.tree = new SimpleTree<TreeNodeData>(treeData.data);
         this.treeLoaded = true;
-        $callCommand(TREE_DATA_CHANGED_CMD, undefined);
     }
     async storeTreeData() {
         assert(this.isTreeReady(), 'Tree isnt ready yet');
@@ -27,9 +28,15 @@ class TreeManager {
         uploadTreeData(treeData);
     }
     loadTreeStatus() {
-        return loadTreeStatus();
+        this.treeStatus = loadTreeStatus();
     }
+
+    getTreeStatus() {
+        return this.treeStatus;
+    }
+
     storeTreeStatus(treeStatus: string[]) {
+        this.treeStatus = treeStatus;
         storeTreeStatus(treeStatus);
     }
 

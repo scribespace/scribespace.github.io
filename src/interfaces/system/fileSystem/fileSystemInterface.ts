@@ -22,7 +22,12 @@ export type FileSystemWorkerWrapper = WebWorkerManagerInterface<FileSystemBase, 
 export interface FileSystemAsync extends FileSystemWorkerWrapper, FileSystemWorkerRegister {
 }
 
-export interface FileSystem extends FileSystemAsync, FileSystemBase {
+export interface FileSystemMainThread {
+  isPathID(path: string): boolean;
+  getFileList(dirPath: string, callback: (list: string[]) => void, onerror: (error:any) => void): Promise<void>;
+}
+
+export interface FileSystem extends FileSystemAsync, FileSystemBase, FileSystemMainThread {
 }
 
 let fileSystem: FileSystem | null = null;

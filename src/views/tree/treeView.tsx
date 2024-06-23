@@ -13,22 +13,16 @@ import {
 import "./css/treeView.css";
 
 import useBoundingRect from "@/hooks/useBoundingRect";
-import {
-  FileSystemStatus,
-  FileUploadMode,
-  InfoResult
-} from "@/interfaces/system/fileSystem/fileSystemShared";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { $getFileSystem } from "@coreSystems";
+import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
+import { notesManager } from "@systems/notesManager";
 import { TREE_DATA_CHANGED_CMD, treeManager } from "@systems/treeManager";
 import { IconBaseProps } from "react-icons";
 import {
-  NOTES_PATH,
   TreeNodeApi,
   TreeNodeData,
 } from "../../system/treeManager/treeData";
-import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
 
 interface TreeViewProps {
   setSelectedFile: (file: string) => void;
@@ -89,23 +83,11 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
   };
 
   const onCreate: CreateHandler<TreeNodeData> = async ({ parentId, index }) => {
-    const fileName =
-      "scribe-space-id-" + crypto.randomUUID() + new Date().toJSON();
+    const result = await notesManager.createNote();
 
-    const result: InfoResult | undefined = await $getFileSystem().uploadFile(
-      NOTES_PATH + fileName,
-      { content: new Blob([""]) },
-      FileUploadMode.Add
-    );
-    if (!result) throw Error("onCreate note: no result");
-    if (result.status !== FileSystemStatus.Success)
-      throw Error("Couldnt upload note, status: " + result.status);
-    if (!result.fileInfo) throw Error("onCreate note: No fileInfo");
-    if (!result.fileInfo.hash) throw Error("onCreate note: No hash");
-
-    if (result.fileInfo.id) {
-      const id = result.fileInfo.id;
-      const node = treeManager.createNode(parentId, index, id, result.fileInfo.path);
+    if (result.fileInfo!.id) {
+      const id = result.fileInfo!.id;
+      const node = treeManager.createNode(parentId, index, id, result.fileInfo!.path);
       return node;
     }
     return null;
@@ -141,16 +123,13 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
   };
 
   useEffect(() => {
-    treeManager.loadTreeData()
-    .then(() => {
-      const treeStatusArray = treeManager.loadTreeStatus();
+      const treeStatusArray = treeManager.getTreeStatus();
       onToggleEnabled.current = false;
       for (const node of treeStatusArray) {
         treeOpenNodes.current.add(node);
         treeElementRef.current?.close(node);
       }
       onToggleEnabled.current = true;
-  });
   }, []);
 
   useEffect(
@@ -172,7 +151,6 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
   function DeleteIcon(props: IconBaseProps) {
     return treeTheme.DeleteIcon(props);
   }
-  
   return (
     <div id="tree-view" className="tree-view">
       <div style={{ height: "100%" }}>

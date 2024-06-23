@@ -127,20 +127,20 @@ async (importOriginal) => {
                         return;
                     },
                     calculateFileHash: async function (file: File): Promise<string> {
-                        if ( file.content == null )
+                        if (file.content == null)
                             return '0';
 
-                        const mockedFile = filesMapBlob.get(file.content) || {hash: '0'};
+                        const mockedFile = filesMapBlob.get(file.content) || { hash: '0' };
                         return mockedFile.hash;
                     },
                     getFileHash: async function (path: string): Promise<string> {
-                        const mockedFile = loadFile(path) || {hash: '0'};
+                        const mockedFile = loadFile(path) || { hash: '0' };
                         return mockedFile.hash;
                     },
                     getFileInfo: async function (path: string): Promise<InfoResult> {
                         const mockedFile = loadFile(path) || null;
-                        if ( mockedFile == null ) 
-                            return {status: FileSystemStatus.NotFound};
+                        if (mockedFile == null)
+                            return { status: FileSystemStatus.NotFound };
 
                         return {
                             status: FileSystemStatus.Success,
@@ -152,9 +152,9 @@ async (importOriginal) => {
                         };
                     },
                     uploadFile: async function (path: string, file: File, mode: FileUploadMode): Promise<InfoResult> {
-                        const mockedFile: MockedFile = {path: path, hash: path, id: 'id:'+path, content: file.content!};
-                        if ( mode === FileUploadMode.Add ) {
-                            while ( fileExists(mockedFile.path) ) {
+                        const mockedFile: MockedFile = { path: path, hash: path, id: 'id:' + path, content: file.content! };
+                        if (mode === FileUploadMode.Add) {
+                            while (fileExists(mockedFile.path)) {
                                 mockedFile.path += '1';
                                 mockedFile.hash += '1';
                                 mockedFile.id += '1';
@@ -163,20 +163,20 @@ async (importOriginal) => {
 
                         addFile(mockedFile);
 
-                        return { status: FileSystemStatus.Success, fileInfo: {path: mockedFile.path, hash: mockedFile.hash, id: mockedFile.id} };
+                        return { status: FileSystemStatus.Success, fileInfo: { path: mockedFile.path, hash: mockedFile.hash, id: mockedFile.id } };
                     },
                     downloadFile: async function (path: string): Promise<DownloadResult> {
                         const mockedFile = loadFile(path);
-                        if ( !variableExists(mockedFile) ) return {status: FileSystemStatus.NotFound};
+                        if (!variableExists(mockedFile)) return { status: FileSystemStatus.NotFound };
 
                         return {
                             status: FileSystemStatus.Success,
                             fileInfo: { hash: mockedFile.hash, id: mockedFile.id, path: mockedFile.path },
-                            file: {content: mockedFile.content}
+                            file: { content: mockedFile.content }
                         };
                     },
                     deleteFile: async function (path: string): Promise<DeleteResults> {
-                        if ( !fileExists(path) ) return {status: FileSystemStatus.NotFound};
+                        if (!fileExists(path)) return { status: FileSystemStatus.NotFound };
 
                         deleteFile(loadFile(path)!);
 
@@ -185,9 +185,15 @@ async (importOriginal) => {
                         };
                     },
                     getFileURL: async function (path: string): Promise<string> {
-                        if ( !fileExists(path) ) return '';
+                        if (!fileExists(path)) return '';
 
                         return 'https://' + path + '.com';
+                    },
+                    getFileList: function (): Promise<void> {
+                        throw new Error("Function not implemented.");
+                    },
+                    isPathID: function (path: string): boolean {
+                        return path.startsWith('id:');
                     }
                 };
                 
