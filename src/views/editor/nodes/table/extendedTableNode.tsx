@@ -185,11 +185,12 @@ export class ExtendedTableNode extends ElementNode {
     addClassNamesToElement(tableElement, css);
     tableElement.style.width = "100%";  
 
-    const width = this.__columnsWidths.reduce(
+      const unit = this.__columnsWidths[0].unit;
+      const width = this.__columnsWidths.reduce(
       (prevValue, currentValue) => {
         return prevValue.add(currentValue);
       },
-      new Metric(0, "px")
+      new Metric(0, unit)
     );
 
     const colgroup = document.createElement("colgroup");
@@ -260,11 +261,12 @@ export class ExtendedTableNode extends ElementNode {
       const colsElements = colgroupElement.children;
       const colsCount = colsElements.length;
 
+      const unit = this.__columnsWidths[0].unit;
       const width = this.__columnsWidths.reduce(
         (prevValue, currentValue) => {
           return prevValue.add(currentValue);
         },
-        new Metric(0, "px")
+        new Metric(0, unit)
       );
 
       for (let c = 0; c < colsCount; ++c) {
