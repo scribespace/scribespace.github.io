@@ -4,7 +4,7 @@ import { DataLoader } from "@/components/dataLoader/dataLoader";
 import { MainThemeContext } from "@/mainThemeContext";
 import TreeView from "@tree/treeView";
 
-export const DefaultTestTree = 
+export const DefaultTestDataLoader = 
 () => {
     return (
         <DataLoader>
