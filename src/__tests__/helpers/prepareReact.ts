@@ -1,9 +1,10 @@
-import { afterEach } from "vitest";
 import * as ReactTest from "@testing-library/react";
-import '@/components/shortcuts/shortcutsCommands';
-
 export {ReactTest};
 
+import { afterEach } from "vitest";
+import '@/components/shortcuts/shortcutsCommands';
+
+
 export function reactSetup() {
-  afterEach(ReactTest.cleanup);
+  afterEach(() => {ReactTest.cleanup();});
 }

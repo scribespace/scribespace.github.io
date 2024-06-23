@@ -54,16 +54,19 @@ vi.spyOn(global, 'Blob').mockImplementation(
 const filesMapID = new Map<string, MockedFile>();
 const filesMapBlob = new Map<Blob, MockedFile>();
 const filesMapPath = new Map<string, MockedFile>();
+const filesMapPathToID = new Map<string, string>();
 
 function addFile( file: MockedFile ) {
     filesMapID.set( file.id, file );
     filesMapBlob.set( file.content, file );
     filesMapPath.set( file.path, file );
+    filesMapPathToID.set( file.path, file.id );
 }
 
 function deleteFile( file: MockedFile ) {
     filesMapID.delete(file.id);
     filesMapPath.delete(file.path);
+    filesMapPathToID.delete(file.path);
     filesMapBlob.delete(file.content);
 }
 
@@ -85,6 +88,7 @@ export function $clearMockedFiles() {
     filesMapID.clear();
     filesMapPath.clear();
     filesMapBlob.clear();
+    filesMapPathToID.clear();
 }
 
 export function $getMockedFiles() {
@@ -140,7 +144,9 @@ async (importOriginal) => {
                     getFileInfo: async function (path: string): Promise<InfoResult> {
                         const mockedFile = loadFile(path) || null;
                         if (mockedFile == null)
-                            return { status: FileSystemStatus.NotFound };
+                            {
+                                return { status: FileSystemStatus.NotFound };
+                            }
 
                         return {
                             status: FileSystemStatus.Success,
@@ -152,22 +158,36 @@ async (importOriginal) => {
                         };
                     },
                     uploadFile: async function (path: string, file: File, mode: FileUploadMode): Promise<InfoResult> {
-                        const mockedFile: MockedFile = { path: path, hash: path, id: 'id:' + path, content: file.content! };
-                        if (mode === FileUploadMode.Add) {
+                        if ( path.startsWith('id:') && (mode === FileUploadMode.Add || !filesMapID.has(path) ) ) {
+                            return {status: FileSystemStatus.NotFound };
+                        }
+
+                        if ( mode === FileUploadMode.Add ) {
+                            const mockedFile: MockedFile = { path: path, hash: path, id: 'id:'+path, content: file.content! };
                             while (fileExists(mockedFile.path)) {
                                 mockedFile.path += '1';
                                 mockedFile.hash += '1';
                                 mockedFile.id += '1';
                             }
+
+                            return { status: FileSystemStatus.Success, fileInfo: { path: mockedFile.path, hash: mockedFile.hash, id: mockedFile.id } };
+                        }
+                        let mockedFile = loadFile(path);
+                        if ( variableExists(mockedFile) ) {
+                            mockedFile.content = file.content!;
+                        } else {
+                            mockedFile = { path: path, hash: path, id: 'id:'+path, content: file.content! };
                         }
 
                         addFile(mockedFile);
-
+                        
                         return { status: FileSystemStatus.Success, fileInfo: { path: mockedFile.path, hash: mockedFile.hash, id: mockedFile.id } };
                     },
                     downloadFile: async function (path: string): Promise<DownloadResult> {
                         const mockedFile = loadFile(path);
-                        if (!variableExists(mockedFile)) return { status: FileSystemStatus.NotFound };
+                        if (!variableExists(mockedFile)) {
+                            return { status: FileSystemStatus.NotFound };
+                        }
 
                         return {
                             status: FileSystemStatus.Success,
@@ -189,8 +209,14 @@ async (importOriginal) => {
 
                         return 'https://' + path + '.com';
                     },
-                    getFileList: function (): Promise<void> {
-                        throw new Error("Function not implemented.");
+                    getFileList: async function (dirPath: string, callback: (list: string[]) => void/*, onerror: (error: unknown) => void*/): Promise<void> {
+                        const fileList: string[] = [];
+                        for (const [filePath,fileID] of filesMapPathToID) {
+                            if (filePath.startsWith(dirPath)) {
+                                fileList.push(fileID);
+                            }
+                        }
+                        callback(fileList);
                     },
                     isPathID: function (path: string): boolean {
                         return path.startsWith('id:');

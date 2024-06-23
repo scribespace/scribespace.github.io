@@ -2,14 +2,13 @@ import TreeView from "./tree/treeView";
 
 import "./css/mainView.css";
 
+import { Actions } from "@/components/actions/actions";
+import { DataLoader } from "@/components/dataLoader/dataLoader";
 import { ShortcutsDialog } from "@/components/shortcuts/shortcutsDialog";
 import useBoundingRect from "@/hooks/useBoundingRect";
 import { EditorView } from "@/views/editor/editorView";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { AUTH_DISABLED, authGlobal } from "../system/authentication";
-import { Actions } from "@/components/actions/actions";
-import { treeManager } from "@systems/treeManager";
-import { notesManager } from "@systems/notesManager";
 
 type Props = {
   changeAuthButtonState: (state: number) => void;
@@ -17,22 +16,8 @@ type Props = {
 
 export function MainView({changeAuthButtonState}: Props) {
   const [selectedFile, setSelectedFile] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const toolbarRef = useRef<HTMLDivElement>(null);
   const { height: toolbarHeight } = useBoundingRect(toolbarRef);
-
-  const runOnceRef = useRef<boolean>(true);
-
-  useEffect(
-    () => {
-      if ( runOnceRef.current ) {
-        runOnceRef.current = false;
-        const managersPromises = [treeManager.loadTreeData(), notesManager.initNotes()];
-        Promise.all(managersPromises).then( () => {setIsLoading(false);});
-      }
-    },
-    []
-  );
 
   const handleLogOutClick = () => {
     authGlobal.logout().then(() => {
@@ -52,11 +37,10 @@ export function MainView({changeAuthButtonState}: Props) {
           </span>
         </div>
         <div style={{ height: `calc(100% - ${toolbarHeight}px)` }} className="main-view">
-          {!isLoading &&
-          <>
+          <DataLoader>
             <TreeView setSelectedFile={setSelectedFile} />
             <EditorView selectedFile={selectedFile} />
-          </>}
+          </DataLoader>
         </div>
       </div>
       <ShortcutsDialog/>
