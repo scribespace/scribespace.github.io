@@ -10,7 +10,7 @@ export const DefaultTestDataLoader =
         <DataLoader>
             <MainThemeContext.Provider value={TEST_THEME_DEFAULT}>
                 <Actions />
-                <TreeView setSelectedFile={() => {}}/>
+                <TreeView/>
             </MainThemeContext.Provider>
         </DataLoader>
     );

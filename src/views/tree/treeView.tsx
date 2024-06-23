@@ -15,7 +15,7 @@ import "./css/treeView.css";
 import useBoundingRect from "@/hooks/useBoundingRect";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
+import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import { notesManager } from "@systems/notesManager";
 import { TREE_DATA_CHANGED_CMD, treeManager } from "@systems/treeManager";
 import { IconBaseProps } from "react-icons";
@@ -23,12 +23,9 @@ import {
   TreeNodeApi,
   TreeNodeData,
 } from "../../system/treeManager/treeData";
+import { NOTES_LOAD_CMD } from "@systems/notesManager/notesCommands";
 
-interface TreeViewProps {
-  setSelectedFile: (file: string) => void;
-}
-
-export default function TreeView({ setSelectedFile }: TreeViewProps) {
+export default function TreeView() {
   const { treeTheme }: MainTheme = useMainThemeContext();
 
   const [, setDataVersion] = useState<number>(0);
@@ -104,10 +101,8 @@ export default function TreeView({ setSelectedFile }: TreeViewProps) {
 
   const onSelect = (nodes: TreeNodeApi[]) => {
     if (nodes.length > 1) throw Error("onSelect: Too many files selected!");
-    if (nodes.length == 0) {
-      setSelectedFile("");
-    } else {
-      setSelectedFile(nodes[0].id);
+    if (nodes.length > 0) {
+      $callCommand(NOTES_LOAD_CMD, nodes[0].id);
     }
   };
 

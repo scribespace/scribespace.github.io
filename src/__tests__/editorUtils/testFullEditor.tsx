@@ -3,8 +3,8 @@ import { Actions } from '@/components/actions/actions';
 import { MainThemeContext } from '@/mainThemeContext';
 import { EditorInput } from '@editor/components/editorInput/editorInput';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
-import { EDITOR_NODES, editorPlugins } from '@systems/editorManager';
 import { TEST_THEME_DEFAULT } from '../helpers/testTheme';
+import { EDITOR_NODES, editorPlugins } from '@systems/editorManager/editorEnv';
 
 export const TestFullEditor = (plugins?: React.ReactNode[]) => {
       const initialConfig = {
