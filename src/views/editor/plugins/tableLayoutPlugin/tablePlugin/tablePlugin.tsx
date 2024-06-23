@@ -505,8 +505,10 @@ export default function TablePlugin() {
     const onWheel = (event: WheelEvent) => {
       const rootElement = editor.getRootElement();
       if ( !rootElement ) return;
+      const rootParent = rootElement.parentElement;
+      if ( !rootParent ) return;
 
-      rootElement.scrollBy(event.deltaX, event.deltaY);
+      rootParent.scrollBy(event.deltaX, event.deltaY);
     };
 
     document.addEventListener("mousemove", onMouseMove);
