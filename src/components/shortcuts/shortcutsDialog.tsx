@@ -56,7 +56,7 @@ function Shortcuts() {
 
 export function ShortcutsDialog() {
     return (
-        <Dialog command={SHORTCUTS_OPEN_DIALOG_CMD}>
+        <Dialog commandOpen={SHORTCUTS_OPEN_DIALOG_CMD}>
             <Shortcuts/>
         </Dialog>
     );

@@ -3,6 +3,8 @@ import { FileSystemStatus, FileUploadMode } from "@interfaces/system/fileSystem/
 import { editorGetEmptyNote } from "@systems/editorManager";
 import { assert } from "@utils";
 import { NoteObject, noteConvertToV0 } from "./notesVersions";
+import { $callCommand } from "@systems/commandsManager/commandsManager";
+import { NOTES_CONVERTING_CMD, NOTES_CREATING_META_CMD, NOTES_FINISH_CONVERTING_CMD } from "./notesCommands";
 
 export const NOTES_VERSION = 0 as const;
 export const NOTES_PATH = "/notes/";
@@ -84,6 +86,7 @@ class NotesManager {
             return;
         }
 
+        $callCommand( NOTES_CREATING_META_CMD, undefined );
         const metaObject: NotesMetaObject = { version: -1 /* We need to convert notes */, notes: new Map()};
 
         await $getFileSystem().getFileList( NOTES_PATH, 
@@ -108,7 +111,10 @@ class NotesManager {
     }
 
     async processNotes() {
+        let i = 1;
+        const max = this.metaObject.notes.size;
         for ( const [noteID,] of this.metaObject.notes ) {
+            $callCommand(NOTES_CONVERTING_CMD, {id: i++, max} );
             await this.loadNote(noteID);
         }
     }
@@ -120,7 +126,8 @@ class NotesManager {
             await this.processNotes();
 
             this.metaObject.version = NOTES_VERSION;
-            await this.storeMetaFile();
+            await this.storeMetaFile();            
+            $callCommand(NOTES_FINISH_CONVERTING_CMD, undefined);
         }
     }
 }

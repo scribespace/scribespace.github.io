@@ -9,6 +9,7 @@ import useBoundingRect from "@/hooks/useBoundingRect";
 import { EditorView } from "@/views/editor/editorView";
 import { useRef } from "react";
 import { AUTH_DISABLED, authGlobal } from "../system/authentication";
+import { NotesConvertDialog } from "@/components/notesConvertDialog/notesConvertDialog";
 
 type Props = {
   changeAuthButtonState: (state: number) => void;
@@ -43,6 +44,7 @@ export function MainView({changeAuthButtonState}: Props) {
         </div>
       </div>
       <ShortcutsDialog/>
+      <NotesConvertDialog/>
     </>
   );
 }

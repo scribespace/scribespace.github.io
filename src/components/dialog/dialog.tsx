@@ -5,13 +5,15 @@ import { $registerCommandListener } from "@systems/commandsManager/commandsManag
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { CLOSE_ALL_WINDOWS_CMD } from "../shortcuts/shortcutsCommands";
+import { variableExists } from "@utils";
 
 interface DialogProps {
-    command: Command<unknown>,
+    commandOpen: Command<unknown>,
+    commandClose?: Command<unknown>,
     children: ReactNode,
 }
 
-export function Dialog({command, children}: DialogProps) {
+export function Dialog({commandOpen: command, commandClose, children}: DialogProps) {
     const constStyle: React.CSSProperties = { 
         position: "fixed", 
         zIndex: 5,
@@ -25,12 +27,27 @@ export function Dialog({command, children}: DialogProps) {
     const [showDialog, setShowDialog] = useState<boolean>(false);
     const dialogRef = useRef<HTMLDivElement>(null);
 
+    const forceCloseDialog = useCallback(
+        () => {
+            setShowDialog( false );
+        },
+        []
+    );
+    const closeDialog = useCallback(
+        () => {
+            if ( !variableExists(commandClose) ) {
+                forceCloseDialog();
+            }
+        },
+        [commandClose, forceCloseDialog]
+    );
+
     const onClick = useCallback(
         (event: MouseEvent) => {
             if ( !dialogRef.current?.contains(event.target as Node) )
-                setShowDialog(false);
+                closeDialog();
         },
-        []
+        [closeDialog]
     );
 
     useEffect(
@@ -44,6 +61,17 @@ export function Dialog({command, children}: DialogProps) {
 
     useEffect(
         () => {
+        const commandCloseListener = 
+        variableExists(commandClose) ?
+        $registerCommandListener(
+            commandClose,
+            () => {
+                forceCloseDialog();
+            }
+        ) :
+        () => {};
+
+
         return mergeRegister(
                 $registerCommandListener(
                     command,
@@ -51,15 +79,16 @@ export function Dialog({command, children}: DialogProps) {
                         setShowDialog(true);
                     }
                 ),
+                commandCloseListener,
                 $registerCommandListener(
                     CLOSE_ALL_WINDOWS_CMD,
                     () => {
-                        setShowDialog(false);
+                        closeDialog();
                     }
                 )
             );
         },
-        [command]
+        [closeDialog, command, commandClose, forceCloseDialog]
     );
     
     return (
