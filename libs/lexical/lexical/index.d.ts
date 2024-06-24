@@ -19,7 +19,7 @@ export { COMMAND_PRIORITY_CRITICAL, COMMAND_PRIORITY_EDITOR, COMMAND_PRIORITY_HI
 export type { EventHandler } from './LexicalEvents';
 export { $normalizeSelection as $normalizeSelection__EXPERIMENTAL } from './LexicalNormalization';
 export { $createNodeSelection, $createPoint, $createRangeSelection, $createRangeSelectionFromDom, $getCharacterOffsets, $getPreviousSelection, $getSelection, $getTextContent, $insertNodes, $isBlockElementNode, $isNodeSelection, $isRangeSelection, } from './LexicalSelection';
-export { $parseSerializedNode, getActiveEditor, isCurrentlyReadOnlyMode } from './LexicalUpdates';
+export { $parseSerializedNode, getActiveEditor, isCurrentlyReadOnlyMode, } from './LexicalUpdates';
 export { $addUpdateTag, $applyNodeReplacement, $copyNode, $getAdjacentNode, $getEditor, $getNearestNodeFromDOMNode, $getNearestRootOrShadowRoot, $getNodeByKey, $getNodeByKeyOrThrow, $getRoot, $hasAncestor, $hasUpdateTag, $isInlineElementOrDecoratorNode, $isLeafNode, $isRootOrShadowRoot, $nodesOfType, $selectAll, $setCompositionKey, $setSelection, $splitNode, getNearestEditorFromDOMNode, isBlockDomNode, isHTMLAnchorElement, isHTMLElement, isInlineDomNode, isSelectionCapturedInDecoratorInput, isSelectionWithinEditor, resetRandomKey, } from './LexicalUtils';
 export { ArtificialNode__DO_NOT_USE } from './nodes/ArtificialNode';
 export { $isDecoratorNode, DecoratorNode } from './nodes/LexicalDecoratorNode';

@@ -1942,7 +1942,10 @@ function reconcileElementTerminatingLineBreak(prevElement, nextElement, dom) {
 }
 function reconcileParagraphFormat(element) {
   if ($isParagraphNode(element) && subTreeTextFormat != null && subTreeTextFormat !== element.__textFormat) {
-    element.setTextFormat(subTreeTextFormat);
+    if (!activeEditorStateReadOnly) {
+      const writableNode = element.getWritable();
+      writableNode.__textFormat = subTreeTextFormat;
+    }
   }
 }
 function reconcileBlockDirection(element, dom) {
@@ -2003,13 +2006,14 @@ function reconcileBlockDirection(element, dom) {
 }
 function $reconcileChildrenWithDirection(prevElement, nextElement, dom) {
   const previousSubTreeDirectionTextContent = subTreeDirectionedTextContent;
+  const previousSubTreeTextFormat = subTreeTextFormat;
   subTreeDirectionedTextContent = '';
   subTreeTextFormat = null;
   $reconcileChildren(prevElement, nextElement, dom);
   reconcileBlockDirection(nextElement, dom);
   reconcileParagraphFormat(nextElement);
   subTreeDirectionedTextContent = previousSubTreeDirectionTextContent;
-  subTreeTextFormat = null;
+  subTreeTextFormat = previousSubTreeTextFormat;
 }
 function createChildrenArray(element, nodeMap) {
   const children = [];
