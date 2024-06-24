@@ -1,7 +1,8 @@
 import * as DropboxAPI from "dropbox";
 import { DropboxFileSystemAsync } from "./dropboxFileSystemAsync";
-import { GetExtendedFileSystemBase } from "./dropboxFileSystemBase";
+import { GetExtendedFileSystemBase, metaToFileInfo } from "./dropboxFileSystemBase";
 import { FileSystemMainThread } from "@coreSystems";
+import { FileInfo } from "@interfaces/system/fileSystem/fileSystemShared";
 
 const DropboxFileSystemExtened = GetExtendedFileSystemBase(DropboxFileSystemAsync);
 export class DropboxFileSystem extends DropboxFileSystemExtened implements FileSystemMainThread{
@@ -13,16 +14,16 @@ export class DropboxFileSystem extends DropboxFileSystemExtened implements FileS
     return path.startsWith('id:');
   }
   
-  async getFileList(dirPath: string, callback: (list: string[]) => void, onerror: (error: unknown) => void): Promise<void> {
+  async getFileList(dirPath: string, callback: (list: FileInfo[]) => void, onerror: (error: unknown) => void): Promise<void> {
     try {
       const fileListResult = await this.dbx.filesListFolder({path: dirPath});
       const fileList = fileListResult.result;
 
       do {
-        const files: string[] = [];
+        const files: FileInfo[] = [];
         for ( const entry of fileList.entries ) {
           if ( entry[".tag"] == 'file' ) {
-            files.push( entry.id );
+            files.push( metaToFileInfo(entry) );
           }
         }
 

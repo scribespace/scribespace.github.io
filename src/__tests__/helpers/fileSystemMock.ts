@@ -1,5 +1,5 @@
 import { FileSystem } from "@/interfaces/system/fileSystem/fileSystemInterface";
-import { DeleteResults, DownloadResult, File, FileSystemStatus, FileUploadMode, InfoResult } from "@interfaces/system/fileSystem/fileSystemShared";
+import { DeleteResults, DownloadResult, File, FileInfo, FileSystemStatus, FileUploadMode, InfoResult } from "@interfaces/system/fileSystem/fileSystemShared";
 import { variableExists } from "@utils";
 import { vi } from "vitest";
 
@@ -209,11 +209,11 @@ async (importOriginal) => {
 
                         return 'https://' + path + '.com';
                     },
-                    getFileList: async function (dirPath: string, callback: (list: string[]) => void/*, onerror: (error: unknown) => void*/): Promise<void> {
-                        const fileList: string[] = [];
-                        for (const [filePath,fileID] of filesMapPathToID) {
+                    getFileList: async function (dirPath: string, callback: (list: FileInfo[]) => void/*, onerror: (error: unknown) => void*/): Promise<void> {
+                        const fileList: FileInfo[] = [];
+                        for (const [filePath,file] of filesMapPath) {
                             if (filePath.startsWith(dirPath)) {
-                                fileList.push(fileID);
+                                fileList.push( {hash: file.hash, id: file.id, path: file.path} );
                             }
                         }
                         callback(fileList);

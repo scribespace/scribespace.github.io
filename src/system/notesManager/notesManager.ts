@@ -89,10 +89,7 @@ class NotesManager {
         await $getFileSystem().getFileList( NOTES_PATH, 
             async (notesList) => {
                 for ( const noteFile of notesList ) {
-                    const notesFileInfo = await $getFileSystem().getFileInfo(noteFile);
-                    assert(notesFileInfo.status == FileSystemStatus.Success, 'Didnt load FileInfo');
-
-                    metaObject.notes.set( notesFileInfo.fileInfo!.id, notesFileInfo.fileInfo!.path );
+                    metaObject.notes.set( noteFile.id, noteFile.path );
                 }
             },
             (error) => {throw error;}

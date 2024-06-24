@@ -34,7 +34,7 @@ import {
 } from "../dropboxCommon";
 import { HandleDeleteError, HandleDownloadError, HandleGetMetadataError, HandleUploadError } from "./dropboxFileSystemShared";
 
-function metaToFileInfo(meta: DropboxFileMetadata): FileInfo {
+export function metaToFileInfo(meta: DropboxFileMetadata): FileInfo {
   return {
     hash: meta.content_hash,
     id: meta.id,

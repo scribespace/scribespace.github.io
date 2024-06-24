@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { WebWorkerManagerInterface } from "@/interfaces/webWorker";
 import { assert, notNullOrThrowDev } from "@/utils";
-import { DeleteResults, DownloadResult, File, FileUploadMode, InfoResult } from "./fileSystemShared";
+import { DeleteResults, DownloadResult, File, FileInfo, FileUploadMode, InfoResult } from "./fileSystemShared";
 
 export interface FileSystemBase{
   calculateFileHash(file: File): Promise<string>;
@@ -24,7 +24,7 @@ export interface FileSystemAsync extends FileSystemWorkerWrapper, FileSystemWork
 
 export interface FileSystemMainThread {
   isPathID(path: string): boolean;
-  getFileList(dirPath: string, callback: (list: string[]) => void, onerror: (error:any) => void): Promise<void>;
+  getFileList(dirPath: string, callback: (list: FileInfo[]) => void, onerror: (error:any) => void): Promise<void>;
 }
 
 export interface FileSystem extends FileSystemAsync, FileSystemBase, FileSystemMainThread {
