@@ -3,13 +3,13 @@ import {
   FileSystemBase
 } from "@/interfaces/system/fileSystem/fileSystemInterface";
 import {
-  DeleteResults,
-  DownloadResult,
-  File,
   FileInfo,
+  FileInfoResultType,
+  FileResult,
+  FileResultType,
+  FileSystemResult,
   FileSystemStatus,
-  FileUploadMode,
-  InfoResult
+  FileUploadMode
 } from "@/interfaces/system/fileSystem/fileSystemShared";
 import { Constructor, variableExistsOrThrow } from "@utils";
 import * as DropboxAPI from "dropbox";
@@ -51,22 +51,20 @@ export function GetExtendedFileSystemBase<TExtend extends Constructor>(extend: T
       this.dbx = dbx;
     }
 
-    async calculateFileHash(file: File): Promise<string> {
-      if (file.content === null)
-        ThrowDropboxError("calculateFileHash: File has no content");
+    async calculateFileHash(fileContent: Blob): Promise<string> {
       /*
-              -Split the file into blocks of 4 MB (4,194,304 or 4 * 1024 * 1024 bytes). The last block (if any) may be smaller than 4 MB.
-              -Compute the hash of each block using SHA-256.
-              -Concatenate the hash of all blocks in the binary format to form a single binary string.
-              -Compute the hash of the concatenated string using SHA-256. Output the resulting hash in hexadecimal format.
-          */
+          -Split the file into blocks of 4 MB (4,194,304 or 4 * 1024 * 1024 bytes). The last block (if any) may be smaller than 4 MB.
+          -Compute the hash of each block using SHA-256.
+          -Concatenate the hash of all blocks in the binary format to form a single binary string.
+          -Compute the hash of the concatenated string using SHA-256. Output the resulting hash in hexadecimal format.
+      */
 
       const BLOCK_SIZE = 4 * 1024 * 1024;
       const blocksHashesPromises: Promise<ArrayBuffer>[] = [];
-      const fileSize = file.content.size;
+      const fileSize = fileContent.size;
       for (let offset = 0; offset < fileSize; offset += BLOCK_SIZE) {
         const blockSize = Math.min(BLOCK_SIZE, fileSize - offset);
-        const blockBlob = file.content.slice(offset, offset + blockSize);
+        const blockBlob = fileContent.slice(offset, offset + blockSize);
         const blockHashPromise = blockBlob.arrayBuffer();
         blocksHashesPromises.push(blockHashPromise);
       }
@@ -108,19 +106,16 @@ export function GetExtendedFileSystemBase<TExtend extends Constructor>(extend: T
     //for files below 150MB
     private async uploadSmallFile(
       path: string,
-      file: File,
+      content: Blob,
       commit: DropboxCommitInfo,
       fileHash: Promise<string>
-    ): Promise<InfoResult> {
-      if (file.content === null)
-        ThrowDropboxError("uploadSmallFile: File has no content");
-
+    ): Promise<FileInfoResultType> {
       let fileMeta: DropboxFileMetadata;
       try {
         fileMeta = (
           await this.dbx.filesUpload({
             path,
-            contents: file.content,
+            contents: content,
             autorename: commit.autorename,
             mute: commit.mute,
             mode: commit.mode,
@@ -142,22 +137,19 @@ export function GetExtendedFileSystemBase<TExtend extends Constructor>(extend: T
 
     private async uploadBigFile(
       path: string,
-      file: File,
+      content: Blob,
       commit: DropboxCommitInfo,
       fileHash: Promise<string>
-    ): Promise<InfoResult> {
-      if (file.content === null)
-        ThrowDropboxError("uploadBigFile: File has no content");
-
+    ): Promise<FileInfoResultType> {
       const concurrentSize = 4194304; // call must be multiple of 4194304 bytes (except for last upload_session/append:2 with UploadSessionStartArg.close to true, that may contain any remaining data).
       const maxBlob =
         concurrentSize * Math.floor((8 * 1024 * 1024) / concurrentSize); // 8MB - Dropbox JavaScript API suggested max file / chunk size
 
       const blobs: Blob[] = [];
       let offset = 0;
-      while (offset < file.content.size) {
-        const blobSize = Math.min(maxBlob, file.content.size - offset);
-        blobs.push(file.content.slice(offset, offset + blobSize));
+      while (offset < content.size) {
+        const blobSize = Math.min(maxBlob, content.size - offset);
+        blobs.push(content.slice(offset, offset + blobSize));
         offset += maxBlob;
       }
       const blobsCount = blobs.length;
@@ -237,12 +229,9 @@ export function GetExtendedFileSystemBase<TExtend extends Constructor>(extend: T
 
     async uploadFile(
       path: string,
-      file: File,
+      content: Blob,
       mode: FileUploadMode
-    ): Promise<InfoResult> {
-      if (file.content === null)
-        ThrowDropboxError("uploadFile: File has no content");
-
+    ): Promise<FileInfoResultType> {
       const smallFileMaxSize = 150 * 1024 * 1024; // 150 MB - from dropbox doc
       const settings: DropboxCommitInfo = {
         path: path,
@@ -262,15 +251,15 @@ export function GetExtendedFileSystemBase<TExtend extends Constructor>(extend: T
           ThrowDropboxError("Unknown upload mode");
       }
 
-      const fileHash: Promise<string> = this.calculateFileHash(file);
-      if (file.content.size < smallFileMaxSize) {
-        return this.uploadSmallFile(path, file, settings, fileHash);
+      const fileHash: Promise<string> = this.calculateFileHash(content);
+      if (content.size < smallFileMaxSize) {
+        return this.uploadSmallFile(path, content, settings, fileHash);
       } else {
-        return this.uploadBigFile(path, file, settings, fileHash);
+        return this.uploadBigFile(path, content, settings, fileHash);
       }
     }
 
-    async downloadFile(path: string): Promise<DownloadResult> {
+    async downloadFile(path: string): Promise<FileResultType> {
       let respond: DropboxFileBlobResponse;
       try {
         respond = await this.dbx.filesDownload({ path: path });
@@ -302,27 +291,24 @@ export function GetExtendedFileSystemBase<TExtend extends Constructor>(extend: T
           break;
       }
 
-      const file = fileType
-        ? {
-            content: fileMeta.fileBlob.slice(0, fileMeta.fileBlob.size, fileType),
-          }
-        : { content: fileMeta.fileBlob };
-      const fileHash: string = await this.calculateFileHash(file);
+      const fileContent = fileType
+        ? fileMeta.fileBlob.slice(0, fileMeta.fileBlob.size, fileType)
+        : fileMeta.fileBlob;
+      const fileHash: string = await this.calculateFileHash(fileContent);
 
       if (fileHash !== fileMeta.content_hash) {
         return { status: FileSystemStatus.MismatchHash };
       }
 
-      const result: DownloadResult = {
+      const result: FileResult = {
         status: FileSystemStatus.Success,
-        file: file,
-        fileInfo: metaToFileInfo( fileMeta ),
+        file: {info: metaToFileInfo( fileMeta ), content: fileContent }
       };
 
       return result;
     }
 
-    async getFileInfo(path: string): Promise<InfoResult> {
+    async getFileInfo(path: string): Promise<FileInfoResultType> {
       let fileMeta: DropboxFileMetadata;
       try {
         fileMeta = (await this.dbx.filesGetMetadata({ path: path }))
@@ -344,8 +330,14 @@ export function GetExtendedFileSystemBase<TExtend extends Constructor>(extend: T
 
     async getFileHash(path: string): Promise<string> {
       const fileMeta = await this.getFileInfo(path);
+      if ( fileMeta.status !== FileSystemStatus.Success ) {
+        ThrowDropboxError({
+          status: fileMeta.status,
+          message: `Couldn't get FileInfo`
+        });
+      }
 
-      if (!fileMeta.fileInfo?.hash) {
+      if (!fileMeta.fileInfo.hash) {
         ThrowDropboxError({
           status: FileSystemStatus.NotFound,
           message: 'getFileHash: no hash for file "' + path + '"',
@@ -354,7 +346,7 @@ export function GetExtendedFileSystemBase<TExtend extends Constructor>(extend: T
       return fileMeta.fileInfo.hash;
     }
 
-    async deleteFile(path: string): Promise<DeleteResults> {
+    async deleteFile(path: string): Promise<FileSystemResult> {
       try {
         await this.dbx.filesDeleteV2({ path: path });
       } catch (error) {
@@ -366,10 +358,7 @@ export function GetExtendedFileSystemBase<TExtend extends Constructor>(extend: T
         return HandleDeleteError(path, deleteError.error); // promise returns DropboxResponseError<Error<files.DownloadError>> (there is a mistake in index.d.ts)
       }
 
-      const result: DeleteResults = {
-        status: FileSystemStatus.Success,
-      };
-      return result;
+      return {status: FileSystemStatus.Success};
     }
 
     async getFileURL(path: string): Promise<string> {

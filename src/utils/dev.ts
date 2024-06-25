@@ -6,7 +6,7 @@ import {
 } from "./common";
 import { Func } from "./types/types";
 
-export function assert(test: boolean, message: string) {
+export function assert(test: boolean, message: string): asserts test {
   DEV(() => {
     if (!test) throw Error("Assert failed: " + message);
   });

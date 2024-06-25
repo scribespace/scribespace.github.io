@@ -25,6 +25,11 @@ export function NoteLoaderPlugin() {
                         });
                     }
                 ),
+                editor.registerUpdateListener(
+                    (args) => {
+                        console.log(`Save: ${Array.from(args.tags)} ${args.dirtyElements.size + args.dirtyLeaves.size}`);                        
+                    }
+                )
             );
         },
         [editor]

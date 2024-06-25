@@ -6,14 +6,14 @@ import { $setFileSystem, System } from "@coreSystems";
 import { DROPBOX_APP } from "./dropboxCommon";
 
 export class DropboxSystem implements System {
-  private dbx: DropboxAPI.Dropbox = new DropboxAPI.Dropbox();
+  private __dbx: DropboxAPI.Dropbox = new DropboxAPI.Dropbox();
 
   constructor() {
     const auth = new DropboxAuth();
-    this.dbx = new DropboxAPI.Dropbox({ auth: auth.getDropboxAuth() });
-    auth.setDropbox(this.dbx);
+    this.__dbx = new DropboxAPI.Dropbox({ auth: auth.getDropboxAuth() });
+    auth.setDropbox(this.__dbx);
     $setAuthentication(auth);
-    $setFileSystem( new DropboxFileSystem(this.dbx) );
+    $setFileSystem( new DropboxFileSystem(this.__dbx) );
   }
 
   getAppID(): string {

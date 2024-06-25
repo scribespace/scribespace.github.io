@@ -1,11 +1,11 @@
 import { WebWorkerManager } from "@/interfaces/webWorker";
 
-import { File, FileUploadMode, InfoResult } from "@/interfaces/system/fileSystem/fileSystemShared";
-import { notNullOrThrowDev, variableExistsOrThrowDev } from "@/utils";
+import { FileInfoResultType, FileSystemStatus, FileUploadMode } from "@/interfaces/system/fileSystem/fileSystemShared";
+import { assert } from "@/utils";
+import { $getFileSystem } from "@coreSystems";
 import { ImageManagerWorkerPublic } from "./imageManagerWorker";
 import workerURL from "./imageManagerWorker?worker&url";
 import { ImageManagerWorkerFunctions, ImageManagerWorkerFunctionsExtended, ImageManagerWorkerWrapper } from "./workerShared";
-import { $getFileSystem } from "@coreSystems";
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface ImageManager extends ImageManagerWorkerWrapper {}
@@ -15,13 +15,12 @@ export class ImageManager extends WebWorkerManager<ImageManagerWorkerFunctions, 
     super(workerURL, ImageManagerWorkerPublic);
   }
 
-  imageUpload(file: File): Promise<string> {
-    notNullOrThrowDev(file.content);
+  imageUpload(imageBlob: Blob): Promise<string> {
     return $getFileSystem()
-    .uploadFileAsync($getImageName(file.content.type), file, FileUploadMode.Add)
+    .uploadFileAsync($getImageName(imageBlob.type), imageBlob, FileUploadMode.Add)
     .then(
-      (result: InfoResult) => {
-        variableExistsOrThrowDev( result.fileInfo, "Missing fileInfo" );
+      (result: FileInfoResultType) => {
+        assert( result.status === FileSystemStatus.Success, "Missing fileInfo" );
         return $getFileSystem().getFileURLAsync(result.fileInfo.id);
       }
     );

@@ -1,10 +1,10 @@
-import { File } from "@/interfaces/system/fileSystem/fileSystemShared";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { notNullOrThrowDev, variableExists } from "@/utils";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 
 import { $getImageNodeByKey, $isImageNode } from "@editor/nodes/image/imageNode";
+import { CLICK_CMD } from "@editor/plugins/commandsPlugin/editorCommands";
 import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import { $getImageManager } from "@systems/imageManager";
 import {
@@ -18,7 +18,6 @@ import {
   useState
 } from "react";
 import { ImageControl } from "./imageControl";
-import { CLICK_CMD } from "@editor/plugins/commandsPlugin/editorCommands";
 
 const MISSING_IMAGE = "/images/no-image.png" as const;
 
@@ -76,8 +75,8 @@ export function Image({
   );
 
   const uploadImage = useCallback(
-    (file: File) => {
-      $getImageManager().imageUpload(file).then(
+    (imageBlob: Blob) => {
+      $getImageManager().imageUpload(imageBlob).then(
         (url: string) => {
           editor.update( () => {
             setImageState(ImageState.LoadingFinal);
@@ -135,7 +134,7 @@ export function Image({
         $getImageManager().blobsToUrlObjs([blob])
         .then( (urlsObjs) => {
             setCurrentSrc(urlsObjs[0]);
-            uploadImage({content: blob});
+            uploadImage(blob);
           })
           .catch( (error) => { 
               imageLoadFailed(error);

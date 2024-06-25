@@ -24,11 +24,12 @@ interface NotesMetaObjectSereialized {
 
 
 class NotesManager {
-    private metaObject: NotesMetaObject = {version: -1, notes: new Map()};
+    private __metaObject: NotesMetaObject = {version: -1, notes: new Map()};
 
     async uploadNoteObject(path: string, noteObject: NoteObject, uploadMode: FileUploadMode ) {
         const fileData = JSON.stringify(noteObject);
-        const infoResult = await $getFileSystem().uploadFileAsync(path, {content: new Blob([fileData])}, uploadMode);
+        const infoResult = await $getFileSystem().uploadFileAsync(path, new Blob([fileData]), uploadMode);
+        assert( infoResult.status === FileSystemStatus.Success, `Note Object didnt' upload` );
 
         return infoResult;
     }
@@ -47,7 +48,7 @@ class NotesManager {
 
         const infoResult = await this.uploadNoteObject( NOTES_PATH + fileName, {version: NOTES_VERSION, data: emptyNote}, FileUploadMode.Add );
         if (infoResult.status === FileSystemStatus.Success) {
-            this.metaObject.notes.set(infoResult.fileInfo!.id, infoResult.fileInfo!.path);
+            this.__metaObject.notes.set(infoResult.fileInfo!.id, infoResult.fileInfo!.path);
             this.storeMetaFile();
         }
 
@@ -78,9 +79,9 @@ class NotesManager {
 
             assert( metaObjectSerialized.version === NOTES_VERSION, 'Meta on server doesnt match version' );
 
-            this.metaObject = {version: metaObjectSerialized.version, notes: new Map()};
+            this.__metaObject = {version: metaObjectSerialized.version, notes: new Map()};
             for ( const note of metaObjectSerialized.notes ) {
-                this.metaObject.notes.set(note[0], note[1]);
+                this.__metaObject.notes.set(note[0], note[1]);
             }
 
             return;
@@ -98,22 +99,25 @@ class NotesManager {
             (error) => {throw error;}
          );
 
-         this.metaObject = metaObject;
+         this.__metaObject = metaObject;
     }
 
     private async storeMetaFile() {
         const metaSerialized: NotesMetaObjectSereialized = {
-            version: this.metaObject.version,
-            notes: Array.from(this.metaObject.notes)
+            version: this.__metaObject.version,
+            notes: Array.from(this.__metaObject.notes)
         };
         const metaJSON = JSON.stringify(metaSerialized);
-        return $getFileSystem().uploadFileAsync(NOTES_META_PATH, {content: new Blob([metaJSON])}, FileUploadMode.Replace);
+        const fileInfo = await $getFileSystem().uploadFileAsync(NOTES_META_PATH, new Blob([metaJSON]), FileUploadMode.Replace);
+        assert(fileInfo.status === FileSystemStatus.Success, `Meta Data didn't upload`);
+
+        return fileInfo.fileInfo!;
     }
 
     async processNotes() {
         let i = 1;
-        const max = this.metaObject.notes.size;
-        for ( const [noteID,] of this.metaObject.notes ) {
+        const max = this.__metaObject.notes.size;
+        for ( const [noteID,] of this.__metaObject.notes ) {
             $callCommand(NOTES_CONVERTING_CMD, {id: i++, max} );
             await this.loadNote(noteID);
         }
@@ -122,10 +126,10 @@ class NotesManager {
     async initNotes() {
         await this.loadMetaFile();
 
-        if ( this.metaObject.version === -1 ) {
+        if ( this.__metaObject.version === -1 ) {
             await this.processNotes();
 
-            this.metaObject.version = NOTES_VERSION;
+            this.__metaObject.version = NOTES_VERSION;
             await this.storeMetaFile();            
             $callCommand(NOTES_FINISH_CONVERTING_CMD, undefined);
         }

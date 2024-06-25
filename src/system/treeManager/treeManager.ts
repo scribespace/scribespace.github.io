@@ -8,42 +8,42 @@ import { TREE_FILE, TreeNodeData, createTreeData, loadTreeData, uploadTreeData }
 import { loadTreeStatus, storeTreeStatus } from "./treeStatus";
 
 class TreeManager {
-    private tree: SimpleTree<TreeNodeData> = new SimpleTree<TreeNodeData>([]);
-    private treeStatus: string[] = [];
-    private treeLoaded = false;
+    private __tree: SimpleTree<TreeNodeData> = new SimpleTree<TreeNodeData>([]);
+    private __treeStatus: string[] = [];
+    private __treeLoaded = false;
 
-    get data() { return this.tree.data; }
+    get data() { return this.__tree.data; }
 
     async loadTreeData() {
         this.loadTreeStatus();
         const downloadResult = await $getFileSystem().downloadFileAsync(TREE_FILE);
-        const treeJSON = downloadResult.status !== FileSystemStatus.Success ? '[]' : await downloadResult.file!.content!.text();
+        const treeJSON = downloadResult.status !== FileSystemStatus.Success ? '{}' : await downloadResult.file!.content!.text();
         const treeData = await loadTreeData(treeJSON);
-        this.tree = new SimpleTree<TreeNodeData>(treeData.data);
-        this.treeLoaded = true;
+        this.__tree = new SimpleTree<TreeNodeData>(treeData.data);
+        this.__treeLoaded = true;
     }
     async storeTreeData() {
         assert(this.isTreeReady(), 'Tree isnt ready yet');
-        const treeData = createTreeData(this.tree.data);
+        const treeData = createTreeData(this.__tree.data);
         uploadTreeData(treeData);
     }
     loadTreeStatus() {
-        this.treeStatus = loadTreeStatus();
+        this.__treeStatus = loadTreeStatus();
     }
 
     getTreeStatus() {
-        return this.treeStatus;
+        return this.__treeStatus;
     }
 
     storeTreeStatus(treeStatus: string[]) {
-        this.treeStatus = treeStatus;
+        this.__treeStatus = treeStatus;
         storeTreeStatus(treeStatus);
     }
 
     moveNodes(args: { dragIds: string[]; parentId: null | string; index: number; } ) {
         assert(this.isTreeReady(), 'Tree isnt ready yet');
         for (const id of args.dragIds) {
-          this.tree.move({ id, parentId: args.parentId, index: args.index });
+          this.__tree.move({ id, parentId: args.parentId, index: args.index });
         }
         if ( args.dragIds.length > 0 ) {
             $callCommand(TREE_DATA_CHANGED_CMD, undefined);
@@ -53,7 +53,7 @@ class TreeManager {
 
     renameNode(id: string, name: string) {
         assert(this.isTreeReady(), 'Tree isnt ready yet');
-        this.tree.update({ id, changes: { name } as TreeNodeData });
+        this.__tree.update({ id, changes: { name } as TreeNodeData });
         $callCommand(TREE_DATA_CHANGED_CMD, undefined);
         this.storeTreeData();
     }
@@ -61,7 +61,7 @@ class TreeManager {
     createNode(parentId: string | null, index: number, id: string, path: string) {
         assert(this.isTreeReady(), 'Tree isnt ready yet');
         const node = { id, path, name: "New File", children: [] } as TreeNodeData;
-        this.tree.create({ parentId, index, data: node });
+        this.__tree.create({ parentId, index, data: node });
         $callCommand(TREE_DATA_CHANGED_CMD, undefined);
         this.storeTreeData();
         return node;
@@ -69,13 +69,13 @@ class TreeManager {
 
     async deleteNode(id: string) {
         assert(this.isTreeReady(), 'Tree isnt ready yet');
-        this.tree.drop({ id });
+        this.__tree.drop({ id });
         $callCommand(TREE_DATA_CHANGED_CMD, undefined);
         this.storeTreeData();
     }
 
     isTreeReady() {
-        return this.treeLoaded;
+        return this.__treeLoaded;
     }
 }
 

@@ -11,25 +11,35 @@ export enum FileUploadMode {
   Replace
 }
 
-export interface File {
-  content: Blob | null;
-}
-
 export interface FileInfo {
   hash: string | undefined;
   id: string;
   path: string;
 }
 
-export interface FileResult {
+export interface File {
+  content: Blob;
+  info: FileInfo;
+}
+
+export interface FileSystemResult {
   status: FileSystemStatus;
 }
 
-export interface InfoResult extends FileResult {
-  fileInfo?: FileInfo;
+export interface FileSystemFailedResult {
+  status: FileSystemStatus.Unknown | FileSystemStatus.NotFound | FileSystemStatus.MismatchHash;
 }
-export interface DownloadResult extends FileResult {
-  file?: File;
-  fileInfo?: FileInfo;
+
+export interface FileSystemSuccessResult {
+  status: FileSystemStatus.Success;
 }
-export interface DeleteResults extends FileResult { }
+
+export interface FileInfoResult extends FileSystemSuccessResult {
+  fileInfo: FileInfo;
+}
+export type FileInfoResultType = FileSystemFailedResult | FileInfoResult;
+
+export interface FileResult extends FileSystemSuccessResult {
+  file: File;
+}
+export type FileResultType = FileSystemFailedResult | FileResult;

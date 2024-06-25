@@ -1,5 +1,5 @@
 import { FileSystem } from "@/interfaces/system/fileSystem/fileSystemInterface";
-import { DeleteResults, DownloadResult, File, FileInfo, FileSystemStatus, FileUploadMode, InfoResult } from "@interfaces/system/fileSystem/fileSystemShared";
+import { FileInfo, FileInfoResultType, FileResultType, FileSystemResult, FileSystemStatus, FileUploadMode } from "@interfaces/system/fileSystem/fileSystemShared";
 import { variableExists } from "@utils";
 import { vi } from "vitest";
 
@@ -106,22 +106,22 @@ async (importOriginal) => {
         $getFileSystem: vi.fn<[], FileSystem>(
             () => {
                 const fileSystem: FileSystem = {
-                    calculateFileHashAsync: async function (file: File): Promise<string> {
-                        return this.calculateFileHash(file);
+                    calculateFileHashAsync: async function (content: Blob): Promise<string> {
+                        return this.calculateFileHash(content);
                     },
                     getFileHashAsync: async function (path: string): Promise<string> {
                         return this.getFileHash(path);
                     },
-                    getFileInfoAsync: async function (path: string): Promise<InfoResult> {
+                    getFileInfoAsync: async function (path: string): Promise<FileInfoResultType> {
                         return this.getFileInfo(path);
                     },
-                    uploadFileAsync: async function (path: string, file: File, mode: FileUploadMode): Promise<InfoResult> {
-                        return this.uploadFile(path, file, mode);
+                    uploadFileAsync: async function (path: string, content: Blob, mode: FileUploadMode): Promise<FileInfoResultType> {
+                        return this.uploadFile(path, content, mode);
                     },
-                    downloadFileAsync: async function (path: string): Promise<DownloadResult> {
+                    downloadFileAsync: async function (path: string): Promise<FileResultType> {
                         return this.downloadFile(path);
                     },
-                    deleteFileAsync: async function (path: string): Promise<DeleteResults> {
+                    deleteFileAsync: async function (path: string): Promise<FileSystemResult> {
                         return this.deleteFile(path);
                     },
                     getFileURLAsync: async function (path: string): Promise<string> {
@@ -130,18 +130,15 @@ async (importOriginal) => {
                     registerFileSystemWorker: function (): void {
                         return;
                     },
-                    calculateFileHash: async function (file: File): Promise<string> {
-                        if (file.content == null)
-                            return '0';
-
-                        const mockedFile = filesMapBlob.get(file.content) || { hash: '0' };
+                    calculateFileHash: async function (content: Blob): Promise<string> {
+                        const mockedFile = filesMapBlob.get(content) || { hash: '0' };
                         return mockedFile.hash;
                     },
                     getFileHash: async function (path: string): Promise<string> {
                         const mockedFile = loadFile(path) || { hash: '0' };
                         return mockedFile.hash;
                     },
-                    getFileInfo: async function (path: string): Promise<InfoResult> {
+                    getFileInfo: async function (path: string): Promise<FileInfoResultType> {
                         const mockedFile = loadFile(path) || null;
                         if (mockedFile == null)
                             {
@@ -157,13 +154,13 @@ async (importOriginal) => {
                             }
                         };
                     },
-                    uploadFile: async function (path: string, file: File, mode: FileUploadMode): Promise<InfoResult> {
+                    uploadFile: async function (path: string, content: Blob, mode: FileUploadMode): Promise<FileInfoResultType> {
                         if ( path.startsWith('id:') && (mode === FileUploadMode.Add || !filesMapID.has(path) ) ) {
                             return {status: FileSystemStatus.NotFound };
                         }
 
                         if ( mode === FileUploadMode.Add ) {
-                            const mockedFile: MockedFile = { path: path, hash: path, id: 'id:'+path, content: file.content! };
+                            const mockedFile: MockedFile = { path: path, hash: path, id: 'id:'+path, content: content };
                             while (fileExists(mockedFile.path)) {
                                 mockedFile.path += '1';
                                 mockedFile.hash += '1';
@@ -174,16 +171,16 @@ async (importOriginal) => {
                         }
                         let mockedFile = loadFile(path);
                         if ( variableExists(mockedFile) ) {
-                            mockedFile.content = file.content!;
+                            mockedFile.content = content;
                         } else {
-                            mockedFile = { path: path, hash: path, id: 'id:'+path, content: file.content! };
+                            mockedFile = { path: path, hash: path, id: 'id:'+path, content: content };
                         }
 
                         addFile(mockedFile);
                         
                         return { status: FileSystemStatus.Success, fileInfo: { path: mockedFile.path, hash: mockedFile.hash, id: mockedFile.id } };
                     },
-                    downloadFile: async function (path: string): Promise<DownloadResult> {
+                    downloadFile: async function (path: string): Promise<FileResultType> {
                         const mockedFile = loadFile(path);
                         if (!variableExists(mockedFile)) {
                             return { status: FileSystemStatus.NotFound };
@@ -191,11 +188,10 @@ async (importOriginal) => {
 
                         return {
                             status: FileSystemStatus.Success,
-                            fileInfo: { hash: mockedFile.hash, id: mockedFile.id, path: mockedFile.path },
-                            file: { content: mockedFile.content }
+                            file: { content: mockedFile.content, info: { hash: mockedFile.hash, id: mockedFile.id, path: mockedFile.path } }
                         };
                     },
-                    deleteFile: async function (path: string): Promise<DeleteResults> {
+                    deleteFile: async function (path: string): Promise<FileSystemResult> {
                         if (!fileExists(path)) return { status: FileSystemStatus.NotFound };
 
                         deleteFile(loadFile(path)!);

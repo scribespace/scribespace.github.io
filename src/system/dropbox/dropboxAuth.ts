@@ -5,20 +5,20 @@ import { CLIENT_ID } from "./dropboxCommon";
 import { REDIRECT_URI } from "./dropboxCommon";
 
 export class DropboxAuth implements Authenticate {
-  private dbxAuth: DropboxAPI.DropboxAuth;
-  private dbx: DropboxAPI.Dropbox | null = null;
+  private __dbxAuth: DropboxAPI.DropboxAuth;
+  private __dbx: DropboxAPI.Dropbox | null = null;
 
   constructor() {
-    this.dbxAuth = new DropboxAPI.DropboxAuth({
+    this.__dbxAuth = new DropboxAPI.DropboxAuth({
       clientId: CLIENT_ID,
     });
   }
 
   getDropboxAuth(): DropboxAPI.DropboxAuth {
-    return this.dbxAuth;
+    return this.__dbxAuth;
   }
   setDropbox(dbx: DropboxAPI.Dropbox) {
-    this.dbx = dbx;
+    this.__dbx = dbx;
   }
 
   static async requestLogin() {
@@ -63,34 +63,34 @@ export class DropboxAuth implements Authenticate {
       ThrowDropboxError("There is no codeVerifier. Call RequestLogin() first");
     }
 
-    this.dbxAuth.setCodeVerifier(sessionCode);
+    this.__dbxAuth.setCodeVerifier(sessionCode);
     const login = (
-      await this.dbxAuth.getAccessTokenFromCode(REDIRECT_URI, oauth_code)
+      await this.__dbxAuth.getAccessTokenFromCode(REDIRECT_URI, oauth_code)
     ).result as AuthData;
     return login;
   }
 
   async login(access_token: string, refresh_token: string): Promise<void> {
-    this.dbxAuth.setAccessToken(access_token);
-    this.dbxAuth.setRefreshToken(refresh_token);
-    this.dbxAuth.setClientId(CLIENT_ID);
+    this.__dbxAuth.setAccessToken(access_token);
+    this.__dbxAuth.setRefreshToken(refresh_token);
+    this.__dbxAuth.setClientId(CLIENT_ID);
 
-    this.dbx = new DropboxAPI.Dropbox({
-      auth: this.dbxAuth,
+    this.__dbx = new DropboxAPI.Dropbox({
+      auth: this.__dbxAuth,
     });
 
-    const response = await this.dbx.usersGetCurrentAccount();
+    const response = await this.__dbx.usersGetCurrentAccount();
     if (!response?.result.account_id) {
       ThrowDropboxError("Login() failed");
     }
   }
 
   async logout(): Promise<void> {
-    if (!this.dbx) {
+    if (!this.__dbx) {
       ThrowDropboxError("Logout: no Dropbox object!");
     }
 
-    const response = await this.dbx.authTokenRevoke();
+    const response = await this.__dbx.authTokenRevoke();
     if (!response) {
       ThrowDropboxError("Logout failed");
     }

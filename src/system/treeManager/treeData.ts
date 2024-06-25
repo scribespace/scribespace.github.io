@@ -1,5 +1,5 @@
 import { $getFileSystem } from "@coreSystems";
-import { FileUploadMode } from "@interfaces/system/fileSystem/fileSystemShared";
+import { FileSystemStatus, FileUploadMode } from "@interfaces/system/fileSystem/fileSystemShared";
 import { assert, variableExists } from "@utils";
 import { NodeApi } from "react-arborist";
 
@@ -25,7 +25,9 @@ export async function uploadTreeData(treeData: TreeData) {
 
     const treeJSON = JSON.stringify(treeData);
     const treeBlob = new Blob([treeJSON]);
-    return $getFileSystem().uploadFileAsync( TREE_FILE, { content: treeBlob }, FileUploadMode.Replace );
+    const infoResult = await $getFileSystem().uploadFileAsync( TREE_FILE, treeBlob, FileUploadMode.Replace );
+    assert( infoResult.status === FileSystemStatus.Success, `Tree didn't upload` );
+    return infoResult.fileInfo!;
 }
 
 export async function loadTreeData( treeJSON: string ): Promise<TreeData> {

@@ -1,11 +1,11 @@
-import { FileResult, FileSystemStatus } from "@/interfaces/system/fileSystem/fileSystemShared";
-import { DropboxLookupError, ThrowDropboxError, DropboxDownloadError, DropboxDeleteError, DropboxUploadError, DropboxGetMetadataError } from "../dropboxCommon";
+import { FileSystemFailedResult, FileSystemStatus } from "@/interfaces/system/fileSystem/fileSystemShared";
+import { DropboxDeleteError, DropboxDownloadError, DropboxGetMetadataError, DropboxLookupError, DropboxUploadError, ThrowDropboxError } from "../dropboxCommon";
 
 
 function HandleLookupError(
   path: string,
   lookupError: DropboxLookupError
-): FileResult {
+): FileSystemFailedResult {
   switch (lookupError[".tag"]) {
     case "not_found": //LookupErrorNotFound
       return { status: FileSystemStatus.NotFound };
@@ -21,7 +21,7 @@ function HandleLookupError(
 export function HandleDownloadError(
   path: string,
   downloadError: DropboxDownloadError
-): FileResult {
+): FileSystemFailedResult {
   switch (downloadError[".tag"]) {
     case "path": //DownloadErrorPath
       return HandleLookupError(path, downloadError.path);
@@ -32,7 +32,7 @@ export function HandleDownloadError(
 export function HandleDeleteError(
   path: string,
   deleteError: DropboxDeleteError
-): FileResult {
+): FileSystemFailedResult {
   switch (deleteError[".tag"]) {
     case "path_lookup": //DeleteErrorPathLookup
       return HandleLookupError(path, deleteError.path_lookup);
@@ -43,7 +43,7 @@ export function HandleDeleteError(
 export function HandleUploadError(
   path: string,
   uploadError: DropboxUploadError
-): FileResult {
+): FileSystemFailedResult {
   switch (uploadError[".tag"]) {
     case "content_hash_mismatch":
       return { status: FileSystemStatus.MismatchHash };
