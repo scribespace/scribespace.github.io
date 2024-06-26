@@ -16,14 +16,14 @@ import useBoundingRect from "@/hooks/useBoundingRect";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
-import { notesManager } from "@systems/notesManager";
-import { TREE_DATA_CHANGED_CMD, treeManager } from "@systems/treeManager";
+import { $getNotesManager } from "@systems/notesManager";
+import { NOTES_LOAD_CMD } from "@systems/notesManager/notesCommands";
+import { $getTreeManager, TREE_DATA_CHANGED_CMD } from "@systems/treeManager";
 import { IconBaseProps } from "react-icons";
 import {
   TreeNodeApi,
   TreeNodeData,
 } from "../../system/treeManager/treeData";
-import { NOTES_LOAD_CMD } from "@systems/notesManager/notesCommands";
 
 export default function TreeView() {
   const { treeTheme }: MainTheme = useMainThemeContext();
@@ -47,7 +47,7 @@ export default function TreeView() {
   );
 
   function uploadTreeStatus() {
-    treeManager.storeTreeStatus([...treeOpenNodes.current]);
+    $getTreeManager().storeTreeStatus([...treeOpenNodes.current]);
   }
 
   const OnAddElement = () => {
@@ -72,19 +72,19 @@ export default function TreeView() {
     parentId: null | string;
     index: number;
   }) => {
-    treeManager.moveNodes(args);
+    $getTreeManager().moveNodes(args);
   };
 
   const onRename: RenameHandler<TreeNodeData> = ({ name, id }) => {
-    treeManager.renameNode(id, name);
+    $getTreeManager().renameNode(id, name);
   };
 
   const onCreate: CreateHandler<TreeNodeData> = async ({ parentId, index }) => {
-    const result = await notesManager.createNote();
+    const result = await $getNotesManager().createNote();
 
     if (result.fileInfo!.id) {
       const id = result.fileInfo!.id;
-      const node = treeManager.createNode(parentId, index, id, result.fileInfo!.path);
+      const node = $getTreeManager().createNode(parentId, index, id, result.fileInfo!.path);
       return node;
     }
     return null;
@@ -96,7 +96,7 @@ export default function TreeView() {
     if (args.ids.length > 1) throw Error("onDelete: Too many files selected!");
     const id = args.ids[0];
 
-    await treeManager.deleteNode(id);
+    await $getTreeManager().deleteNode(id );
   };
 
   const onSelect = (nodes: TreeNodeApi[]) => {
@@ -118,7 +118,7 @@ export default function TreeView() {
   };
 
   useEffect(() => {
-      const treeStatusArray = treeManager.getTreeStatus();
+      const treeStatusArray = $getTreeManager().getTreeStatus();
       onToggleEnabled.current = false;
       for (const node of treeStatusArray) {
         treeOpenNodes.current.add(node);
@@ -152,11 +152,11 @@ export default function TreeView() {
         <div ref={controlButtonsRef}>
           <AddIcon
             size={"30px"}
-            onClick={treeManager.isTreeReady() ? OnAddElement : () => {}}
+            onClick={$getTreeManager().isTreeReady() ? OnAddElement : () => {}}
           />
           <DeleteIcon
             size={"30px"}
-            onClick={treeManager.isTreeReady() ? OnDeleteElement : () => {}}
+            onClick={$getTreeManager().isTreeReady() ? OnDeleteElement : () => {}}
           />
         </div>
         <div
@@ -165,8 +165,8 @@ export default function TreeView() {
         >
           <Tree
             ref={treeElementRef}
-            disableEdit={!treeManager.isTreeReady()}
-            data={treeManager.data}
+            disableEdit={!$getTreeManager().isTreeReady()}
+            data={$getTreeManager().data}
             width={"100%"}
             height={treeParentHeight}
             disableMultiSelection={true}

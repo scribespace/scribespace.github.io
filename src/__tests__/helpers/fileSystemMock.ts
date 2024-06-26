@@ -1,5 +1,6 @@
 import { FileSystem } from "@/interfaces/system/fileSystem/fileSystemInterface";
 import { FileInfo, FileInfoResultType, FileResultType, FileSystemResult, FileSystemStatus, FileUploadMode } from "@interfaces/system/fileSystem/fileSystemShared";
+import { $getStreamManager } from "@systems/streamManager/streamManager";
 import { variableExists } from "@utils";
 import { vi } from "vitest";
 
@@ -91,13 +92,46 @@ export function $clearMockedFiles() {
     filesMapPathToID.clear();
 }
 
-export function $getMockedFiles() {
+export async function $getMockedFiles() {
+    await $getStreamManager().flush();
     return [...filesMapID.values()];
 }
 
-export function $getMockedFilesJSON(): string {
-    return JSON.stringify([...filesMapID.values()]);
+export async function $getMockedFilesJSON(): Promise<string> {
+    const mockedFiles = await $getMockedFiles();
+    return JSON.stringify(mockedFiles);
 }
+
+const fileSystemStats = {
+    uploadCount: 0,
+    downloadCount: 0,
+};
+
+export function $resetFileSystemStats() {
+    fileSystemStats.uploadCount = 0;
+    fileSystemStats.downloadCount = 0;
+}
+
+export function $getFileSystemStats() {
+    return fileSystemStats;
+}
+
+function fileSystemStatsAddUpload() {
+    ++fileSystemStats.uploadCount;
+}
+
+function fileSystemStatsAddDownload() {
+    ++fileSystemStats.downloadCount;
+}
+
+const fileSystemSettings = {
+    callsDelay: 0,
+};
+
+export function $fileSystemSetDelay(delay: number) {
+    fileSystemSettings.callsDelay = delay;
+}
+
 vi.mock('@coreSystems', 
 async (importOriginal) => {
     const mod = await importOriginal<typeof import('@coreSystems')>();
@@ -135,10 +169,12 @@ async (importOriginal) => {
                         return mockedFile.hash;
                     },
                     getFileHash: async function (path: string): Promise<string> {
+                        await new Promise(resolve => setTimeout(resolve, fileSystemSettings.callsDelay));
                         const mockedFile = loadFile(path) || { hash: '0' };
                         return mockedFile.hash;
                     },
                     getFileInfo: async function (path: string): Promise<FileInfoResultType> {
+                        await new Promise(resolve => setTimeout(resolve, fileSystemSettings.callsDelay));
                         const mockedFile = loadFile(path) || null;
                         if (mockedFile == null)
                             {
@@ -150,15 +186,18 @@ async (importOriginal) => {
                             fileInfo: {
                                 hash: mockedFile.hash,
                                 id: mockedFile.id,
-                                path: mockedFile.path
+                                path: mockedFile.path,
+                                date: '2015-05-12T15:50:38Z'
                             }
                         };
                     },
                     uploadFile: async function (path: string, content: Blob, mode: FileUploadMode): Promise<FileInfoResultType> {
+                        await new Promise(resolve => setTimeout(resolve, fileSystemSettings.callsDelay));
+
                         if ( path.startsWith('id:') && (mode === FileUploadMode.Add || !filesMapID.has(path) ) ) {
                             return {status: FileSystemStatus.NotFound };
                         }
-
+                        fileSystemStatsAddUpload();
                         if ( mode === FileUploadMode.Add ) {
                             const mockedFile: MockedFile = { path: path, hash: path, id: 'id:'+path, content: content };
                             while (fileExists(mockedFile.path)) {
@@ -166,8 +205,9 @@ async (importOriginal) => {
                                 mockedFile.hash += '1';
                                 mockedFile.id += '1';
                             }
-
-                            return { status: FileSystemStatus.Success, fileInfo: { path: mockedFile.path, hash: mockedFile.hash, id: mockedFile.id } };
+                            
+                            addFile(mockedFile);
+                            return { status: FileSystemStatus.Success, fileInfo: { path: mockedFile.path, hash: mockedFile.hash, id: mockedFile.id, date: '2015-05-12T15:50:38Z' } };
                         }
                         let mockedFile = loadFile(path);
                         if ( variableExists(mockedFile) ) {
@@ -178,20 +218,23 @@ async (importOriginal) => {
 
                         addFile(mockedFile);
                         
-                        return { status: FileSystemStatus.Success, fileInfo: { path: mockedFile.path, hash: mockedFile.hash, id: mockedFile.id } };
+                        return { status: FileSystemStatus.Success, fileInfo: { path: mockedFile.path, hash: mockedFile.hash, id: mockedFile.id, date: '2015-05-12T15:50:38Z' } };
                     },
                     downloadFile: async function (path: string): Promise<FileResultType> {
+                        await new Promise(resolve => setTimeout(resolve, fileSystemSettings.callsDelay));
+
                         const mockedFile = loadFile(path);
                         if (!variableExists(mockedFile)) {
                             return { status: FileSystemStatus.NotFound };
                         }
-
+                        fileSystemStatsAddDownload();
                         return {
                             status: FileSystemStatus.Success,
-                            file: { content: mockedFile.content, info: { hash: mockedFile.hash, id: mockedFile.id, path: mockedFile.path } }
+                            file: { content: mockedFile.content, info: { hash: mockedFile.hash, id: mockedFile.id, path: mockedFile.path, date: '2015-05-12T15:50:38Z' } }
                         };
                     },
                     deleteFile: async function (path: string): Promise<FileSystemResult> {
+                        await new Promise(resolve => setTimeout(resolve, fileSystemSettings.callsDelay));
                         if (!fileExists(path)) return { status: FileSystemStatus.NotFound };
 
                         deleteFile(loadFile(path)!);
@@ -201,23 +244,25 @@ async (importOriginal) => {
                         };
                     },
                     getFileURL: async function (path: string): Promise<string> {
+                        await new Promise(resolve => setTimeout(resolve, fileSystemSettings.callsDelay));
                         if (!fileExists(path)) return '';
 
                         return 'https://' + path + '.com';
                     },
                     getFileList: async function (dirPath: string, callback: (list: FileInfo[]) => void): Promise<FileSystemResult> {
+                        await new Promise(resolve => setTimeout(resolve, fileSystemSettings.callsDelay));
                         const fileList: FileInfo[] = [];
                         for (const [filePath,file] of filesMapPath) {
                             if (filePath.startsWith(dirPath)) {
-                                fileList.push( {hash: file.hash, id: file.id, path: file.path} );
+                                fileList.push( {hash: file.hash, id: file.id, path: file.path, date: '2015-05-12T15:50:38Z'} );
                             }
                         }
                         callback(fileList);
                         return {status: FileSystemStatus.Success};
                     },
-                    isPathID: function (path: string): boolean {
+                    isFileID: function (path: string): boolean {
                         return path.startsWith('id:');
-                    }
+                    },
                 };
                 
                 return fileSystem;

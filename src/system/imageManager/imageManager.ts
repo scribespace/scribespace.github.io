@@ -6,7 +6,7 @@ import { $getFileSystem } from "@coreSystems";
 import { ImageManagerWorkerPublic } from "./imageManagerWorker";
 import workerURL from "./imageManagerWorker?worker&url";
 import { ImageManagerWorkerFunctions, ImageManagerWorkerFunctionsExtended, ImageManagerWorkerWrapper } from "./workerShared";
-import { streamManager } from "@systems/streamManager/streamManager";
+import { $getStreamManager } from "@systems/streamManager/streamManager";
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface ImageManager extends ImageManagerWorkerWrapper {}
@@ -17,7 +17,7 @@ export class ImageManager extends WebWorkerManager<ImageManagerWorkerFunctions, 
   }
 
   imageUpload(imageBlob: Blob): Promise<string> {
-    return streamManager
+    return $getStreamManager()
     .uploadFile($getImageName(imageBlob.type), imageBlob, FileUploadMode.Add)
     .then(
       (result: FileInfoResultType) => {

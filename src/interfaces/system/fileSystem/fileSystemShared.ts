@@ -15,6 +15,7 @@ export interface FileInfo {
   hash: string | undefined;
   id: string;
   path: string;
+  date: string;
 }
 
 export interface File {

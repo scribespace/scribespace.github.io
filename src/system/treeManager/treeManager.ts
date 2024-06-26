@@ -1,11 +1,11 @@
 import { FileSystemStatus } from "@interfaces/system/fileSystem/fileSystemShared";
 import { $callCommand } from "@systems/commandsManager/commandsManager";
-import { streamManager } from "@systems/streamManager/streamManager";
 import { assert, notNullOrThrow } from "@utils";
 import { SimpleTree } from "react-arborist";
 import { TREE_DATA_CHANGED_CMD } from "./treeCommands";
 import { TREE_FILE, TreeData, TreeNodeData, createEmptyTreeData, createTreeData, loadTreeData, uploadTreeData } from "./treeData";
 import { loadTreeStatus, storeTreeStatus } from "./treeStatus";
+import { $getStreamManager } from "@systems/streamManager/streamManager";
 
 class TreeManager {
     private __tree: SimpleTree<TreeNodeData> = new SimpleTree<TreeNodeData>([]);
@@ -16,7 +16,7 @@ class TreeManager {
 
     async loadTreeData() {
         this.loadTreeStatus();
-        const downloadResult = await streamManager.downloadFile(TREE_FILE);
+        const downloadResult = await $getStreamManager().downloadFile(TREE_FILE);
         let treeData: TreeData | null = null;
         if ( downloadResult.status === FileSystemStatus.Success ) {
             const treeJSON = downloadResult.status !== FileSystemStatus.Success ? '{}' : await downloadResult.file!.content!.text();
@@ -86,4 +86,8 @@ class TreeManager {
     }
 }
 
-export const treeManager = new TreeManager();
+const __treeManager = new TreeManager();
+
+export function $getTreeManager() {
+    return __treeManager;
+}

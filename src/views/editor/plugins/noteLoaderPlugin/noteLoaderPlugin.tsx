@@ -1,7 +1,7 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
-import { notesManager } from "@systems/notesManager";
+import { $getNotesManager } from "@systems/notesManager";
 import { NOTES_LOAD_CMD } from "@systems/notesManager/notesCommands";
 import { variableExists } from "@utils";
 import { useEffect, useRef, useState } from "react";
@@ -22,7 +22,7 @@ export function NoteLoaderPlugin() {
                 return;
 
             loadPromiseRef.current = loadPromiseRef.current.then( async () => {
-                const noteObject = await notesManager.loadNote(noteInfo.noteID);
+                const noteObject = await $getNotesManager().loadNote(noteInfo.noteID);
                 const editorState = editor.parseEditorState(noteObject.data);
                 editor.setEditorState(editorState);
                 editor.setEditable(true);
@@ -49,7 +49,7 @@ export function NoteLoaderPlugin() {
                         if ( noteInfo.noteID === '' || (args.dirtyElements.size + args.dirtyLeaves.size) === 0 || (args.dirtyLeaves.size === 0 && args.dirtyElements.size === 1 && variableExists( args.dirtyElements.get('root') ) ) )
                             return;
                         
-                            notesManager.storeNote(noteInfo.noteID,JSON.stringify( args.editorState )).then(()=>{
+                            $getNotesManager().storeNote(noteInfo.noteID,JSON.stringify( args.editorState )).then(()=>{
                             console.log(`Save: ${noteInfo.noteID} tags: ${Array.from(args.tags)}` );
                         });
                     }

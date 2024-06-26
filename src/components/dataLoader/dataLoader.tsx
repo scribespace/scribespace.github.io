@@ -1,6 +1,6 @@
-import { notesManager } from "@systems/notesManager";
-import { treeManager } from "@systems/treeManager";
-import { useRef, useEffect, useState } from "react";
+import { $getNotesManager } from "@systems/notesManager";
+import { $getTreeManager } from "@systems/treeManager";
+import { useEffect, useRef, useState } from "react";
 
 interface DataLoaderProp {
     children: React.ReactNode
@@ -14,7 +14,7 @@ export function DataLoader({children}: DataLoaderProp) {
       () => {
         if ( runOnceRef.current ) {
           runOnceRef.current = false;
-          const managersPromises = [treeManager.loadTreeData(), notesManager.initNotes()];
+          const managersPromises = [$getTreeManager().loadTreeData(), $getNotesManager().initNotes()];
           Promise.all(managersPromises).then( () => {setIsLoading(false);});
         }
       },

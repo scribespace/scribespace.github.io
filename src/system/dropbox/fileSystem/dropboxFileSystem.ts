@@ -12,7 +12,7 @@ export class DropboxFileSystem extends DropboxFileSystemExtened implements FileS
     //@ts-expect-error Class defined in mixin needs this argument
     super(dbx);
   }
-  isPathID(path: string): boolean {
+  isFileID(path: string): boolean {
     return path.startsWith('id:');
   }
   

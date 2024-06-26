@@ -1,21 +1,19 @@
 import { $getFileSystem } from "@coreSystems";
 import { FileSystemStatus, FileUploadMode } from "@interfaces/system/fileSystem/fileSystemShared";
-import { editorGetEmptyNote } from "@systems/editorManager";
-import { assert } from "@utils";
-import { NoteObject, noteConvertToV0 } from "./notesVersions";
 import { $callCommand } from "@systems/commandsManager/commandsManager";
+import { editorGetEmptyNote } from "@systems/editorManager";
+import { $getStreamManager } from "@systems/streamManager/streamManager";
+import { assert } from "@utils";
 import { NOTES_CONVERTING_CMD, NOTES_CREATING_META_CMD, NOTES_FINISH_CONVERTING_CMD } from "./notesCommands";
-import { streamManager } from "@systems/streamManager/streamManager";
+import { NoteObject, noteConvertToV0 } from "./notesVersions";
 
 export const NOTES_VERSION = 0 as const;
 export const NOTES_PATH = "/notes/";
 const NOTES_META_PATH = "/notes_meta";
 
-export type NoteID = string;
-
 interface NotesMetaObject {
     version: number;
-    notes: Map<NoteID, string>
+    notes: Map<string, string>
 }
 
 interface NotesMetaObjectSereialized {
@@ -29,7 +27,7 @@ class NotesManager {
 
     async uploadNoteObject(path: string, noteObject: NoteObject, uploadMode: FileUploadMode ) {
         const fileData = JSON.stringify(noteObject);
-        const infoResult = await streamManager.uploadFile(path, new Blob([fileData]), uploadMode);
+        const infoResult = await $getStreamManager().uploadFile(path, new Blob([fileData]), uploadMode);
         assert( infoResult.status === FileSystemStatus.Success, `Note Object didnt' upload` );
 
         return infoResult;
@@ -57,7 +55,7 @@ class NotesManager {
     }
 
     async loadNote( notePath: string ): Promise<NoteObject> {
-        const downloadResult = await streamManager.downloadFile(notePath);
+        const downloadResult = await $getStreamManager().downloadFile(notePath);
         assert(downloadResult.status === FileSystemStatus.Success, 'Note couldnt be downloaded');
         const content = await downloadResult.file!.content!.text();
         let noteObject: NoteObject;
@@ -72,7 +70,7 @@ class NotesManager {
     }
 
     private async loadMetaFile() {
-        const downloadResults = await streamManager.downloadFile(NOTES_META_PATH);
+        const downloadResults = await $getStreamManager().downloadFile(NOTES_META_PATH);
         
         if ( downloadResults.status === FileSystemStatus.Success ) {
             const metaObjectJSON = await downloadResults.file!.content!.text();
@@ -108,7 +106,7 @@ class NotesManager {
             notes: Array.from(this.__metaObject.notes)
         };
         const metaJSON = JSON.stringify(metaSerialized);
-        const fileInfo = await streamManager.uploadFile(NOTES_META_PATH, new Blob([metaJSON]), FileUploadMode.Replace);
+        const fileInfo = await $getStreamManager().uploadFile(NOTES_META_PATH, new Blob([metaJSON]), FileUploadMode.Replace);
         assert(fileInfo.status === FileSystemStatus.Success, `Meta Data didn't upload`);
 
         return fileInfo.fileInfo;
@@ -140,4 +138,7 @@ class NotesManager {
     }
 }
 
-export const notesManager = new NotesManager();
+const __notesManager = new NotesManager();
+export function $getNotesManager() {
+    return __notesManager;
+}

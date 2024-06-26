@@ -1,48 +1,64 @@
 import { $getFileSystem } from "@coreSystems";
 import { FileInfoResultType, FileResultType, FileUploadMode } from "@interfaces/system/fileSystem/fileSystemShared";
-import { assert, variableExists } from "@utils";
+import { variableExists } from "@utils";
 
 interface FileUploadObject {
     content: Blob;
-    mode: FileUploadMode;
     resolves: ((fileInfo: FileInfoResultType | PromiseLike<FileInfoResultType>) => void)[];
 }
 
-interface FileCallback {
-    resolve: (fileInfo: FileResultType | PromiseLike<FileResultType>) => void;
+interface FileAddObject {
+    path: string;
+    uploadObject: FileUploadObject;
 }
 
+type FileCallback = (fileInfo: FileResultType | PromiseLike<FileResultType>) => void;
+
 class StreamManager {
-    private __uploadQueue: Map<string, FileUploadObject> = new Map();
+    private __uploadReplaceQueue: Map<string, FileUploadObject> = new Map();
+    private __uploadAddQueue: FileAddObject[] = [];
     private __uploadProcessPromise = Promise.resolve();
 
-    private async processUpload(queue: [string, FileUploadObject][]) {
-        for (const [path, queueObj] of queue ) {
-            const fileInfo = await $getFileSystem().uploadFileAsync( path, queueObj.content, queueObj.mode );
+    private async processUpload(replaceQueue: [string, FileUploadObject][], addQueue: FileAddObject[]) {
+        for (const [path, queueObj] of replaceQueue ) {
+            const fileInfo = await $getFileSystem().uploadFileAsync( path, queueObj.content, FileUploadMode.Replace );
             for ( const resolve of queueObj.resolves )
                 resolve(fileInfo);
+        }
+        
+        for (const addObject of addQueue ) {
+            const fileInfo = await $getFileSystem().uploadFileAsync( addObject.path, addObject.uploadObject.content, FileUploadMode.Add );
+            addObject.uploadObject.resolves[0](fileInfo);
         }
     }
 
     uploadFile( path: string, content: Blob, mode: FileUploadMode ): Promise<FileInfoResultType> {
-        let uploadObject = this.__uploadQueue.get(path);
-        if ( !variableExists(uploadObject)) {
-            uploadObject = { content, mode, resolves: [] };
-            this.__uploadQueue.set(path, uploadObject);
+        let uploadObject: FileUploadObject | undefined = undefined;
+        if ( mode === FileUploadMode.Replace ) {
+            uploadObject = this.__uploadReplaceQueue.get(path);
+            if ( !variableExists(uploadObject)) {
+                uploadObject = { content, resolves: [] };
+                this.__uploadReplaceQueue.set(path, uploadObject);
+            }
+        } else { // Add
+            uploadObject = { content, resolves: [] };
+            this.__uploadAddQueue.push( {path, uploadObject } );
         }
-        assert(mode === uploadObject.mode, `Mixed modes for upload`);
+
         uploadObject.content = content;
 
         return new Promise<FileInfoResultType>( (resolve) => {
             uploadObject.resolves.push(resolve);
             this.__uploadProcessPromise = this.__uploadProcessPromise.then(async () => {
-                if ( this.__uploadQueue.size === 0 )
+                if ( this.__uploadReplaceQueue.size === 0 && this.__uploadAddQueue.length === 0 )
                     return;
 
-                const queueCopy = Array.from(this.__uploadQueue);
-                this.__uploadQueue.clear();
+                const queueReplaceCopy = Array.from(this.__uploadReplaceQueue);
+                const queueAddCopy = this.__uploadAddQueue;
+                this.__uploadReplaceQueue.clear();
+                this.__uploadAddQueue = [];
 
-                await this.processUpload(queueCopy);
+                await this.processUpload(queueReplaceCopy, queueAddCopy);
             });
         } );
     }
@@ -54,7 +70,7 @@ class StreamManager {
         for ( const [path, callbacks] of queue ) {
             const file = await $getFileSystem().downloadFileAsync( path );
             for ( const callback of callbacks )
-                callback.resolve(file);
+                callback(file);
         }
     }
 
@@ -67,7 +83,7 @@ class StreamManager {
         
         return new Promise<FileResultType>(
             (resolve) => {
-                callbackList.push( {resolve} );
+                callbackList.push( resolve );
                 this.__downloadProcessPromise = this.__downloadProcessPromise.then( async () => {
                     if ( this.__downloadQueue.size === 0 )
                         return;
@@ -80,6 +96,14 @@ class StreamManager {
             }
         );
     }
+
+    async flush() {
+        await Promise.all([this.__uploadProcessPromise, this.__downloadProcessPromise]);
+    }
 }
 
-export const streamManager = new StreamManager();
+const __streamManager = new StreamManager();
+
+export function $getStreamManager() {
+    return __streamManager;
+}

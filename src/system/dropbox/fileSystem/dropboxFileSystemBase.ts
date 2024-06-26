@@ -39,6 +39,7 @@ export function metaToFileInfo(meta: DropboxFileMetadata): FileInfo {
     hash: meta.content_hash,
     id: meta.id,
     path: meta.path_lower || '',
+    date: meta.server_modified
   };
 }
 

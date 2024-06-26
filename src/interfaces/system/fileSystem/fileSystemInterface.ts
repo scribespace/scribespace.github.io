@@ -23,7 +23,7 @@ export interface FileSystemAsync extends FileSystemWorkerWrapper, FileSystemWork
 }
 
 export interface FileSystemMainThread {
-  isPathID(path: string): boolean;
+  isFileID(path: string): boolean;
   getFileList(dirPath: string, callback: (list: FileInfo[]) => void): Promise<FileSystemResult>;
 }
 
