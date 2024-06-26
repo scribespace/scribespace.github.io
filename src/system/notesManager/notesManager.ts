@@ -25,7 +25,7 @@ interface NotesMetaObjectSereialized {
 class NotesManager {
     private __metaObject: NotesMetaObject = {version: -1, notes: new Map()};
 
-    async uploadNoteObject(path: string, noteObject: NoteObject, uploadMode: FileUploadMode ) {
+    private async uploadNoteObject(path: string, noteObject: NoteObject, uploadMode: FileUploadMode ) {
         const fileData = JSON.stringify(noteObject);
         const infoResult = await $getStreamManager().uploadFile(path, new Blob([fileData]), uploadMode);
         assert( infoResult.status === FileSystemStatus.Success, `Note Object didnt' upload` );
@@ -44,7 +44,7 @@ class NotesManager {
     async createNote() {
         const fileName = "scribe-space-id-" + crypto.randomUUID() + (new Date().getTime());
         const emptyNote = await editorGetEmptyNote();
-
+        
         const infoResult = await this.uploadNoteObject( NOTES_PATH + fileName, {version: NOTES_VERSION, data: emptyNote}, FileUploadMode.Add );
         if (infoResult.status === FileSystemStatus.Success) {
             this.__metaObject.notes.set(infoResult.fileInfo!.id, infoResult.fileInfo!.path);
@@ -112,7 +112,7 @@ class NotesManager {
         return fileInfo.fileInfo;
     }
 
-    async processNotes() {
+    private async processNotes() {
         let i = 1;
         const max = this.__metaObject.notes.size;
         const promises: Promise<void>[] = [];
