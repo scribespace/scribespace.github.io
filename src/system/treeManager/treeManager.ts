@@ -1,10 +1,10 @@
-import { $getFileSystem } from "@coreSystems";
 import { FileSystemStatus } from "@interfaces/system/fileSystem/fileSystemShared";
 import { $callCommand } from "@systems/commandsManager/commandsManager";
-import { assert } from "@utils";
+import { streamManager } from "@systems/streamManager/streamManager";
+import { assert, notNullOrThrow } from "@utils";
 import { SimpleTree } from "react-arborist";
 import { TREE_DATA_CHANGED_CMD } from "./treeCommands";
-import { TREE_FILE, TreeNodeData, createTreeData, loadTreeData, uploadTreeData } from "./treeData";
+import { TREE_FILE, TreeData, TreeNodeData, createEmptyTreeData, createTreeData, loadTreeData, uploadTreeData } from "./treeData";
 import { loadTreeStatus, storeTreeStatus } from "./treeStatus";
 
 class TreeManager {
@@ -16,9 +16,16 @@ class TreeManager {
 
     async loadTreeData() {
         this.loadTreeStatus();
-        const downloadResult = await $getFileSystem().downloadFileAsync(TREE_FILE);
-        const treeJSON = downloadResult.status !== FileSystemStatus.Success ? '{}' : await downloadResult.file!.content!.text();
-        const treeData = await loadTreeData(treeJSON);
+        const downloadResult = await streamManager.downloadFile(TREE_FILE);
+        let treeData: TreeData | null = null;
+        if ( downloadResult.status === FileSystemStatus.Success ) {
+            const treeJSON = downloadResult.status !== FileSystemStatus.Success ? '{}' : await downloadResult.file!.content!.text();
+            treeData = await loadTreeData(treeJSON);
+        } else if ( downloadResult.status === FileSystemStatus.NotFound) {
+            treeData = await createEmptyTreeData();
+        }
+        notNullOrThrow(treeData);
+
         this.__tree = new SimpleTree<TreeNodeData>(treeData.data);
         this.__treeLoaded = true;
     }

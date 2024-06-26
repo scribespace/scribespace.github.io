@@ -6,6 +6,7 @@ import { $getFileSystem } from "@coreSystems";
 import { ImageManagerWorkerPublic } from "./imageManagerWorker";
 import workerURL from "./imageManagerWorker?worker&url";
 import { ImageManagerWorkerFunctions, ImageManagerWorkerFunctionsExtended, ImageManagerWorkerWrapper } from "./workerShared";
+import { streamManager } from "@systems/streamManager/streamManager";
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface ImageManager extends ImageManagerWorkerWrapper {}
@@ -16,8 +17,8 @@ export class ImageManager extends WebWorkerManager<ImageManagerWorkerFunctions, 
   }
 
   imageUpload(imageBlob: Blob): Promise<string> {
-    return $getFileSystem()
-    .uploadFileAsync($getImageName(imageBlob.type), imageBlob, FileUploadMode.Add)
+    return streamManager
+    .uploadFile($getImageName(imageBlob.type), imageBlob, FileUploadMode.Add)
     .then(
       (result: FileInfoResultType) => {
         assert( result.status === FileSystemStatus.Success, "Missing fileInfo" );

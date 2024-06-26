@@ -2,6 +2,7 @@ import { DEV } from "@systems/environment";
 import {
   isFunctionOrThrow,
   isKeyOrThrow,
+  variableExists,
   variableExistsOrThrow,
 } from "./common";
 import { Func } from "./types/types";
@@ -69,4 +70,12 @@ export function isFunctionOrThrowDev(func: unknown): asserts func is Func {
   DEV(() => {
     isFunctionOrThrow(func);
   });
+}
+
+export function getStack() {
+  const error = new Error();
+  if ( variableExists(error.stack) ) {
+    return error.stack.split('\n');
+  }
+  return [];
 }

@@ -1,5 +1,5 @@
 import { FileSystemFailedResult, FileSystemStatus } from "@/interfaces/system/fileSystem/fileSystemShared";
-import { DropboxDeleteError, DropboxDownloadError, DropboxGetMetadataError, DropboxLookupError, DropboxUploadError, ThrowDropboxError } from "../dropboxCommon";
+import { DropboxDeleteError, DropboxDownloadError, DropboxGetMetadataError, DropboxListFolderError, DropboxLookupError, DropboxUploadError, ThrowDropboxError } from "../dropboxCommon";
 
 
 function HandleLookupError(
@@ -65,5 +65,17 @@ export function HandleGetMetadataError(
       return HandleLookupError(path, getMetadataError.path);
     default:
       ThrowDropboxError("Unsupported GetMetadataError type. File: " + path);
+  }
+}
+
+export function HandleListFolderError(
+  path: string,
+  listFolderError: DropboxListFolderError
+) {
+  switch (listFolderError[".tag"]) {
+    case "path": //DownloadErrorPath
+      return HandleLookupError(path, listFolderError.path);
+    default:
+      ThrowDropboxError("Unsupported listFolderError type. File: " + path);
   }
 }

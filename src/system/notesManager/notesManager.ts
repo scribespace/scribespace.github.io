@@ -5,6 +5,7 @@ import { assert } from "@utils";
 import { NoteObject, noteConvertToV0 } from "./notesVersions";
 import { $callCommand } from "@systems/commandsManager/commandsManager";
 import { NOTES_CONVERTING_CMD, NOTES_CREATING_META_CMD, NOTES_FINISH_CONVERTING_CMD } from "./notesCommands";
+import { streamManager } from "@systems/streamManager/streamManager";
 
 export const NOTES_VERSION = 0 as const;
 export const NOTES_PATH = "/notes/";
@@ -28,7 +29,7 @@ class NotesManager {
 
     async uploadNoteObject(path: string, noteObject: NoteObject, uploadMode: FileUploadMode ) {
         const fileData = JSON.stringify(noteObject);
-        const infoResult = await $getFileSystem().uploadFileAsync(path, new Blob([fileData]), uploadMode);
+        const infoResult = await streamManager.uploadFile(path, new Blob([fileData]), uploadMode);
         assert( infoResult.status === FileSystemStatus.Success, `Note Object didnt' upload` );
 
         return infoResult;
@@ -56,7 +57,7 @@ class NotesManager {
     }
 
     async loadNote( notePath: string ): Promise<NoteObject> {
-        const downloadResult = await $getFileSystem().downloadFileAsync(notePath);
+        const downloadResult = await streamManager.downloadFile(notePath);
         assert(downloadResult.status === FileSystemStatus.Success, 'Note couldnt be downloaded');
         const content = await downloadResult.file!.content!.text();
         let noteObject: NoteObject;
@@ -71,7 +72,7 @@ class NotesManager {
     }
 
     private async loadMetaFile() {
-        const downloadResults = await $getFileSystem().downloadFileAsync(NOTES_META_PATH);
+        const downloadResults = await streamManager.downloadFile(NOTES_META_PATH);
         
         if ( downloadResults.status === FileSystemStatus.Success ) {
             const metaObjectJSON = await downloadResults.file!.content!.text();
@@ -96,7 +97,6 @@ class NotesManager {
                     metaObject.notes.set( noteFile.id, noteFile.path );
                 }
             },
-            (error) => {throw error;}
          );
 
          this.__metaObject = metaObject;
@@ -108,19 +108,23 @@ class NotesManager {
             notes: Array.from(this.__metaObject.notes)
         };
         const metaJSON = JSON.stringify(metaSerialized);
-        const fileInfo = await $getFileSystem().uploadFileAsync(NOTES_META_PATH, new Blob([metaJSON]), FileUploadMode.Replace);
+        const fileInfo = await streamManager.uploadFile(NOTES_META_PATH, new Blob([metaJSON]), FileUploadMode.Replace);
         assert(fileInfo.status === FileSystemStatus.Success, `Meta Data didn't upload`);
 
-        return fileInfo.fileInfo!;
+        return fileInfo.fileInfo;
     }
 
     async processNotes() {
         let i = 1;
         const max = this.__metaObject.notes.size;
+        const promises: Promise<void>[] = [];
         for ( const [noteID,] of this.__metaObject.notes ) {
-            $callCommand(NOTES_CONVERTING_CMD, {id: i++, max} );
-            await this.loadNote(noteID);
+            promises.push(this.loadNote(noteID).then(()=> {
+                $callCommand(NOTES_CONVERTING_CMD, {id: i++, max} );
+            }));
         }
+
+        await Promise.all(promises);
     }
 
     async initNotes() {

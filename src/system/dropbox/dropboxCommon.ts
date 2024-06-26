@@ -97,6 +97,9 @@ export type DropboxCreateSharedLinkWithSettingsError =
 export type DropboxCreateSharedLinkWithSettingsErrorResponse =
   DropboxResponseError<DropboxError<DropboxCreateSharedLinkWithSettingsError>>;
 
+export type DropboxListFolderError = files.ListFolderError;
+export type DropboxListFolderErrorResponse = DropboxResponseError<DropboxError<DropboxListFolderError>>;
+
 export type DropboxCommitInfo = files.CommitInfo;
 
 export const DropboxWriteModeAdd: files.WriteModeAdd = { ".tag": "add" };

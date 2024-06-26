@@ -205,7 +205,7 @@ async (importOriginal) => {
 
                         return 'https://' + path + '.com';
                     },
-                    getFileList: async function (dirPath: string, callback: (list: FileInfo[]) => void/*, onerror: (error: unknown) => void*/): Promise<void> {
+                    getFileList: async function (dirPath: string, callback: (list: FileInfo[]) => void): Promise<FileSystemResult> {
                         const fileList: FileInfo[] = [];
                         for (const [filePath,file] of filesMapPath) {
                             if (filePath.startsWith(dirPath)) {
@@ -213,6 +213,7 @@ async (importOriginal) => {
                             }
                         }
                         callback(fileList);
+                        return {status: FileSystemStatus.Success};
                     },
                     isPathID: function (path: string): boolean {
                         return path.startsWith('id:');

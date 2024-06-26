@@ -9743,7 +9743,14 @@ class LexicalEditor {
    * run synchronously.
    */
   update(updateFn, options) {
-    updateEditor(this, updateFn, options);
+    const fixedOption = {...options};
+    const error = new Error();
+    if ( error.stack ) {
+      const stack = error.stack.split('\n');
+      if ( stack.length > 0 )
+        fixedOption.caller = stack[1];
+    }
+    updateEditor(this, updateFn, fixedOption);
   }
 
   /**

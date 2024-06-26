@@ -1,3 +1,4 @@
+
 export enum OS {
     Unknown,
     Windows,
@@ -33,4 +34,3 @@ export const DEV = isDev() ? (callback: () => void) => {
   }
 } :
   () => { };
-

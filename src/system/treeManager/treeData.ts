@@ -1,5 +1,5 @@
-import { $getFileSystem } from "@coreSystems";
 import { FileSystemStatus, FileUploadMode } from "@interfaces/system/fileSystem/fileSystemShared";
+import { streamManager } from "@systems/streamManager/streamManager";
 import { assert, variableExists } from "@utils";
 import { NodeApi } from "react-arborist";
 
@@ -25,20 +25,26 @@ export async function uploadTreeData(treeData: TreeData) {
 
     const treeJSON = JSON.stringify(treeData);
     const treeBlob = new Blob([treeJSON]);
-    const infoResult = await $getFileSystem().uploadFileAsync( TREE_FILE, treeBlob, FileUploadMode.Replace );
+    const infoResult = await streamManager.uploadFile( TREE_FILE, treeBlob, FileUploadMode.Replace );
     assert( infoResult.status === FileSystemStatus.Success, `Tree didn't upload` );
     return infoResult.fileInfo!;
 }
 
 export async function loadTreeData( treeJSON: string ): Promise<TreeData> {
   let treeData = JSON.parse(treeJSON);
-
+  
   if ( !variableExists(treeData.version) ) {
     treeData = await convertToV0(treeData);
-    uploadTreeData(treeData);
+    await uploadTreeData(treeData);
   }
 
   return treeData;
+}
+
+export async function createEmptyTreeData() {
+  const emptyTree = {version: TREE_DATA_VERSION, data: []};
+  await uploadTreeData( emptyTree );
+  return emptyTree;
 }
 
 export function createTreeData( treeNodes: TreeNodeData[] ): TreeData {
