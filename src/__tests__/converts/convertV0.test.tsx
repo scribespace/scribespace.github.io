@@ -1,5 +1,6 @@
 import { $clearMockedFiles, $getMockedFilesJSON, $setMockedFiles, MockedFile } from "../helpers/fileSystemMock";
 import '../helpers/workerMock';
+import { ReactTest, reactSetup } from "../helpers/prepareReact";
 
 import { $getTreeManager } from "@systems/treeManager";
 import { TREE_FILE } from "@systems/treeManager/treeData";
