@@ -1,14 +1,10 @@
 import { WebWorkerThread } from "@/interfaces/webWorker";
 
 export const ImageManagerWorkerPublic = {
-  blobsToUrlObjs(blobs: Blob[]): Promise<string[]> {
-    return new Promise<string[]>(
+  blobToUrlObj(blob: Blob): Promise<string> {
+    return new Promise<string>(
       (resolve) => {
-        const urlObjs: string[] = [];
-        for (const blob of blobs) {
-          urlObjs.push(URL.createObjectURL(blob));
-        }
-        resolve(urlObjs); 
+          resolve(URL.createObjectURL(blob)); 
       }
     );
   },

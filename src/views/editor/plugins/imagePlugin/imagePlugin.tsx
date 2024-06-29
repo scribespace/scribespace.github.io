@@ -1,8 +1,9 @@
-import { IMAGE_SUPPORTED_FORMATS } from "@/system/imageManager";
+import { $getImageManager } from "@/system/imageManager";
 import { $createImageNode, $isImageNode } from "@editor/nodes/image/imageNode";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
+import { IMAGE_SUPPORTED_FORMATS, MISSING_IMAGE } from "@systems/imageManager/imageConstants";
 import { assert } from "@utils";
 import {
   $getSelection,
@@ -11,9 +12,9 @@ import {
 } from "lexical";
 import { useCallback, useEffect } from "react";
 import { ImageNode } from "../../nodes/image";
+import { KEY_BACKSPACE_CMD, KEY_DELETE_CMD } from "../commandsPlugin/editorCommands";
 import { EDITOR_DRAG_DROP_ADD_TYPES_LISTENER_CMD } from "../dragDropPlugin";
 import { INSERT_IMAGES_CMD } from "./imageCommands";
-import { KEY_DELETE_CMD, KEY_BACKSPACE_CMD } from "../commandsPlugin/editorCommands";
 
 export function ImagePlugin() {
   const [editor] = useLexicalComposerContext();
@@ -35,24 +36,30 @@ export function ImagePlugin() {
     return false;
   }, []);
 
-  useEffect(() => {
-    assert(editor.hasNode(ImageNode), "ImageNode not registered");
-
-    function insertImages(images: File[]) {
+  const insertImages = useCallback(
+    (images: File[]) => {
       const imageNodes: ImageNode[] = [];
 
       for (const image of images) {
+        const imageID = $getImageManager().imageUpload(image);
+
         const imageNode = $createImageNode(
+          imageID,
+          MISSING_IMAGE,
           undefined,
           undefined,
           undefined,
-          image,
         );
         imageNodes.push(imageNode);
       }
 
       $insertNodes(imageNodes);
-    }
+    },
+    []
+  );
+
+  useEffect(() => {
+    assert(editor.hasNode(ImageNode), "ImageNode not registered");
 
     function dragDropListener(images: File[]) {
       insertImages(images);
@@ -80,7 +87,7 @@ export function ImagePlugin() {
         onDelete,
       ),
     );
-  }, [editor, onDelete]);
+  }, [editor, insertImages, onDelete]);
 
   return null;
 }

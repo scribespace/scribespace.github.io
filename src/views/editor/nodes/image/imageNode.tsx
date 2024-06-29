@@ -19,6 +19,7 @@ import { ReactElement } from "react";
 export type SerializedImageNode = Spread<
   {
     src: string;
+    filePath: string;
     width?: number;
     height?: number;
   },
@@ -27,25 +28,28 @@ export type SerializedImageNode = Spread<
 
 export class ImageNode extends DecoratorNode<ReactElement> {
   __src: string;
+  __filePath: string;
   __width?: number;
   __height?: number;
-
-  __blob?: Blob;
+  __imageID: number;
 
   constructor(
+    imageID: number,
     src?: string,
+    filePath?: string,
     width?: number,
     height?: number,
-    blob?: Blob,
-    key?: NodeKey
+    key?: NodeKey,
   ) {
     super(key);
 
     this.__src = src || "";
-    this.__blob = blob;
+    this.__filePath = filePath || "";
 
     this.__width = width && width > 0 ? width : undefined;
     this.__height = height && height > 0 ? height : undefined;
+
+    this.__imageID = imageID;
   }
 
   static getType(): string {
@@ -54,17 +58,22 @@ export class ImageNode extends DecoratorNode<ReactElement> {
 
   static clone(node: ImageNode): ImageNode {
     return new ImageNode(
+      node.__imageID,
       node.__src,
+      node.__filePath,
       node.__width,
       node.__height,
-      node.__blob,
-      node.__key
     );
   }
 
   setSrc(src: string) {
     const self = this.getWritable();
     self.__src = src;
+  }
+
+  setFilePath(filePath: string) {
+    const self = this.getWritable();
+    self.__filePath = filePath;
   }
 
   setWidth(width: number) {
@@ -85,7 +94,9 @@ export class ImageNode extends DecoratorNode<ReactElement> {
 
   static importJSON(serializedNode: SerializedImageNode): ImageNode {
     const imageNode = $createImageNode(
+      -1,
       serializedNode.src,
+      serializedNode.filePath,
       serializedNode.width,
       serializedNode.height
     );
@@ -95,6 +106,7 @@ export class ImageNode extends DecoratorNode<ReactElement> {
   exportJSON(): SerializedImageNode {
     return {
       src: this.__src,
+      filePath: this.__filePath,
       width: this.__width,
       height: this.__height,
       type: "image",
@@ -135,20 +147,21 @@ export class ImageNode extends DecoratorNode<ReactElement> {
         src={this.__src}
         width={this.__width}
         height={this.__height}
-        blob={this.__blob}
-        imageKey={this.getKey()}
+        imageNodeKey={this.getKey()}
+        imageID={this.__imageID}
       />
     );
   }
 }
 
 export function $createImageNode(
+  imageID: number,
   src?: string,
+  filePath?: string,
   width?: number,
   height?: number,
-  blob?: Blob
 ): ImageNode {
-  return $applyNodeReplacement(new ImageNode(src, width, height, blob));
+  return $applyNodeReplacement(new ImageNode(imageID, src, filePath, width, height));
 }
 
 export function $isImageNode(
@@ -170,7 +183,7 @@ export function $convertImageElement(domNode: Node): null | DOMConversionOutput 
     return null;
   }
 
-  const node = $createImageNode(src, width, height);
+  const node = $createImageNode(-1, src, undefined, width, height);
   return { node };
 }
 

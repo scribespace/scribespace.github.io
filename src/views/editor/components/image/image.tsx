@@ -1,12 +1,13 @@
 import { useMainThemeContext } from "@/mainThemeContext";
-import { notNullOrThrowDev, variableExists } from "@/utils";
+import { notNullOrThrowDev } from "@/utils";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 
-import { $getImageNodeByKey, $isImageNode } from "@editor/nodes/image/imageNode";
+import { $getImageNodeByKey } from "@editor/nodes/image/imageNode";
 import { CLICK_CMD } from "@editor/plugins/commandsPlugin/editorCommands";
 import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
-import { $getImageManager } from "@systems/imageManager";
+import { $getImageManager, ImageObject, ImageState } from "@systems/imageManager";
+import { LOADING_IMAGE, MISSING_IMAGE } from "@systems/imageManager/imageConstants";
 import {
   $getNodeByKey,
   NodeKey
@@ -19,30 +20,27 @@ import {
 } from "react";
 import { ImageControl } from "./imageControl";
 
-const MISSING_IMAGE = "/images/no-image.png" as const;
-
-enum ImageState {
-  None,
-  Loading,
-  LoadingFinal,
-  Ready,
-  Missing,
+enum ImageLoadingState {
+  None = 0,
+  Loading = 1 << 0,
+  Ready = 1 << 1,
+  Failed = 1 << 2,
 }
 
 interface ImageProps {
-  src?: string;
+  src: string;
   width?: number;
   height?: number;
-  blob?: Blob;
-  imageKey: NodeKey;
+  imageNodeKey: NodeKey;
+  imageID: number;
 }
 
 export function Image({
   src,
   width,
   height,
-  blob,
-  imageKey,
+  imageNodeKey,
+  imageID,
 }: ImageProps) {
   const [editor] = useLexicalComposerContext();
 
@@ -51,112 +49,37 @@ export function Image({
     editorTheme: { imageTheme },
   } = useMainThemeContext();
 
-  const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(imageKey);
+  const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(imageNodeKey);
+  const [currentSrc, setCurrentSrc] = useState<string>(LOADING_IMAGE);
+  const [isLoading, setIsLoading] = useState<ImageLoadingState>(ImageLoadingState.Loading);
 
   const imageRef = useRef<HTMLImageElement>(null);
 
-  const [imageState, setImageState] = useState<ImageState>(ImageState.None);
-  const [currentSrc, setCurrentSrc] = useState<string>(src || MISSING_IMAGE);
-
-  const imageLoadFailed = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (error: any) => {
-      setImageState(ImageState.Missing); 
-      setCurrentSrc(MISSING_IMAGE);
-
-      editor.update( () => {
-        const node = $getNodeByKey(imageKey);
-        if ( $isImageNode(node) )
-          node.setSrc(MISSING_IMAGE); 
-      });
-      throw Error( error );
-    },
-    [editor, imageKey]
-  );
-
-  const uploadImage = useCallback(
-    (imageBlob: Blob) => {
-      $getImageManager().imageUpload(imageBlob).then(
-        (url: string) => {
-          editor.update( () => {
-            setImageState(ImageState.LoadingFinal);
-            setCurrentSrc(url);
-            const node = $getImageNodeByKey(imageKey);
-            if (node)
-              node.setSrc(url);
-        },
-        { tag: "history-merge" }); 
-        }
-      )
-      .catch((error) => { 
-            imageLoadFailed(error);
-          }
-      );
-    },
-    [editor, imageKey, imageLoadFailed]
-  );
-
-  const onLoad = useCallback(
-    () => {
-      if (imageState == ImageState.LoadingFinal) {
-        setImageState(ImageState.Ready);
-        if ( !variableExists(width) || !variableExists(height) ) {
-          editor.update(
-            () => {
-              const node = $getNodeByKey(imageKey);
-              if ( $isImageNode(node) )
-                node.setWidthHeight( imageRef.current!.naturalWidth, imageRef.current!.naturalHeight ); 
-            },
-            { tag: "history-merge" }
-          );
-        }
-      }
-    },
-    [editor, height, imageKey, imageState, width]
-  );
-
   const onError = useCallback(
     () => {
-        setImageState(ImageState.Missing);
-        setCurrentSrc(MISSING_IMAGE);
+      setCurrentSrc(MISSING_IMAGE);
+      setIsLoading(ImageLoadingState.Failed);
     },
     []
   );
 
+  const onLoad = useCallback(
+    () => {
+      if ( (isLoading & ImageLoadingState.Ready) !== 0 ) { 
+        setIsLoading(ImageLoadingState.None);
 
-  useEffect(() => {
-    if ( imageState == ImageState.None ) {
-       setCurrentSrc(MISSING_IMAGE);
-
-       if ( (src == "") && blob ) {
-        setImageState(ImageState.Loading);
-
-        $getImageManager().blobsToUrlObjs([blob])
-        .then( (urlsObjs) => {
-            setCurrentSrc(urlsObjs[0]);
-            uploadImage(blob);
-          })
-          .catch( (error) => { 
-              imageLoadFailed(error);
-          });
-
-         return;
-       }   
-
-       if ( variableExists(src) ) {
-          setImageState(ImageState.Loading);
-          $getImageManager().preloadImage(src)
-          .then(() => {
-              setCurrentSrc( src );
-              setImageState(ImageState.LoadingFinal);
+        editor.update( () => {
+          const node = $getImageNodeByKey(imageNodeKey);
+          if ( node ) {
+            if ( imageRef.current ) {
+              node.setWidthHeight(imageRef.current.naturalWidth, imageRef.current.naturalHeight);
             }
-          );
-          return;
+          }
+        }, {tag:"history-merge"});
       }
-
-      setImageState(ImageState.Missing);
-    }
-  }, [blob, editor, imageLoadFailed, imageState, src, uploadImage]);
+    },
+    [editor, imageNodeKey, isLoading]
+  );
 
   useEffect(() => {
     return $registerCommandListener(
@@ -182,24 +105,61 @@ export function Image({
 
     const getImageRootElement = useCallback(
       (): HTMLElement | null => {
-        const imageNode = $getNodeByKey(imageKey);
+        const imageNode = $getNodeByKey(imageNodeKey);
         notNullOrThrowDev(imageNode);
 
         const rootElement = editor.getElementByKey( imageNode.getTopLevelElementOrThrow().getParentOrThrow().getKey());
         return rootElement;
       }, 
-      [editor, imageKey]
+      [editor, imageNodeKey]
     );
 
     const updateImageSize = useCallback(
       (width: number, height: number): void => {
         editor.update( () => {
-          const node = $getImageNodeByKey(imageKey);
+          const node = $getImageNodeByKey(imageNodeKey);
           if ( node )
             node.setWidthHeight(width, height);
         });
       },
-      [editor, imageKey]
+      [editor, imageNodeKey]
+    );
+
+    const imageUpdate = useCallback( 
+      (imageObject: ImageObject, oldState: ImageState) => {
+        setCurrentSrc(imageObject.src);
+        const isUploading = (imageObject.state & ImageState.Uploading) !== 0;
+        const isPreloadingUrl = (imageObject.state & (ImageState.Preloading | ImageState.BlobURL)) === ImageState.Preloading;
+        const newLoadingState = isLoading | ((isUploading || isPreloadingUrl) ? ImageLoadingState.Loading : ImageLoadingState.Ready);
+        setIsLoading( newLoadingState );
+
+        const changedState = oldState ^ imageObject.state;
+        if ( (changedState & ImageState.Uploading) !== 0 ) {
+          editor.update( () => {
+            const node = $getImageNodeByKey(imageNodeKey);
+            if ( node ) {
+              node.setSrc(imageObject.fileUrl);
+              node.setFilePath(imageObject.filePath);
+            }
+          }, {tag:"history-merge"});
+        }
+      },
+      [editor, imageNodeKey, isLoading]
+    );
+
+    useEffect(
+      () => {
+        if ( (isLoading & ImageLoadingState.Failed) !== 0 && imageID === -1 )
+          return;
+
+        let updatedImageID = imageID;
+        if ( updatedImageID === -1 ) {
+          updatedImageID = $getImageManager().imagePreload(src);
+        } 
+
+        return $getImageManager().registerListener(updatedImageID, imageUpdate);
+      },
+      [imageID, imageUpdate, isLoading, src]
     );
 
   return (
@@ -216,12 +176,12 @@ export function Image({
       >
         <img
           ref={imageRef}
-          className={imageTheme.element + ((imageState == ImageState.Loading || imageState == ImageState.LoadingFinal) ? " " + pulsing : "")}
+          className={imageTheme.element + ((isLoading & ImageLoadingState.Loading) !== 0 ? " " + pulsing : "")}
           style={{ display: "block" }}
           src={currentSrc}
           alt={`No image ${currentSrc}`}
-          onLoad={onLoad}
           onError={onError}
+          onLoad={onLoad}
         />
       </div>
 
