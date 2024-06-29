@@ -73,6 +73,14 @@ export class ImageManager extends WebWorkerManager<ImageManagerWorkerFunctions, 
     }
   }
 
+  private async preloadImage(src: string): Promise<void> {
+    return this.callFunction("preloadImage", [src], {} );
+  }
+
+  private async blobToUrlObj(imageBlob: Blob): Promise<string> {
+    return this.callFunction("blobToUrlObj", [imageBlob], {} );
+  }
+
   private async imageProcessPreload( imageID: number ) {
     const imageObject = this.__imageObjects[imageID];
     imageObject.state = imageObject.state | ImageState.Preloading;

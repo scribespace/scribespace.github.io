@@ -1,6 +1,9 @@
 import { WebWorkerThread } from "@/interfaces/webWorker";
 
 export const ImageManagerWorkerPublic = {
+};
+
+export const ImageManagerWorkerPrivate = {
   blobToUrlObj(blob: Blob): Promise<string> {
     return new Promise<string>(
       (resolve) => {
@@ -18,5 +21,6 @@ export const ImageManagerWorkerPublic = {
 
 export const ImageManagerWorkerImplementation = {
   ...ImageManagerWorkerPublic,
+  ...ImageManagerWorkerPrivate,
 };
 new WebWorkerThread(ImageManagerWorkerImplementation);
