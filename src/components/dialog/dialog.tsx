@@ -13,7 +13,7 @@ interface DialogProps {
     children: ReactNode,
 }
 
-export function Dialog({commandOpen: command, commandClose, children}: DialogProps) {
+export function Dialog({commandOpen, commandClose, children}: DialogProps) {
     const constStyle: React.CSSProperties = { 
         position: "fixed", 
         zIndex: 5,
@@ -74,7 +74,7 @@ export function Dialog({commandOpen: command, commandClose, children}: DialogPro
 
         return mergeRegister(
                 $registerCommandListener(
-                    command,
+                    commandOpen,
                     () => {
                         setShowDialog(true);
                     }
@@ -88,7 +88,7 @@ export function Dialog({commandOpen: command, commandClose, children}: DialogPro
                 )
             );
         },
-        [closeDialog, command, commandClose, forceCloseDialog]
+        [closeDialog, commandOpen, commandClose, forceCloseDialog]
     );
     
     return (

@@ -4,12 +4,12 @@ import "./css/mainView.css";
 
 import { Actions } from "@/components/actions/actions";
 import { DataLoader } from "@/components/dataLoader/dataLoader";
+import { NotesConvertDialog } from "@/components/notesConvertDialog/notesConvertDialog";
 import { ShortcutsDialog } from "@/components/shortcuts/shortcutsDialog";
 import useBoundingRect from "@/hooks/useBoundingRect";
 import { EditorView } from "@/views/editor/editorView";
 import { useRef } from "react";
 import { AUTH_DISABLED, authGlobal } from "../system/authentication";
-import { NotesConvertDialog } from "@/components/notesConvertDialog/notesConvertDialog";
 
 type Props = {
   changeAuthButtonState: (state: number) => void;

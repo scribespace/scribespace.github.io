@@ -5,6 +5,7 @@ import "./css/index.css";
 import { MainThemeContext } from "./mainThemeContext";
 import { MAIN_THEME_DEFAULT, MainTheme } from "./theme";
 import { WelcomeView } from "./views/welcomeView";
+import { ErrorDialog } from "./components/errorHandling/errorDialog";
 
 export function MainApp() {
   const [mainTheme, setMainTheme] = useState<MainTheme>(MAIN_THEME_DEFAULT);
@@ -28,6 +29,7 @@ export function MainApp() {
   return (
     <MainThemeContext.Provider value={mainTheme}>
       <WelcomeView />
+      <ErrorDialog/>
     </MainThemeContext.Provider>
   );
 }

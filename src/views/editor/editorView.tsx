@@ -15,12 +15,14 @@ import { useRef } from "react";
 import { EditorInput } from "./components/editorInput/editorInput";
 import { EDITOR_NODES, editorPlugins } from "@systems/editorManager/editorEnv";
 import { InfobarPlugin } from "./plugins/infobarPlugin";
+import { ERROR_OPEN_DIALOG } from "@/components/errorHandling/errorCommands";
+import { $callCommand } from "@systems/commandsManager/commandsManager";
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
 // try to recover gracefully without losing user data.
 function onError(error: Error) {
-  console.error(error);
+  $callCommand(ERROR_OPEN_DIALOG, error);
 }
 
 const USE_DEBUG_TREE = isDev() && false;
