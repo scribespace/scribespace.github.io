@@ -14,6 +14,7 @@ import { isDev } from "@systems/environment";
 import { useRef } from "react";
 import { EditorInput } from "./components/editorInput/editorInput";
 import { EDITOR_NODES, editorPlugins } from "@systems/editorManager/editorEnv";
+import { InfobarPlugin } from "./plugins/infobarPlugin";
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
@@ -27,7 +28,9 @@ const USE_DEBUG_TREE = isDev() && false;
 export function EditorView() {
   const { editorTheme }: MainTheme = useMainThemeContext();
   const toolbarRef = useRef<HTMLDivElement>(null);
+  const infobarRef = useRef<HTMLDivElement>(null);
   const { height: toolbarHeight } = useBoundingRect(toolbarRef);
+  const { height: infobarHeight } = useBoundingRect(infobarRef);
 
   const initialConfig = {
     namespace: "ScribleSpace",
@@ -45,11 +48,12 @@ export function EditorView() {
             <ToolbarPlugin ref={toolbarRef} />
             <div
               className={editorTheme.editorInner}
-              style={{ height: `calc(${USE_DEBUG_TREE ? '50%' : '100%'} - ${toolbarHeight}px)` }}
+              style={{ height: `calc(${USE_DEBUG_TREE ? '50%' : '100%'} - ${toolbarHeight}px - ${infobarHeight}px)` }}
             >
               <EditorInput />
             </div>
             {USE_DEBUG_TREE && <TreeViewPlugin/>}
+            <InfobarPlugin ref={infobarRef}/>  
           </div>
         </LexicalComposer>
       </div>

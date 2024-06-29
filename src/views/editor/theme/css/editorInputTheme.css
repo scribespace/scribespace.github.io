@@ -14,8 +14,6 @@
 .editor-inner {
   background-color: white;
   border: 1px solid rgb(173, 173, 173);
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
   box-sizing: border-box;
   overflow-x: auto;
   overflow-y: scroll;

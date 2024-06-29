@@ -19,7 +19,7 @@
 }
 
 .shortcuts-cell {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--default-font-family);
     text-wrap: nowrap;
     margin-left: 5px;
     margin-right: 5px;
@@ -48,7 +48,7 @@
 }
 
 .shortcuts-scopeName {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--default-font-family);
     background-color: rgb(189, 189, 189);    
     margin-bottom: 0;
     padding-left: 10px;

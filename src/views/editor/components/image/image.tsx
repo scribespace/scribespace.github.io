@@ -80,22 +80,24 @@ export function Image({
   const onLoad = useCallback(
     () => {
       if ( (isLoading & ImageLoadingState.Ready) !== 0 ) { 
-        setIsLoading(ImageLoadingState.None);
+          setIsLoading(ImageLoadingState.None);
 
-        editor.update( () => {
-          const node = $getImageNodeByKey(imageNodeKey);
-          if ( node ) {
-            if ( imageRef.current ) {
-              notNullOrThrowDev(rootElement);
-              const normalizedWidth = imageRef.current.width / rootElement.clientWidth;
-              const normalizeHeight = imageRef.current.height / rootElement.clientHeight;
-              node.setWidthHeight(normalizedWidth, normalizeHeight);
+          if (!variableExists(width) || !variableExists(height)) {
+          editor.update( () => {
+            const node = $getImageNodeByKey(imageNodeKey);
+            if ( node ) {
+              if ( imageRef.current ) {
+                notNullOrThrowDev(rootElement);
+                const normalizedWidth = imageRef.current.width / rootElement.clientWidth;
+                const normalizeHeight = imageRef.current.height / rootElement.clientHeight;
+                node.setWidthHeight(normalizedWidth, normalizeHeight);
+              }
             }
-          }
-        }, {tag:"history-merge"});
+          }, {tag:"history-merge"});
+        }
       }
     },
-    [editor, imageNodeKey, isLoading, rootElement]
+    [editor, height, imageNodeKey, isLoading, rootElement, width]
   );
 
   useEffect(() => {

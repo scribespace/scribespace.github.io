@@ -19,6 +19,7 @@ import { HORIZONTAL_BREAK_THEME_DEFAULT, HorizontalBreakTheme } from "@editor/co
 import { PAGE_BREAK_THEME_DEFAULT, PageBreakTheme } from "@editor/components/pageBreak/theme/pageBreakTheme";
 import { DATE_THEME_DEFAULT, DateTheme } from "@editor/nodes/date/theme/dateTheme";
 import { LIST_THEME_DEFAULT, ListTheme } from "../components/list/theme/listTheme";
+import { INFOBAR_THEME_DEFAULT, InfobarTheme } from "@editor/plugins/infobarPlugin/theme/infobarTheme";
 
 export interface EditorInputTheme extends EditorThemeClasses {
   defaultFontSize: EditorThemeClassName;
@@ -50,6 +51,7 @@ export interface EditorTheme {
   horizontalBreakTheme: HorizontalBreakTheme;
   pageBreakTheme: PageBreakTheme;
 
+  infobarTheme: InfobarTheme;
   toolbarTheme: ToolbarTheme;
   contextMenuTheme: ContextMenuTheme;
 }
@@ -154,6 +156,7 @@ export const EDITOR_THEME_DEFAULT: EditorTheme = {
   horizontalBreakTheme: HORIZONTAL_BREAK_THEME_DEFAULT,
   pageBreakTheme: PAGE_BREAK_THEME_DEFAULT,
   
+  infobarTheme: INFOBAR_THEME_DEFAULT,
   toolbarTheme: TOOLBAR_THEME_DEFAULT,
   contextMenuTheme: CONTEXT_MENU_THEME_DEFAULT,
 };

@@ -4,14 +4,33 @@ import { $callCommand, $registerCommandListener } from "@systems/commandsManager
 import { $getNotesManager } from "@systems/notesManager";
 import { NOTES_LOAD_CMD } from "@systems/notesManager/notesCommands";
 import { variableExists } from "@utils";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { CLEAR_HISTORY_CMD } from "../commandsPlugin/editorCommands";
+import { INFOBAR_SUBMIT_INFO_CMD } from "../infobarPlugin/infoCommands";
 
 export function NoteLoaderPlugin() {
     const [editor] = useLexicalComposerContext();
     const [noteInfo, setNoteInfo] = useState<{loadVersion: number, noteID: string}>({loadVersion:-1, noteID:''});
     const loadPromiseRef = useRef<Promise<void>>(Promise.resolve());
     const loadVersionRef = useRef<number>(0);
+    const savesRequestedRef = useRef<number>(0);
+    const savesDoneRef = useRef<number>(0);
+    const lastSaveDateRef = useRef<string>('--:--:--');
+
+    const updateSaveData = useCallback(
+        () => {
+            const time = new Date();
+            lastSaveDateRef.current = `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`;
+        },
+        []
+    );
+
+    const getSaveString = useCallback(
+        () => {
+            return `Save: ${savesDoneRef.current}/${savesRequestedRef.current} Time: ${lastSaveDateRef.current}`;
+        },
+        []
+    );
 
     useEffect(
         () => {
@@ -49,14 +68,21 @@ export function NoteLoaderPlugin() {
                         if ( noteInfo.noteID === '' || (args.dirtyElements.size + args.dirtyLeaves.size) === 0 || (args.dirtyLeaves.size === 0 && args.dirtyElements.size === 1 && variableExists( args.dirtyElements.get('root') ) ) )
                             return;
                         
+                            ++savesRequestedRef.current;
+                            const currentSave = savesRequestedRef.current;
+                            $callCommand( INFOBAR_SUBMIT_INFO_CMD, getSaveString());
                             $getNotesManager().storeNote(noteInfo.noteID,JSON.stringify( args.editorState )).then(()=>{
-                            console.log(`Save: ${noteInfo.noteID} tags: ${Array.from(args.tags)}` );
+                                if ( savesDoneRef.current < currentSave ) {
+                                    savesDoneRef.current = currentSave;
+                                    updateSaveData();
+                                    $callCommand( INFOBAR_SUBMIT_INFO_CMD, getSaveString());
+                                }
                         });
                     }
                 )
             );
         },
-        [editor, noteInfo.noteID]
+        [editor, getSaveString, noteInfo.noteID, updateSaveData]
     );
 
     return null;
