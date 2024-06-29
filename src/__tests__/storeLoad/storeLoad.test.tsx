@@ -20,7 +20,7 @@ afterAll(
 
 beforeAll(
   async () => {
-    const date = new Date(1998, 11, 19);
+    const date = new Date(0);
     vi.useFakeTimers();
     vi.setSystemTime(date);
   }

@@ -159,7 +159,7 @@ export function $getImageManager(): ImageManager {
 }
 
 export function $getImageName(type: string) {
-  return `${IMAGES_PATH}scribe-space-id-image-${crypto.randomUUID()}${(new Date().toJSON())}.${IMAGE_SUPPORTED_FORMATS[type as keyof typeof IMAGE_SUPPORTED_FORMATS]}`;
+  return `${IMAGES_PATH}scribe-space-id-image-${crypto.randomUUID()}${((new Date()).getTime())}.${IMAGE_SUPPORTED_FORMATS[type as keyof typeof IMAGE_SUPPORTED_FORMATS]}`;
 }
 
 

@@ -1,6 +1,6 @@
-import '../helpers/cryptoMock';
-import { $clearMockedFiles, $fileSystemSetDelay, $getMockedFiles, $getMockedFilesJSON, $resetFileSystemStats, $setMockedFiles, MockedFile } from "../helpers/fileSystemMock";
 import '../helpers/workerMock';
+import '../helpers/cryptoMock';
+import { $clearMockedFiles, $fileSystemSetDelay,$getMockedFilesJSON, $resetFileSystemStats, $setMockedFiles, MockedFile } from "../helpers/fileSystemMock";
 
 
 import { $getNotesManager } from "@systems/notesManager";
@@ -24,7 +24,7 @@ afterAll(
 
 beforeAll(
     () => {
-      const date = new Date(2024, 11, 19);
+      const date = new Date(0);
       vi.useFakeTimers({toFake:['Date']});
       vi.setSystemTime(date);
       $fileSystemSetDelay(100);

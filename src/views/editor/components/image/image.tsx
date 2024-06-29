@@ -149,7 +149,7 @@ export function Image({
 
     useEffect(
       () => {
-        if ( (isLoading & ImageLoadingState.Failed) !== 0 && imageID === -1 )
+        if ( (src === MISSING_IMAGE || (isLoading & ImageLoadingState.Failed) !== 0) && imageID === -1 )
           return;
 
         let updatedImageID = imageID;
