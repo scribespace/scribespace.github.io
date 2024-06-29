@@ -126,8 +126,8 @@ export class ImageNode extends DecoratorNode<ReactElement> {
   exportDOM(): DOMExportOutput {
     const element = document.createElement("img");
     element.setAttribute("src", this.__src);
-    element.setAttribute("width", `${this.__width}px`);
-    element.setAttribute("height", `${this.__height}px`);
+    element.setAttribute("width", `${this.__width}%`);
+    element.setAttribute("height", `${this.__height}%`);
     return { element };
   }
 

@@ -1,5 +1,5 @@
 import { useMainThemeContext } from "@/mainThemeContext";
-import { notNullOrThrowDev } from "@/utils";
+import { notNullOrThrowDev, variableExists } from "@/utils";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 
@@ -15,6 +15,7 @@ import {
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState
 } from "react";
@@ -52,6 +53,7 @@ export function Image({
   const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(imageNodeKey);
   const [currentSrc, setCurrentSrc] = useState<string>(LOADING_IMAGE);
   const [isLoading, setIsLoading] = useState<ImageLoadingState>(ImageLoadingState.Loading);
+  const [rootElement, setRootElement] = useState<HTMLElement | null>(null);
 
   const imageRef = useRef<HTMLImageElement>(null);
 
@@ -63,6 +65,18 @@ export function Image({
     []
   );
 
+  const {displayWidth, displayHeight} : {displayWidth: number | undefined, displayHeight: number | undefined} = useMemo(
+    () => {
+      if ( variableExists(width) && variableExists(height) && rootElement ) {
+        return { displayWidth: rootElement.clientWidth * width, displayHeight: rootElement.clientHeight * height };
+      }
+
+      return {displayHeight: undefined, displayWidth: undefined};
+
+    },
+    [height, rootElement, width]
+  );
+
   const onLoad = useCallback(
     () => {
       if ( (isLoading & ImageLoadingState.Ready) !== 0 ) { 
@@ -72,13 +86,16 @@ export function Image({
           const node = $getImageNodeByKey(imageNodeKey);
           if ( node ) {
             if ( imageRef.current ) {
-              node.setWidthHeight(imageRef.current.naturalWidth, imageRef.current.naturalHeight);
+              notNullOrThrowDev(rootElement);
+              const normalizedWidth = imageRef.current.width / rootElement.clientWidth;
+              const normalizeHeight = imageRef.current.height / rootElement.clientHeight;
+              node.setWidthHeight(normalizedWidth, normalizeHeight);
             }
           }
         }, {tag:"history-merge"});
       }
     },
-    [editor, imageNodeKey, isLoading]
+    [editor, imageNodeKey, isLoading, rootElement]
   );
 
   useEffect(() => {
@@ -96,33 +113,19 @@ export function Image({
     );
   }, [clearSelection, editor, setSelected]);
 
-    const getImageElement = useCallback(
-      (): HTMLImageElement | null => {
-        return imageRef.current;
-      }, 
-      []
-    );
-
-    const getImageRootElement = useCallback(
-      (): HTMLElement | null => {
-        const imageNode = $getNodeByKey(imageNodeKey);
-        notNullOrThrowDev(imageNode);
-
-        const rootElement = editor.getElementByKey( imageNode.getTopLevelElementOrThrow().getParentOrThrow().getKey());
-        return rootElement;
-      }, 
-      [editor, imageNodeKey]
-    );
-
     const updateImageSize = useCallback(
       (width: number, height: number): void => {
         editor.update( () => {
           const node = $getImageNodeByKey(imageNodeKey);
-          if ( node )
-            node.setWidthHeight(width, height);
+          if ( node ) {
+            notNullOrThrowDev(rootElement);
+            const normalizedWidth = width / rootElement.clientWidth;
+            const normalizeHeight = height / rootElement.clientHeight;
+            node.setWidthHeight(normalizedWidth, normalizeHeight);
+          }
         });
       },
-      [editor, imageNodeKey]
+      [editor, imageNodeKey, rootElement]
     );
 
     const imageUpdate = useCallback( 
@@ -162,30 +165,41 @@ export function Image({
       [imageID, imageUpdate, isLoading, src]
     );
 
-  return (
-    <>
-      <div
-        className={isSelected ? " " + imageTheme.selected : ""}
-        style={{
-          display: "inline-block",
-          overflow: "hidden",
-          maxWidth: "100%",
-          width,
-          height,
-        }}
-      >
-        <img
-          ref={imageRef}
-          className={imageTheme.element + ((isLoading & ImageLoadingState.Loading) !== 0 ? " " + pulsing : "")}
-          style={{ display: "block" }}
-          src={currentSrc}
-          alt={`No image ${currentSrc}`}
-          onError={onError}
-          onLoad={onLoad}
-        />
-      </div>
+    useEffect(
+      () => {
+        editor.update(
+          () => {            
+              const imageNode = $getNodeByKey(imageNodeKey);
+              notNullOrThrowDev(imageNode);
+        
+              setRootElement(editor.getElementByKey( imageNode.getTopLevelElementOrThrow().getParentOrThrow().getKey()));
+            }
+          );
+      },
+      [editor, imageNodeKey]
+    );
 
-      {isSelected && <ImageControl getImageElement={getImageElement} getImageRootElement={getImageRootElement} updateImageSize={updateImageSize} /> }
-    </>
+  return (
+    <div
+      className={isSelected ? " " + imageTheme.selected : ""}
+      style={{
+        position: 'relative',
+        display: "inline-block",
+        maxWidth: "100%",
+        width: displayWidth,
+        height: displayHeight,
+      }}
+    >
+      <img
+        ref={imageRef}
+        className={imageTheme.element + ((isLoading & ImageLoadingState.Loading) !== 0 ? " " + pulsing : "")}
+        style={{ display: "block" }}
+        src={currentSrc}
+        alt={`No image ${currentSrc}`}
+        onError={onError}
+        onLoad={onLoad}
+      />
+      {isSelected && <ImageControl imageElement={imageRef.current} inputElement={rootElement} updateImageSize={updateImageSize} /> }
+    </div>
   );
 }

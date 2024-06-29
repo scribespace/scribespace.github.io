@@ -61,7 +61,7 @@ describe('Image:',
             });
         });
 
-        await vi.waitFor( () => { expect(container.innerHTML).toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><p><span data-lexical-decorator="true"><div class="" style="display: inline-block; overflow: hidden; max-width: 100%;"><img class="image-element-default pulsing" style="display: block;" src="https://id:/images/scribe-space-id-image-00.undefined.com" alt="No image https://id:/images/scribe-space-id-image-00.undefined.com"></div></span><br></p></div></div></div></div>'); } );
+        await vi.waitFor( () => { expect(container.innerHTML).toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><p><span data-lexical-decorator="true"><div class="" style="position: relative; display: inline-block; max-width: 100%;"><img class="image-element-default pulsing" style="display: block;" src="https://id:/images/scribe-space-id-image-00.undefined.com" alt="No image https://id:/images/scribe-space-id-image-00.undefined.com"></div></span><br></p></div></div></div></div>'); } );
         await vi.waitFor( () => { expect(JSON.stringify(imageNode?.exportJSON())).toBe('{"src":"https://id:/images/scribe-space-id-image-00.undefined.com","filePath":"/images/scribe-space-id-image-00.undefined","type":"image","version":1}'); } );
       }
     );
@@ -87,7 +87,7 @@ describe('Image:',
         });
 
         await vi.waitFor( () => { expect(imageJSON).toBe('{"src":"https://test.com","filePath":"","type":"image","version":1}'); } );
-        await vi.waitFor( () => { expect(container.innerHTML).toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><p><span data-lexical-decorator="true"><div class="" style="display: inline-block; overflow: hidden; max-width: 100%;"><img class="image-element-default pulsing" style="display: block;" src="https://test.com" alt="No image https://test.com"></div></span><br></p></div></div></div></div>'); } );
+        await vi.waitFor( () => { expect(container.innerHTML).toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><p><span data-lexical-decorator="true"><div class="" style="position: relative; display: inline-block; max-width: 100%;"><img class="image-element-default pulsing" style="display: block;" src="https://test.com" alt="No image https://test.com"></div></span><br></p></div></div></div></div>'); } );
 
         ReactTest.act(() => {
             editor.registerNodeTransform(ImageNode, (node: ImageNode) => {
@@ -103,7 +103,7 @@ describe('Image:',
         });
 
         await vi.waitFor( () => { expect(imageJSON).toBe('{"src":"https://test.com","filePath":"","type":"image","version":1}'); } );
-        await vi.waitFor( () => { expect(container.innerHTML).toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><p><span data-lexical-decorator="true"><div class="" style="display: inline-block; overflow: hidden; max-width: 100%;"><img class="image-element-default pulsing" style="display: block;" src="https://test.com" alt="No image https://test.com"></div></span><span data-lexical-decorator="true"><div class="" style="display: inline-block; overflow: hidden; max-width: 100%;"><img class="image-element-default pulsing" style="display: block;" src="https://test.com" alt="No image https://test.com"></div></span><br></p></div></div></div></div>'); } );
+        await vi.waitFor( () => { expect(container.innerHTML).toBe('<div id="editor-view"><div><div><div class="editor-input section-to-print" contenteditable="true" role="textbox" spellcheck="false" style="user-select: text; white-space: pre-wrap; word-break: break-word;" data-lexical-editor="true"><p><span data-lexical-decorator="true"><div class="" style="position: relative; display: inline-block; max-width: 100%;"><img class="image-element-default pulsing" style="display: block;" src="https://test.com" alt="No image https://test.com"></div></span><span data-lexical-decorator="true"><div class="" style="position: relative; display: inline-block; max-width: 100%;"><img class="image-element-default pulsing" style="display: block;" src="https://test.com" alt="No image https://test.com"></div></span><br></p></div></div></div></div>'); } );
       }
     );
 
