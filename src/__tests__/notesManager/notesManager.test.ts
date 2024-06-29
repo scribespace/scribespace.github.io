@@ -92,7 +92,7 @@ async () => {
         test('Create Note',
             async () => {
                 const fileInfo = await $getNotesManager().createNote();
-                expect(JSON.stringify(fileInfo)).toBe('{"status":1,"fileInfo":{"path":"/notes/scribe-space-id-01734562800000","hash":"/notes/scribe-space-id-01734562800000","id":"id:/notes/scribe-space-id-01734562800000","date":"2015-05-12T15:50:38Z"}}');
+                expect(JSON.stringify(fileInfo)).toBe('{"status":1,"fileInfo":{"path":"/notes/scribe-space-id-00","hash":"/notes/scribe-space-id-00","id":"id:/notes/scribe-space-id-00","date":"2015-05-12T15:50:38Z"}}');
             }
         );
 
@@ -106,7 +106,7 @@ async () => {
         test('Load-Convert Note',
             async () => {
                 const note = await $getNotesManager().loadNote('id:/notes/7');
-                expect(JSON.stringify(note)).toBe('{"version":0,"data":"{\\"root\\":{\\"children\\":[{\\"children\\":[{\\"detail\\":0,\\"format\\":0,\\"mode\\":\\"normal\\",\\"style\\":\\"\\",\\"text\\":\\"dsadsasdsadsa\\",\\"type\\":\\"extended-text\\",\\"version\\":1},{\\"src\\":\\"https://www.test-image.com/\\",\\"type\\":\\"image\\",\\"version\\":1},{\\"detail\\":0,\\"format\\":0,\\"mode\\":\\"normal\\",\\"style\\":\\"\\",\\"text\\":\\"dsadsadsadsad\\",\\"type\\":\\"extended-text\\",\\"version\\":1}],\\"direction\\":null,\\"format\\":\\"\\",\\"indent\\":0,\\"type\\":\\"paragraph\\",\\"version\\":1,\\"textFormat\\":0}],\\"direction\\":null,\\"format\\":\\"\\",\\"indent\\":0,\\"type\\":\\"root\\",\\"version\\":1}}"}');
+                expect(JSON.stringify(note)).toBe('{"version":0,"data":"{\\"root\\":{\\"children\\":[{\\"children\\":[{\\"detail\\":0,\\"format\\":0,\\"mode\\":\\"normal\\",\\"style\\":\\"\\",\\"text\\":\\"dsadsasdsadsa\\",\\"type\\":\\"extended-text\\",\\"version\\":1},{\\"src\\":\\"https://www.test-image.com/\\",\\"filePath\\":\\"\\",\\"type\\":\\"image\\",\\"version\\":1},{\\"detail\\":0,\\"format\\":0,\\"mode\\":\\"normal\\",\\"style\\":\\"\\",\\"text\\":\\"dsadsadsadsad\\",\\"type\\":\\"extended-text\\",\\"version\\":1}],\\"direction\\":null,\\"format\\":\\"\\",\\"indent\\":0,\\"type\\":\\"paragraph\\",\\"version\\":1,\\"textFormat\\":0}],\\"direction\\":null,\\"format\\":\\"\\",\\"indent\\":0,\\"type\\":\\"root\\",\\"version\\":1}}"}');
               }
         );
 
