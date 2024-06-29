@@ -1,12 +1,12 @@
 import { MENU_THEME_DEFAULT, MenuTheme } from "@/components/menu/theme";
-import { EditorThemeClassName } from "lexical";
 
 import "./css/image.css";
+import { CSSTheme } from "@utils";
 
 export interface ImageControlTheme {
   anchorSize: number;
-  anchor: EditorThemeClassName;
-  marker: EditorThemeClassName;
+  anchor: CSSTheme;
+  marker: CSSTheme;
 }
 
 export const IMAGE_CONTROL_THEME_DEFAULT: ImageControlTheme = {
@@ -22,8 +22,8 @@ export const IMAGE_EDITOR_MENU_THEME_DEFAULT: MenuTheme = {
 };
 
 export interface ImageTheme {
-  element: EditorThemeClassName;
-  selected: EditorThemeClassName;
+  element: CSSTheme;
+  selected: CSSTheme;
   control: ImageControlTheme;
 }
 

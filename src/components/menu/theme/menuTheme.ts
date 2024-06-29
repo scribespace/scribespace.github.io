@@ -1,18 +1,18 @@
 import { Icon } from "@/components";
-import { EditorThemeClassName } from "lexical";
 import { CSSProperties } from "react";
 import { IconType } from "react-icons";
 import { FaAngleRight } from "react-icons/fa";
 
 import "./css/menuTheme.css";
+import { CSSTheme } from "@utils";
 
 export interface MenuTheme {
-  containerDefault: EditorThemeClassName;
-  itemDefault: EditorThemeClassName;
-  itemSelected: EditorThemeClassName;
-  itemDisabled: EditorThemeClassName;
-  itemIcon: EditorThemeClassName;
-  submenuIcon: EditorThemeClassName;
+  containerDefault: CSSTheme;
+  itemDefault: CSSTheme;
+  itemSelected: CSSTheme;
+  itemDisabled: CSSTheme;
+  itemIcon: CSSTheme;
+  submenuIcon: CSSTheme;
   itemIconSize: string;
 
   SubmenuIcon: IconType;

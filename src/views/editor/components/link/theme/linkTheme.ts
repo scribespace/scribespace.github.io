@@ -1,16 +1,16 @@
 import { Icon } from "@/components";
-import { EditorThemeClassName } from "lexical";
 import { IconType } from "react-icons";
 import { HiExternalLink } from "react-icons/hi";
 import { MdEdit, MdLink } from "react-icons/md";
 import "./css/link.css";
+import { CSSTheme } from "@utils";
 
 export interface LinkTheme {
-  editor: EditorThemeClassName;
-  container: EditorThemeClassName;
-  icon: EditorThemeClassName;
-  input: EditorThemeClassName;
-  button: EditorThemeClassName;
+  editor: CSSTheme;
+  container: CSSTheme;
+  icon: CSSTheme;
+  input: CSSTheme;
+  button: CSSTheme;
 
   TextIcon: IconType;
   LinkIcon: IconType;

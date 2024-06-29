@@ -1,10 +1,10 @@
-import { EditorThemeClassName } from "lexical";
+import { CSSTheme } from '@utils';
 import './css/error.css';
 
 export interface ErrorTheme {
-    container: EditorThemeClassName;
-    msg: EditorThemeClassName;
-    callstack: EditorThemeClassName;
+    container: CSSTheme;
+    msg: CSSTheme;
+    callstack: CSSTheme;
 }
 
 export const ERROR_THEME_DEFAULT: ErrorTheme = {

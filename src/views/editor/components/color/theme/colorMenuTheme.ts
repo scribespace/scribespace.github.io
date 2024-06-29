@@ -1,10 +1,10 @@
 import { Icon } from "@/components";
-import { EditorThemeClassName } from "lexical";
+import { CSSTheme } from "@utils";
 import { IconType } from "react-icons";
 import { MdFormatColorText, MdOutlineFormatColorFill } from "react-icons/md";
 
 export interface ColorMenuTheme {
-  colorPickerContainer: EditorThemeClassName;
+  colorPickerContainer: CSSTheme;
 
   ColorTextIcon: IconType;
   ColorBackgroundIcon: IconType;

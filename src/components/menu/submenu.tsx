@@ -1,7 +1,6 @@
 import { useEditorEditable } from "@/views/editor/hooks/useEditorEditable";
-import { variableExists } from "@/utils";
+import { CSSTheme, variableExists } from "@/utils";
 import { assert } from "@/utils/dev";
-import { EditorThemeClassName } from "lexical";
 import {
   Children,
   ReactElement,
@@ -16,7 +15,7 @@ import MenuItem from "./menuItem";
 import { $menuItemParent } from "./theme";
 
 interface SubmenuProps {
-  className?: EditorThemeClassName;
+  className?: CSSTheme;
   showSubmenu?: boolean;
   setShowSubmenu?: (show: boolean) => void;
   children: React.ReactNode;

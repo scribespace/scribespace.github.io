@@ -1,10 +1,10 @@
-import { EditorThemeClassName } from "lexical";
+import { CSSTheme } from "@utils";
 
 export interface TableCreatorTheme {
-  container: EditorThemeClassName;
-  cellContainer: EditorThemeClassName;
-  cell: EditorThemeClassName;
-  label: EditorThemeClassName;
+  container: CSSTheme;
+  cellContainer: CSSTheme;
+  cell: CSSTheme;
+  label: CSSTheme;
 }
 
 export const TABLE_CREATOR_EDITOR_THEME_DEFAULT: TableCreatorTheme = {

@@ -1,4 +1,4 @@
-import { Font } from "@utils";
+import { CSSTheme, Font } from "@utils";
 
 import "./css/editorInputTheme.css";
 
@@ -9,7 +9,7 @@ import { NUMBER_INPUT_THEME_DEFAULT, NumberInputTheme } from "@editor/components
 import { UNDO_REDO_THEME_DEFAULT, UndoRedoTheme } from "@editor/components/undoRedo/theme";
 import { CONTEXT_MENU_THEME_DEFAULT, ContextMenuTheme } from "@editor/plugins/contextMenuPlugin/theme";
 import { TOOLBAR_THEME_DEFAULT, ToolbarTheme } from "@editor/plugins/toolbarPlugin/theme";
-import { EditorThemeClassName, EditorThemeClasses } from "lexical";
+import { EditorThemeClasses } from "lexical";
 import { ALIGN_MENU_THEME_DEFAULT, AlignMenuTheme } from "../components/align/theme";
 import { COLOR_MENU_THEME_DEFAULT, ColorMenuTheme } from "../components/color/theme";
 import { IMAGE_THEME_DEFAULT, ImageTheme } from "../components/image/theme";
@@ -22,21 +22,21 @@ import { LIST_THEME_DEFAULT, ListTheme } from "../components/list/theme/listThem
 import { INFOBAR_THEME_DEFAULT, InfobarTheme } from "@editor/plugins/infobarPlugin/theme/infobarTheme";
 
 export interface EditorInputTheme extends EditorThemeClasses {
-  defaultFontSize: EditorThemeClassName;
+  defaultFontSize: CSSTheme;
   defaultFontFamily: Font;
 
-  layout: EditorThemeClassName;
+  layout: CSSTheme;
   date: DateTheme;
 }
 
 export interface EditorTheme {
-  editorContainer: EditorThemeClassName;
-  editorInner: EditorThemeClassName;
-  editorEditable: EditorThemeClassName;
+  editorContainer: CSSTheme;
+  editorInner: CSSTheme;
+  editorEditable: CSSTheme;
   editorInputTheme: EditorInputTheme;
 
-  editorSeeThrough: EditorThemeClassName;
-  editorPrintDisabled: EditorThemeClassName;
+  editorSeeThrough: CSSTheme;
+  editorPrintDisabled: CSSTheme;
 
   tableLayoutTheme: TableLayoutTheme;
   separatorTheme: SeparatorTheme;

@@ -1,9 +1,9 @@
-import { EditorThemeClassName } from 'lexical';
+import { CSSTheme } from '@utils';
 import './css/infobar.css';
 
 export interface InfobarTheme {
-    container: EditorThemeClassName;
-    info: EditorThemeClassName;
+    container: CSSTheme;
+    info: CSSTheme;
 }
 
 export const INFOBAR_THEME_DEFAULT: InfobarTheme = {

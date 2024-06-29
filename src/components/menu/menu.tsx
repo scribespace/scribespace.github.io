@@ -1,11 +1,10 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { MenuContextData, useMenuContext } from "./menuContext";
-import { EditorThemeClassName } from "lexical";
-import { variableExists } from "@/utils";
+import { CSSTheme, variableExists } from "@/utils";
 
 interface MenuProps {
   parentRect: { x: number; y: number; width: number; height: number };
-  className?: EditorThemeClassName;
+  className?: CSSTheme;
   showMenu: boolean;
   setShowMenu: (show: boolean) => void;
   children: React.ReactNode;
@@ -28,7 +27,7 @@ export default function Menu({
   const menuContainerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const selectedClassName: EditorThemeClassName = useMemo(() => {
+  const selectedClassName: CSSTheme = useMemo(() => {
     if (variableExists(className)) return className;
     return menuContext.theme.containerDefault;
   }, [className, menuContext.theme.containerDefault]);

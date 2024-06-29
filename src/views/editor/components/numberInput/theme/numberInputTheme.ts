@@ -1,15 +1,15 @@
 import { PiCheckSquareOffsetBold } from "react-icons/pi";
-import { EditorThemeClassName } from "lexical";
 import { IconType } from "react-icons";
 import { HiPlusSm, HiMinusSm } from "react-icons/hi";
 import { Icon } from "@/components";
 import "./css/numberInput.css";
+import { CSSTheme } from "@utils";
 
 export interface NumberInputTheme {
-  container: EditorThemeClassName;
-  controlButton: EditorThemeClassName;
-  acceptButton: EditorThemeClassName;
-  input: EditorThemeClassName;
+  container: CSSTheme;
+  controlButton: CSSTheme;
+  acceptButton: CSSTheme;
+  input: CSSTheme;
 
   IncreaseIcon: IconType;
   DecreaseIcon: IconType;

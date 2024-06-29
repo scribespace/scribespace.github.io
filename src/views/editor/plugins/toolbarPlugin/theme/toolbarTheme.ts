@@ -1,15 +1,15 @@
-import { EditorThemeClassName } from "lexical";
 import { FaAngleDown } from "react-icons/fa";
 import { Icon } from "@/components";
 import { MENU_THEME_DEFAULT, MenuTheme } from "@/components/menu/theme";
+import { CSSTheme } from "@utils";
 
 export interface ToolbarMenuTheme extends MenuTheme {
-  fontFamily: EditorThemeClassName;
-  horizontalContainer: EditorThemeClassName;
+  fontFamily: CSSTheme;
+  horizontalContainer: CSSTheme;
 }
 
 export interface ToolbarTheme {
-  container: EditorThemeClassName;
+  container: CSSTheme;
   menuTheme: ToolbarMenuTheme;
 }
 

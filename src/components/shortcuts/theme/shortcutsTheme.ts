@@ -2,16 +2,16 @@ import { IconType } from 'react-icons';
 import { GiHelp } from "react-icons/gi";
 import './css/shortcuts.css';
 import { Icon } from '@/components/icon';
-import { EditorThemeClassName } from 'lexical';
+import { CSSTheme } from '@utils';
 
 
 export interface ShortcutsTheme {
-    container: EditorThemeClassName;
-    row: EditorThemeClassName;
-    cell: EditorThemeClassName;
-    scopeRoot: EditorThemeClassName;
-    scopeName: EditorThemeClassName;
-    cellsContainer: EditorThemeClassName;
+    container: CSSTheme;
+    row: CSSTheme;
+    cell: CSSTheme;
+    scopeRoot: CSSTheme;
+    scopeName: CSSTheme;
+    cellsContainer: CSSTheme;
     ShortcutIcon: IconType;
 }
 

@@ -5,6 +5,8 @@ export interface Font {
   alt: string;
 }
 
+export type CSSTheme = string;
+
 export type Func = (...args: any[]) => any;
 
 export type IsFunction<F> = F extends Func ? F : never;

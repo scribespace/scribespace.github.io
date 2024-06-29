@@ -1,9 +1,9 @@
 import { MENU_THEME_DEFAULT, MenuTheme } from "@/components/menu/theme";
-import { EditorThemeClassName } from "lexical";
+import { CSSTheme } from "@utils";
 
 export interface ContextMenuMenuTheme extends MenuTheme {
-  editorContainer: EditorThemeClassName;
-  menuLabel: EditorThemeClassName;
+  editorContainer: CSSTheme;
+  menuLabel: CSSTheme;
 }
 
 export interface ContextMenuTheme {

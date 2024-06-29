@@ -1,10 +1,10 @@
-import { EditorThemeClassName } from "lexical";
+import { CSSTheme } from "@utils";
 
 export interface SeparatorTheme {
-  separatorHorizontal: EditorThemeClassName;
-  separatorHorizontalStrong: EditorThemeClassName;
-  separatorVertical: EditorThemeClassName;
-  separatorVerticalStrong: EditorThemeClassName;
+  separatorHorizontal: CSSTheme;
+  separatorHorizontalStrong: CSSTheme;
+  separatorVertical: CSSTheme;
+  separatorVerticalStrong: CSSTheme;
 }
 
 export const SEPARATOR_THEME_DEFAULT: SeparatorTheme = {

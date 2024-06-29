@@ -1,4 +1,4 @@
-import { assert } from "@/utils";
+import { CSSTheme, assert } from "@/utils";
 import { Metric, MetricSerialized } from "@/utils/types";
 import {
   $getTableNodeFromLexicalNodeOrThrow,
@@ -10,7 +10,6 @@ import {
   DOMConversionMap,
   DOMConversionOutput,
   EditorConfig,
-  EditorThemeClassName,
   ElementNode,
   LexicalEditor,
   LexicalNode,
@@ -180,7 +179,7 @@ export class ExtendedTableNode extends ElementNode {
     );
   }
 
-  createDOMWithCSS(css: EditorThemeClassName | undefined): HTMLElement {
+  createDOMWithCSS(css: CSSTheme | undefined): HTMLElement {
     const tableElement = document.createElement("table");
     addClassNamesToElement(tableElement, css);
     tableElement.style.width = "100%";  

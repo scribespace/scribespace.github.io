@@ -1,7 +1,6 @@
 import { isIcon } from "@/components";
 import { useEditorEditable } from "@/views/editor/hooks/useEditorEditable";
-import { variableExists } from "@utils";
-import { EditorThemeClassName } from "lexical";
+import { CSSTheme, variableExists } from "@utils";
 import {
   Children,
   ReactElement,
@@ -13,7 +12,7 @@ import { MenuContextData, useMenuContext } from "./menuContext";
 
 interface MenuItemProps {
   disabled?: boolean;
-  className?: EditorThemeClassName;
+  className?: CSSTheme;
   onClick?: (event: React.MouseEvent) => void;
   children?: ReactNode;
 }

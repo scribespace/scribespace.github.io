@@ -2,13 +2,13 @@ import { DIALOG_THEME_DEFAULT, DialogTheme } from "@/components/dialog/theme/dia
 import { ERROR_THEME_DEFAULT, ErrorTheme } from "@/components/errorHandling/theme/errorTheme";
 import { NOTES_CONVERT_THEME_DEFAULT } from "@/components/notesConvertDialog/theme/notesConvertDialogTheme";
 import { SHORTCUTS_THEME_DEFAULT, ShortcutsTheme } from "@/components/shortcuts/theme/shortcutsTheme";
-import { EditorThemeClassName } from "lexical";
+import { CSSTheme } from "@utils";
 
 export interface CommonTheme {
-  pulsing: EditorThemeClassName;
+  pulsing: CSSTheme;
   
   dialogTheme: DialogTheme;
-  notesConvertTheme: EditorThemeClassName;
+  notesConvertTheme: CSSTheme;
   shortcutsTheme: ShortcutsTheme;
   errorTheme: ErrorTheme;
 }

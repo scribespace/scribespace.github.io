@@ -3,10 +3,10 @@ import { Icon } from '@/components';
 import { TbSpacingVertical } from 'react-icons/tb';
 
 import './css/pageBreak.css';
-import { EditorThemeClassName } from 'lexical';
+import { CSSTheme } from '@utils';
 
 export interface PageBreakTheme {
-    pageBreakFiller: EditorThemeClassName;
+    pageBreakFiller: CSSTheme;
     PageBreakIcon: IconType;
 }
 
