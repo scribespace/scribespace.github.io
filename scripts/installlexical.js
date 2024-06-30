@@ -1,9 +1,12 @@
 import fse from "fs-extra";
-import path from "path";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
 // Convert the module URL to a file path
 
 // Get the directory name from the file path
-const packagesDir = path.join("..","..", "libs", "lexical");
+const __filename = fileURLToPath(import.meta.url);
+const topDir = dirname(__filename);
+const packagesDir = path.join(topDir,"..", "libs", "lexical");
 
 import * as child_process from "child_process";
 
