@@ -31,16 +31,18 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id: string) {
-          // creating a chunk to react routes deps. Reducing the vendor chunk size
-          if (
-            id.includes('libs/lexical')
-          ) {
+          if ( id.includes('node_modules') ) {
+            return id.split("/node_modules/").pop()?.split("/")[0];
+          }
+          
+          if (id.includes('react')) {
+            return '@react';
+          }
+          if ( id.includes('libs/lexical') ) {
             return '@lexical';
           } 
 
-          if (
-            id.includes('views/editor')
-          ) {
+          if ( id.includes('views/editor') ) {
             return '@editor';
           } 
         },
