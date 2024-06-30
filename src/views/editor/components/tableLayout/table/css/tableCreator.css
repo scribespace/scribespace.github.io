@@ -1,0 +1,33 @@
+.table-creator-container-default {
+  display: grid;
+  grid-template-rows: auto min-content;
+
+  background-color: white;
+  box-shadow: var(--default-box-shadow);
+  border-radius: 5px;
+}
+
+.table-creator-cells-container-default {
+  border-collapse: collapse;
+  border-spacing: 0;
+  table-layout: fixed;
+  margin: 5px 5px 0px 5px;
+}
+
+.table-creator-cell-default {
+  border: 1px solid rgb(209, 209, 209);
+  border-collapse: collapse;
+  margin: 1px;
+}
+
+.table-creator-cell-default.selected {
+  border: 1px solid black;
+  background-color: rgb(209, 209, 209);
+}
+
+.table-creator-label-default {
+  height: fit-content;
+  text-align: center;
+  font-family: var(--default-font-family);
+  font-size: small;
+}

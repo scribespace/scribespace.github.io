@@ -1,0 +1,43 @@
+.menu-container-default {
+  box-shadow: var(--default-box-shadow);
+  border-radius: 3px;
+  background-color: #fff;
+  padding-bottom: 8px;
+  padding-top: 8px;
+  align-content: center;
+  align-items: center;
+}
+
+.menu-item-default {
+  vertical-align: middle;
+  align-content: center;
+  border: 0 solid;
+  background-color: transparent;
+  border-radius: 3px;
+  display: flex;
+
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
+.menu-item-disabled-default {
+  color: gray;
+}
+
+.menu-item-selected-default > .menu-item-default {
+  background-color: rgb(177, 177, 177);
+}
+
+.menu-item-default:hover:not(.menu-item-disabled-default) {
+  background-color: rgb(209, 209, 209);
+  cursor: pointer;
+}
+
+.menu-item-icon-default {
+  vertical-align: middle;
+}
+
+.menu-item-submenu-icon-default {
+  margin-left: auto;
+}
