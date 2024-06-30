@@ -1,56 +1,52 @@
-import { FileSystemStatus, FileUploadMode } from "@interfaces/system/fileSystem/fileSystemShared";
-import { $getStreamManager } from "@systems/streamManager/streamManager";
-import { assert, variableExists } from "@utils";
 import { NodeApi } from "react-arborist";
 
 export const TREE_FILE = "/tree";
+export const TREE_DATA_VERSION = 0 as const;
 
 export interface TreeNodeData {
   id: string;
   name: string;
   children: TreeNodeData[];
 }
-
 export type TreeNodeApi = NodeApi<TreeNodeData>;
 
-const TREE_DATA_VERSION = 0 as const;
+export interface TreeNodeToNote {
+  treeNodeID: string;
+  noteID: string;
+}
+
+type TreeDataPreV = TreeNodeData[];
 export interface TreeData {
-    version: number;
-    data: TreeNodeData[];
-}
-export const EMPTY_TREE_DATA: TreeData = {version:-1, data:[]};
-
-export async function uploadTreeData(treeData: TreeData) {
-    assert( treeData.version === TREE_DATA_VERSION, 'TreeData wrong version' );
-
-    const treeJSON = JSON.stringify(treeData);
-    const treeBlob = new Blob([treeJSON]);
-    const infoResult = await $getStreamManager().uploadFile( TREE_FILE, treeBlob, FileUploadMode.Replace );
-    assert( infoResult.status === FileSystemStatus.Success, `Tree didn't upload` );
-    return infoResult.fileInfo!;
+  version: number;
+  treeNodeLastID: number;
+  treeNotesMap: TreeNodeToNote[];
+  treeData: TreeNodeData[];
 }
 
-export async function loadTreeData( treeJSON: string ): Promise<TreeData> {
-  let treeData = JSON.parse(treeJSON);
-  
-  if ( !variableExists(treeData.version) ) {
-    treeData = await convertToV0(treeData);
-    await uploadTreeData(treeData);
+function convertToV0Children( treeToNoteMap: TreeNodeToNote[], treeNodeID: number, treeData: TreeNodeData[], oldTreeData: TreeDataPreV ) {
+
+  for ( const oldTreeNode of oldTreeData ) {
+    const newTreeNode: TreeNodeData = {id: (treeNodeID++).toString(), name: oldTreeNode.name, children: [] };
+    treeToNoteMap.push( {treeNodeID: newTreeNode.id, noteID: oldTreeNode.id} );
+
+    if ( oldTreeNode.children.length > 0 ) {
+      treeNodeID = convertToV0Children( treeToNoteMap, treeNodeID, newTreeNode.children, oldTreeNode.children );
+    }
+
+    treeData.push( newTreeNode );
   }
 
-  return treeData;
+  return treeNodeID;
 }
 
-export async function createEmptyTreeData() {
-  const emptyTree = {version: TREE_DATA_VERSION, data: []};
-  await uploadTreeData( emptyTree );
-  return emptyTree;
+async function convertToV0( oldTreeData: TreeDataPreV ): Promise<TreeData> {
+  const treeData: TreeNodeData[] = [];
+  const treeToNoteMap: TreeNodeToNote[] = [];
+  const treeNodeID = convertToV0Children( treeToNoteMap, 0, treeData, oldTreeData );
+
+  return {version: 0, treeNodeLastID: treeNodeID, treeNotesMap: treeToNoteMap, treeData};
 }
 
-export function createTreeData( treeNodes: TreeNodeData[] ): TreeData {
-  return {version: TREE_DATA_VERSION, data: treeNodes};
-}
-
-async function convertToV0( oldTreeData: TreeNodeData[] ): Promise<TreeData> {
-  return {version: 0, data: oldTreeData};
+export async function $treeConvertToLatest(oldTreeData: TreeDataPreV): Promise<TreeData> {
+  return convertToV0(oldTreeData);
 }
