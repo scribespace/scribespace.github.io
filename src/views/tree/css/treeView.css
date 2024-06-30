@@ -1,3 +1,5 @@
 div[role="tree"] {
   white-space: nowrap;
+  height: 100% !important;
+  overflow: auto;
 }
