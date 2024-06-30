@@ -1,4 +1,4 @@
-import { DEV, ENV, OS } from "@systems/environment";
+import { DEV, ENV, OS } from "@systems/environment/environment";
 import { assert, variableExists } from "@utils";
 
 export enum SpecialKey {

@@ -67,12 +67,3 @@ export const urlRegExp = new RegExp(
 export function validateUrl(url: string): boolean {
   return url === "https://" || urlRegExp.test(url);
 }
-
-export function openURL(url: string) {
-  if (validateUrl(url)) {
-    const validURL = url; // url.match(/^https?:/) ? url : '//' + url;
-    window.open(validURL, "_blank")?.focus();
-  }
-}
-
-

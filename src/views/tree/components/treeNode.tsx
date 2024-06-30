@@ -14,6 +14,7 @@ import { IconBaseProps } from "react-icons";
 import { $callCommand } from "@systems/commandsManager/commandsManager";
 import { TREE_SELECT_NOTE_CMD } from "@systems/treeManager";
 import { useCallback } from "react";
+import { $openTab } from "@systems/environment/environment";
 
 export default function TreeNode({
   node,
@@ -51,7 +52,7 @@ export default function TreeNode({
   const onClick = useCallback(
     (event: React.MouseEvent) => {
       if ( event.ctrlKey || event.metaKey ) {
-        window.open( `${window.location.origin}/${node.data.id}`, '_blank')?.focus();
+        $openTab(`${window.location.origin}/${node.data.id}`);
         event.stopPropagation(); 
         event.preventDefault();
         return;

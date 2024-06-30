@@ -24,7 +24,9 @@ function $getEnv() {
         OS: osTest || OS.Unknown,
     };
 }
-export const ENV = $getEnv();export function isDev() {
+export const ENV = $getEnv();
+
+export function isDev() {
   return import.meta.env.DEV;
 }
 
@@ -34,3 +36,21 @@ export const DEV = isDev() ? (callback: () => void) => {
   }
 } :
   () => { };
+
+
+export function $getTreeNodeIDFromURL() {
+ return window.location.pathname.slice(1);
+}
+
+export function $setURLTreeNodeID( treeNodeID: string ) {
+  window.history.pushState({treeNodeID}, '', `${window.location.origin}/${treeNodeID}`);
+}
+export function $setWindowTitle(title: string) {
+  let mainTitle = document.title.split(':')[0];
+  mainTitle = `${mainTitle}: ${title}`;
+  document.title = mainTitle;
+}
+
+export function $openTab(url: string) {
+  window.open( url, '_blank')?.focus();
+}

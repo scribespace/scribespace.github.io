@@ -10,7 +10,7 @@ import useBoundingRect from "@/hooks/useBoundingRect";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { EDITOR_ELEMENT_ID } from "@systems/editorManager/editorConst";
-import { isDev } from "@systems/environment";
+import { isDev } from "@systems/environment/environment";
 import { useRef } from "react";
 import { EditorInput } from "./components/editorInput/editorInput";
 import { EDITOR_NODES, editorPlugins } from "@systems/editorManager/editorEnv";

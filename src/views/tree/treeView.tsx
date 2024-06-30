@@ -14,7 +14,8 @@ import "./css/treeView.css";
 
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
+import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
+import { $getTreeNodeIDFromURL, $setURLTreeNodeID, $setWindowTitle } from "@systems/environment/environment";
 import { $getTreeManager, TREE_DATA_CHANGED_CMD, TREE_PROCESS_START_NOTE_CMD, TREE_SELECT_NOTE_CMD, TreeSelectPayload, TreeSelectionSrc } from "@systems/treeManager";
 import { IconBaseProps } from "react-icons";
 import {
@@ -35,7 +36,7 @@ export default function TreeView() {
   const treeElementRef = useRef<TreeApi<TreeNodeData>>(null);
   const onToggleEnabled = useRef<boolean>(true);
   const lastSelectionRef = useRef<string>('');
-  const selectionSrcref = useRef<'unknown' | TreeSelectionSrc>('unknown');
+  const selectionSrcRef = useRef<'unknown' | TreeSelectionSrc>('unknown');
 
   const updateDataVersion = useCallback( 
     () => {
@@ -90,17 +91,13 @@ export default function TreeView() {
     if (nodes.length > 0) {
       const node = nodes[0];
       if ( lastSelectionRef.current !== node.data.id ) {
-        let title = document.title.split(':')[0];
-        const noteName = node.data.name;
-        title = `${title}: ${noteName}`;
-        document.title = title;
-
-        if ( selectionSrcref.current !== 'history' && selectionSrcref.current !== 'pageload' ) {
-          window.history.pushState({name: noteName, treeNodeID: node.data.id}, '', `${window.location.origin}/${node.data.id}`);
+        $setWindowTitle(node.data.name);
+        if ( selectionSrcRef.current !== 'history' && selectionSrcRef.current !== 'pageload' ) {
+          $setURLTreeNodeID(node.data.id);
         }
         
         lastSelectionRef.current = node.data.id;
-        selectionSrcref.current = 'unknown';
+        selectionSrcRef.current = 'unknown';
         $getTreeManager().selectTreeNode(nodes[0].id);
       }
     }
@@ -146,7 +143,7 @@ export default function TreeView() {
 
   const callSelection = useCallback(
     (selectPayload: TreeSelectPayload) => {
-      selectionSrcref.current = selectPayload.commandSrc;
+      selectionSrcRef.current = selectPayload.commandSrc;
       treeElementRef.current?.select(selectPayload.treeNodeID);
     },
     []
@@ -169,7 +166,7 @@ export default function TreeView() {
       return $registerCommandListener(
         TREE_PROCESS_START_NOTE_CMD,
         () => {
-          const loadTreeNodeID = window.location.pathname.slice(1);
+          const loadTreeNodeID = $getTreeNodeIDFromURL();
           if ( loadTreeNodeID !== '' ) {
             callSelection({treeNodeID: loadTreeNodeID, commandSrc: 'pageload'});
           }
@@ -230,11 +227,3 @@ export default function TreeView() {
   );
 }
 
-function historyChange() {
-  const treeNodeToSelect = window.location.pathname.slice(1);
-  if ( treeNodeToSelect != '' ) {
-      $callCommand(TREE_SELECT_NOTE_CMD, {treeNodeID: treeNodeToSelect, commandSrc:'history'} );
-  }
-}
-
-window.addEventListener('popstate', historyChange);

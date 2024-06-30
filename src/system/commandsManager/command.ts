@@ -1,4 +1,4 @@
-import { DEV } from "@systems/environment";
+import { DEV } from "@systems/environment/environment";
 import { Func } from "@utils";
 
 export type CommandListener<P> = (payload: P) => unknown;
