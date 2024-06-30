@@ -20,6 +20,7 @@ import {
   useState
 } from "react";
 import { ImageControl } from "./imageControl";
+import { Metric } from "@/utils/types";
 
 enum ImageLoadingState {
   None = 0,
@@ -30,8 +31,8 @@ enum ImageLoadingState {
 
 interface ImageProps {
   src: string;
-  width?: number;
-  height?: number;
+  width?: Metric;
+  height?: Metric;
   imageNodeKey: NodeKey;
   imageID: number;
 }
@@ -65,10 +66,13 @@ export function Image({
     []
   );
 
-  const {displayWidth, displayHeight} : {displayWidth: number | undefined, displayHeight: number | undefined} = useMemo(
+  const {displayWidth, displayHeight} : {displayWidth: string | undefined, displayHeight: string | undefined} = useMemo(
     () => {
-      if ( variableExists(width) && variableExists(height) && rootElement ) {
-        return { displayWidth: rootElement.clientWidth * width, displayHeight: rootElement.clientHeight * height };
+      if ( variableExists(width) && variableExists(height) ) {
+        if( width.unit === 'a4w' && rootElement ) {
+          return { displayWidth: `${rootElement.clientWidth * width.value}px`, displayHeight: `${rootElement.clientWidth * height.value}px` };
+        }
+        return { displayWidth: width.toString(), displayHeight: height.toString() };
       }
 
       return {displayHeight: undefined, displayWidth: undefined};
@@ -86,11 +90,10 @@ export function Image({
           editor.update( () => {
             const node = $getImageNodeByKey(imageNodeKey);
             if ( node ) {
-              if ( imageRef.current ) {
-                notNullOrThrowDev(rootElement);
+              if ( imageRef.current && rootElement && rootElement.clientWidth > 0 && rootElement.clientHeight > 0 ) {
                 const normalizedWidth = imageRef.current.width / rootElement.clientWidth;
-                const normalizeHeight = imageRef.current.height / rootElement.clientHeight;
-                node.setWidthHeight(normalizedWidth, normalizeHeight);
+                const normalizeHeight = imageRef.current.height / rootElement.clientWidth;
+                node.setWidthHeight( new Metric(normalizedWidth, 'a4w'), new Metric(normalizeHeight, 'a4w'));
               }
             }
           }, {tag:"history-merge"});
@@ -122,8 +125,8 @@ export function Image({
           if ( node ) {
             notNullOrThrowDev(rootElement);
             const normalizedWidth = width / rootElement.clientWidth;
-            const normalizeHeight = height / rootElement.clientHeight;
-            node.setWidthHeight(normalizedWidth, normalizeHeight);
+            const normalizeHeight = height / rootElement.clientWidth;
+            node.setWidthHeight( new Metric(normalizedWidth, 'a4w'), new Metric(normalizeHeight, 'a4w'));
           }
         });
       },

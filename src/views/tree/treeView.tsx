@@ -12,7 +12,6 @@ import {
 } from "react-arborist";
 import "./css/treeView.css";
 
-import useBoundingRect from "@/hooks/useBoundingRect";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
