@@ -24,20 +24,25 @@ export default function TreeNode({
     node.tree.edit(node);
   };
 
-  const OnAddInternal = () => {
+  const OnAddInternal = (event: React.MouseEvent) => {
     if (node.isInternal) {
-      node.select();
       node.open();
-      node.tree.createInternal();
+      node.tree.create({type:'internal', parentId: node.id});
+
+      event.preventDefault();
+      event.stopPropagation();
     }
   };
 
-  const OnDeleteNode = () => {
+  const OnDeleteNode = (event: React.MouseEvent) => {
     if (!node.tree.props.onDelete) return;
     const sib = node.nextSibling;
     const parent = node.parent;
     node.tree.focus(sib || parent, { scroll: false });
     node.tree.delete(node);
+
+    event.preventDefault();
+    event.stopPropagation();
   };
 
   function AddIcon(props: IconBaseProps) {

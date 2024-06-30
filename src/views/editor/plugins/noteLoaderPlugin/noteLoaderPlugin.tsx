@@ -11,6 +11,7 @@ import { INFOBAR_SUBMIT_INFO_CMD } from "../infobarPlugin/infoCommands";
 export function NoteLoaderPlugin() {
     const [editor] = useLexicalComposerContext();
     const [noteInfo, setNoteInfo] = useState<{loadVersion: number, noteID: string}>({loadVersion:-1, noteID:''});
+    const currentNoteRef = useRef<string>('');
     const loadPromiseRef = useRef<Promise<void>>(Promise.resolve());
     const loadVersionRef = useRef<number>(0);
     const savesRequestedRef = useRef<number>(0);
@@ -41,6 +42,8 @@ export function NoteLoaderPlugin() {
                 return;
 
             loadPromiseRef.current = loadPromiseRef.current.then( async () => {
+                currentNoteRef.current = noteInfo.noteID;
+
                 const noteObject = await $getNotesManager().loadNote(noteInfo.noteID);
                 const editorState = editor.parseEditorState(noteObject.data);
                 editor.setEditorState(editorState);
@@ -57,6 +60,10 @@ export function NoteLoaderPlugin() {
                 $registerCommandListener(
                     NOTES_LOAD_CMD,
                     async (notePath) => {
+                        if ( currentNoteRef.current === notePath ) {
+                            return;
+                        }
+
                         loadPromiseRef.current = loadPromiseRef.current.then( () => {
                             editor.setEditable(false);
                             setNoteInfo( {loadVersion: ++loadVersionRef.current, noteID: notePath});

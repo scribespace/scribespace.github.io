@@ -110,8 +110,8 @@ export class TreeData {
       this.__tree.update({ id, changes: { name } as TreeNodeData });
   }
 
-  createNode(parentId: string | null, index: number, noteID: string, path: string) {
-      const node = { id: (this.__lastID++).toString(), path, name: "New File", children: [] } as TreeNodeData;
+  createNode(parentId: string | null, index: number, noteID: string) {
+      const node = { id: (this.__lastID++).toString(), name: "New File", children: [] } as TreeNodeData;
       this.__nodeToNote.set(node.id, noteID);
       this.__tree.create({ parentId, index, data: node });
       return node;
@@ -126,6 +126,10 @@ export class TreeData {
     const noteID = this.__nodeToNote.get(treeID);
     variableExistsOrThrow(noteID, 'TreeID without NoteID');
     return noteID;
+  }
+
+  updateNoteID( treeID: string, newNoteID: string ) {
+    this.__nodeToNote.set(treeID, newNoteID);
   }
 
   get data() { return this.__tree.data; }

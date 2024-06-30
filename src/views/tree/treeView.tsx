@@ -16,7 +16,6 @@ import useBoundingRect from "@/hooks/useBoundingRect";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
-import { $getNotesManager } from "@systems/notesManager";
 import { $getTreeManager, TREE_DATA_CHANGED_CMD } from "@systems/treeManager";
 import { IconBaseProps } from "react-icons";
 import {
@@ -43,8 +42,6 @@ export default function TreeView() {
     },
     []
   );
-
- 
 
   const OnAddElement = () => {
     if (treeElementRef.current == null) return;
@@ -76,23 +73,15 @@ export default function TreeView() {
   };
 
   const onCreate: CreateHandler<TreeNodeData> = async ({ parentId, index }) => {
-    const result = await $getNotesManager().createNote();
-
-    if (result.fileInfo!.id) {
-      const noteID = result.fileInfo!.id;
-      const node = $getTreeManager().createNode(parentId, index, noteID, result.fileInfo!.path);
-      return node;
-    }
-    return null;
+    return $getTreeManager().createNode(parentId, index);
   };
 
-  const onDelete: DeleteHandler<TreeNodeData> = async (args: {
-    ids: string[];
+  const onDelete: DeleteHandler<TreeNodeData> = (args: {
+    ids: string[], nodes: TreeNodeApi[]
   }) => {
     if (args.ids.length > 1) throw Error("onDelete: Too many files selected!");
     const id = args.ids[0];
-
-    await $getTreeManager().deleteNode(id );
+    $getTreeManager().deleteNode( id );
   };
 
   const onSelect = (nodes: TreeNodeApi[]) => {

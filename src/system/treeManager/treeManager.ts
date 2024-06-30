@@ -1,4 +1,4 @@
-import { FileSystemStatus, FileUploadMode } from "@interfaces/system/fileSystem/fileSystemShared";
+import { FileInfoResult, FileSystemStatus, FileUploadMode } from "@interfaces/system/fileSystem/fileSystemShared";
 import { $callCommand } from "@systems/commandsManager/commandsManager";
 import { NOTES_LOAD_CMD } from "@systems/notesManager/notesCommands";
 import { $getStreamManager } from "@systems/streamManager/streamManager";
@@ -6,12 +6,16 @@ import { assert, variableExistsOrThrow } from "@utils";
 import { TREE_DATA_CHANGED_CMD } from "./treeCommands";
 import { SerializedTreeData, TreeData } from "./treeData";
 import { TreeStatus } from "./treeStatus";
+import { $getNotesManager } from "@systems/notesManager";
 
 
-const TREE_STATUS_PATH = "tree_status";
-export const TREE_FILE = "/tree";
+const TREE_STATUS_PATH = "tree_status" as const;
+export const TREE_FILE = "/tree" as const;
+const EMPTY_NOTE_ID = 'empty_note' as const;
 class TreeManager {
     private __tree: TreeData = new TreeData();
+    private __treeIDToPromise: Map<string, Promise<FileInfoResult>> = new Map();
+
     private __treeStatus: TreeStatus = new TreeStatus();
 
     private __treeLoaded = false;
@@ -97,16 +101,27 @@ class TreeManager {
         this.storeTreeData();
     }
 
-    createNode(parentId: string | null, index: number, noteID: string, path: string) {
+    createNode(parentId: string | null, index: number) {
         assert(this.isTreeReady(), 'Tree isnt ready yet');
-        const node = this.__tree.createNode(parentId, index, noteID, path);
+
+        const node = this.__tree.createNode(parentId, index, EMPTY_NOTE_ID);
+
+        const notePromise = $getNotesManager().createNote();
+        notePromise.then(
+            (result) => {
+                assert( result.status === FileSystemStatus.Success, `Couldn't create a note` );
+                this.__tree.updateNoteID( node.id, result.fileInfo.id );
+                this.storeTreeData();
+            }
+        );
+        this.__treeIDToPromise.set(node.id, notePromise);
 
         $callCommand(TREE_DATA_CHANGED_CMD, undefined);
         this.storeTreeData();
         return node;
     }
 
-    async deleteNode(id: string) {
+    deleteNode(id: string) {
         assert(this.isTreeReady(), 'Tree isnt ready yet');
         this.__tree.deleteNode( id );
         $callCommand(TREE_DATA_CHANGED_CMD, undefined);
@@ -115,6 +130,17 @@ class TreeManager {
 
     selectTreeNode(id: string) {
         const noteID = this.__tree.treeIDToNoteID(id);
+        if ( noteID === EMPTY_NOTE_ID ) {
+            console.trace();
+            this.__treeIDToPromise.get(id)?.then(
+                (result) => {
+                    $callCommand(NOTES_LOAD_CMD, result.fileInfo.id);
+                }
+            );
+
+            return;
+        }
+
         variableExistsOrThrow(noteID, `Tree Node doesn't have Note ID`);
         $callCommand(NOTES_LOAD_CMD, noteID);
     }
