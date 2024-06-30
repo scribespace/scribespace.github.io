@@ -2,14 +2,14 @@
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "ES2021.String", "DOM", "DOM.Iterable"],
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "types": ["vite/client"],
     "skipLibCheck": true,
     "esModuleInterop": true,
 
     /* Bundler mode */
-    "moduleResolution": "Bundler",
+    "moduleResolution": "Node",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -20,18 +20,7 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "paths": {
-      "@editorHelpers/*": ["./src/views/editor/lexicalHelpers/*"],
-      "shared/*": ["./src/views/editor/lexicalHelpers/*"],
-      "@editor/*": ["./src/views/editor/*"],
-      "@tree/*": ["./src/views/tree/*"],
-      "@coreSystems": ["./src/interfaces/system"],
-      "@systems/*": ["./src/system/*"],
-      "@interfaces/*": ["./src/interfaces/*"],
-      "@utils": ["./src/utils"],
-      "@/*": ["./src/*"],
-    }
+    "noFallthroughCasesInSwitch": true
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

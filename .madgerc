@@ -1,5 +1,0 @@
-{
-    "fileExtensions": ["ts","tsx"],
-    "excludeRegExp": ["libs", "imageNode.tsx", "pageBreakNode.tsx"],
-    "tsConfig": "tsconfig.json"
-}
