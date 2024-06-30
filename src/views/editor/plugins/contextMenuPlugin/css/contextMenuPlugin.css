@@ -1,0 +1,36 @@
+.context-menu-container-default {
+  min-width: 230px;
+  min-height: 10px;
+}
+
+.context-menu-item-default {
+  padding: 5px;
+  margin: 0 2px 0 2px;
+  font-family: var(--default-font-family);
+  flex: 1;
+}
+
+.context-menu-label-defualt {
+  font-weight: bold;
+  text-align: center;
+  flex: 1;
+}
+
+.context-menu-item-default:hover:not(.menu-item-disabled-default):not(
+    .context-menu-item-selected-default > .context-menu-item-default
+  ):not(:has(.context-menu-label-defualt)) {
+  background-color: rgb(209, 209, 209);
+}
+
+.context-menu-item-icon-default {
+  margin-right: 5px;
+  width: 16px;
+  height: 16px;
+}
+
+.context-menu-editor-container-default {
+  box-shadow: var(--default-box-shadow);
+  background-color: #fff;
+  padding: 5px;
+  border-radius: 5px;
+}

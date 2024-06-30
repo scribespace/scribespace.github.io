@@ -1,0 +1,68 @@
+.shortcuts-container {
+    width: fit-content;
+    margin: 10px;
+}
+
+.shortcuts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background-color: rgb(228, 228, 228);
+}
+
+.shortcuts-row:last-of-type {
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+}
+
+.shortcuts-row:nth-child(odd) {
+    background-color: rgb(212, 212, 212);
+}
+
+.shortcuts-cell {
+    font-family: var(--default-font-family);
+    text-wrap: nowrap;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.shortcuts-scopeRoot {
+    width: auto;
+    border: 0;
+    margin-bottom: 2px;
+}
+
+.shortcuts-scopeRoot:last-of-type {
+    margin-bottom: 0;
+}
+
+.shortcuts-scopeRoot:first-of-type {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.shortcuts-scopeRoot:last-of-type {
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.shortcuts-scopeName {
+    font-family: var(--default-font-family);
+    background-color: rgb(189, 189, 189);    
+    margin-bottom: 0;
+    padding-left: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-weight: bold;
+    font-size: large;
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+    margin-top: 0px;
+}
+
+.shortcuts-cellsContainer{
+
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+}

@@ -1,0 +1,33 @@
+.link-editor-default {
+  background-color: white;
+  box-shadow: var(--default-box-shadow);
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.link-input-container-default {
+  margin: 3px;
+  width: 100%;
+}
+
+.link-input-text-default {
+  border: none;
+  border-radius: 3px;
+  padding: 3px;
+  background-color: rgb(230, 230, 230);
+  margin-left: auto;
+  vertical-align: middle;
+}
+
+.link-input-icon-default {
+  margin: 3px;
+  vertical-align: middle;
+}
+
+.link-input-icon-default {
+  cursor: pointer;
+  border-radius: 3px;
+}
+.link-input-icon-default:hover {
+  background-color: rgb(209, 209, 209);
+}
