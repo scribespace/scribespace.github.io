@@ -1,0 +1,24 @@
+
+.editor-page-break-filler {
+    position: relative;
+    left: calc(-1 * var(--default-input-padding-x));
+    width: calc(100% + 2 * var(--default-input-padding-x));
+    height: 20px;
+    background-color: rgb(224, 224, 224);
+    box-shadow: inset  0px 0px 10px 0px rgba(0, 0, 0, 0.582);
+    margin: 0;
+}
+
+.editor-page-break-filler.selected {
+    border-left: 2px dotted black;
+    border-top: 2px dotted black;
+    border-bottom: 2px dotted black;
+    width: calc(100% + 2 * var(--default-input-padding-x) - 2px);
+    height: calc(20px - 4px);
+}
+
+@media print {
+    .editor-page-break-filler {
+        visibility: hidden !important;
+    }    
+}
