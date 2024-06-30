@@ -2,60 +2,21 @@ import { FileSystemStatus, FileUploadMode } from "@interfaces/system/fileSystem/
 import { $callCommand } from "@systems/commandsManager/commandsManager";
 import { NOTES_LOAD_CMD } from "@systems/notesManager/notesCommands";
 import { $getStreamManager } from "@systems/streamManager/streamManager";
-import { assert, notNullOrThrow, notNullOrThrowDev, variableExists, variableExistsOrThrow } from "@utils";
-import { SimpleTree } from "react-arborist";
+import { assert, variableExistsOrThrow } from "@utils";
 import { TREE_DATA_CHANGED_CMD } from "./treeCommands";
-import { $treeConvertToLatest, TREE_DATA_VERSION, TREE_FILE, TreeData, TreeNodeData, TreeNodeToNote } from "./treeData";
+import { SerializedTreeData, TreeData } from "./treeData";
 import { loadTreeStatus, storeTreeStatus } from "./treeStatus";
 
+export const TREE_FILE = "/tree";
 class TreeManager {
-    private __tree: SimpleTree<TreeNodeData> = new SimpleTree<TreeNodeData>([]);
-    private __treeIDToNoteIDMap: Map<string, string> = new Map();
-    private __treeIDLatest: number = 0;
+    private __tree: TreeData = new TreeData();
 
     private __treeStatus: string[] = [];
     private __treeLoaded = false;
 
     get data() { return this.__tree.data; }
 
-    private exportTreeToNoteMap(): TreeNodeToNote[] {
-        const mapToArray = Array.from(this.__treeIDToNoteIDMap);
-        const serializedMap: TreeNodeToNote[] = [];
-
-        for ( const entry of mapToArray ) {
-            serializedMap.push( {treeNodeID: entry[0], noteID: entry[1]} );
-        }
-
-        return serializedMap;
-    }
-
-    private importTreeToNoteMap(treeToNoteArray: TreeNodeToNote[]): Map<string, string> {
-        const map: Map<string, string> = new Map();
-
-        for ( const entry of treeToNoteArray ) {
-            map.set( entry.treeNodeID, entry.noteID );
-        }
-
-        return map;
-    }
-
-    private exportTreeData(): TreeData {
-        return {
-            version: TREE_DATA_VERSION, 
-            treeNodeLastID: this.__treeIDLatest,
-            treeNotesMap: this.exportTreeToNoteMap(),
-            treeData: this.__tree.data
-        };
-    }
-
-    private createEmptyTreeData(): TreeData {
-        const emptyTree: TreeData = {version: TREE_DATA_VERSION, treeNodeLastID: 0, treeNotesMap: [], treeData: []};
-        return emptyTree;
-      }
-
-    private async uploadTreeData(treeData: TreeData) {
-        assert( treeData.version === TREE_DATA_VERSION, 'TreeData wrong version' );
-    
+    private async uploadTreeData(treeData: SerializedTreeData) {
         const treeJSON = JSON.stringify(treeData);
         const treeBlob = new Blob([treeJSON]);
         const infoResult = await $getStreamManager().uploadFile( TREE_FILE, treeBlob, FileUploadMode.Replace );
@@ -65,35 +26,24 @@ class TreeManager {
 
     async loadTreeData() {
         this.loadTreeStatus();
+
         const downloadResult = await $getStreamManager().downloadFile(TREE_FILE);
-        let treeData: TreeData | null = null;
         if ( downloadResult.status === FileSystemStatus.Success ) {
             const treeJSON = downloadResult.status !== FileSystemStatus.Success ? '{}' : await downloadResult.file!.content!.text();
-            
-            let treeCandidate = JSON.parse(treeJSON);
-            if ( !variableExists(treeCandidate.version) || treeCandidate.version !== TREE_DATA_VERSION ) {
-                treeCandidate = await $treeConvertToLatest(treeCandidate);
-                await this.uploadTreeData(treeCandidate);
+            const needSaving = await this.__tree.import(treeJSON);
+            if ( needSaving ) {
+                await this.uploadTreeData(this.__tree.export());
             }
-
-            treeData = treeCandidate;
-
         } else if ( downloadResult.status === FileSystemStatus.NotFound) {
-            treeData = this.createEmptyTreeData();
-            await this.uploadTreeData(treeData);
+            await this.uploadTreeData(this.__tree.export());
         }
-        notNullOrThrow(treeData);
-
-        this.__tree = new SimpleTree<TreeNodeData>(treeData.treeData);
-        this.__treeIDLatest = treeData.treeNodeLastID;
-        this.__treeIDToNoteIDMap = this.importTreeToNoteMap(treeData.treeNotesMap);
+       
         this.__treeLoaded = true;
     }
 
     async storeTreeData() {
         assert(this.isTreeReady(), 'Tree isnt ready yet');
-        const treeData = this.exportTreeData();
-        this.uploadTreeData(treeData);
+        this.uploadTreeData(this.__tree.export());
     }
 
     loadTreeStatus() {
@@ -111,9 +61,8 @@ class TreeManager {
 
     moveNodes(args: { dragIds: string[]; parentId: null | string; index: number; } ) {
         assert(this.isTreeReady(), 'Tree isnt ready yet');
-        for (const id of args.dragIds) {
-          this.__tree.move({ id, parentId: args.parentId, index: args.index });
-        }
+        this.__tree.moveNodes(args.dragIds, args.parentId, args.index);
+
         if ( args.dragIds.length > 0 ) {
             $callCommand(TREE_DATA_CHANGED_CMD, undefined);
             this.storeTreeData();
@@ -122,16 +71,16 @@ class TreeManager {
 
     renameNode(id: string, name: string) {
         assert(this.isTreeReady(), 'Tree isnt ready yet');
-        this.__tree.update({ id, changes: { name } as TreeNodeData });
+        this.__tree.renameNode( id, name );
+
         $callCommand(TREE_DATA_CHANGED_CMD, undefined);
         this.storeTreeData();
     }
 
     createNode(parentId: string | null, index: number, noteID: string, path: string) {
         assert(this.isTreeReady(), 'Tree isnt ready yet');
-        const node = { id: (this.__treeIDLatest++).toString(), path, name: "New File", children: [] } as TreeNodeData;
-        this.__treeIDToNoteIDMap.set(node.id, noteID);
-        this.__tree.create({ parentId, index, data: node });
+        const node = this.__tree.createNode(parentId, index, noteID, path);
+
         $callCommand(TREE_DATA_CHANGED_CMD, undefined);
         this.storeTreeData();
         return node;
@@ -139,14 +88,13 @@ class TreeManager {
 
     async deleteNode(id: string) {
         assert(this.isTreeReady(), 'Tree isnt ready yet');
-        this.__tree.drop({ id });
-        this.__treeIDToNoteIDMap.delete(id);
+        this.__tree.deleteNode( id );
         $callCommand(TREE_DATA_CHANGED_CMD, undefined);
         this.storeTreeData();
     }
 
     selectTreeNode(id: string) {
-        const noteID = this.__treeIDToNoteIDMap.get(id);
+        const noteID = this.__tree.treeIDToNoteID(id);
         variableExistsOrThrow(noteID, `Tree Node doesn't have Note ID`);
         $callCommand(NOTES_LOAD_CMD, noteID);
     }
