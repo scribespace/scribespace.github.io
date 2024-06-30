@@ -35,7 +35,6 @@ export default function TreeView() {
   const { height: controlButtonsHeight } = useBoundingRect(controlButtonsRef);
 
   const treeElementRef = useRef<TreeApi<TreeNodeData>>(null);
-  const treeOpenNodes = useRef<Set<string>>(new Set<string>());
   const onToggleEnabled = useRef<boolean>(true);
 
   const updateDataVersion = useCallback( 
@@ -45,9 +44,7 @@ export default function TreeView() {
     []
   );
 
-  function uploadTreeStatus() {
-    $getTreeManager().storeTreeStatus([...treeOpenNodes.current]);
-  }
+ 
 
   const OnAddElement = () => {
     if (treeElementRef.current == null) return;
@@ -106,24 +103,17 @@ export default function TreeView() {
   };
 
   const onToggle = (nodeID: string) => {
-    if (!onToggleEnabled.current) return;
-
-    if (treeOpenNodes.current.has(nodeID)) {
-      treeOpenNodes.current.delete(nodeID);
-    } else {
-      treeOpenNodes.current.add(nodeID);
-    }
-    uploadTreeStatus();
+    if ( onToggleEnabled.current )
+      $getTreeManager().toggleTreeNode(nodeID);
   };
 
   useEffect(() => {
-      const treeStatusArray = $getTreeManager().getTreeStatus();
-      onToggleEnabled.current = false;
-      for (const node of treeStatusArray) {
-        treeOpenNodes.current.add(node);
-        treeElementRef.current?.close(node);
-      }
-      onToggleEnabled.current = true;
+    onToggleEnabled.current = false;
+    const closedTreeNodes = $getTreeManager().getClosedNodes();
+    for (const node of closedTreeNodes) {
+      treeElementRef.current?.close(node);
+    }
+    onToggleEnabled.current = true;
   }, []);
 
   useEffect(

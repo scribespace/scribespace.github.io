@@ -1,17 +1,44 @@
-const TREE_STATUS_PATH = "tree_status";
-const TREE_STATUS_VERSION_PATH = "tree_status/version";
 const TREE_STATUS_VERSION = '0' as const;
 
-export function storeTreeStatus(treeStatus: string[]) {
-    const treeStatusString = treeStatus.join(';');
-    window.localStorage.setItem(TREE_STATUS_PATH, treeStatusString);
-    window.localStorage.setItem(TREE_STATUS_VERSION_PATH, TREE_STATUS_VERSION);
+export interface SerializedTreeStatus {
+    version: string;
+    nodes: string[];
 }
 
-export function loadTreeStatus(): string[] {
-    const treeStatusString = window.localStorage.getItem(TREE_STATUS_PATH);
-    if ( treeStatusString )
-        return treeStatusString.split(';');
+export class TreeStatus {
+    private __status: Set<string> = new Set();
 
-    return [];
+    import( serilizedStatus: string ) {
+        const status = JSON.parse(serilizedStatus) as SerializedTreeStatus;
+        for ( const nodeID of status.nodes ) {
+            this.__status.add(nodeID);
+        }
+    }
+
+    export(): SerializedTreeStatus {
+        return {
+            version: TREE_STATUS_VERSION,
+            nodes: Array.from( this.__status ),
+        };
+    }
+
+    open(treeNodeID: string) {
+        this.__status.delete(treeNodeID);
+    }
+
+    close(treeNodeID: string) {
+        this.__status.add(treeNodeID);
+    }
+
+    toggle(treeNodeID: string ) {
+        if ( this.__status.has(treeNodeID) ) {
+            this.open(treeNodeID);
+        } else {
+            this.close(treeNodeID);
+        }
+    }
+
+    getClosedNodes() {
+        return Array.from(this.__status);
+    }
 }

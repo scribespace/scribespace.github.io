@@ -5,13 +5,15 @@ import { $getStreamManager } from "@systems/streamManager/streamManager";
 import { assert, variableExistsOrThrow } from "@utils";
 import { TREE_DATA_CHANGED_CMD } from "./treeCommands";
 import { SerializedTreeData, TreeData } from "./treeData";
-import { loadTreeStatus, storeTreeStatus } from "./treeStatus";
+import { TreeStatus } from "./treeStatus";
 
+
+const TREE_STATUS_PATH = "tree_status";
 export const TREE_FILE = "/tree";
 class TreeManager {
     private __tree: TreeData = new TreeData();
+    private __treeStatus: TreeStatus = new TreeStatus();
 
-    private __treeStatus: string[] = [];
     private __treeLoaded = false;
 
     get data() { return this.__tree.data; }
@@ -46,17 +48,35 @@ class TreeManager {
         this.uploadTreeData(this.__tree.export());
     }
 
-    loadTreeStatus() {
-        this.__treeStatus = loadTreeStatus();
+    private loadTreeStatus() {
+        const treeStatusJSON = window.localStorage.getItem(TREE_STATUS_PATH);
+        if ( treeStatusJSON ) {
+            this.__treeStatus.import(treeStatusJSON);
+        }
     }
 
-    getTreeStatus() {
-        return this.__treeStatus;
+    private storeTreeStatus() {
+        const serilizedStatus = this.__treeStatus.export();
+        window.localStorage.setItem(TREE_STATUS_PATH, JSON.stringify(serilizedStatus));
     }
 
-    storeTreeStatus(treeStatus: string[]) {
-        this.__treeStatus = treeStatus;
-        storeTreeStatus(treeStatus);
+    openTreeNode( id: string ) {
+        this.__treeStatus.open(id);
+        this.storeTreeStatus();
+    }
+
+    closeTreeNode( id: string ) {
+        this.__treeStatus.close(id);
+        this.storeTreeStatus();
+    }
+    
+    toggleTreeNode( id: string ) {
+        this.__treeStatus.toggle(id);
+        this.storeTreeStatus();
+    }
+
+    getClosedNodes() {
+        return this.__treeStatus.getClosedNodes();
     }
 
     moveNodes(args: { dragIds: string[]; parentId: null | string; index: number; } ) {
