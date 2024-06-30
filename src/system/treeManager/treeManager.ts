@@ -131,7 +131,6 @@ class TreeManager {
     selectTreeNode(id: string) {
         const noteID = this.__tree.treeIDToNoteID(id);
         if ( noteID === EMPTY_NOTE_ID ) {
-            console.trace();
             this.__treeIDToPromise.get(id)?.then(
                 (result) => {
                     $callCommand(NOTES_LOAD_CMD, result.fileInfo.id);
