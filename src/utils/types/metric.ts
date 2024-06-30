@@ -15,6 +15,14 @@ export class Metric {
     this.__unit = unit || "";
   }
 
+  export(): MetricSerialized {
+    return {value: this.value, unit: this.unit};
+  }
+
+  static import(smetric: MetricSerialized): Metric {
+    return new Metric(smetric.value, smetric.unit);
+  }
+
   clone() {
     return new Metric(this.__value, this.__unit);
   }

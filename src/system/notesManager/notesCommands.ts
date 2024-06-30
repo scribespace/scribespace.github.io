@@ -1,6 +1,7 @@
 import { $createCommand } from "@systems/commandsManager/commandsManager";
 
 export const NOTES_LOAD_CMD = $createCommand<string>('NOTES_LOAD_CMD');
+export const NOTE_CONVERTED_CMD = $createCommand<void>('NOTE_CONVERTED_CMD');
 
 export const NOTES_CREATING_META_CMD = $createCommand<void>('NOTES_CREATING_META_CMD');
 

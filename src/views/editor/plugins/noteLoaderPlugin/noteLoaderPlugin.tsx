@@ -2,11 +2,12 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { mergeRegister } from "@lexical/utils";
 import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import { $getNotesManager } from "@systems/notesManager";
-import { NOTES_LOAD_CMD } from "@systems/notesManager/notesCommands";
+import { NOTES_LOAD_CMD, NOTE_CONVERTED_CMD } from "@systems/notesManager/notesCommands";
 import { variableExists } from "@utils";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CLEAR_HISTORY_CMD } from "../commandsPlugin/editorCommands";
 import { INFOBAR_SUBMIT_INFO_CMD } from "../infobarPlugin/infoCommands";
+import { EditorState } from "lexical";
 
 export function NoteLoaderPlugin() {
     const [editor] = useLexicalComposerContext();
@@ -17,6 +18,7 @@ export function NoteLoaderPlugin() {
     const savesRequestedRef = useRef<number>(0);
     const savesDoneRef = useRef<number>(0);
     const lastSaveDateRef = useRef<string>('--:--:--');
+    const noteConverted = useRef<boolean>( false );
 
     const updateSaveData = useCallback(
         () => {
@@ -31,6 +33,22 @@ export function NoteLoaderPlugin() {
             return `Save: ${savesDoneRef.current}/${savesRequestedRef.current} Time: ${lastSaveDateRef.current}`;
         },
         []
+    );
+
+    const saveNote = useCallback(
+        (editorState: EditorState) => {
+            ++savesRequestedRef.current;
+            const currentSave = savesRequestedRef.current;
+            $callCommand( INFOBAR_SUBMIT_INFO_CMD, getSaveString());
+            $getNotesManager().storeNote(noteInfo.noteID,JSON.stringify( editorState )).then(()=>{
+                if ( savesDoneRef.current < currentSave ) {
+                    savesDoneRef.current = currentSave;
+                    updateSaveData();
+                    $callCommand( INFOBAR_SUBMIT_INFO_CMD, getSaveString());
+                }
+        });
+        },
+        [getSaveString, noteInfo.noteID, updateSaveData]
     );
 
     useEffect(
@@ -49,9 +67,15 @@ export function NoteLoaderPlugin() {
                 editor.setEditorState(editorState);
                 editor.setEditable(true);
                 $callCommand(CLEAR_HISTORY_CMD, undefined);
+                
+                if ( noteConverted.current ) {
+                    noteConverted.current = false;
+
+                    saveNote(editor.getEditorState());
+                }
             } );
         },
-        [editor, noteInfo]
+        [editor, noteInfo, saveNote]
     );
 
     useEffect(
@@ -70,26 +94,23 @@ export function NoteLoaderPlugin() {
                         });
                     }
                 ),
+                $registerCommandListener(
+                    NOTE_CONVERTED_CMD,
+                    () => {
+                        noteConverted.current = true;
+                    }
+                ),
                 editor.registerUpdateListener(
                     (args) => {
                         if ( noteInfo.noteID === '' || (args.dirtyElements.size + args.dirtyLeaves.size) === 0 || (args.dirtyLeaves.size === 0 && args.dirtyElements.size === 1 && variableExists( args.dirtyElements.get('root') ) ) )
                             return;
                         
-                            ++savesRequestedRef.current;
-                            const currentSave = savesRequestedRef.current;
-                            $callCommand( INFOBAR_SUBMIT_INFO_CMD, getSaveString());
-                            $getNotesManager().storeNote(noteInfo.noteID,JSON.stringify( args.editorState )).then(()=>{
-                                if ( savesDoneRef.current < currentSave ) {
-                                    savesDoneRef.current = currentSave;
-                                    updateSaveData();
-                                    $callCommand( INFOBAR_SUBMIT_INFO_CMD, getSaveString());
-                                }
-                        });
+                            saveNote(args.editorState);
                     }
                 )
             );
         },
-        [editor, getSaveString, noteInfo.noteID, updateSaveData]
+        [editor, getSaveString, noteInfo.noteID, saveNote, updateSaveData]
     );
 
     return null;

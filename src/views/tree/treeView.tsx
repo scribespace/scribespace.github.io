@@ -12,7 +12,6 @@ import {
 } from "react-arborist";
 import "./css/treeView.css";
 
-import useBoundingRect from "@/hooks/useBoundingRect";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
@@ -30,8 +29,8 @@ export default function TreeView() {
 
   const treeParentRef = useRef<HTMLDivElement>(null);
   const controlButtonsRef = useRef<HTMLDivElement>(null);
-  const { height: treeParentHeight } = useBoundingRect(treeParentRef);
-  const { height: controlButtonsHeight } = useBoundingRect(controlButtonsRef);
+  const [ treeParentRect, setTreeParentHeight ] = useState<DOMRect>(new DOMRect(0, 0, 0, 0));
+  const [ controlButtonsRect, setControlButtonsHeight ] = useState<DOMRect>(new DOMRect(0, 0, 0, 0));
 
   const treeElementRef = useRef<TreeApi<TreeNodeData>>(null);
   const onToggleEnabled = useRef<boolean>(true);
@@ -117,6 +116,17 @@ export default function TreeView() {
     [updateDataVersion]
   );
 
+  useEffect( 
+    () => {
+      if (treeParentRef.current)
+        setTreeParentHeight( treeParentRef.current.getBoundingClientRect() );
+
+      if (controlButtonsRef.current)
+        setControlButtonsHeight( controlButtonsRef.current.getBoundingClientRect() );
+    },
+    []
+  );
+
   function AddIcon(props: IconBaseProps) {
     return treeTheme.AddIcon(props);
   }
@@ -126,7 +136,7 @@ export default function TreeView() {
   }
   return (
     <div id="tree-view" className="tree-view">
-      <div style={{ height: "100%" }}>
+      <div style={{ height: "100%" }}> 
         <div ref={controlButtonsRef}>
           <AddIcon
             size={"30px"}
@@ -137,16 +147,13 @@ export default function TreeView() {
             onClick={$getTreeManager().isTreeReady() ? OnDeleteElement : () => {}}
           />
         </div>
-        <div
-          ref={treeParentRef}
-          style={{ height: `calc(100% - ${controlButtonsHeight}px)`, overflow: 'visible' }}
-        >
+        <div ref={treeParentRef} style={{ height: `calc(100% - ${controlButtonsRect.height}px)`, overflow: 'visible' }} >
           <Tree
             ref={treeElementRef}
             disableEdit={!$getTreeManager().isTreeReady()}
             data={$getTreeManager().data}
             width={"100%"}
-            height={treeParentHeight}
+            height={treeParentRect.height}
             disableMultiSelection={true}
             onMove={onMove}
             onRename={onRename}
