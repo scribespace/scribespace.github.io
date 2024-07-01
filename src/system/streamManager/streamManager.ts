@@ -33,15 +33,96 @@ interface FileGetInfo {
 
 type FileOperation = FileUploadReplace | FileDownload | FileGetInfo;
 
+interface FileQueue {
+    operations: FileOperation[];
+    lock: Promise<void>;
+}
+
 class StreamManager {
     private __filesPathToID: Map<string, string> = new Map();
     private __filesIDToPath: Map<string, string> = new Map();
-    private __fileOperationQueues: Map<string, FileOperation[]> = new Map();
+
+    private __fileOperationQueues: Map<string, FileQueue> = new Map();
+
     private __fileAddQueue: FileUploadAdd[] = [];
+    private __processFilesAddLock = Promise.resolve();
 
-    private __processFilesLock = Promise.resolve();
+    
+    private getFileID( testID: string ): string {
+        const isFileID = $getFileSystem().isFileID(testID);
+        const otherID = isFileID ? this.__filesIDToPath.get(testID) || '' : this.__filesPathToID.get(testID) || '';
+        return this.__fileOperationQueues.has(otherID) ? otherID : testID;
+    }
 
-    private async processFilesInternal( filesOperations: [string, FileOperation[]][], filesAdd: FileUploadAdd[] ) {
+    private async processFilesInternal( filePath: string, filesOperations: FileOperation[] ) {
+        let filePathsIDsSet = false;
+        const fileID = $getFileSystem().isFileID( filePath ) ? filePath : (this.__filesPathToID.get(filePath) || filePath);
+   
+        for ( const operation of filesOperations ) {
+            switch ( operation.type ) {
+                case FileOperationType.FileGetInfo:
+                {   
+                    const fileGetInfo = operation as FileGetInfo;
+                    const result = await $getFileSystem().getFileInfoAsync( fileID );
+                    if ( !filePathsIDsSet && result.status === FileSystemStatus.Success ) {
+                        this.__filesPathToID.set( result.fileInfo.path, result.fileInfo.id );
+                        this.__filesIDToPath.set( result.fileInfo.id, result.fileInfo.path );
+                        filePathsIDsSet = true;
+                    }
+                    for ( const resolve of fileGetInfo.resolves ) {
+                        resolve( result );
+                    }
+                }   
+                break;
+                case FileOperationType.FileUploadReplace:
+                {   
+                    const fileUpload = operation as FileUploadReplace;
+                    const result = await $getFileSystem().uploadFileAsync( fileID, fileUpload.content, FileUploadMode.Replace );
+                    if ( !filePathsIDsSet && result.status === FileSystemStatus.Success ) {
+                        this.__filesPathToID.set( result.fileInfo.path, result.fileInfo.id );
+                        this.__filesIDToPath.set( result.fileInfo.id, result.fileInfo.path );
+                        filePathsIDsSet = true;
+                    }
+                    for ( const resolve of fileUpload.resolves ) {
+                        resolve( result );
+                    }
+                }   
+                break;
+                case FileOperationType.FileDownload:
+                {   
+                    const fileDownload = operation as FileDownload;
+                    const result = await $getFileSystem().downloadFileAsync( fileID );
+                    if ( !filePathsIDsSet && result.status === FileSystemStatus.Success ) {
+                        this.__filesPathToID.set( result.file.info.path, result.file.info.id );
+                        this.__filesIDToPath.set( result.file.info.id, result.file.info.path );
+                        filePathsIDsSet = true;
+                    }
+                    for ( const resolve of fileDownload.resolves ) {
+                        resolve( result );
+                    }
+                }   
+                break;
+            }
+        }
+    }
+
+    
+    private processFiles( filePath: string, fileQueue: FileQueue ) {
+        fileQueue.lock = fileQueue.lock.then(
+            async () => {
+                if ( fileQueue.operations.length === 0 ) {
+                    return;
+                }
+
+                const fileOperation: FileOperation[] = [...fileQueue.operations];
+                fileQueue.operations = [];
+
+                await this.processFilesInternal(filePath, fileOperation);
+            }
+        );
+    }
+
+    private async processFileAddInternal(filesAdd: FileUploadAdd[]) {
         for ( const file of filesAdd ) {
             const result = await $getFileSystem().uploadFileAsync( file.fileID, file.content, FileUploadMode.Add );
             if ( result.status === FileSystemStatus.Success ) {
@@ -49,82 +130,21 @@ class StreamManager {
             }
             file.resolve( result );
         }
-
-        for ( const entry of filesOperations ) {
-            let filePathsIDsSet = false;
-            const fileID = $getFileSystem().isFileID( entry[0] ) ? entry[0] : (this.__filesPathToID.get(entry[0]) || entry[0]);
-            const operationsQueue = entry[1];
-
-            for ( const operation of operationsQueue ) {
-                switch ( operation.type ) {
-                    case FileOperationType.FileGetInfo:
-                    {   
-                        const fileGetInfo = operation as FileGetInfo;
-                        const result = await $getFileSystem().getFileInfoAsync( fileID );
-                        if ( !filePathsIDsSet && result.status === FileSystemStatus.Success ) {
-                            this.__filesPathToID.set( result.fileInfo.path, result.fileInfo.id );
-                            this.__filesIDToPath.set( result.fileInfo.id, result.fileInfo.path );
-                            filePathsIDsSet = true;
-                        }
-                        for ( const resolve of fileGetInfo.resolves ) {
-                            resolve( result );
-                        }
-                    }   
-                    break;
-                    case FileOperationType.FileUploadReplace:
-                    {   
-                        const fileUpload = operation as FileUploadReplace;
-                        const result = await $getFileSystem().uploadFileAsync( fileID, fileUpload.content, FileUploadMode.Replace );
-                        if ( !filePathsIDsSet && result.status === FileSystemStatus.Success ) {
-                            this.__filesPathToID.set( result.fileInfo.path, result.fileInfo.id );
-                            this.__filesIDToPath.set( result.fileInfo.id, result.fileInfo.path );
-                            filePathsIDsSet = true;
-                        }
-                        for ( const resolve of fileUpload.resolves ) {
-                            resolve( result );
-                        }
-                    }   
-                    break;
-                    case FileOperationType.FileDownload:
-                    {   
-                        const fileDownload = operation as FileDownload;
-                        const result = await $getFileSystem().downloadFileAsync( fileID );
-                        if ( !filePathsIDsSet && result.status === FileSystemStatus.Success ) {
-                            this.__filesPathToID.set( result.file.info.path, result.file.info.id );
-                            this.__filesIDToPath.set( result.file.info.id, result.file.info.path );
-                            filePathsIDsSet = true;
-                        }
-                        for ( const resolve of fileDownload.resolves ) {
-                            resolve( result );
-                        }
-                    }   
-                    break;
-                }
-            }
-        }
     }
 
-    private processFiles() {
-        this.__processFilesLock = this.__processFilesLock.then(
+    private processFilesAdd() {
+        this.__processFilesAddLock = this.__processFilesAddLock.then(
             async () => {
-                if ( this.__fileAddQueue.length === 0 && this.__fileOperationQueues.size === 0 ) {
+                if ( this.__fileAddQueue.length === 0 ) {
                     return;
                 }
 
-                const filesOperations: [string, FileOperation[]][] = Array.from( this.__fileOperationQueues );
                 const filesAdd: FileUploadAdd[] = [...this.__fileAddQueue ];
-                this.__fileOperationQueues.clear();
                 this.__fileAddQueue = [];
 
-                await this.processFilesInternal(filesOperations, filesAdd);
+                await this.processFileAddInternal(filesAdd);
             }
         );
-    }
-
-    private getFileID( testID: string ): string {
-        const isFileID = $getFileSystem().isFileID(testID);
-        const otherID = isFileID ? this.__filesIDToPath.get(testID) || '' : this.__filesPathToID.get(testID) || '';
-        return this.__fileOperationQueues.has(otherID) ? otherID : testID;
     }
     
     uploadFile( path: string, content: Blob, mode: FileUploadMode ): Promise<FileInfoResultType> {
@@ -139,7 +159,7 @@ class StreamManager {
                     };
                     this.__fileAddQueue.push(fileUpload);
 
-                    this.processFiles();
+                    this.processFilesAdd();
                 }
             );
         }
@@ -148,27 +168,22 @@ class StreamManager {
             (resolve) => {
                 const fileID = this.getFileID(path);
 
-                const lastOperation = this.__fileOperationQueues.get(fileID) || [];
-                if ( lastOperation.length === 0 || lastOperation[lastOperation.length - 1].type !== FileOperationType.FileUploadReplace ) {
+                const fileQueue = this.__fileOperationQueues.get(fileID) || this.__fileOperationQueues.set(fileID,{operations: [], lock: Promise.resolve()}).get(fileID) as FileQueue;
+                const operations = fileQueue.operations;
+                if ( operations.length === 0 || operations[operations.length - 1].type !== FileOperationType.FileUploadReplace ) {
                     const fileUpload: FileUploadReplace = {
                         type: FileOperationType.FileUploadReplace,
                         content,
                         resolves: [resolve]
                     };
-                    if ( lastOperation.length > 0 ) {
-                        lastOperation.push(fileUpload);
-                    } else {
-                        this.__fileOperationQueues.set( path, [...lastOperation, fileUpload] );
-                    }
-
+                    operations.push(fileUpload);
                 } else {
-                    const lastUpload = lastOperation[lastOperation.length - 1] as FileUploadReplace;
+                    const lastUpload = operations[operations.length - 1] as FileUploadReplace;
                     lastUpload.content = content;
                     lastUpload.resolves.push(resolve);
                 }
 
-
-                this.processFiles();
+                this.processFiles(fileID, fileQueue);
             }
         );
     }
@@ -178,25 +193,20 @@ class StreamManager {
             (resolve) => {
                 const fileID = this.getFileID(path);
 
-                const lastOperation = this.__fileOperationQueues.get(fileID) || [];
-                if ( lastOperation.length === 0 || lastOperation[lastOperation.length - 1].type !== FileOperationType.FileGetInfo ) {
-                    const fileInfo: FileGetInfo = {
+                const fileQueue = this.__fileOperationQueues.get(fileID) || this.__fileOperationQueues.set(fileID,{operations: [], lock: Promise.resolve()}).get(fileID) as FileQueue;
+                const operations = fileQueue.operations;
+                if ( operations.length === 0 || operations[operations.length - 1].type !== FileOperationType.FileGetInfo ) {
+                    const fileGetInfo: FileGetInfo = {
                         type: FileOperationType.FileGetInfo,
                         resolves: [resolve]
                     };
-                    if ( lastOperation.length > 0 ) {
-                        lastOperation.push(fileInfo);
-                    } else {
-                        this.__fileOperationQueues.set( path, [...lastOperation, fileInfo] );
-                    }
-
+                    operations.push(fileGetInfo);
                 } else {
-                    const lastGetInfo = lastOperation[lastOperation.length - 1] as FileGetInfo;
-                    lastGetInfo.resolves.push(resolve);
+                    const lastUpload = operations[operations.length - 1] as FileGetInfo;
+                    lastUpload.resolves.push(resolve);
                 }
 
-
-                this.processFiles();
+                this.processFiles(fileID, fileQueue);
             }
         );
     }
@@ -206,38 +216,31 @@ class StreamManager {
             (resolve) => {
                 const fileID = this.getFileID(path);
 
-                const lastOperation = this.__fileOperationQueues.get(fileID) || [];
-                if ( lastOperation.length === 0 || lastOperation[lastOperation.length - 1].type !== FileOperationType.FileDownload ) {
-                    const fileInfo: FileDownload = {
+                const fileQueue = this.__fileOperationQueues.get(fileID) || this.__fileOperationQueues.set(fileID,{operations: [], lock: Promise.resolve()}).get(fileID) as FileQueue;
+                const operations = fileQueue.operations;
+                if ( operations.length === 0 || operations[operations.length - 1].type !== FileOperationType.FileDownload ) {
+                    const fileDownload: FileDownload = {
                         type: FileOperationType.FileDownload,
                         resolves: [resolve]
                     };
-                    if ( lastOperation.length > 0 ) {
-                        lastOperation.push(fileInfo);
-                    } else {
-                        this.__fileOperationQueues.set( path, [...lastOperation, fileInfo] );
-                    }
-
+                    operations.push(fileDownload);
                 } else {
-                    const lastDownload = lastOperation[lastOperation.length - 1] as FileDownload;
-                    lastDownload.resolves.push(resolve);
+                    const lastUpload = operations[operations.length - 1] as FileDownload;
+                    lastUpload.resolves.push(resolve);
                 }
 
-                this.processFiles();
+                this.processFiles(fileID, fileQueue);
             }
         );
     }
 
-    flush(): Promise<void> {
-        return new Promise<void>(
-            (resolve) => {
-                this.__processFilesLock = this.__processFilesLock.then(
-                    () => {
-                        resolve();
-                    }
-                );
-            }
-        );
+    flush(): Promise<void[]> {
+        const promisesArray: Promise<void>[] = [];
+        for ( const fileQueue of this.__fileOperationQueues ) {
+            promisesArray.push(fileQueue[1].lock);
+        }
+
+        return Promise.all(promisesArray);
     }
 }
 
