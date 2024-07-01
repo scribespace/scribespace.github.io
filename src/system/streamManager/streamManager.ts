@@ -1,104 +1,243 @@
 import { $getFileSystem } from "@coreSystems";
-import { FileInfoResultType, FileResultType, FileUploadMode } from "@interfaces/system/fileSystem/fileSystemShared";
-import { variableExists } from "@utils";
+import { FileInfoResultType, FileResultType, FileSystemStatus, FileUploadMode } from "@interfaces/system/fileSystem/fileSystemShared";
 
-interface FileUploadObject {
+enum FileOperationType {
+    FileUploadReplace,
+    FileUploadAdd,
+    FileDownload,
+    FileGetInfo,
+}
+
+interface FileUploadReplace {
+    type: FileOperationType.FileUploadReplace;
     content: Blob;
-    resolves: ((fileInfo: FileInfoResultType | PromiseLike<FileInfoResultType>) => void)[];
+    resolves: ((result: FileInfoResultType) => void)[];
 }
 
-interface FileAddObject {
-    path: string;
-    uploadObject: FileUploadObject;
+interface FileUploadAdd {
+    type: FileOperationType.FileUploadAdd;
+    fileID: string;
+    content: Blob;
+    resolve: ((result: FileInfoResultType) => void);
 }
 
-type FileCallback = (fileInfo: FileResultType | PromiseLike<FileResultType>) => void;
+interface FileDownload {
+    type: FileOperationType.FileDownload;
+    resolves: ((result: FileResultType) => void)[];
+}
+
+interface FileGetInfo {
+    type: FileOperationType.FileGetInfo;
+    resolves: ((result: FileInfoResultType) => void)[];
+}
+
+type FileOperation = FileUploadReplace | FileDownload | FileGetInfo;
 
 class StreamManager {
-    private __uploadReplaceQueue: Map<string, FileUploadObject> = new Map();
-    private __uploadAddQueue: FileAddObject[] = [];
-    private __uploadProcessPromise = Promise.resolve();
+    private __filesPathToID: Map<string, string> = new Map();
+    private __filesIDToPath: Map<string, string> = new Map();
+    private __fileOperationQueues: Map<string, FileOperation[]> = new Map();
+    private __fileAddQueue: FileUploadAdd[] = [];
 
-    private async processUpload(replaceQueue: [string, FileUploadObject][], addQueue: FileAddObject[]) {
-        for (const [path, queueObj] of replaceQueue ) {
-            const fileInfo = await $getFileSystem().uploadFileAsync( path, queueObj.content, FileUploadMode.Replace );
-            for ( const resolve of queueObj.resolves )
-                resolve(fileInfo);
-        }
-        
-        for (const addObject of addQueue ) {
-            const fileInfo = await $getFileSystem().uploadFileAsync( addObject.path, addObject.uploadObject.content, FileUploadMode.Add );
-            addObject.uploadObject.resolves[0](fileInfo);
-        }
-    }
+    private __processFilesLock = Promise.resolve();
 
-    uploadFile( path: string, content: Blob, mode: FileUploadMode ): Promise<FileInfoResultType> {
-        let uploadObject: FileUploadObject | undefined = undefined;
-        if ( mode === FileUploadMode.Replace ) {
-            uploadObject = this.__uploadReplaceQueue.get(path);
-            if ( !variableExists(uploadObject)) {
-                uploadObject = { content, resolves: [] };
-                this.__uploadReplaceQueue.set(path, uploadObject);
+    private async processFilesInternal( filesOperations: [string, FileOperation[]][], filesAdd: FileUploadAdd[] ) {
+        for ( const file of filesAdd ) {
+            const result = await $getFileSystem().uploadFileAsync( file.fileID, file.content, FileUploadMode.Add );
+            if ( result.status === FileSystemStatus.Success ) {
+                this.__filesPathToID.set( result.fileInfo.path, result.fileInfo.id );
             }
-        } else { // Add
-            uploadObject = { content, resolves: [] };
-            this.__uploadAddQueue.push( {path, uploadObject } );
+            file.resolve( result );
         }
 
-        uploadObject.content = content;
+        for ( const entry of filesOperations ) {
+            let filePathsIDsSet = false;
+            const fileID = $getFileSystem().isFileID( entry[0] ) ? entry[0] : (this.__filesPathToID.get(entry[0]) || entry[0]);
+            const operationsQueue = entry[1];
 
-        return new Promise<FileInfoResultType>( (resolve) => {
-            uploadObject.resolves.push(resolve);
-            this.__uploadProcessPromise = this.__uploadProcessPromise.then(async () => {
-                if ( this.__uploadReplaceQueue.size === 0 && this.__uploadAddQueue.length === 0 )
+            for ( const operation of operationsQueue ) {
+                switch ( operation.type ) {
+                    case FileOperationType.FileGetInfo:
+                    {   
+                        const fileGetInfo = operation as FileGetInfo;
+                        const result = await $getFileSystem().getFileInfoAsync( fileID );
+                        if ( !filePathsIDsSet && result.status === FileSystemStatus.Success ) {
+                            this.__filesPathToID.set( result.fileInfo.path, result.fileInfo.id );
+                            this.__filesIDToPath.set( result.fileInfo.id, result.fileInfo.path );
+                            filePathsIDsSet = true;
+                        }
+                        for ( const resolve of fileGetInfo.resolves ) {
+                            resolve( result );
+                        }
+                    }   
+                    break;
+                    case FileOperationType.FileUploadReplace:
+                    {   
+                        const fileUpload = operation as FileUploadReplace;
+                        const result = await $getFileSystem().uploadFileAsync( fileID, fileUpload.content, FileUploadMode.Replace );
+                        if ( !filePathsIDsSet && result.status === FileSystemStatus.Success ) {
+                            this.__filesPathToID.set( result.fileInfo.path, result.fileInfo.id );
+                            this.__filesIDToPath.set( result.fileInfo.id, result.fileInfo.path );
+                            filePathsIDsSet = true;
+                        }
+                        for ( const resolve of fileUpload.resolves ) {
+                            resolve( result );
+                        }
+                    }   
+                    break;
+                    case FileOperationType.FileDownload:
+                    {   
+                        const fileDownload = operation as FileDownload;
+                        const result = await $getFileSystem().downloadFileAsync( fileID );
+                        if ( !filePathsIDsSet && result.status === FileSystemStatus.Success ) {
+                            this.__filesPathToID.set( result.file.info.path, result.file.info.id );
+                            this.__filesIDToPath.set( result.file.info.id, result.file.info.path );
+                            filePathsIDsSet = true;
+                        }
+                        for ( const resolve of fileDownload.resolves ) {
+                            resolve( result );
+                        }
+                    }   
+                    break;
+                }
+            }
+        }
+    }
+
+    private processFiles() {
+        this.__processFilesLock = this.__processFilesLock.then(
+            async () => {
+                if ( this.__fileAddQueue.length === 0 && this.__fileOperationQueues.size === 0 ) {
                     return;
+                }
 
-                const queueReplaceCopy = Array.from(this.__uploadReplaceQueue);
-                const queueAddCopy = this.__uploadAddQueue;
-                this.__uploadReplaceQueue.clear();
-                this.__uploadAddQueue = [];
+                const filesOperations: [string, FileOperation[]][] = Array.from( this.__fileOperationQueues );
+                const filesAdd: FileUploadAdd[] = [...this.__fileAddQueue ];
+                this.__fileOperationQueues.clear();
+                this.__fileAddQueue = [];
 
-                await this.processUpload(queueReplaceCopy, queueAddCopy);
-            });
-        } );
-    }
-
-    private __downloadQueue: Map<string, FileCallback[]> = new Map();
-    private __downloadProcessPromise = Promise.resolve();
-
-    private async processDownload(queue: [string, FileCallback[]][]) {
-        for ( const [path, callbacks] of queue ) {
-            const file = await $getFileSystem().downloadFileAsync( path );
-            for ( const callback of callbacks )
-                callback(file);
-        }
-    }
-
-    async downloadFile( path: string ) {
-        let callbackList = this.__downloadQueue.get(path);
-        if ( !variableExists(callbackList) ) {
-            callbackList = [] as FileCallback[];
-            this.__downloadQueue.set( path, callbackList );
-        }
-        
-        return new Promise<FileResultType>(
-            (resolve) => {
-                callbackList.push( resolve );
-                this.__downloadProcessPromise = this.__downloadProcessPromise.then( async () => {
-                    if ( this.__downloadQueue.size === 0 )
-                        return;
-    
-                    const queueCopy = Array.from(this.__downloadQueue);
-                    this.__downloadQueue.clear();
-    
-                    await this.processDownload(queueCopy);
-                });
+                await this.processFilesInternal(filesOperations, filesAdd);
             }
         );
     }
 
-    async flush() {
-        await Promise.all([this.__uploadProcessPromise, this.__downloadProcessPromise]);
+    private getFileID( testID: string ): string {
+        const isFileID = $getFileSystem().isFileID(testID);
+        const otherID = isFileID ? this.__filesIDToPath.get(testID) || '' : this.__filesPathToID.get(testID) || '';
+        return this.__fileOperationQueues.has(otherID) ? otherID : testID;
+    }
+    
+    uploadFile( path: string, content: Blob, mode: FileUploadMode ): Promise<FileInfoResultType> {
+        if ( mode === FileUploadMode.Add ) {
+            return new Promise<FileInfoResultType>(
+                (resolve) => {
+                    const fileUpload: FileUploadAdd = {
+                        type: FileOperationType.FileUploadAdd,
+                        fileID: path,
+                        content,
+                        resolve
+                    };
+                    this.__fileAddQueue.push(fileUpload);
+
+                    this.processFiles();
+                }
+            );
+        }
+
+        return new Promise<FileInfoResultType>(
+            (resolve) => {
+                const fileID = this.getFileID(path);
+
+                const lastOperation = this.__fileOperationQueues.get(fileID) || [];
+                if ( lastOperation.length === 0 || lastOperation[lastOperation.length - 1].type !== FileOperationType.FileUploadReplace ) {
+                    const fileUpload: FileUploadReplace = {
+                        type: FileOperationType.FileUploadReplace,
+                        content,
+                        resolves: [resolve]
+                    };
+                    if ( lastOperation.length > 0 ) {
+                        lastOperation.push(fileUpload);
+                    } else {
+                        this.__fileOperationQueues.set( path, [...lastOperation, fileUpload] );
+                    }
+
+                } else {
+                    const lastUpload = lastOperation[lastOperation.length - 1] as FileUploadReplace;
+                    lastUpload.content = content;
+                    lastUpload.resolves.push(resolve);
+                }
+
+
+                this.processFiles();
+            }
+        );
+    }
+
+    getFileInfo( path: string ): Promise<FileInfoResultType> {
+        return new Promise<FileInfoResultType>(
+            (resolve) => {
+                const fileID = this.getFileID(path);
+
+                const lastOperation = this.__fileOperationQueues.get(fileID) || [];
+                if ( lastOperation.length === 0 || lastOperation[lastOperation.length - 1].type !== FileOperationType.FileGetInfo ) {
+                    const fileInfo: FileGetInfo = {
+                        type: FileOperationType.FileGetInfo,
+                        resolves: [resolve]
+                    };
+                    if ( lastOperation.length > 0 ) {
+                        lastOperation.push(fileInfo);
+                    } else {
+                        this.__fileOperationQueues.set( path, [...lastOperation, fileInfo] );
+                    }
+
+                } else {
+                    const lastGetInfo = lastOperation[lastOperation.length - 1] as FileGetInfo;
+                    lastGetInfo.resolves.push(resolve);
+                }
+
+
+                this.processFiles();
+            }
+        );
+    }
+
+    downloadFile( path: string ): Promise<FileResultType> {
+        return new Promise<FileResultType>(
+            (resolve) => {
+                const fileID = this.getFileID(path);
+
+                const lastOperation = this.__fileOperationQueues.get(fileID) || [];
+                if ( lastOperation.length === 0 || lastOperation[lastOperation.length - 1].type !== FileOperationType.FileDownload ) {
+                    const fileInfo: FileDownload = {
+                        type: FileOperationType.FileDownload,
+                        resolves: [resolve]
+                    };
+                    if ( lastOperation.length > 0 ) {
+                        lastOperation.push(fileInfo);
+                    } else {
+                        this.__fileOperationQueues.set( path, [...lastOperation, fileInfo] );
+                    }
+
+                } else {
+                    const lastDownload = lastOperation[lastOperation.length - 1] as FileDownload;
+                    lastDownload.resolves.push(resolve);
+                }
+
+                this.processFiles();
+            }
+        );
+    }
+
+    flush(): Promise<void> {
+        return new Promise<void>(
+            (resolve) => {
+                this.__processFilesLock = this.__processFilesLock.then(
+                    () => {
+                        resolve();
+                    }
+                );
+            }
+        );
     }
 }
 
