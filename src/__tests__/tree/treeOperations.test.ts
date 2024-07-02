@@ -7,7 +7,8 @@ import { afterAll, afterEach, beforeEach, describe, expect, test, vi } from "vit
 
 
 afterEach(
-    () => {
+    async () => {
+        await $getStreamManager().flush();
         $clearMockedFiles();
     }
 );
@@ -20,7 +21,6 @@ afterAll(
 
 beforeEach( 
     async () => {
-        await $getStreamManager().flush();
         const files: MockedFile[] = [
             {
                 path:"/tree",

@@ -113,7 +113,7 @@ class StreamManager {
                 if ( fileQueue.operations.length === 0 ) {
                     return;
                 }
-
+                
                 const fileOperation: FileOperation[] = [...fileQueue.operations];
                 fileQueue.operations = [];
 
@@ -135,13 +135,13 @@ class StreamManager {
     private processFilesAdd() {
         this.__processFilesAddLock = this.__processFilesAddLock.then(
             async () => {
-                if ( this.__fileAddQueue.length === 0 ) {
-                    return;
-                }
-
-                const filesAdd: FileUploadAdd[] = [...this.__fileAddQueue ];
-                this.__fileAddQueue = [];
-
+            if ( this.__fileAddQueue.length === 0 ) {
+                return;
+            }
+            
+            const filesAdd: FileUploadAdd[] = [...this.__fileAddQueue ];
+            this.__fileAddQueue = [];
+        
                 await this.processFileAddInternal(filesAdd);
             }
         );
@@ -240,7 +240,12 @@ class StreamManager {
             promisesArray.push(fileQueue[1].lock);
         }
 
-        return Promise.all(promisesArray);
+        return Promise.all([...promisesArray, this.__processFilesAddLock]);
+    }
+
+    clear() {
+        this.__filesPathToID.clear();
+        this.__filesIDToPath.clear();
     }
 }
 

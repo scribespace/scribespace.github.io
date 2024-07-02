@@ -90,6 +90,7 @@ export function $clearMockedFiles() {
     filesMapPath.clear();
     filesMapBlob.clear();
     filesMapPathToID.clear();
+    $getStreamManager().clear();
 }
 
 export async function $getMockedFiles() {

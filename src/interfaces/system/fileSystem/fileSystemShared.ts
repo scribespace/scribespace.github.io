@@ -12,7 +12,7 @@ export enum FileUploadMode {
 }
 
 export interface FileInfo {
-  hash: string | undefined;
+  hash?: string;
   id: string;
   path: string;
   date: string;
