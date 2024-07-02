@@ -39,11 +39,11 @@ export const DEV = isDev() ? (callback: () => void) => {
 
 
 export function $getTreeNodeIDFromURL() {
- return window.location.pathname.slice(1);
+ return window.location.search.slice(1);
 }
 
 export function $setURLTreeNodeID( treeNodeID: string ) {
-  window.history.pushState({treeNodeID}, '', `${window.location.origin}/${treeNodeID}`);
+  window.history.pushState({treeNodeID}, '', `${window.location.origin}/?${treeNodeID}`);
 }
 export function $setWindowTitle(title: string) {
   let mainTitle = document.title.split(':')[0];
