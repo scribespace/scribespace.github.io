@@ -42,8 +42,12 @@ export function $getTreeNodeIDFromURL() {
  return window.location.search.slice(1);
 }
 
+export function $getURLTreeNodeID( treeNodeID: string ) {
+  return `${window.location.origin}/?${treeNodeID}`;
+}
+
 export function $setURLTreeNodeID( treeNodeID: string ) {
-  window.history.pushState({treeNodeID}, '', `${window.location.origin}/?${treeNodeID}`);
+  window.history.pushState({treeNodeID}, '', $getURLTreeNodeID(treeNodeID));
 }
 export function $setWindowTitle(title: string) {
   let mainTitle = document.title.split(':')[0];
