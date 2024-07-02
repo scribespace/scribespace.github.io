@@ -303,7 +303,8 @@ export function GetExtendedFileSystemBase<TExtend extends Constructor>(extend: T
 
       const result: FileResult = {
         status: FileSystemStatus.Success,
-        file: {info: metaToFileInfo( fileMeta ), content: fileContent }
+        content: fileContent,
+        fileInfo: metaToFileInfo( fileMeta )
       };
 
       return result;

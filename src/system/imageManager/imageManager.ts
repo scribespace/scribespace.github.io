@@ -1,6 +1,6 @@
 import { WebWorkerManager } from "@/interfaces/webWorker";
 
-import { FileSystemStatus, FileUploadMode } from "@/interfaces/system/fileSystem/fileSystemShared";
+import { FileSystemStatus } from "@/interfaces/system/fileSystem/fileSystemShared";
 import { assert, variableExists, variableExistsOrThrow } from "@/utils";
 import { $getFileSystem } from "@coreSystems";
 import { $getFileManager } from "@systems/fileManager/fileManager";
@@ -91,15 +91,15 @@ export class ImageManager extends WebWorkerManager<ImageManagerWorkerFunctions, 
   
   private async imageProcessUpload(imageBlob: Blob, imageID: number) {
     const imageName = $getImageName(imageBlob.type);
-    const uploadResult = await $getFileManager().uploadFile(imageName, imageBlob, FileUploadMode.Add);
+    const uploadResult = await $getFileManager().createFile(imageName, imageBlob);
     assert( uploadResult.status === FileSystemStatus.Success, "Missing fileInfo" );
     
-    const finalURL = await $getFileSystem().getFileURLAsync(uploadResult.fileInfo.id);
+    const finalURL = await $getFileSystem().getFileURLAsync(uploadResult.file.fileInfo.id);
     this.__imageSrcToID.set(finalURL, imageID);
     
     const imageObject = this.__imageObjects[imageID];
     const newState = (imageObject.state & (~ImageState.Uploading)) | ImageState.Preloading;
-    this.updateImageObject( imageID, newState, undefined, finalURL, uploadResult.fileInfo.path );
+    this.updateImageObject( imageID, newState, undefined, finalURL, uploadResult.file.fileInfo.path );
     
     this.imageProcessPreload(imageID);
   }

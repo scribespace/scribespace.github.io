@@ -1,6 +1,6 @@
-import '../helpers/workerMock';
 import '../helpers/cryptoMock';
-import { $clearMockedFiles, $fileSystemSetDelay,$getMockedFilesJSON, $resetFileSystemStats, $setMockedFiles, MockedFile } from "../helpers/fileSystemMock";
+import { $clearMockedFiles, $fileSystemSetDelay, $getMockedFilesJSON, $resetFileSystemStats, $setMockedFiles, MockedFile } from "../helpers/fileSystemMock";
+import '../helpers/workerMock';
 
 
 import { $getNotesManager } from "@systems/notesManager";
@@ -92,7 +92,7 @@ async () => {
         test('Create Note',
             async () => {
                 const fileInfo = await $getNotesManager().createNote();
-                expect(JSON.stringify(fileInfo)).toBe('{"status":1,"fileInfo":{"path":"/notes/scribe-space-id-00","hash":"/notes/scribe-space-id-00","id":"id:/notes/scribe-space-id-00","date":"2015-05-12T15:50:38Z"}}');
+                expect(JSON.stringify(fileInfo)).toBe('{"path":"/notes/scribe-space-id-00","hash":"/notes/scribe-space-id-00","id":"id:/notes/scribe-space-id-00","date":"2015-05-12T15:50:38Z"}');
             }
         );
 

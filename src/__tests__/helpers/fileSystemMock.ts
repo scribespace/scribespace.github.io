@@ -231,7 +231,8 @@ async (importOriginal) => {
                         fileSystemStatsAddDownload();
                         return {
                             status: FileSystemStatus.Success,
-                            file: { content: mockedFile.content, info: { hash: mockedFile.hash, id: mockedFile.id, path: mockedFile.path, date: '2015-05-12T15:50:38Z' } }
+                            content: mockedFile.content, 
+                            fileInfo: { hash: mockedFile.hash, id: mockedFile.id, path: mockedFile.path, date: '2015-05-12T15:50:38Z' }
                         };
                     },
                     deleteFile: async function (path: string): Promise<FileSystemResult> {
