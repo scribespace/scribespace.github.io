@@ -11,6 +11,10 @@ import { Input } from "./input";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { IconBaseProps } from "react-icons";
+import { $callCommand } from "@systems/commandsManager/commandsManager";
+import { TREE_SELECT_NOTE_CMD } from "@systems/treeManager";
+import { useCallback } from "react";
+import { $openTab } from "@systems/environment/environment";
 
 export default function TreeNode({
   node,
@@ -45,6 +49,22 @@ export default function TreeNode({
     event.stopPropagation();
   };
 
+  const onClick = useCallback(
+    (event: React.MouseEvent) => {
+      if ( event.ctrlKey || event.metaKey ) {
+        $openTab(`${window.location.origin}/${node.data.id}`);
+        event.stopPropagation(); 
+        event.preventDefault();
+        return;
+      }
+
+      $callCommand(TREE_SELECT_NOTE_CMD, {treeNodeID: node.data.id, commandSrc: 'user'}); 
+      event.stopPropagation(); 
+      event.preventDefault();
+    },
+    [node.data.id]
+  );
+
   function AddIcon(props: IconBaseProps) {
     return treeTheme.AddIcon(props);
   }
@@ -54,7 +74,7 @@ export default function TreeNode({
   }
 
   return (
-    <div ref={dragHandle} style={style} className={clsx("node", node.state)}>
+    <div ref={dragHandle} style={style} className={clsx("node", node.state)} onClick={onClick}>
       <FolderArrow node={node} />
       <span>
         <SlDoc />

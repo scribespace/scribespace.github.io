@@ -1,4 +1,4 @@
-import { DEV } from "@systems/environment";
+import { DEV } from "@systems/environment/environment";
 import {
   isFunctionOrThrow,
   isKeyOrThrow,

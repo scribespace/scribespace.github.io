@@ -8,6 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { CLEAR_HISTORY_CMD } from "../commandsPlugin/editorCommands";
 import { INFOBAR_SUBMIT_INFO_CMD } from "../infobarPlugin/infoCommands";
 import { EditorState } from "lexical";
+import { TREE_PROCESS_START_NOTE_CMD } from "@systems/treeManager";
 
 export function NoteLoaderPlugin() {
     const [editor] = useLexicalComposerContext();
@@ -19,6 +20,7 @@ export function NoteLoaderPlugin() {
     const savesDoneRef = useRef<number>(0);
     const lastSaveDateRef = useRef<string>('--:--:--');
     const noteConverted = useRef<boolean>( false );
+    const pageLoadedRef = useRef<boolean>( false );
 
     const updateSaveData = useCallback(
         () => {
@@ -111,6 +113,16 @@ export function NoteLoaderPlugin() {
             );
         },
         [editor, getSaveString, noteInfo.noteID, saveNote, updateSaveData]
+    );
+
+    useEffect(
+        () => {
+            if ( !pageLoadedRef.current ) {
+                $callCommand(TREE_PROCESS_START_NOTE_CMD, undefined);
+                pageLoadedRef.current = true;
+            }
+        },
+        []
     );
 
     return null;

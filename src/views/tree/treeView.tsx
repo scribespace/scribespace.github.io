@@ -15,7 +15,8 @@ import "./css/treeView.css";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
-import { $getTreeManager, TREE_DATA_CHANGED_CMD } from "@systems/treeManager";
+import { $getTreeNodeIDFromURL, $setURLTreeNodeID, $setWindowTitle } from "@systems/environment/environment";
+import { $getTreeManager, TREE_DATA_CHANGED_CMD, TREE_PROCESS_START_NOTE_CMD, TREE_SELECT_NOTE_CMD, TreeSelectPayload, TreeSelectionSrc } from "@systems/treeManager";
 import { IconBaseProps } from "react-icons";
 import {
   TreeNodeApi,
@@ -34,6 +35,8 @@ export default function TreeView() {
 
   const treeElementRef = useRef<TreeApi<TreeNodeData>>(null);
   const onToggleEnabled = useRef<boolean>(true);
+  const lastSelectionRef = useRef<string>('');
+  const selectionSrcRef = useRef<'unknown' | TreeSelectionSrc>('unknown');
 
   const updateDataVersion = useCallback( 
     () => {
@@ -86,7 +89,17 @@ export default function TreeView() {
   const onSelect = (nodes: TreeNodeApi[]) => {
     if (nodes.length > 1) throw Error("onSelect: Too many files selected!");
     if (nodes.length > 0) {
-      $getTreeManager().selectTreeNode(nodes[0].id);
+      const node = nodes[0];
+      if ( lastSelectionRef.current !== node.data.id ) {
+        $setWindowTitle(node.data.name);
+        if ( selectionSrcRef.current !== 'history' && selectionSrcRef.current !== 'pageload' ) {
+          $setURLTreeNodeID(node.data.id);
+        }
+        
+        lastSelectionRef.current = node.data.id;
+        selectionSrcRef.current = 'unknown';
+        $getTreeManager().selectTreeNode(nodes[0].id);
+      }
     }
   };
 
@@ -126,6 +139,42 @@ export default function TreeView() {
         setControlButtonsRect( controlButtonsRef.current.getBoundingClientRect() );
     },
     [treeParentElement]
+  );
+
+  const callSelection = useCallback(
+    (selectPayload: TreeSelectPayload) => {
+      selectionSrcRef.current = selectPayload.commandSrc;
+      treeElementRef.current?.select(selectPayload.treeNodeID);
+    },
+    []
+  );
+
+  useEffect(
+    () => {
+      return $registerCommandListener(
+        TREE_SELECT_NOTE_CMD,
+        (selectPayload) => {
+          callSelection(selectPayload);
+        }
+      );
+    },
+    [callSelection]
+  );
+
+  useEffect(
+    () => {
+      return $registerCommandListener(
+        TREE_PROCESS_START_NOTE_CMD,
+        () => {
+          const loadTreeNodeID = $getTreeNodeIDFromURL();
+          if ( loadTreeNodeID !== '' ) {
+            callSelection({treeNodeID: loadTreeNodeID, commandSrc: 'pageload'});
+          }
+        }
+      );
+      
+    },
+    [callSelection]
   );
 
   useLayoutEffect( 
@@ -177,3 +226,4 @@ export default function TreeView() {
     </div>
   );
 }
+

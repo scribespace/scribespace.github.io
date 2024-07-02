@@ -2,7 +2,7 @@ import { Command } from "@systems/commandsManager/command";
 import { $callCommand } from "@systems/commandsManager/commandsManager";
 import { assert, variableExists } from "@utils";
 import { $packShortcut, NO_SHORTCUT_PACKED, PackedShortcut, Shortcut } from "./shortcut";
-import { isDev } from "@systems/environment";
+import { isDev } from "@systems/environment/environment";
 
 export interface ActionScopeID {
     id: number;

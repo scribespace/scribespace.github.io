@@ -1,13 +1,14 @@
 import '../helpers/workerMock';
 import { $clearMockedFiles, $getMockedFilesJSON, $setMockedFiles, MockedFile } from "../helpers/fileSystemMock";
-import { $getStreamManager } from "@systems/streamManager/streamManager";
+import { $getFileManager } from "@systems/fileManager/fileManager";
 import { $getTreeManager } from "@systems/treeManager";
 
 import { afterAll, afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 
 afterEach(
-    () => {
+    async () => {
+        await $getFileManager().flush();
         $clearMockedFiles();
     }
 );
@@ -20,7 +21,6 @@ afterAll(
 
 beforeEach( 
     async () => {
-        await $getStreamManager().flush();
         const files: MockedFile[] = [
             {
                 path:"/tree",

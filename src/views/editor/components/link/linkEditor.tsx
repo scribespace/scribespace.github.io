@@ -1,6 +1,7 @@
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { openURL, validateUrl } from "@utils";
+import { $openTab } from "@systems/environment/environment";
+import { validateUrl } from "@utils";
 import { useEffect, useMemo, useRef } from "react";
 import { IconBaseProps } from "react-icons";
 
@@ -29,7 +30,7 @@ export function LinkEditor({
 
   function openURLFromInput() {
     const url = urlInput.current?.value;
-    if (url) openURL(url);
+    if (url) $openTab(url);
   }
 
   function yextChangeAccepted(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -101,3 +102,4 @@ export function LinkEditor({
     </div>
   );
 }
+

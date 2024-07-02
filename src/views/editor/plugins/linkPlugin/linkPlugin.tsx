@@ -20,10 +20,11 @@ import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { LinkEditor } from "@editor/components/link";
 import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
-import { openURL, urlRegExp, validateUrl } from "@utils";
+import { urlRegExp, validateUrl } from "@utils";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { KEY_ENTER_CMD, KEY_SPACE_CMD, SELECTION_CHANGE_CMD } from "../commandsPlugin/editorCommands";
 import { LINK_CONVERT_SELECTED_CMD } from "./linkCommands";
+import { $openTab } from "@systems/environment/environment";
 
 export default function LinkPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -272,7 +273,7 @@ export default function LinkPlugin() {
           const element = editor.getElementByKey(nodeKey) as HTMLLinkElement;
           if ((e as MouseEvent).ctrlKey && element) {
             const url = element.href;
-            openURL(url);
+            $openTab(url);
           }
         }}
       />

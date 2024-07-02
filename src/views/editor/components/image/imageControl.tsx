@@ -2,7 +2,7 @@ import { useMainThemeContext } from "@/mainThemeContext";
 import { MousePosition, assert, notNullOrThrowDev } from "@/utils";
 import { Metric } from "@/utils/types";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { DEV } from "@systems/environment";
+import { DEV } from "@systems/environment/environment";
 
 import {
   CSSProperties,

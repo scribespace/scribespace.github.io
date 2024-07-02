@@ -1,6 +1,6 @@
 import { FileSystem } from "@/interfaces/system/fileSystem/fileSystemInterface";
 import { FileInfo, FileInfoResultType, FileResultType, FileSystemResult, FileSystemStatus, FileUploadMode } from "@interfaces/system/fileSystem/fileSystemShared";
-import { $getStreamManager } from "@systems/streamManager/streamManager";
+import { $getFileManager } from "@systems/fileManager/fileManager";
 import { variableExists } from "@utils";
 import { vi } from "vitest";
 
@@ -90,10 +90,11 @@ export function $clearMockedFiles() {
     filesMapPath.clear();
     filesMapBlob.clear();
     filesMapPathToID.clear();
+    $getFileManager().clear();
 }
 
 export async function $getMockedFiles() {
-    await $getStreamManager().flush();
+    await $getFileManager().flush();
     return [...filesMapID.values()];
 }
 

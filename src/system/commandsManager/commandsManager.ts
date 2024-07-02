@@ -1,6 +1,6 @@
 import { Func, assert } from "@utils";
 import { Command, CommandListener } from "./command";
-import { isDev } from "@systems/environment";
+import { isDev } from "@systems/environment/environment";
 
 const commandMap = new Map<Command<unknown>, CommandListener<unknown>[]>();
 
