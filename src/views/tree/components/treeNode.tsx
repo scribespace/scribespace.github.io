@@ -52,7 +52,7 @@ export default function TreeNode({
   const onClick = useCallback(
     (event: React.MouseEvent) => {
       if ( event.ctrlKey || event.metaKey ) {
-        $openTab(`${window.location.origin}/${node.data.id}`);
+        $openTab(`${window.location.origin}/?${node.data.id}`);
         event.stopPropagation(); 
         event.preventDefault();
         return;

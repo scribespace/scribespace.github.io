@@ -1,3 +1,4 @@
+import '@systems/environment/environmentEvents';
 import { fontFromStyle } from "@utils";
 import { useEffect, useState } from "react";
 import "./css/commonTheme.css";
