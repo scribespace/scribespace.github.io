@@ -38,7 +38,7 @@ interface FileQueue {
     lock: Promise<void>;
 }
 
-class StreamManager {
+class FileManager {
     private __filesPathToID: Map<string, string> = new Map();
     private __filesIDToPath: Map<string, string> = new Map();
 
@@ -249,8 +249,8 @@ class StreamManager {
     }
 }
 
-const __streamManager = new StreamManager();
+const __fileManager = new FileManager();
 
-export function $getStreamManager() {
-    return __streamManager;
+export function $getFileManager() {
+    return __fileManager;
 }

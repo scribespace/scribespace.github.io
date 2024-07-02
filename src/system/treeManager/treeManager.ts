@@ -1,7 +1,7 @@
 import { FileInfoResult, FileSystemStatus, FileUploadMode } from "@interfaces/system/fileSystem/fileSystemShared";
 import { $callCommand } from "@systems/commandsManager/commandsManager";
 import { NOTES_LOAD_CMD } from "@systems/notesManager/notesCommands";
-import { $getStreamManager } from "@systems/streamManager/streamManager";
+import { $getFileManager } from "@systems/fileManager/fileManager";
 import { assert, variableExistsOrThrow } from "@utils";
 import { TREE_DATA_CHANGED_CMD } from "./treeCommands";
 import { SerializedTreeData, TreeData } from "./treeData";
@@ -25,7 +25,7 @@ class TreeManager {
     private async uploadTreeData(treeData: SerializedTreeData) {
         const treeJSON = JSON.stringify(treeData);
         const treeBlob = new Blob([treeJSON]);
-        const infoResult = await $getStreamManager().uploadFile( TREE_FILE, treeBlob, FileUploadMode.Replace );
+        const infoResult = await $getFileManager().uploadFile( TREE_FILE, treeBlob, FileUploadMode.Replace );
         assert( infoResult.status === FileSystemStatus.Success, `Tree didn't upload` );
         return infoResult.fileInfo!;
     }
@@ -33,7 +33,7 @@ class TreeManager {
     async loadTreeData() {
         this.loadTreeStatus();
 
-        const downloadResult = await $getStreamManager().downloadFile(TREE_FILE);
+        const downloadResult = await $getFileManager().downloadFile(TREE_FILE);
         if ( downloadResult.status === FileSystemStatus.Success ) {
             const treeJSON = downloadResult.status !== FileSystemStatus.Success ? '{}' : await downloadResult.file!.content!.text();
             const needSaving = await this.__tree.import(treeJSON);

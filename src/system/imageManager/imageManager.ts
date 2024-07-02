@@ -3,7 +3,7 @@ import { WebWorkerManager } from "@/interfaces/webWorker";
 import { FileSystemStatus, FileUploadMode } from "@/interfaces/system/fileSystem/fileSystemShared";
 import { assert, variableExists, variableExistsOrThrow } from "@/utils";
 import { $getFileSystem } from "@coreSystems";
-import { $getStreamManager } from "@systems/streamManager/streamManager";
+import { $getFileManager } from "@systems/fileManager/fileManager";
 import { IMAGES_PATH, IMAGE_SUPPORTED_FORMATS, LOADING_IMAGE } from "./imageConstants";
 import { ImageManagerWorkerPublic } from "./imageManagerWorker";
 import workerURL from "./imageManagerWorker?worker&url";
@@ -91,7 +91,7 @@ export class ImageManager extends WebWorkerManager<ImageManagerWorkerFunctions, 
   
   private async imageProcessUpload(imageBlob: Blob, imageID: number) {
     const imageName = $getImageName(imageBlob.type);
-    const uploadResult = await $getStreamManager().uploadFile(imageName, imageBlob, FileUploadMode.Add);
+    const uploadResult = await $getFileManager().uploadFile(imageName, imageBlob, FileUploadMode.Add);
     assert( uploadResult.status === FileSystemStatus.Success, "Missing fileInfo" );
     
     const finalURL = await $getFileSystem().getFileURLAsync(uploadResult.fileInfo.id);
