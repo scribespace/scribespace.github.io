@@ -1,12 +1,13 @@
 import { FileInfo, FileSystemStatus } from "@interfaces/system/fileSystem/fileSystemShared";
 import { $callCommand } from "@systems/commandsManager/commandsManager";
-import { $getFileManager, FileHandle } from "@systems/fileManager/fileManager";
+import { $getFileManager, FileHandle, FileUploadReplaceResolve } from "@systems/fileManager/fileManager";
 import { $getNotesManager } from "@systems/notesManager";
 import { NOTES_LOAD_CMD } from "@systems/notesManager/notesCommands";
 import { assert, variableExistsOrThrow } from "@utils";
-import { TREE_DATA_CHANGED_CMD } from "./treeCommands";
+import { TREE_DATA_CHANGED_CMD, TREE_RELOAD_CMD } from "./treeCommands";
 import { SerializedTreeData, TreeData } from "./treeData";
 import { TreeStatus } from "./treeStatus";
+import { BLOCK_EDITING_CMD } from "@systems/systemCommands";
 
 
 const TREE_STATUS_PATH = "tree_status" as const;
@@ -21,6 +22,8 @@ class TreeManager {
     private __treeLoaded = false;
     private __treeHandle: FileHandle = {fileID: TREE_FILE, version: -1};
 
+    private __validTree = false;
+
     get data() { return this.__tree.data; }
 
     private async uploadTreeData(treeData: SerializedTreeData) {
@@ -34,7 +37,20 @@ class TreeManager {
             this.__treeHandle = infoResult.handle;
             fileInfo = infoResult.file.fileInfo;
         } else {
-            const infoResult = await $getFileManager().uploadFile( this.__treeHandle, treeBlob );
+            const infoResult = await $getFileManager().uploadFile( this.__treeHandle, treeBlob, 
+                (_id: string, _path: string, _version:number, oldResolve: FileUploadReplaceResolve) => {
+                    this.__validTree = false;
+                    $callCommand(BLOCK_EDITING_CMD, undefined);
+                    this.loadTreeData().then( 
+                        () => {
+                            $callCommand(TREE_RELOAD_CMD, undefined);
+                            return $getFileManager().getFileInfo(this.__treeHandle);                            
+                        } ).then(
+                            (fileInfo) => {
+                                oldResolve( fileInfo );
+                            }
+                        );
+                } );
             assert( infoResult.status === FileSystemStatus.Success, `Tree didn't upload` );
             fileInfo = infoResult.fileInfo;
         }
@@ -43,6 +59,8 @@ class TreeManager {
     }
 
     async loadTreeData() {
+        this.__treeLoaded = false;
+
         this.loadTreeStatus();
 
         const downloadResult = await $getFileManager().downloadFile(this.__treeHandle.fileID);
@@ -58,12 +76,15 @@ class TreeManager {
             await this.uploadTreeData(this.__tree.export());
         }
        
+        this.__validTree = true;
         this.__treeLoaded = true;
     }
 
-    async storeTreeData() {
-        assert(this.isTreeReady(), 'Tree isnt ready yet');
-        this.uploadTreeData(this.__tree.export());
+    private async storeTreeData() {
+        if ( this.__validTree ) {
+            assert(this.isTreeReady(), 'Tree isnt ready yet');
+            await this.uploadTreeData(this.__tree.export());
+        }
     }
 
     private loadTreeStatus() {
@@ -117,20 +138,22 @@ class TreeManager {
 
     createNode(parentId: string | null, index: number) {
         assert(this.isTreeReady(), 'Tree isnt ready yet');
-
         const node = this.__tree.createNode(parentId, index, EMPTY_NOTE_ID);
 
-        const notePromise = $getNotesManager().createNote();
-        notePromise.then(
-            (result) => {
-                this.__tree.updateNoteID( node.id, result.id );
-                this.storeTreeData();
-            }
-        );
+        const notePromise = this.storeTreeData().then(
+            () => {
+                return $getNotesManager().createNote();
+                }).then(
+                    (result) => {
+                        this.__tree.updateNoteID( node.id, result.id );
+                        this.storeTreeData();
+
+                        return result;
+                    }
+                );
         this.__treeIDToPromise.set(node.id, notePromise);
 
         $callCommand(TREE_DATA_CHANGED_CMD, undefined);
-        this.storeTreeData();
         return node;
     }
 
@@ -146,7 +169,7 @@ class TreeManager {
         if ( noteID === EMPTY_NOTE_ID ) {
             this.__treeIDToPromise.get(id)?.then(
                 (result) => {
-                    $callCommand(NOTES_LOAD_CMD, result.id);
+                    $callCommand(NOTES_LOAD_CMD, {id:result.id});
                 }
             );
 
@@ -154,7 +177,7 @@ class TreeManager {
         }
 
         variableExistsOrThrow(noteID, `Tree Node doesn't have Note ID`);
-        $callCommand(NOTES_LOAD_CMD, noteID);
+        $callCommand(NOTES_LOAD_CMD, {id: noteID});
     }
 
     isTreeReady() {

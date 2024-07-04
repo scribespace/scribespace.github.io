@@ -9,11 +9,19 @@ enum FileOperationType {
     FileGetInfo,
 }
 
+export type FileUploadReplaceResolve = ((result: FileInfoResultType) => void);
+export type InvalidCacheCallback = ((fileID: string, filePath: string, targetVersion: number, oldResolve: FileUploadReplaceResolve) => void);
+
+export interface FileUploadReplaceCallback {
+    resolve: FileUploadReplaceResolve;
+    invalidCacheCallback: InvalidCacheCallback;
+}
+
 interface FileUploadReplace {
     type: FileOperationType.FileUploadReplace;
     version: number;
     content: Blob;
-    resolves: ((result: FileInfoResultType) => void)[];
+    callbacks: FileUploadReplaceCallback[];
 }
 
 interface FileUploadAdd {
@@ -42,7 +50,8 @@ interface FileQueue {
 }
 
 interface FileCache {
-    version: number;
+    targetVersion: number;
+    currentVersion: number;
     fileObject: FileObject;
 }
 
@@ -91,7 +100,7 @@ class FileManager {
                             status: FileSystemStatus.Success
                         };
 
-                        this.__fileCache.set( operationResult.handle.fileID, {fileObject: operationResult.file, version: 0 } );
+                        this.__fileCache.set( operationResult.handle.fileID, {fileObject: operationResult.file, currentVersion: 0, targetVersion: 0 } );
                         fileUpload.resolve(operationResult);
                     } else {
                         fileUpload.resolve(result);
@@ -104,7 +113,7 @@ class FileManager {
 
                     // Data in cache
                     const fileCache = this.__fileCache.get(fileID);
-                    if ( variableExists(fileCache) ) {
+                    if ( variableExists(fileCache) && fileCache.targetVersion === fileGetInfo.version ) {
                         const operationResult: FileInfoResult = {
                             fileInfo: fileCache.fileObject.fileInfo,
                             status: FileSystemStatus.Success
@@ -130,6 +139,28 @@ class FileManager {
                 case FileOperationType.FileUploadReplace:
                 {   
                     const fileUpload = operation as FileUploadReplace;
+                    const fileCache = this.__fileCache.get(fileID);
+                    assert( variableExists(fileCache), `Upload replace before download ${fileID}`);
+
+                    if ( fileCache.targetVersion !== fileUpload.version ) {
+                        for ( const callback of fileUpload.callbacks ){
+                            callback.invalidCacheCallback( fileCache.fileObject.fileInfo.id, fileCache.fileObject.fileInfo.path, fileCache.targetVersion, callback.resolve );
+                        }
+                        break;
+                    }
+
+                    {
+                        const result = await $getFileSystem().getFileInfoAsync( fileID );
+                        assert( result.status === FileSystemStatus.Success, `Couldn't grab FileInfo` );
+                        if ( fileCache.fileObject.fileInfo.hash !== result.fileInfo.hash ) {
+                            ++fileCache.targetVersion;
+                            for ( const callback of fileUpload.callbacks ){
+                                callback.invalidCacheCallback( fileCache.fileObject.fileInfo.id, fileCache.fileObject.fileInfo.path, fileCache.targetVersion, callback.resolve );
+                            }
+                            break;
+                        }
+                    }
+
                     const result = await $getFileSystem().uploadFileAsync( fileID, fileUpload.content, FileUploadMode.Replace );
                     if ( result.status === FileSystemStatus.Success ) {
                         if ( !filePathsIDsSet ) {
@@ -137,34 +168,38 @@ class FileManager {
                             this.__filesIDToPath.set( result.fileInfo.id, result.fileInfo.path );
                             filePathsIDsSet = true;
                         }
-                        this.__fileCache.set( fileID, {fileObject: {content: fileUpload.content, fileInfo: result.fileInfo}, version: 0 } );
+                        this.__fileCache.set( fileID, {fileObject: {content: fileUpload.content, fileInfo: result.fileInfo}, currentVersion: 0, targetVersion: 0 } );
                     } 
 
-                    for ( const resolve of fileUpload.resolves ) {
-                        resolve( result );
+                    for ( const callback of fileUpload.callbacks ) {
+                        callback.resolve( result );
                     }
                 }   
                 break;
                 case FileOperationType.FileDownload:
                     {   
                     const fileDownload = operation as FileDownload;
+                    let targetVersion = 0;
 
                     // Data in cache
                     const fileCache = this.__fileCache.get(fileID);
                     if ( variableExists(fileCache) ) {
-                        const operationResult: FileOperationResult = {
-                            handle: { fileID,  version: fileCache.version },
-                            file: fileCache.fileObject,
-                            status: FileSystemStatus.Success
-                        };
+                        targetVersion = fileCache.targetVersion;
+                        if ( targetVersion === fileCache.currentVersion ) {
+                            const operationResult: FileOperationResult = {
+                                handle: { fileID, version: fileCache.currentVersion },
+                                file: {content: fileCache.fileObject.content.slice(), fileInfo: structuredClone( fileCache.fileObject.fileInfo )},
+                                status: FileSystemStatus.Success
+                            };
 
-                        for ( const resolve of fileDownload.resolves ) {
-                            resolve( operationResult );
-                         }
-                         break;
+                            for ( const resolve of fileDownload.resolves ) {
+                                resolve( operationResult );
+                            }
+                            break;
+                        }
                     }
 
-                    // First download
+                    // First download or updating cache
                     const result = await $getFileSystem().downloadFileAsync( fileID );
                     if ( result.status === FileSystemStatus.Success ) {
                         if ( !filePathsIDsSet ) {
@@ -174,15 +209,15 @@ class FileManager {
                         }
 
                         const operationResult: FileOperationResult = {
-                            handle: { fileID,  version: 0 },
+                            handle: { fileID,  version: targetVersion },
                             file: {...result},
                             status: FileSystemStatus.Success
                         };
-                        this.__fileCache.set( fileID, {fileObject: operationResult.file, version: 0 } );
-
+                        this.__fileCache.set( fileID, {fileObject: operationResult.file, currentVersion: targetVersion, targetVersion: targetVersion } );
+                        
                         for ( const resolve of fileDownload.resolves ) {
                             resolve( operationResult );
-                         }
+                        }
                     } else {
                         for ( const resolve of fileDownload.resolves ) {
                            resolve( result );
@@ -230,7 +265,7 @@ class FileManager {
         );
     }
     
-    uploadFile( fileHandle: FileHandle, content: Blob ): Promise<FileInfoResultType> {
+    uploadFile( fileHandle: FileHandle, content: Blob, invalidCacheCallback: InvalidCacheCallback ): Promise<FileInfoResultType> {
         return new Promise<FileInfoResultType>(
             (resolve) => {
                 const fileID = this.getFileID(fileHandle.fileID);
@@ -243,13 +278,13 @@ class FileManager {
                         type: FileOperationType.FileUploadReplace,
                         version: fileHandle.version,
                         content,
-                        resolves: [resolve]
+                        callbacks: [{invalidCacheCallback, resolve}]
                     };
                     operations.push(fileUpload);
                 } else {
                     const lastUpload = operations[operations.length - 1] as FileUploadReplace;
                     lastUpload.content = content;
-                    lastUpload.resolves.push(resolve);
+                    lastUpload.callbacks.push( {invalidCacheCallback, resolve } );
                 }
 
                 this.processFile(fileID, fileQueue);

@@ -9,3 +9,4 @@ export interface TreeSelectPayload {
 }
 export const TREE_SELECT_NOTE_CMD = $createCommand<TreeSelectPayload>('TREE_SELECT_NOTE_CMD');
 export const TREE_PROCESS_START_NOTE_CMD = $createCommand<void>('TREE_PROCESS_START_NOTE_CMD');
+export const TREE_RELOAD_CMD = $createCommand<void>('TREE_RELOAD_CMD');

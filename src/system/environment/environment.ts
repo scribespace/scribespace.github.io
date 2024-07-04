@@ -58,3 +58,7 @@ export function $setWindowTitle(title: string) {
 export function $openTab(url: string) {
   window.open( url, '_blank')?.focus();
 }
+
+export function $reloadPage() {
+  window.location.reload();
+}

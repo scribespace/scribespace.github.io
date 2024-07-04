@@ -7,7 +7,7 @@ import {
   AUTH_LOGOUT,
 } from "../system/authentication";
 
-import { MainView } from "./mainView";
+import { MainView } from "./main/mainView";
 import { LogInView } from "./logInView";
 
 export function WelcomeView() {

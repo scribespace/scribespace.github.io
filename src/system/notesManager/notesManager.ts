@@ -2,10 +2,11 @@ import { $getFileSystem } from "@coreSystems";
 import { FileInfo, FileSystemStatus } from "@interfaces/system/fileSystem/fileSystemShared";
 import { $callCommand } from "@systems/commandsManager/commandsManager";
 import { editorGetEmptyNote } from "@systems/editorManager";
-import { $getFileManager, FileHandle } from "@systems/fileManager/fileManager";
+import { $getFileManager, FileHandle, FileUploadReplaceResolve } from "@systems/fileManager/fileManager";
 import { assert, variableExists } from "@utils";
-import { NOTES_CONVERTING_CMD, NOTES_CREATING_META_CMD, NOTES_FINISH_CONVERTING_CMD } from "./notesCommands";
+import { NOTES_CONVERTING_CMD, NOTES_CREATING_META_CMD, NOTES_FINISH_CONVERTING_CMD, NOTES_LOAD_CMD } from "./notesCommands";
 import { NoteObject, noteConvertToV0 } from "./notesVersions";
+import { BLOCK_EDITING_CMD } from "@systems/systemCommands";
 
 export const NOTES_VERSION = 0 as const;
 export const NOTES_PATH = "/notes/";
@@ -40,7 +41,21 @@ class NotesManager {
             this.__notesHandles.set( result.file.fileInfo.id, result.handle );
             fileInfo = result.file.fileInfo;
         } else {
-            const result = await $getFileManager().uploadFile( noteHandle, fileData );
+            const result = await $getFileManager().uploadFile( noteHandle, fileData, ( id: string, _path: string, _version: number, oldResolve: FileUploadReplaceResolve ) => {
+                $callCommand(BLOCK_EDITING_CMD, undefined);
+
+                $getFileManager().downloadFile( id ).then(
+                    (result) => {
+                        if ( result.status === FileSystemStatus.Success) {
+                            this.__notesHandles.set( id, result.handle );
+                            oldResolve({status: FileSystemStatus.Success, fileInfo: result.file.fileInfo});
+                            $callCommand( NOTES_LOAD_CMD, {id, force: true});
+                            return;
+                        }
+                        throw Error(`Couldn't refresh note`);
+                    }
+                );
+            } );
             assert( result.status === FileSystemStatus.Success, `Note Object didnt upload` );
             fileInfo = result.fileInfo;
         }
@@ -129,7 +144,24 @@ class NotesManager {
             this.__metaObjectHandle = result.handle;
             fileInfo = result.file.fileInfo;
         } else {
-            const result = await $getFileManager().uploadFile(this.__metaObjectHandle, metaBlob);
+            const result = await $getFileManager().uploadFile(this.__metaObjectHandle, metaBlob, 
+                (_id: string, path: string, _version: number, oldResolve: FileUploadReplaceResolve) => {
+                    $callCommand(BLOCK_EDITING_CMD, undefined);
+                    this.loadMetaFile().then(
+                        ()=>{
+                            return $getFileManager().downloadFile(path);
+                        }).then(
+                            (result) => {
+                                if ( result.status === FileSystemStatus.Success ) {
+                                    oldResolve({status: FileSystemStatus.Success, fileInfo: result.file.fileInfo});
+                                    return;
+                                }
+
+                                throw Error(`Couldn't refresh metafile`);
+                            }
+                        );
+                    }
+                );
             assert(result.status === FileSystemStatus.Success, `Meta Data didn't upload`);
             fileInfo = result.fileInfo;
         }

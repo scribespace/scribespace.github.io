@@ -36,7 +36,7 @@ import { HandleDeleteError, HandleDownloadError, HandleGetMetadataError, HandleU
 
 export function metaToFileInfo(meta: DropboxFileMetadata): FileInfo {
   return {
-    hash: meta.content_hash,
+    hash: meta.content_hash as string,
     id: meta.id,
     path: meta.path_lower || '',
     date: meta.server_modified

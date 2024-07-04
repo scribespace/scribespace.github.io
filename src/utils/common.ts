@@ -1,4 +1,4 @@
-import { Func } from "./types/types";
+import { BaseFunc, Func } from "./types/types";
 
 export function variableExists<T>(variable: T | undefined): variable is T {
   return typeof variable !== "undefined";
@@ -66,4 +66,12 @@ export const urlRegExp = new RegExp(
 );
 export function validateUrl(url: string): boolean {
   return url === "https://" || urlRegExp.test(url);
+}
+
+export function bundleFunctions( ...funcs: BaseFunc[] ): BaseFunc {
+  return () => {
+    for ( const func of funcs ) {
+      func();
+    }
+  };
 }

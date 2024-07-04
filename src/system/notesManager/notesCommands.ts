@@ -1,6 +1,11 @@
 import { $createCommand } from "@systems/commandsManager/commandsManager";
 
-export const NOTES_LOAD_CMD = $createCommand<string>('NOTES_LOAD_CMD');
+export interface NoteLoadPayload {
+    id: string;
+    force?: boolean;
+}
+
+export const NOTES_LOAD_CMD = $createCommand<NoteLoadPayload>('NOTES_LOAD_CMD');
 export const NOTE_CONVERTED_CMD = $createCommand<void>('NOTE_CONVERTED_CMD');
 
 export const NOTES_CREATING_META_CMD = $createCommand<void>('NOTES_CREATING_META_CMD');

@@ -1,20 +1,20 @@
 import { NodeRendererProps } from "react-arborist";
 
+import clsx from "clsx";
 import { AiOutlineEdit } from "react-icons/ai";
 import { SlDoc } from "react-icons/sl";
-import clsx from "clsx";
 
-import "./css/treeNode.css";
-import { TreeNodeData } from "../../../system/treeManager/treeData";
-import { FolderArrow } from "./folderArrow";
-import { Input } from "./input";
 import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
-import { IconBaseProps } from "react-icons";
 import { $callCommand } from "@systems/commandsManager/commandsManager";
+import { $getURLTreeNodeID, $openTab } from "@systems/environment/environment";
 import { TREE_SELECT_NOTE_CMD } from "@systems/treeManager";
 import { useCallback } from "react";
-import { $getTreeNodeIDFromURL, $openTab } from "@systems/environment/environment";
+import { IconBaseProps } from "react-icons";
+import { TreeNodeData } from "../../../system/treeManager/treeData";
+import "./css/treeNode.css";
+import { FolderArrow } from "./folderArrow";
+import { Input } from "./input";
 
 export default function TreeNode({
   node,
@@ -52,7 +52,7 @@ export default function TreeNode({
   const onClick = useCallback(
     (event: React.MouseEvent) => {
       if ( event.ctrlKey || event.metaKey ) {
-        $openTab($getTreeNodeIDFromURL());
+        $openTab($getURLTreeNodeID(node.id));
         event.stopPropagation(); 
         event.preventDefault();
         return;
@@ -62,7 +62,7 @@ export default function TreeNode({
       event.stopPropagation(); 
       event.preventDefault();
     },
-    [node.data.id]
+    [node.data.id, node.id]
   );
 
   function AddIcon(props: IconBaseProps) {

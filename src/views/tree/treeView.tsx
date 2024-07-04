@@ -22,6 +22,8 @@ import {
   TreeNodeApi,
   TreeNodeData,
 } from "../../system/treeManager/treeData";
+import { bundleFunctions } from "@utils";
+import { BLOCK_EDITING_CMD } from "@systems/systemCommands";
 
 export default function TreeView() {
   const { treeTheme }: MainTheme = useMainThemeContext();
@@ -163,15 +165,23 @@ export default function TreeView() {
 
   useEffect(
     () => {
-      return $registerCommandListener(
-        TREE_PROCESS_START_NOTE_CMD,
-        () => {
-          const loadTreeNodeID = $getTreeNodeIDFromURL();
-          if ( loadTreeNodeID !== '' ) {
-            callSelection({treeNodeID: loadTreeNodeID, commandSrc: 'pageload'});
-          }
-        }
-      );
+      return bundleFunctions(
+         $registerCommandListener(
+            TREE_PROCESS_START_NOTE_CMD,
+            () => {
+              const loadTreeNodeID = $getTreeNodeIDFromURL();
+              if ( loadTreeNodeID !== '' ) {
+                callSelection({treeNodeID: loadTreeNodeID, commandSrc: 'pageload'});
+              }
+            }
+          ),
+          $registerCommandListener(
+            BLOCK_EDITING_CMD,
+            () => {
+
+            }
+          )
+        );
       
     },
     [callSelection]
@@ -207,7 +217,7 @@ export default function TreeView() {
         <div ref={setTreeParentElement} style={{ height: `calc(100% - ${controlButtonsRect.height}px)`, overflow: 'visible' }} onResize={updateSize}>
           <Tree
             ref={treeElementRef}
-            disableEdit={!$getTreeManager().isTreeReady()}
+            disableEdit={true}
             data={$getTreeManager().data}
             width={"100%"}
             height={treeParentRect.height}
