@@ -164,7 +164,7 @@ async () => {
                 $getFileManager().uploadFile(fileHandle, new Blob([JSON.stringify(file)]), invalidCacheFunction);
             }
 
-            expect(await $getMockedFilesJSON()).toBe('[{"path":"/notes/0","hash":"/notes/0","id":"id:/notes/0","content":{"data":["{\\"root\\":{\\"children\\":[{\\"children\\":[{\\"detail\\":0,\\"format\\":0,\\"mode\\":\\"normal\\",\\"style\\":\\"\\",\\"text\\":\\"7\\",\\"type\\":\\"extended-text\\",\\"version\\":1}],\\"direction\\":\\"ltr\\",\\"format\\":\\"\\",\\"indent\\":0,\\"type\\":\\"paragraph\\",\\"version\\":1,\\"textFormat\\":0}],\\"direction\\":\\"ltr\\",\\"format\\":\\"\\",\\"indent\\":0,\\"type\\":\\"root\\",\\"version\\":1}}"],"size":289,"type":"text/xml"}}]');
+            expect(await $getMockedFilesJSON()).toBe('[{"path":"/notes/0","hash":"/notes/01","id":"id:/notes/0","content":{"data":["{\\"root\\":{\\"children\\":[{\\"children\\":[{\\"detail\\":0,\\"format\\":0,\\"mode\\":\\"normal\\",\\"style\\":\\"\\",\\"text\\":\\"7\\",\\"type\\":\\"extended-text\\",\\"version\\":1}],\\"direction\\":\\"ltr\\",\\"format\\":\\"\\",\\"indent\\":0,\\"type\\":\\"paragraph\\",\\"version\\":1,\\"textFormat\\":0}],\\"direction\\":\\"ltr\\",\\"format\\":\\"\\",\\"indent\\":0,\\"type\\":\\"root\\",\\"version\\":1}}"],"size":289,"type":"text/xml"}}]');
             expect($getFileSystemStats().uploadCount).toBe(1);
             expect(invalidCacheFunction).not.toHaveBeenCalled();
         });

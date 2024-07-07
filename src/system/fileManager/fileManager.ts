@@ -76,8 +76,8 @@ export interface FileOperationResult extends FileSystemSuccessResult {
 export type FileOperationResultType = FileOperationResult | FileSystemFailedResult;
 const FILE_UPLOAD_ADD_ID = '$fileAdd' as const;
 
-const FILE_CHANGE_VALID_PERIOD = 90000 as const;
-const FILE_CACHE_COUNT = 20 as const;
+export const FILE_CHANGE_VALID_PERIOD = 90000 as const;
+export const FILE_CACHE_COUNT = 20 as const;
 
 class FileManager {
     private __filesPathToID: Map<string, string> = new Map();
@@ -216,8 +216,6 @@ class FileManager {
                     }
 
                     if ( (new Date()).getTime() > fileCache.nextChangeTest) {
-                        const result = await $getFileSystem().getFileInfoAsync( fileID );
-                        assert( result.status === FileSystemStatus.Success, `Couldn't grab FileInfo` );
                         if ( !(await this.validateCache(fileID, fileCache)) ) {
                             for ( const callback of fileUpload.callbacks ){
                                 callback.invalidCacheCallback( fileCache.fileObject.fileInfo.id, fileCache.fileObject.fileInfo.path, fileCache.targetVersion, callback.resolve );
@@ -434,6 +432,7 @@ class FileManager {
         this.__filesPathToID.clear();
         this.__filesIDToPath.clear();
         this.__fileCache.clear();
+        this.__fileCachedLastUsed.length = 0;
     }
 }
 
@@ -441,4 +440,8 @@ const __fileManager = new FileManager();
 
 export function $getFileManager() {
     return __fileManager;
+}
+
+export function _test_getNewFileManager() {
+    return new FileManager();
 }

@@ -40,7 +40,7 @@ vi.spyOn(global, 'Blob').mockImplementation(
             }
             
             slice() {
-                return new Blob([]);
+                return new Blob(structuredClone(this.data));
             }
 
             text() {
@@ -133,6 +133,11 @@ export function $fileSystemSetDelay(delay: number) {
     fileSystemSettings.callsDelay = delay;
 }
 
+async function fakeWait() {
+    if ( fileSystemSettings.callsDelay > 0 )
+        await new Promise(resolve => setTimeout(resolve, fileSystemSettings.callsDelay));
+}
+
 vi.mock('@coreSystems', 
 async (importOriginal) => {
     const mod = await importOriginal<typeof import('@coreSystems')>();
@@ -170,12 +175,12 @@ async (importOriginal) => {
                         return mockedFile.hash;
                     },
                     getFileHash: async function (path: string): Promise<string> {
-                        await new Promise(resolve => setTimeout(resolve, fileSystemSettings.callsDelay));
+                        await fakeWait();
                         const mockedFile = loadFile(path) || { hash: '0' };
                         return mockedFile.hash;
                     },
                     getFileInfo: async function (path: string): Promise<FileInfoResultType> {
-                        await new Promise(resolve => setTimeout(resolve, fileSystemSettings.callsDelay));
+                        await fakeWait();
                         const mockedFile = loadFile(path) || null;
                         if (mockedFile == null)
                             {
@@ -193,7 +198,7 @@ async (importOriginal) => {
                         };
                     },
                     uploadFile: async function (path: string, content: Blob, mode: FileUploadMode): Promise<FileInfoResultType> {
-                        await new Promise(resolve => setTimeout(resolve, fileSystemSettings.callsDelay));
+                        await fakeWait();
 
                         if ( path.startsWith('id:') && (mode === FileUploadMode.Add || !filesMapID.has(path) ) ) {
                             return {status: FileSystemStatus.NotFound };
@@ -213,6 +218,7 @@ async (importOriginal) => {
                         let mockedFile = loadFile(path);
                         if ( variableExists(mockedFile) ) {
                             mockedFile.content = content;
+                            mockedFile.hash += '1';
                         } else {
                             mockedFile = { path: path, hash: path, id: 'id:'+path, content: content };
                         }
@@ -222,7 +228,7 @@ async (importOriginal) => {
                         return { status: FileSystemStatus.Success, fileInfo: { path: mockedFile.path, hash: mockedFile.hash, id: mockedFile.id, date: '2015-05-12T15:50:38Z' } };
                     },
                     downloadFile: async function (path: string): Promise<FileResultType> {
-                        await new Promise(resolve => setTimeout(resolve, fileSystemSettings.callsDelay));
+                        await fakeWait();
 
                         const mockedFile = loadFile(path);
                         if (!variableExists(mockedFile)) {
@@ -236,7 +242,7 @@ async (importOriginal) => {
                         };
                     },
                     deleteFile: async function (path: string): Promise<FileSystemResult> {
-                        await new Promise(resolve => setTimeout(resolve, fileSystemSettings.callsDelay));
+                        await fakeWait();
                         if (!fileExists(path)) return { status: FileSystemStatus.NotFound };
 
                         deleteFile(loadFile(path)!);
@@ -246,13 +252,13 @@ async (importOriginal) => {
                         };
                     },
                     getFileURL: async function (path: string): Promise<string> {
-                        await new Promise(resolve => setTimeout(resolve, fileSystemSettings.callsDelay));
+                        await fakeWait();
                         if (!fileExists(path)) return '';
 
                         return 'https://' + path + '.com';
                     },
                     getFileList: async function (dirPath: string, callback: (list: FileInfo[]) => void): Promise<FileSystemResult> {
-                        await new Promise(resolve => setTimeout(resolve, fileSystemSettings.callsDelay));
+                        await fakeWait();
                         const fileList: FileInfo[] = [];
                         for (const [filePath,file] of filesMapPath) {
                             if (filePath.startsWith(dirPath)) {
