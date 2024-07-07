@@ -17,6 +17,7 @@ import { MainTheme } from "@/theme";
 import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import { $getTreeNodeIDFromURL, $setURLTreeNodeID, $setWindowTitle } from "@systems/environment/environment";
 import { $getTreeManager, TREE_DATA_CHANGED_CMD, TREE_PROCESS_START_NOTE_CMD, TREE_SELECT_NOTE_CMD, TreeSelectPayload, TreeSelectionSrc } from "@systems/treeManager";
+import { bundleFunctions } from "@utils";
 import { IconBaseProps } from "react-icons";
 import {
   TreeNodeApi,
@@ -163,15 +164,17 @@ export default function TreeView() {
 
   useEffect(
     () => {
-      return $registerCommandListener(
-        TREE_PROCESS_START_NOTE_CMD,
-        () => {
-          const loadTreeNodeID = $getTreeNodeIDFromURL();
-          if ( loadTreeNodeID !== '' ) {
-            callSelection({treeNodeID: loadTreeNodeID, commandSrc: 'pageload'});
-          }
-        }
-      );
+      return bundleFunctions(
+         $registerCommandListener(
+            TREE_PROCESS_START_NOTE_CMD,
+            () => {
+              const loadTreeNodeID = $getTreeNodeIDFromURL();
+              if ( loadTreeNodeID !== '' ) {
+                callSelection({treeNodeID: loadTreeNodeID, commandSrc: 'pageload'});
+              }
+            }
+          ),
+        );
       
     },
     [callSelection]
@@ -207,7 +210,7 @@ export default function TreeView() {
         <div ref={setTreeParentElement} style={{ height: `calc(100% - ${controlButtonsRect.height}px)`, overflow: 'visible' }} onResize={updateSize}>
           <Tree
             ref={treeElementRef}
-            disableEdit={!$getTreeManager().isTreeReady()}
+            disableEdit={true}
             data={$getTreeManager().data}
             width={"100%"}
             height={treeParentRect.height}

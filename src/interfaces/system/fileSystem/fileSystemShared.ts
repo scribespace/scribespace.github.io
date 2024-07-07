@@ -12,15 +12,10 @@ export enum FileUploadMode {
 }
 
 export interface FileInfo {
-  hash?: string;
+  hash: string;
   id: string;
   path: string;
   date: string;
-}
-
-export interface File {
-  content: Blob;
-  info: FileInfo;
 }
 
 export interface FileSystemResult {
@@ -40,7 +35,11 @@ export interface FileInfoResult extends FileSystemSuccessResult {
 }
 export type FileInfoResultType = FileSystemFailedResult | FileInfoResult;
 
-export interface FileResult extends FileSystemSuccessResult {
-  file: File;
+export interface FileObject {
+  content: Blob;
+  fileInfo: FileInfo;
+}
+
+export interface FileResult extends FileObject, FileSystemSuccessResult {
 }
 export type FileResultType = FileSystemFailedResult | FileResult;

@@ -1,14 +1,14 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { mergeRegister } from "@lexical/utils";
 import { $callCommand, $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import { $getNotesManager } from "@systems/notesManager";
 import { NOTES_LOAD_CMD, NOTE_CONVERTED_CMD } from "@systems/notesManager/notesCommands";
-import { variableExists } from "@utils";
+import { BLOCK_EDITING_CMD } from "@systems/systemCommands";
+import { TREE_PROCESS_START_NOTE_CMD } from "@systems/treeManager";
+import { bundleFunctions, variableExists } from "@utils";
+import { EditorState } from "lexical";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CLEAR_HISTORY_CMD } from "../commandsPlugin/editorCommands";
 import { INFOBAR_SUBMIT_INFO_CMD } from "../infobarPlugin/infoCommands";
-import { EditorState } from "lexical";
-import { TREE_PROCESS_START_NOTE_CMD } from "@systems/treeManager";
 
 export function NoteLoaderPlugin() {
     const [editor] = useLexicalComposerContext();
@@ -82,17 +82,17 @@ export function NoteLoaderPlugin() {
 
     useEffect(
         () => {
-            return mergeRegister( 
+            return bundleFunctions( 
                 $registerCommandListener(
                     NOTES_LOAD_CMD,
-                    async (notePath) => {
-                        if ( currentNoteRef.current === notePath ) {
+                    async (noteLoadPayload) => {
+                        if ( currentNoteRef.current === noteLoadPayload.id && !noteLoadPayload.force ) {
                             return;
                         }
 
                         loadPromiseRef.current = loadPromiseRef.current.then( () => {
                             editor.setEditable(false);
-                            setNoteInfo( {loadVersion: ++loadVersionRef.current, noteID: notePath});
+                            setNoteInfo( {loadVersion: ++loadVersionRef.current, noteID: noteLoadPayload.id});
                         });
                     }
                 ),
@@ -100,6 +100,12 @@ export function NoteLoaderPlugin() {
                     NOTE_CONVERTED_CMD,
                     () => {
                         noteConverted.current = true;
+                    }
+                ),
+                $registerCommandListener(
+                    BLOCK_EDITING_CMD,
+                    () => {
+                        editor.setEditable(false);
                     }
                 ),
                 editor.registerUpdateListener(

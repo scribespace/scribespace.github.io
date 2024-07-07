@@ -36,7 +36,7 @@ import { HandleDeleteError, HandleDownloadError, HandleGetMetadataError, HandleU
 
 export function metaToFileInfo(meta: DropboxFileMetadata): FileInfo {
   return {
-    hash: meta.content_hash,
+    hash: meta.content_hash as string,
     id: meta.id,
     path: meta.path_lower || '',
     date: meta.server_modified
@@ -303,7 +303,8 @@ export function GetExtendedFileSystemBase<TExtend extends Constructor>(extend: T
 
       const result: FileResult = {
         status: FileSystemStatus.Success,
-        file: {info: metaToFileInfo( fileMeta ), content: fileContent }
+        content: fileContent,
+        fileInfo: metaToFileInfo( fileMeta )
       };
 
       return result;

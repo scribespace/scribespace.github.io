@@ -1,6 +1,6 @@
-import { Func, assert } from "@utils";
-import { Command, CommandListener } from "./command";
 import { isDev } from "@systems/environment/environment";
+import { BaseFunc, assert } from "@utils";
+import { Command, CommandListener } from "./command";
 
 const commandMap = new Map<Command<unknown>, CommandListener<unknown>[]>();
 
@@ -8,7 +8,7 @@ export function $createCommand<P>(name:string) : Command<P> {
     return isDev() ? new Command<P>(name) : new Command<P>();
 }
 
-export function $registerCommandListener<P>( command: Command<P>, listener: CommandListener<P> ): Func {
+export function $registerCommandListener<P>( command: Command<P>, listener: CommandListener<P> ): BaseFunc {
     if ( !commandMap.has(command as Command<unknown>) ) {
         commandMap.set(command as Command<unknown>, []);
     }

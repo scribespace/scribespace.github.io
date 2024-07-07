@@ -1,11 +1,12 @@
 import { $getFileSystem } from "@coreSystems";
-import { FileSystemStatus, FileUploadMode } from "@interfaces/system/fileSystem/fileSystemShared";
+import { FileInfo, FileSystemStatus } from "@interfaces/system/fileSystem/fileSystemShared";
 import { $callCommand } from "@systems/commandsManager/commandsManager";
 import { editorGetEmptyNote } from "@systems/editorManager";
-import { $getFileManager } from "@systems/fileManager/fileManager";
-import { assert } from "@utils";
-import { NOTES_CONVERTING_CMD, NOTES_CREATING_META_CMD, NOTES_FINISH_CONVERTING_CMD } from "./notesCommands";
+import { $getFileManager, FileHandle, FileUploadReplaceResolve } from "@systems/fileManager/fileManager";
+import { assert, variableExists } from "@utils";
+import { NOTES_CONVERTING_CMD, NOTES_CREATING_META_CMD, NOTES_FINISH_CONVERTING_CMD, NOTES_LOAD_CMD } from "./notesCommands";
 import { NoteObject, noteConvertToV0 } from "./notesVersions";
+import { BLOCK_EDITING_CMD } from "@systems/systemCommands";
 
 export const NOTES_VERSION = 0 as const;
 export const NOTES_PATH = "/notes/";
@@ -24,17 +25,45 @@ interface NotesMetaObjectSereialized {
 
 class NotesManager {
     private __metaObject: NotesMetaObject = {version: -1, notes: new Map()};
+    private __metaObjectHandle: FileHandle = {fileID: NOTES_META_PATH, version: -1};
+    private __notesHandles: Map<string, FileHandle> = new Map();
 
-    private async uploadNoteObject(path: string, noteObject: NoteObject, uploadMode: FileUploadMode ) {
-        const fileData = JSON.stringify(noteObject);
-        const infoResult = await $getFileManager().uploadFile(path, new Blob([fileData]), uploadMode);
-        assert( infoResult.status === FileSystemStatus.Success, `Note Object didnt' upload` );
+    private async uploadNoteObject(path: string, noteObject: NoteObject ) {
+        const fileData = new Blob([JSON.stringify(noteObject)]);
 
-        return infoResult;
+        const noteHandle = this.__notesHandles.get(path);
+        let fileInfo: FileInfo;
+        if ( !variableExists( noteHandle ) || noteHandle.version === -1 ) {
+            assert( !$getFileSystem().isFileID(path), `Trying to create note that already exists!` );
+            const result = await $getFileManager().createFile(path, fileData);
+            assert( result.status === FileSystemStatus.Success, `Note Object didnt create` );
+            assert( result.file.fileInfo.path === path, `Note of this name already existed. Probably used id and path separetally` );
+            this.__notesHandles.set( result.file.fileInfo.id, result.handle );
+            fileInfo = result.file.fileInfo;
+        } else {
+            const result = await $getFileManager().uploadFile( noteHandle, fileData, ( id: string, _path: string, _version: number, oldResolve: FileUploadReplaceResolve ) => {
+                $callCommand(BLOCK_EDITING_CMD, undefined);
+
+                $getFileManager().downloadFile( id ).then(
+                    (result) => {
+                        if ( result.status === FileSystemStatus.Success) {
+                            this.__notesHandles.set( id, result.handle );
+                            oldResolve({status: FileSystemStatus.Success, fileInfo: result.file.fileInfo});
+                            $callCommand( NOTES_LOAD_CMD, {id, force: true});
+                            return;
+                        }
+                        throw Error(`Couldn't refresh note`);
+                    }
+                );
+            } );
+            assert( result.status === FileSystemStatus.Success, `Note Object didnt upload` );
+            fileInfo = result.fileInfo;
+        }
+        return fileInfo;
     }
 
     async storeNoteObject( path: string, noteObject: NoteObject ) {
-        return this.uploadNoteObject(path, noteObject, FileUploadMode.Replace);
+        return this.uploadNoteObject(path, noteObject);
     }
 
     async storeNote( path: string, note: string ) {
@@ -45,19 +74,19 @@ class NotesManager {
         const fileName = "scribe-space-id-" + crypto.randomUUID() + (new Date().getTime());
         const emptyNote = await editorGetEmptyNote();
         
-        const infoResult = await this.uploadNoteObject( NOTES_PATH + fileName, {version: NOTES_VERSION, data: emptyNote}, FileUploadMode.Add );
-        if (infoResult.status === FileSystemStatus.Success) {
-            this.__metaObject.notes.set(infoResult.fileInfo!.id, infoResult.fileInfo!.path);
-            this.storeMetaFile();
-        }
+        const fileInfo = await this.uploadNoteObject( NOTES_PATH + fileName, {version: NOTES_VERSION, data: emptyNote} );
+        this.__metaObject.notes.set(fileInfo.id, fileInfo.path);
+        this.storeMetaFile();
 
-        return infoResult;
+        return fileInfo;
     }
 
     async loadNote( notePath: string ): Promise<NoteObject> {
         const downloadResult = await $getFileManager().downloadFile(notePath);
         assert(downloadResult.status === FileSystemStatus.Success, 'Note couldnt be downloaded');
-        const content = await downloadResult.file!.content!.text();
+        this.__notesHandles.set(notePath, downloadResult.handle);
+
+        const content = await downloadResult.file.content.text();
         let noteObject: NoteObject;
         try {
             noteObject = JSON.parse( content ) as NoteObject;
@@ -70,10 +99,11 @@ class NotesManager {
     }
 
     private async loadMetaFile() {
-        const downloadResults = await $getFileManager().downloadFile(NOTES_META_PATH);
+        const downloadResults = await $getFileManager().downloadFile(this.__metaObjectHandle.fileID);
         
         if ( downloadResults.status === FileSystemStatus.Success ) {
-            const metaObjectJSON = await downloadResults.file!.content!.text();
+            this.__metaObjectHandle = downloadResults.handle;
+            const metaObjectJSON = await downloadResults.file.content.text();
             const metaObjectSerialized = JSON.parse(metaObjectJSON) as NotesMetaObjectSereialized;
 
             assert( metaObjectSerialized.version === NOTES_VERSION, 'Meta on server doesnt match version' );
@@ -105,11 +135,38 @@ class NotesManager {
             version: this.__metaObject.version,
             notes: Array.from(this.__metaObject.notes)
         };
-        const metaJSON = JSON.stringify(metaSerialized);
-        const fileInfo = await $getFileManager().uploadFile(NOTES_META_PATH, new Blob([metaJSON]), FileUploadMode.Replace);
-        assert(fileInfo.status === FileSystemStatus.Success, `Meta Data didn't upload`);
+        const metaBlob = new Blob([JSON.stringify(metaSerialized)]);
+        let fileInfo: FileInfo;
+        if ( this.__metaObjectHandle.version === -1 ) {
+            const result = await $getFileManager().createFile( this.__metaObjectHandle.fileID, metaBlob );
+            assert( result.status === FileSystemStatus.Success, `Couldn't create note's meta file` );
+            assert( this.__metaObjectHandle.fileID === result.file.fileInfo.path, `Created note's meta when one is already on the server! ${result.file.fileInfo.path}` );
+            this.__metaObjectHandle = result.handle;
+            fileInfo = result.file.fileInfo;
+        } else {
+            const result = await $getFileManager().uploadFile(this.__metaObjectHandle, metaBlob, 
+                (_id: string, path: string, _version: number, oldResolve: FileUploadReplaceResolve) => {
+                    $callCommand(BLOCK_EDITING_CMD, undefined);
+                    this.loadMetaFile().then(
+                        ()=>{
+                            return $getFileManager().downloadFile(path);
+                        }).then(
+                            (result) => {
+                                if ( result.status === FileSystemStatus.Success ) {
+                                    oldResolve({status: FileSystemStatus.Success, fileInfo: result.file.fileInfo});
+                                    return;
+                                }
 
-        return fileInfo.fileInfo;
+                                throw Error(`Couldn't refresh metafile`);
+                            }
+                        );
+                    }
+                );
+            assert(result.status === FileSystemStatus.Success, `Meta Data didn't upload`);
+            fileInfo = result.fileInfo;
+        }
+
+        return fileInfo;
     }
 
     private async processNotes() {

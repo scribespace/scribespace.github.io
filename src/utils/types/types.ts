@@ -7,6 +7,7 @@ export interface Font {
 
 export type CSSTheme = string;
 
+export type BaseFunc = () => void;
 export type Func = (...args: any[]) => any;
 
 export type IsFunction<F> = F extends Func ? F : never;
