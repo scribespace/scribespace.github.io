@@ -1,5 +1,7 @@
 import { $getFileSystem } from "@coreSystems";
 import { FileInfoResult, FileInfoResultType, FileObject, FileSystemFailedResult, FileSystemStatus, FileSystemSuccessResult, FileUploadMode } from "@interfaces/system/fileSystem/fileSystemShared";
+import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
+import { APP_GET_FOCUS } from "@systems/systemCommands";
 import { assert, variableExists } from "@utils";
 
 enum FileOperationType {
@@ -7,6 +9,7 @@ enum FileOperationType {
     FileUploadAdd,
     FileDownload,
     FileGetInfo,
+    FileValidateCache,
 }
 
 export type FileUploadReplaceResolve = ((result: FileInfoResultType) => void);
@@ -42,7 +45,11 @@ interface FileGetInfo {
     resolves: ((result: FileInfoResultType) => void)[];
 }
 
-type FileOperation = FileUploadReplace | FileDownload | FileGetInfo | FileUploadAdd;
+interface FileValidateCache {
+    type: FileOperationType.FileValidateCache;
+}
+
+type FileOperation = FileUploadReplace | FileDownload | FileGetInfo | FileUploadAdd | FileValidateCache;
 
 interface FileQueue {
     operations: FileOperation[];
@@ -53,6 +60,7 @@ interface FileCache {
     targetVersion: number;
     currentVersion: number;
     fileObject: FileObject;
+    nextChangeTest: number;
 }
 
 export interface FileHandle {
@@ -68,18 +76,73 @@ export interface FileOperationResult extends FileSystemSuccessResult {
 export type FileOperationResultType = FileOperationResult | FileSystemFailedResult;
 const FILE_UPLOAD_ADD_ID = '$fileAdd' as const;
 
+const FILE_CHANGE_VALID_PERIOD = 90000 as const;
+const FILE_CACHE_COUNT = 20 as const;
+
 class FileManager {
     private __filesPathToID: Map<string, string> = new Map();
     private __filesIDToPath: Map<string, string> = new Map();
 
+    private __fileCachedLastUsed: string[] = [];
     private __fileCache: Map<string, FileCache> = new Map();
 
-    private __fileOperationQueues: Map<string, FileQueue> = new Map();
+    private __fileOperationQueues: Map<string, FileQueue> = new Map();    
+
+    constructor() {
+        $registerCommandListener(
+            APP_GET_FOCUS,
+            () => {
+                for ( const fileID of this.__fileCachedLastUsed) {
+                    const fileQueue = this.__fileOperationQueues.get(fileID) || this.__fileOperationQueues.set(fileID,{operations: [], lock: Promise.resolve()}).get(fileID) as FileQueue;
+                    const operations = fileQueue.operations;
+
+                    const fileGetInfo: FileValidateCache = {
+                        type: FileOperationType.FileValidateCache,
+                    };
+                    operations.push(fileGetInfo);
+
+                    this.processFile(fileID, fileQueue);
+                }
+            }
+        );
+    }
+
+    private updateFileUsed( fileID: string ) {
+        if ( this.__fileCachedLastUsed.length >= FILE_CACHE_COUNT ) {
+            const currentFileID = this.__fileCachedLastUsed.findIndex( (element) => {return element === fileID;} );
+            if ( currentFileID === -1 ) {
+                const outOfCacheFileID = this.__fileCachedLastUsed[0];
+                const outOfCacheFile = this.__fileCache.get( outOfCacheFileID );
+                assert( variableExists(outOfCacheFile), 'Cached file not in cache!' );
+                outOfCacheFile.fileObject.content = new Blob([]);
+                outOfCacheFile.fileObject.fileInfo.date = '';
+                outOfCacheFile.fileObject.fileInfo.hash = '';
+                ++outOfCacheFile.targetVersion;
+
+                this.__fileCachedLastUsed = this.__fileCachedLastUsed.slice( 1 );
+            } else {
+                this.__fileCachedLastUsed = this.__fileCachedLastUsed.slice( currentFileID, currentFileID + 1 );
+            }
+        }
+
+        this.__fileCachedLastUsed.push( fileID );
+    }
 
     private getFileID( testID: string ): string {
         const isFileID = $getFileSystem().isFileID(testID);
         const otherID = isFileID ? this.__filesIDToPath.get(testID) || '' : this.__filesPathToID.get(testID) || '';
         return this.__fileCache.has(otherID) ? otherID : testID;
+    }
+
+    private async validateCache(fileID: string, fileCache: FileCache) {
+        const result = await $getFileSystem().getFileInfoAsync( fileID );
+        assert( result.status === FileSystemStatus.Success, `Couldn't grab FileInfo` );
+        const cacheValid = fileCache.fileObject.fileInfo.hash === result.fileInfo.hash;
+        if ( !cacheValid ) {
+            ++fileCache.targetVersion;
+        }
+
+        return cacheValid;
     }
 
     private async processFilesInternal( fileID: string, filesOperations: FileOperation[] ) {
@@ -100,8 +163,11 @@ class FileManager {
                             status: FileSystemStatus.Success
                         };
 
-                        this.__fileCache.set( operationResult.handle.fileID, {fileObject: operationResult.file, currentVersion: 0, targetVersion: 0 } );
+                        this.__fileCache.set( operationResult.handle.fileID, {fileObject: operationResult.file, currentVersion: 0, targetVersion: 0, nextChangeTest: (new Date()).getTime() + FILE_CHANGE_VALID_PERIOD } );
                         fileUpload.resolve(operationResult);
+
+                        this.updateFileUsed(operationResult.handle.fileID);
+
                     } else {
                         fileUpload.resolve(result);
                     }
@@ -149,11 +215,10 @@ class FileManager {
                         break;
                     }
 
-                    {
+                    if ( (new Date()).getTime() > fileCache.nextChangeTest) {
                         const result = await $getFileSystem().getFileInfoAsync( fileID );
                         assert( result.status === FileSystemStatus.Success, `Couldn't grab FileInfo` );
-                        if ( fileCache.fileObject.fileInfo.hash !== result.fileInfo.hash ) {
-                            ++fileCache.targetVersion;
+                        if ( !(await this.validateCache(fileID, fileCache)) ) {
                             for ( const callback of fileUpload.callbacks ){
                                 callback.invalidCacheCallback( fileCache.fileObject.fileInfo.id, fileCache.fileObject.fileInfo.path, fileCache.targetVersion, callback.resolve );
                             }
@@ -168,7 +233,10 @@ class FileManager {
                             this.__filesIDToPath.set( result.fileInfo.id, result.fileInfo.path );
                             filePathsIDsSet = true;
                         }
-                        this.__fileCache.set( fileID, {fileObject: {content: fileUpload.content, fileInfo: result.fileInfo}, currentVersion: 0, targetVersion: 0 } );
+                        fileCache.fileObject = {content: fileUpload.content, fileInfo: result.fileInfo};
+                        fileCache.nextChangeTest = (new Date()).getTime() + FILE_CHANGE_VALID_PERIOD;
+
+                        this.updateFileUsed(fileID);
                     } 
 
                     for ( const callback of fileUpload.callbacks ) {
@@ -213,7 +281,9 @@ class FileManager {
                             file: {...result},
                             status: FileSystemStatus.Success
                         };
-                        this.__fileCache.set( fileID, {fileObject: operationResult.file, currentVersion: targetVersion, targetVersion: targetVersion } );
+                        this.__fileCache.set( fileID, {fileObject: operationResult.file, currentVersion: targetVersion, targetVersion: targetVersion, nextChangeTest: (new Date()).getTime() + FILE_CHANGE_VALID_PERIOD } );
+
+                        this.updateFileUsed(fileID);
                         
                         for ( const resolve of fileDownload.resolves ) {
                             resolve( operationResult );
@@ -224,6 +294,16 @@ class FileManager {
                         }
                     }
                 }   
+                break;
+                case FileOperationType.FileValidateCache:
+                {
+                    const fileCache = this.__fileCache.get(fileID);
+                    assert( variableExists(fileCache), `Upload replace before download ${fileID}`);
+
+                    const result = await $getFileSystem().getFileInfoAsync( fileID );
+                    assert( result.status === FileSystemStatus.Success, `Couldn't grab FileInfo` );
+                    this.validateCache(fileID, fileCache);
+                }
                 break;
             }
         }
