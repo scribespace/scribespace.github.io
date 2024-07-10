@@ -3,12 +3,11 @@ import { $callCommand } from "@systems/commandsManager/commandsManager";
 import { $getFileManager, FileHandle, FileUploadReplaceResolve } from "@systems/fileManager/fileManager";
 import { $getNotesManager } from "@systems/notesManager";
 import { NOTES_LOAD_CMD } from "@systems/notesManager/notesCommands";
+import { BLOCK_EDITING_CMD } from "@systems/systemCommands";
 import { assert, variableExistsOrThrow } from "@utils";
 import { TREE_DATA_CHANGED_CMD, TREE_RELOAD_CMD } from "./treeCommands";
-import { SerializedTreeData, TreeData } from "./treeData";
+import { TreeData } from "./treeData";
 import { TreeStatus } from "./treeStatus";
-import { BLOCK_EDITING_CMD } from "@systems/systemCommands";
-
 
 const TREE_STATUS_PATH = "tree_status" as const;
 export const TREE_FILE = "/tree" as const;
@@ -26,9 +25,8 @@ class TreeManager {
 
     get data() { return this.__tree.data; }
 
-    private async uploadTreeData(treeData: SerializedTreeData) {
-        const treeJSON = JSON.stringify(treeData);
-        const treeBlob = new Blob([treeJSON]);
+    private async uploadTreeData(treeData: Uint8Array) {
+        const treeBlob = new Blob([treeData]);
 
         let fileInfo: FileInfo;
         if ( this.__treeHandle.version === -1 ) {
@@ -67,8 +65,8 @@ class TreeManager {
         if ( downloadResult.status === FileSystemStatus.Success ) {
             this.__treeHandle = downloadResult.handle;
 
-            const treeJSON = await downloadResult.file.content.text();
-            const needSaving = await this.__tree.import(treeJSON);
+            const treeBytes = await downloadResult.file.content.arrayBuffer();
+            const needSaving = await this.__tree.import(treeBytes);
             if ( needSaving ) {
                 await this.uploadTreeData(this.__tree.export());
             }
@@ -182,6 +180,10 @@ class TreeManager {
 
     isTreeReady() {
         return this.__treeLoaded;
+    }
+
+    __test__serializeTreeData() {
+        return this.__tree.serialize();
     }
 }
 

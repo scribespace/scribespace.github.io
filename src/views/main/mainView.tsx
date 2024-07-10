@@ -11,7 +11,7 @@ import { EditorView } from "@/views/editor/editorView";
 import { useEffect, useRef, useState } from "react";
 import { AUTH_DISABLED, authGlobal } from "../../system/authentication";
 import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
-import { TREE_RELOAD_CMD } from "@systems/treeManager";
+import { TREE_RELOAD_CMD } from "@systems/treeManager/treeCommands";
 
 type Props = {
   changeAuthButtonState: (state: number) => void;

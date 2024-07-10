@@ -154,7 +154,7 @@ class FileManager {
                 {
                     const fileUpload = operation as FileUploadAdd;
                     const result = await $getFileSystem().uploadFileAsync( fileUpload.fileID, fileUpload.content, FileUploadMode.Add );
-                    if ( result.status === FileSystemStatus.Success ) {
+                        if ( result.status === FileSystemStatus.Success ) {
                         this.__filesPathToID.set( result.fileInfo.path, result.fileInfo.id );
 
                         const operationResult: FileOperationResult = {
@@ -339,6 +339,7 @@ class FileManager {
                 fileQueue.operations.push(fileUpload);
 
                 this.processFile(path, fileQueue);
+
             }
         );
     }

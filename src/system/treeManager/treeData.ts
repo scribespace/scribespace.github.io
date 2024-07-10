@@ -1,7 +1,11 @@
+import { $throwError, ErrorObject } from "@/utils/error/error";
+import { ErrorCode } from "@/utils/error/errorCodes";
+import { $appReload } from "@systems/environment/environmentEvents";
+import { $deserialize, $serialize } from "@systems/serializer/serializer";
 import { assert, variableExists, variableExistsOrThrow } from "@utils";
 import { NodeApi, SimpleTree } from "react-arborist";
 
-export const TREE_DATA_VERSION = 0 as const;
+export const TREE_DATA_VERSION = 1 as const;
 
 export interface TreeNodeData {
   id: string;
@@ -34,7 +38,7 @@ export class TreeData {
     this.__lastID = 0;
   }
 
-  export(): SerializedTreeData {
+  serialize(): SerializedTreeData {
     const nodeToNoteArray = Array.from(this.__nodeToNote);
     const serializedMap: SerializedTreeNodeToNote[] = [];
     for ( const entry of nodeToNoteArray ) {
@@ -49,6 +53,12 @@ export class TreeData {
     };
 
     return serializedTree;
+  }
+
+  export(): Uint8Array {
+    const serializedTree = this.serialize();
+
+    return $serialize( serializedTree );
   }
 
   private convertToV0Children( treeToNoteMap: SerializedTreeNodeToNote[], treeNodeID: number, treeData: TreeNodeData[], oldTreeData: SerializedTreeDataPreV ) {
@@ -74,20 +84,44 @@ export class TreeData {
   
     return {version: 0, treeNodeLastID: treeNodeID, treeNotesMap: treeToNoteMap, treeNodes};
   }
+
+  private async convertToV1(treeV0: SerializedTreeData): Promise<SerializedTreeData> {
+    return {...treeV0, version: TREE_DATA_VERSION};
+  }
   
-  private async treeConvertToLatest(oldTreeData: SerializedTreeDataPreV): Promise<SerializedTreeData> {
-    return this.convertToV0(oldTreeData);
+  private async treeConvertToLatest(treeBuffer: ArrayBuffer): Promise<SerializedTreeData> {
+    let treeData = JSON.parse( new TextDecoder().decode(treeBuffer) );
+
+    if ( !variableExists(treeData.version) ) {
+      treeData = await this.convertToV0(treeData);
+    }
+
+    return this.convertToV1(treeData);
   }
 
-  async import(treeJSON: string): Promise<boolean> {
+  async import(treeBytes: ArrayBuffer): Promise<boolean> {
     this.clear();
 
     let needsSaving = false;
-    let treeData = JSON.parse(treeJSON);
-    if ( !variableExists(treeData.version) || treeData.version !== TREE_DATA_VERSION ) {
-      treeData = await this.treeConvertToLatest( treeData );
-      needsSaving = true;
+
+    let treeData: SerializedTreeData;
+    try {
+      treeData = $deserialize( new Uint8Array(treeBytes) ) as SerializedTreeData;
+    } catch (error) {
+      const errorObject = error as ErrorObject;
+      if ( errorObject.errorCode === ErrorCode.Deserializer_MissingType ) {
+        treeData = await this.treeConvertToLatest(treeBytes);  
+        needsSaving = true;
+      } else {
+        $throwError( ErrorCode.Deserializer_UnknownError );
+      }
     }
+
+    if ( variableExists(treeData.version) && TREE_DATA_VERSION < treeData.version ) {
+      $appReload();
+      return false;
+    }
+
     const serializedTreeData = treeData as SerializedTreeData;
     assert( serializedTreeData.version === TREE_DATA_VERSION, 'Wrong tree version' );
 

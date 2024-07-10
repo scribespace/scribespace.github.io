@@ -8,13 +8,13 @@ import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { $callCommand } from "@systems/commandsManager/commandsManager";
 import { $getURLTreeNodeID, $openTab } from "@systems/environment/environment";
-import { TREE_SELECT_NOTE_CMD } from "@systems/treeManager";
 import { useCallback } from "react";
 import { IconBaseProps } from "react-icons";
 import { TreeNodeData } from "../../../system/treeManager/treeData";
 import "./css/treeNode.css";
 import { FolderArrow } from "./folderArrow";
 import { Input } from "./input";
+import { TREE_SELECT_NOTE_CMD } from "@systems/treeManager/treeCommands";
 
 export default function TreeNode({
   node,

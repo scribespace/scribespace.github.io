@@ -16,13 +16,14 @@ import { useMainThemeContext } from "@/mainThemeContext";
 import { MainTheme } from "@/theme";
 import { $registerCommandListener } from "@systems/commandsManager/commandsManager";
 import { $getTreeNodeIDFromURL, $setURLTreeNodeID, $setWindowTitle } from "@systems/environment/environment";
-import { $getTreeManager, TREE_DATA_CHANGED_CMD, TREE_PROCESS_START_NOTE_CMD, TREE_SELECT_NOTE_CMD, TreeSelectPayload, TreeSelectionSrc } from "@systems/treeManager";
+import { $getTreeManager} from "@systems/treeManager";
 import { bundleFunctions } from "@utils";
 import { IconBaseProps } from "react-icons";
 import {
   TreeNodeApi,
   TreeNodeData,
 } from "../../system/treeManager/treeData";
+import { TreeSelectionSrc, TREE_DATA_CHANGED_CMD, TreeSelectPayload, TREE_SELECT_NOTE_CMD, TREE_PROCESS_START_NOTE_CMD } from "@systems/treeManager/treeCommands";
 
 export default function TreeView() {
   const { treeTheme }: MainTheme = useMainThemeContext();

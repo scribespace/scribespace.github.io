@@ -3,12 +3,12 @@ import { $callCommand, $registerCommandListener } from "@systems/commandsManager
 import { $getNotesManager } from "@systems/notesManager";
 import { NOTES_LOAD_CMD, NOTE_CONVERTED_CMD } from "@systems/notesManager/notesCommands";
 import { BLOCK_EDITING_CMD } from "@systems/systemCommands";
-import { TREE_PROCESS_START_NOTE_CMD } from "@systems/treeManager";
 import { bundleFunctions, variableExists } from "@utils";
 import { EditorState } from "lexical";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CLEAR_HISTORY_CMD } from "../commandsPlugin/editorCommands";
 import { INFOBAR_SUBMIT_INFO_CMD } from "../infobarPlugin/infoCommands";
+import { TREE_PROCESS_START_NOTE_CMD } from "@systems/treeManager/treeCommands";
 
 export function NoteLoaderPlugin() {
     const [editor] = useLexicalComposerContext();

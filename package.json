@@ -45,6 +45,7 @@
     "@lexical/yjs": "file:libs/lexical/lexical-yjs",
     "clsx": "^2.1.1",
     "dropbox": "^10.34.0",
+    "fflate": "^0.8.2",
     "lexical": "file:libs/lexical/lexical",
     "react": "^18.2.0",
     "react-arborist": "^3.4.0",

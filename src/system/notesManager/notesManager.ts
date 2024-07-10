@@ -7,6 +7,7 @@ import { assert, variableExists } from "@utils";
 import { NOTES_CONVERTING_CMD, NOTES_CREATING_META_CMD, NOTES_FINISH_CONVERTING_CMD, NOTES_LOAD_CMD } from "./notesCommands";
 import { NoteObject, noteConvertToV0 } from "./notesVersions";
 import { BLOCK_EDITING_CMD } from "@systems/systemCommands";
+import { $appReload } from "@systems/environment/environmentEvents";
 
 export const NOTES_VERSION = 0 as const;
 export const NOTES_PATH = "/notes/";
@@ -21,7 +22,6 @@ interface NotesMetaObjectSereialized {
     version: number;
     notes: [string, string][];
 }
-
 
 class NotesManager {
     private __metaObject: NotesMetaObject = {version: -1, notes: new Map()};
@@ -95,6 +95,11 @@ class NotesManager {
             await this.storeNoteObject(notePath, convertedNoteObject);
             return convertedNoteObject;
         }
+
+        if ( NOTES_VERSION < noteObject.version ) {
+            $appReload();
+        }
+
         return noteObject;
     }
 
@@ -145,23 +150,10 @@ class NotesManager {
             fileInfo = result.file.fileInfo;
         } else {
             const result = await $getFileManager().uploadFile(this.__metaObjectHandle, metaBlob, 
-                (_id: string, path: string, _version: number, oldResolve: FileUploadReplaceResolve) => {
-                    $callCommand(BLOCK_EDITING_CMD, undefined);
-                    this.loadMetaFile().then(
-                        ()=>{
-                            return $getFileManager().downloadFile(path);
-                        }).then(
-                            (result) => {
-                                if ( result.status === FileSystemStatus.Success ) {
-                                    oldResolve({status: FileSystemStatus.Success, fileInfo: result.file.fileInfo});
-                                    return;
-                                }
-
-                                throw Error(`Couldn't refresh metafile`);
-                            }
-                        );
-                    }
-                );
+                () => {
+                    $appReload();
+                }
+            );
             assert(result.status === FileSystemStatus.Success, `Meta Data didn't upload`);
             fileInfo = result.fileInfo;
         }
