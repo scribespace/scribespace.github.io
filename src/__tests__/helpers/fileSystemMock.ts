@@ -12,41 +12,26 @@ export interface MockedFileInfo {
 }
 
 export interface MockedFile extends MockedFileInfo {
-    content: Blob;
+    content: Blob
 }
 
-export interface MockedFileSerialized extends MockedFileInfo {
-    content: string;
+export interface MockedFileFlat extends MockedFileInfo {
+    content: string,
 }
 
 vi.spyOn(global, 'Blob').mockImplementation(
     (args: BlobPart[] | undefined) => {
         class BlobMock {
-            data: Uint8Array;
+            data: string[];
             size: number;
             type = 'text/xml';
-            constructor( args: (string | Uint8Array)[] | undefined ) {
-                this.size = 0;
-                if ( variableExists(args) ) {
-                    for ( const a of args ) {
-                        this.size += a.length;
-                    }
-
-                    this.data = new Uint8Array(this.size);
-                    let offset = 0; 
-                    for ( const a of args ) {
-                        const array = ArrayBuffer.isView(a) ? a : new TextEncoder().encode(a);
-
-                        this.data.set( array, offset );
-                        offset += a.length;
-                    }
-                } else {
-                    this.data = new Uint8Array();
-                }
+            constructor( args: string[] | undefined ) {
+                this.data = args || [];
+                this.size = this.data.toString().length;
             }
 
             arrayBuffer() {
-                return new Promise<ArrayBuffer>((resolve)=> {resolve( this.data.buffer);});
+                return new Promise<ArrayBuffer>((resolve)=> {resolve( new ArrayBuffer(0));});
             }
             
             stream() {
@@ -55,11 +40,11 @@ vi.spyOn(global, 'Blob').mockImplementation(
             }
             
             slice() {
-                return new Blob([structuredClone(this.data)]);
+                return new Blob(structuredClone(this.data));
             }
 
             text() {
-                return new Promise<string>( (resolve) => { resolve( new TextDecoder().decode( this.data ) ); } );
+                return new Promise<string>( (resolve) => { resolve( this.data.toString() ); } );
             }
         }
 
@@ -108,12 +93,14 @@ export function $clearMockedFiles() {
     $getFileManager().clear();
 }
 
-export function $getMockedFile( id: string ): MockedFile | undefined {
-    return loadFile(id);
+export async function $getMockedFiles() {
+    await $getFileManager().flush();
+    return [...filesMapID.values()];
 }
 
-export function $getMockedFiles() {
-    return [...filesMapID.values()];
+export async function $getMockedFilesJSON(): Promise<string> {
+    const mockedFiles = await $getMockedFiles();
+    return JSON.stringify(mockedFiles);
 }
 
 const fileSystemStats = {
